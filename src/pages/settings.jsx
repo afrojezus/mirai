@@ -103,6 +103,11 @@ const style = theme => ({
   },
   column: {
     flexBasis: "33.3%"
+  },
+  avaImg: {
+    height: "100%",
+    width: "100%",
+    objectFit: "cover"
   }
 });
 
@@ -195,6 +200,7 @@ class Settings extends Component {
               </div>
               <div className={classes.column}>
                 <M.Avatar
+                  classes={{ img: classes.avaImg }}
                   className={classes.secondaryHeading}
                   src={user.avatar}
                 />
@@ -207,6 +213,7 @@ class Settings extends Component {
                 onDrop={this.handleAva}
               >
                 <M.Avatar
+                  classes={{ img: classes.avaImg }}
                   className={classes.ava}
                   src={this.state.ava ? this.state.ava.preview : user.avatar}
                 />
@@ -236,6 +243,7 @@ class Settings extends Component {
               </div>
               <div className={classes.column}>
                 <M.Avatar
+                  classes={{ img: classes.avaImg }}
                   className={classes.secondaryHeading}
                   src={user.headers}
                 />

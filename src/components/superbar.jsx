@@ -48,6 +48,8 @@ import Tabs, { Tab } from "material-ui/Tabs";
 
 import { Auth } from "../utils/firebase";
 
+import NotificationForm from "./notificationForm";
+
 const renderInput = inputProps => {
   const { classes, autoFocus, value, ref, ...other } = inputProps;
 
@@ -300,6 +302,11 @@ const styles = theme => ({
     height: 64,
     width: 64,
     boxShadow: "0 3px 16px rgba(0,0,0,.5)"
+  },
+  avatarImg: {
+    height: "100%",
+    width: "100%",
+    objectFit: "cover"
   }
 });
 
@@ -739,34 +746,15 @@ class Superbar extends Component {
               <Menu
                 id="info-menu"
                 anchorEl={infoEl}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right"
-                }}
                 transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right"
+                  vertical: "bottom",
+                  horizontal: "center"
                 }}
+                MenuListProps={{ style: { padding: 0 } }}
                 open={infoOpen}
                 onRequestClose={this.handleInfoRequestClose}
               >
-                <MenuItem
-                  onClick={() => {
-                    this.handleInfoRequestClose();
-                    window.open("https://discord.gg/gt69fbe");
-                  }}
-                >
-                  Discord
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    this.handleInfoRequestClose();
-                    this.tabChange(null, 4);
-                    this.props.history.push("/faq");
-                  }}
-                >
-                  FAQ
-                </MenuItem>
+                <NotificationForm />
               </Menu>
             </div>
             {user ? (
@@ -811,7 +799,11 @@ class Superbar extends Component {
                         this.props.history.push("/user");
                       }}
                       avatar={
-                        <Avatar src={user.avatar} className={classes.avatar} />
+                        <Avatar
+                          src={user.avatar}
+                          classes={{ img: classes.avatarImg }}
+                          className={classes.avatar}
+                        />
                       }
                       title={user.username}
                       subheader={user.nick}
