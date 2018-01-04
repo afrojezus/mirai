@@ -1,0 +1,180 @@
+@font-face {
+  font-family: 'Aller';
+  src: url('./assets/fonts/Aller_Rg.ttf');
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+.switch-wrapper {
+  position: relative;
+}
+
+.switch-wrapper > div {
+  position: absolute;
+  width: 100%;
+  will-change: auto;
+}
+
+.floatingIcon {
+  width: 128pt;
+  height: 128pt;
+  margin: 48pt auto 12pt auto;
+  animation: floating infinite 2s ease;
+  filter: drop-shadow(0 2pt 32pt #0066ff);
+}
+
+.floatingIconMirai {
+  width: 128pt;
+  height: 128pt;
+  border-radius: 50%;
+  margin: 48pt auto 12pt auto;
+  animation: floating3D infinite 10s ease;
+  filter: drop-shadow(0 2pt 12pt rgba(0, 0, 0, 0.17));
+}
+
+.specialTitleHeader {
+  margin: auto !important;
+  color: white !important;
+  width: 100%;
+  white-space: nowrap;
+  position: absolute;
+  top: 25%;
+  transform: scale(1.4) translateX(-15%);
+  transition: all .5s ease;
+  font-weight: 700 !important;
+  text-align: center;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+}
+
+@media (max-width: 800px) {
+  .specialTitleHeader {
+    transform: scale(0.8) translateX(-15%);
+  }
+}
+
+.artworktitle {
+  transition: all .3s ease;
+  z-index: 90000000;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 8px;
+  font-weight: 700 !important;
+  color: white !important;
+  text-shadow: 0 3px 30px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes floating {
+  0% {
+    transform: translateY(0%);
+  }
+  50% {
+    transform: translateY(-15%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
+
+@keyframes floating3D {
+	0% {
+		box-shadow: 0 5px 24px 0px rgba(0,0,0,0.2);
+    transform: translateY(0px)
+    rotate3d(0, 0, 0, 0deg);
+	}
+	35% {
+		box-shadow: 0 32px 32px 0px rgba(0,0,0,0.03);
+    transform: translateY(-20px)
+    perspective(400px)
+    rotate3d(-10, 50, -10, 5deg);
+  }
+  65% {
+		box-shadow: 0 32px 32px 0px rgba(0,0,0,0.03);
+    transform: translateY(-20px)
+    perspective(400px)
+    rotate3d(-75, 50, 0, -5deg);
+	}
+	100% {
+		box-shadow: 0 5px 24px 0px rgba(0,0,0,0.2);
+		transform: translateY(0px)
+    rotate3d(0, 0, 0, 0deg);
+	}
+}
+
+@keyframes floating3DX {
+	0% {
+		box-shadow: 0 5px 24px 0px rgba(0,0,0,0.2);
+    transform: translateY(0px)
+    rotate3d(0, 0, 0, 0deg);
+	}
+	35% {
+		box-shadow: 0 32px 32px 0px rgba(0,0,0,0.03);
+    transform: translateY(-1px)
+    perspective(400px)
+    rotate3d(-10, 50, -10, 5deg);
+  }
+  65% {
+		box-shadow: 0 32px 32px 0px rgba(0,0,0,0.03);
+    transform: translateY(-1px)
+    perspective(400px)
+    rotate3d(10, 50, 10, -5deg);
+	}
+	100% {
+		box-shadow: 0 5px 24px 0px rgba(0,0,0,0.2);
+		transform: translateY(0px)
+    rotate3d(0, 0, 0, 0deg);
+	}
+}
+
+
+@keyframes floating3DSelected {
+	0% {
+		box-shadow: 0 5px 24px 0px rgba(0,0,0,0.2);
+	}
+	35% {
+		box-shadow: 0 32px 32px 0px rgba(0,0,0,0.03);
+  }
+  65% {
+		box-shadow: 0 32px 32px 0px rgba(0,0,0,0.03);
+	}
+	100% {
+		box-shadow: 0 5px 24px 0px rgba(0,0,0,0.2);
+	}
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes fuck {
+  0% {
+		transform: translateY(0px)
+    rotate3d(0, 0, 0, 0deg);
+	}
+	50% {
+    transform: scale(1.05)
+    perspective(400px)
+    rotate3d(-1, 1, 0, 1deg);
+  }
+	100% {
+    transform: translateY(0px)
+    rotate3d(0, 0, 0, 0deg);
+	}
+}
+
+@keyframes load {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
