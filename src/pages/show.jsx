@@ -277,6 +277,27 @@ const styles = theme => ({
     background: "linear-gradient(to top, transparent, rgba(0,0,0,.6))",
     height: 183,
     width: "100%"
+  },
+  sectDivide: {
+    marginTop: theme.spacing.unit * 2
+  },
+  progressCon: {
+    display: "flex",
+    flexDirection: "column",
+    marginTop: theme.spacing.unit,
+    maxWidth: 400
+  },
+  progressTitle: {
+    display: "flex",
+    "& > h2": {
+      fontSize: 14
+    }
+  },
+  progressBar: {
+    background: "rgba(255,255,255,.3)"
+  },
+  progressBarActive: {
+    background: "white"
   }
 });
 
@@ -446,6 +467,25 @@ class Show extends Component {
                     {data.Media.type.includes("MANGA") ? "Read" : "Play"}
                   </M.Typography>
                 </div>
+                {user.episodeProgress &&
+                user.episodeProgress.hasOwnProperty(data.Media.id) ? (
+                  <div className={classes.progressCon}>
+                    <M.LinearProgress
+                      mode="determinate"
+                      value={user.episodeProgress[data.Media.id].played * 100}
+                      classes={{
+                        primaryColor: classes.progressBar,
+                        primaryColorBar: classes.progressBarActive
+                      }}
+                    />
+                    <div className={classes.progressTitle}>
+                      <div style={{ flex: 1 }} />
+                      <M.Typography type="title">
+                        EPISODE {user.episodeProgress[data.Media.id].ep}
+                      </M.Typography>
+                    </div>
+                  </div>
+                ) : null}
               </M.Grid>
               <M.Grid item xs className={classes.mainFrame}>
                 <M.Typography className={classes.smallTitle} type="display2">
