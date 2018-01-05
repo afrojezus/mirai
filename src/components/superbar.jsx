@@ -35,6 +35,10 @@ import BellIcon from "material-ui-icons/Notifications";
 import BellOffIcon from "material-ui-icons/NotificationsNone";
 import StarIcon from "material-ui-icons/Star";
 import Avatar from "material-ui/Avatar";
+import MoreVert from "material-ui-icons/MoreVert";
+import Input, { InputLabel } from "material-ui/Input";
+import { FormControl, FormHelperText } from "material-ui/Form";
+import Select from "material-ui/Select";
 
 import localForage from "localforage";
 
@@ -46,7 +50,7 @@ import parse from "autosuggest-highlight/parse";
 
 import Tabs, { Tab } from "material-ui/Tabs";
 
-import { Auth } from "../utils/firebase";
+import { Auth, Database } from "../utils/firebase";
 
 import NotificationForm from "./notificationForm";
 
@@ -213,7 +217,7 @@ const styles = theme => ({
     left: 0,
     right: 0,
     bottom: 0,
-    height: 96 + 8,
+    height: 100 + 8,
     objectFit: "cover",
     width: "100%",
     opacity: 0.4,
@@ -463,8 +467,15 @@ class Superbar extends Component {
 
   hideBar = () => (document.getElementById("superBar").style.opacity = 0);
 
+  handleStatus = e =>
+    this.setState({ [e.target.value]: e.target.value }, async () =>
+      Database.ref("users")
+        .child(this.props.user.userID)
+        .update({ status: e.target.value })
+    );
+
   render() {
-    const { classes, user, twistBase } = this.props;
+    const { classes, user, twistBase, status } = this.props;
     const {
       anchorEl,
       infoEl,
@@ -606,7 +617,7 @@ class Superbar extends Component {
         </List>
         <Divider className={classes.listDivider} />
         <Typography className={classes.footerCopy} type="headline">
-          2018 afroJ
+          {Object.keys(status).length - 1} online<br />2018 afroJ
         </Typography>
       </div>
     );
@@ -803,6 +814,11 @@ class Superbar extends Component {
                           src={user.avatar}
                           classes={{ img: classes.avatarImg }}
                           className={classes.avatar}
+                          style={
+                            status.hasOwnProperty(user.userID)
+                              ? { border: "2px solid lime" }
+                              : null
+                          }
                         />
                       }
                       title={user.username}
@@ -813,6 +829,21 @@ class Superbar extends Component {
                       alt=""
                       className={classes.profileCardImg}
                     />
+                    <Divider />
+                    <form>
+                      <FormControl>
+                        <InputLabel htmlFor="status">Status</InputLabel>
+                        <Select
+                          value={status}
+                          onChange={this.handleStatus}
+                          input={<Input name="status" id="status" />}
+                        >
+                          <MenuItem value={"Online"}>Online</MenuItem>
+                          <MenuItem value={"Busy"}>Busy</MenuItem>
+                          <MenuItem value={"Ghost"}>Ghost</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </form>
                     <Divider />
                     <List>
                       <ListItem

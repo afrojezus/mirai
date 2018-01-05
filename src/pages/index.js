@@ -95,7 +95,8 @@ class Index extends Component {
     user: null,
     loading: true,
     twistBase: [],
-    yu: null
+    yu: null,
+    status: {}
   };
 
   componentWillMount = async () => localForage.ready();
@@ -104,10 +105,22 @@ class Index extends Component {
     Auth.onAuthStateChanged(async user => {
       if (user) {
         let db = Database.ref("users").child(Auth.currentUser.uid);
-        db.on("value", rawdata => {
+        db.on("value", async rawdata => {
           const data = rawdata.val();
           this.setState({ user: data, loading: false }, async () => {
             if (data.mal) this.popuraFetch(data.mal);
+            Database.ref("status").on("value", s =>
+              this.setState({ status: s.val() }, async () =>
+                Database.ref("status")
+                  .child(Auth.currentUser.uid)
+                  .set({ online: true })
+                  .then(async () =>
+                    Database.ref("users")
+                      .child(Auth.currentUser.uid)
+                      .update({ status: "Online" })
+                  )
+              )
+            );
             const userInStorage = await localForage.setItem("user", data);
             if (userInStorage) {
             }
@@ -118,7 +131,6 @@ class Index extends Component {
           localForage.removeItem("user")
         );
       }
-
       const twistBase = await Twist.load();
       if (twistBase) this.setState({ twistBase }); //async () => user ? Database.ref('anidb').update(twistBase).then(() => console.info('Anime database updated!')) : null);
     });
@@ -134,6 +146,16 @@ class Index extends Component {
       open: true
     });
   };
+
+  componentWillUnmount = async () =>
+    Database.ref("status")
+      .child(this.state.user.userID)
+      .remove()
+      .then(async () =>
+        Database.ref("users")
+          .child(Auth.currentUser.uid)
+          .update({ status: "Offline" })
+      );
 
   render() {
     if (this.state.loading)
@@ -151,6 +173,7 @@ class Index extends Component {
               history={history}
               user={this.state.user}
               twistBase={this.state.twistBase}
+              status={this.state.status}
             >
               <Switch
                 atEnter={bounceTransition.atEnter}
@@ -167,6 +190,7 @@ class Index extends Component {
                       user={this.state.user}
                       history={history}
                       meta={meta}
+                      status={this.state.status}
                     />
                   )}
                 />
@@ -211,6 +235,7 @@ class Index extends Component {
                       user={this.state.user}
                       history={history}
                       meta={meta}
+                      status={this.state.status}
                     />
                   )}
                 />

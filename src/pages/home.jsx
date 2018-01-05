@@ -329,7 +329,7 @@ class Home extends Component {
   easterEggOne = () => this.setState({ es: !this.state.es });
 
   render() {
-    const { classes } = this.props;
+    const { classes, status } = this.props;
     const { user, feeds, anchorEl, es, loading } = this.state;
     const openFeed = Boolean(anchorEl);
 
