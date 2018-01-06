@@ -7,13 +7,17 @@ import Segoku from "../utils/segoku/segoku";
 import * as Vibrant from "node-vibrant";
 
 const styles = theme => ({
-  loadingRoot: {
+  loading: {
     height: "100%",
     width: "100%",
-    display: "flex"
-  },
-  loadingCircle: {
-    width: "100%"
+    zIndex: -5,
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%,-50%)",
+    padding: 0,
+    margin: "auto",
+    transition: theme.transitions.create(["all"])
   },
   root: {
     paddingTop: theme.spacing.unit * 8,
@@ -73,7 +77,7 @@ const styles = theme => ({
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0.6,
+    opacity: 0.2,
     height: "100vh",
     objectFit: "cover",
     width: "100%",
@@ -161,7 +165,7 @@ const styles = theme => ({
     "&:hover": {
       transform: "scale(1.05)",
       overflow: "initial",
-      boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
+      boxShadow: `0 2px 14px rgba(0,0,0,.3)`,
       background: M.colors.blue.A200
     },
     "&:hover > .artworktitle": {
@@ -190,6 +194,76 @@ const styles = theme => ({
     fontSize: 22,
     zIndex: "inherit",
     paddingBottom: theme.spacing.unit * 2
+  },
+  fillImg: {
+    height: "100%",
+    width: "100%",
+    objectFit: "cover",
+    background: "white"
+  },
+  peopleCard: {
+    height: "auto",
+    width: 183,
+    flexGrow: "initial",
+    flexBasis: "initial",
+    margin: theme.spacing.unit / 2,
+    transition: theme.transitions.create(["all"]),
+    "&:hover": {
+      transform: "scale(1.05)",
+      overflow: "initial",
+      zIndex: 200,
+      boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
+      background: M.colors.blue.A200
+    },
+    "&:hover > * > h1": {
+      transform: "scale(1.1)",
+      textShadow: "0 2px 12px rgba(0,0,0,.7)"
+    },
+    position: "relative",
+    overflow: "hidden"
+  },
+  peopleImage: {
+    height: 156,
+    width: 156,
+    margin: "auto",
+    zIndex: -1,
+    borderRadius: "50%",
+    boxShadow: "0 2px 12px rgba(0,0,0,.2)",
+    transition: theme.transitions.create(["all"]),
+    "&:hover": {
+      boxShadow: "0 3px 16px rgba(0,0,0,.5)",
+      filter: "brightness(0.8)",
+      transform: "scale(0.9)"
+    },
+    top: 0,
+    left: 0
+  },
+  entityContext: {
+    "&:last-child": {
+      paddingBottom: 12
+    }
+  },
+  peopleTitle: {
+    fontSize: 14,
+    fontWeight: 500,
+    padding: theme.spacing.unit,
+    paddingBottom: theme.spacing.unit / 2,
+    transition: theme.transitions.create(["transform"]),
+    bottom: 0,
+    zIndex: 5,
+    margin: "auto",
+    textAlign: "center",
+    textShadow: "0 1px 12px rgba(0,0,0,.2)"
+  },
+  peopleSubTitle: {
+    fontSize: 14,
+    color: "rgba(255,255,255,.7)",
+    fontWeight: 600,
+    margin: "auto",
+    transition: theme.transitions.create(["transform"]),
+    zIndex: 5,
+    textShadow: "0 1px 12px rgba(0,0,0,.2)",
+    textAlign: "center"
   },
   entityCard: {
     height: 200,
@@ -240,11 +314,6 @@ const styles = theme => ({
     top: 0,
     left: 0
   },
-  entityContext: {
-    "&:last-child": {
-      paddingBottom: 12
-    }
-  },
   entityTitle: {
     fontSize: 14,
     fontWeight: 500,
@@ -285,7 +354,8 @@ const styles = theme => ({
     display: "flex",
     flexDirection: "column",
     marginTop: theme.spacing.unit,
-    maxWidth: 400
+    maxWidth: 400,
+    margin: "auto"
   },
   progressTitle: {
     display: "flex",
@@ -395,8 +465,9 @@ class Show extends Component {
 
   play = () => {
     window.scrollTo(0, 0);
-    if (this.state.data.Media)
+    if (this.state.data.Media && this.state.data.Media.type.includes("ANIME"))
       this.props.history.push("/watch?w=" + this.state.data.Media.id);
+    else this.props.history.push("/read?r=" + this.state.data.Media.id);
   };
 
   componentWillUnmount = () => {};
@@ -432,6 +503,10 @@ class Show extends Component {
             </M.IconButton>
           </M.Toolbar>
         ) : null}
+        <M.CircularProgress
+          className={classes.loading}
+          style={!loading ? { opacity: 0 } : null}
+        />
         {data && data.Media ? (
           <div
             id="previewFrame"
@@ -467,7 +542,8 @@ class Show extends Component {
                     {data.Media.type.includes("MANGA") ? "Read" : "Play"}
                   </M.Typography>
                 </div>
-                {user.episodeProgress &&
+                {user &&
+                user.episodeProgress &&
                 user.episodeProgress.hasOwnProperty(data.Media.id) ? (
                   <div className={classes.progressCon}>
                     <M.LinearProgress
@@ -507,14 +583,32 @@ class Show extends Component {
                   type="body1"
                   dangerouslySetInnerHTML={{ __html: data.Media.description }}
                 />
-                <div style={{ display: "flex" }}>
-                  <M.Typography className={classes.boldD} type="headline">
-                    Starring{" "}
-                  </M.Typography>
-                  <M.Typography className={classes.smallD} type="headline">
-                    Hideo Kojima
-                  </M.Typography>
-                </div>
+                {data.Media.characters.edges[0] &&
+                data.Media.characters.edges[0].voiceActors ? (
+                  <div style={{ display: "flex" }}>
+                    <M.Typography className={classes.boldD} type="headline">
+                      Starring{" "}
+                    </M.Typography>
+                    {data.Media.characters.edges
+                      .filter(s => s.role === "MAIN")
+                      .map((o, i) => (
+                        <M.Typography
+                          className={classes.smallD}
+                          type="headline"
+                        >
+                          {o.voiceActors[0].name.last
+                            ? o.voiceActors[0].name.first +
+                              " " +
+                              o.voiceActors[0].name.last
+                            : o.voiceActors[0].name.first}{" "}
+                          as{" "}
+                          {o.node.name.last
+                            ? o.node.name.first + " " + o.node.name.last
+                            : o.node.name.first}
+                        </M.Typography>
+                      ))}
+                  </div>
+                ) : null}
                 <div style={{ display: "flex" }}>
                   {data.Media.staff.edges.filter(
                     s => s.role === "Director"
@@ -546,8 +640,11 @@ class Show extends Component {
                   )[0] ? (
                     <div className={classes.sepD}>
                       <M.Typography className={classes.boldD} type="headline">
-                        {" "}
-                        and written by{" "}
+                        {data.Media.staff.edges.filter(
+                          s => s.role === "Director"
+                        )[0]
+                          ? "and written by"
+                          : "Written by"}
                       </M.Typography>
                       <M.Typography className={classes.smallD} type="headline">
                         {
@@ -598,20 +695,22 @@ class Show extends Component {
                       ))}
                     </div>
                   </M.Grid>
-                  <M.Grid item xs className={classes.tagBox}>
-                    <M.Typography className={classes.tagTitle} type="title">
-                      Studios
-                    </M.Typography>
-                    <div className={classes.genreRow}>
-                      {data.Media.studios.edges.map((o, i) => (
-                        <M.Chip
-                          className={classes.tagChip}
-                          key={i}
-                          label={o.node.name}
-                        />
-                      ))}
-                    </div>
-                  </M.Grid>
+                  {data.Media.type.includes("MANGA") ? null : (
+                    <M.Grid item xs className={classes.tagBox}>
+                      <M.Typography className={classes.tagTitle} type="title">
+                        Studios
+                      </M.Typography>
+                      <div className={classes.genreRow}>
+                        {data.Media.studios.edges.map((o, i) => (
+                          <M.Chip
+                            className={classes.tagChip}
+                            key={i}
+                            label={o.node.name}
+                          />
+                        ))}
+                      </div>
+                    </M.Grid>
+                  )}
                 </M.Grid>
               </M.Grid>
             </M.Grid>
@@ -665,45 +764,43 @@ class Show extends Component {
                   </M.Grid>
                   <M.Divider />
                   <M.Typography type="title" className={classes.secTitle}>
-                    Cast
+                    {data.Media.type.includes("ANIME") ? "Cast" : "Characters"}
                   </M.Typography>
                   <M.Grid container className={classes.itemcontainer}>
-                    {data.Media.relations.edges.map((anime, index) => (
+                    {data.Media.characters.edges.map((cast, index) => (
                       <M.Grid
-                        className={classes.entityCard}
+                        className={classes.peopleCard}
                         item
                         xs
                         key={index}
                       >
                         <M.Card
-                          style={{ background: "transparent" }}
+                          style={{
+                            background: "transparent",
+                            boxShadow: "none"
+                          }}
                           onClick={() =>
-                            this.openEntity(
-                              `/show?${
-                                anime.node.type.includes("ANIME") ? "s" : "m"
-                              }=${anime.node.id}`
-                            )
+                            this.props.history.push(`/fig?c=${cast.node.id}`)
                           }
                         >
-                          <div className={classes.gradientCard}>
-                            <M.CardMedia
-                              className={classes.entityImage}
-                              image={anime.node.coverImage.large}
-                            />
-                          </div>
+                          <M.Avatar
+                            className={classes.peopleImage}
+                            classes={{ img: classes.fillImg }}
+                            src={cast.node.image.large}
+                          />
                           <M.Typography
                             type="headline"
-                            className={classes.entityTitle}
+                            className={classes.peopleTitle}
                           >
-                            {anime.node.title.english
-                              ? anime.node.title.english
-                              : anime.node.title.romaji}
+                            {cast.node.name.last
+                              ? cast.node.name.first + " " + cast.node.name.last
+                              : cast.node.name.first}
                           </M.Typography>
                           <M.Typography
                             type="headline"
-                            className={classes.entitySubTitle}
+                            className={classes.peopleSubTitle}
                           >
-                            {anime.node.type} {anime.relationType}
+                            {cast.role}
                           </M.Typography>
                         </M.Card>
                       </M.Grid>
@@ -716,26 +813,28 @@ class Show extends Component {
                   <M.Grid container className={classes.itemcontainer}>
                     {data.Media.staff.edges.map((staff, index) => (
                       <M.Grid
-                        className={classes.entityCard}
+                        className={classes.peopleCard}
                         item
                         xs
                         key={index}
                       >
                         <M.Card
-                          style={{ background: "transparent" }}
+                          style={{
+                            background: "transparent",
+                            boxShadow: "none"
+                          }}
                           onClick={() =>
                             this.props.history.push(`/fig?s=${staff.node.id}`)
                           }
                         >
-                          <div className={classes.gradientCard}>
-                            <M.CardMedia
-                              className={classes.entityImage}
-                              image={staff.node.image.large}
-                            />
-                          </div>
+                          <M.Avatar
+                            className={classes.peopleImage}
+                            classes={{ img: classes.fillImg }}
+                            src={staff.node.image.large}
+                          />
                           <M.Typography
                             type="headline"
-                            className={classes.entityTitle}
+                            className={classes.peopleTitle}
                           >
                             {staff.node.name.last
                               ? staff.node.name.first +
@@ -745,7 +844,7 @@ class Show extends Component {
                           </M.Typography>
                           <M.Typography
                             type="headline"
-                            className={classes.entitySubTitle}
+                            className={classes.peopleSubTitle}
                           >
                             {staff.role}
                           </M.Typography>

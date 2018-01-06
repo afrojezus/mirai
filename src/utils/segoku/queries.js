@@ -137,6 +137,38 @@ export const entryQuery = `
           role
         }
       }
+      characters {
+        edges {
+          node {
+            id
+            name {
+              first
+              last
+              native
+            }
+            image {
+              large
+            }
+            description
+            
+          }
+          id
+          role
+          voiceActors {
+                id
+                name {
+                  first
+                  last
+                  native
+                }
+                language
+                image {
+                  large
+                  medium
+                }
+            }
+        }
+      }
     }
   }
 `;
@@ -270,6 +302,25 @@ export const entryQueryM = `
               large
               medium
             }
+          }
+          id
+          role
+        }
+      }
+      characters {
+        edges {
+          node {
+            id
+            name {
+              first
+              last
+              native
+            }
+            image {
+              large
+            }
+            description
+            
           }
           id
           role

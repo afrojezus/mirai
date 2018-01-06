@@ -217,7 +217,7 @@ const styles = theme => ({
     left: 0,
     right: 0,
     bottom: 0,
-    height: 100 + 8,
+    height: 96 + 8,
     objectFit: "cover",
     width: "100%",
     opacity: 0.4,
@@ -311,6 +311,9 @@ const styles = theme => ({
     height: "100%",
     width: "100%",
     objectFit: "cover"
+  },
+  statusForm: {
+    width: "100%"
   }
 });
 
@@ -468,10 +471,10 @@ class Superbar extends Component {
   hideBar = () => (document.getElementById("superBar").style.opacity = 0);
 
   handleStatus = e =>
-    this.setState({ [e.target.value]: e.target.value }, async () =>
+    this.setState({ status: e.target.value }, async () =>
       Database.ref("users")
         .child(this.props.user.userID)
-        .update({ status: e.target.value })
+        .update({ status: this.state.status })
     );
 
   render() {
@@ -814,11 +817,6 @@ class Superbar extends Component {
                           src={user.avatar}
                           classes={{ img: classes.avatarImg }}
                           className={classes.avatar}
-                          style={
-                            status.hasOwnProperty(user.userID)
-                              ? { border: "2px solid lime" }
-                              : null
-                          }
                         />
                       }
                       title={user.username}
@@ -830,21 +828,20 @@ class Superbar extends Component {
                       className={classes.profileCardImg}
                     />
                     <Divider />
-                    <form>
-                      <FormControl>
-                        <InputLabel htmlFor="status">Status</InputLabel>
+                    {/*<form>
+                      <FormControl className={classes.statusForm}>
                         <Select
                           value={status}
                           onChange={this.handleStatus}
                           input={<Input name="status" id="status" />}
                         >
-                          <MenuItem value={"Online"}>Online</MenuItem>
-                          <MenuItem value={"Busy"}>Busy</MenuItem>
-                          <MenuItem value={"Ghost"}>Ghost</MenuItem>
+                          <MenuItem value={10}>Online</MenuItem>
+                          <MenuItem value={20}>Busy</MenuItem>
+                          <MenuItem value={30}>Ghost</MenuItem>
                         </Select>
                       </FormControl>
                     </form>
-                    <Divider />
+                    <Divider />*/}
                     <List>
                       <ListItem
                         button

@@ -95,11 +95,6 @@ class User extends Component {
               src={user.avatar}
               className={classes.avatar}
               classes={{ img: classes.fillImg }}
-              style={
-                status.hasOwnProperty(user.userID)
-                  ? { border: "4px solid lime" }
-                  : null
-              }
             />
             <div className={classes.mainHead}>
               <M.Typography type="display2" className={classes.title}>
