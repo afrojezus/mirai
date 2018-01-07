@@ -12,6 +12,8 @@ import {
   entryQuery,
   entryQueryM,
   bigFuckingQuery,
+  bigFuckingQueryS,
+  bigFuckingQueryM,
   feedQuery,
   smolQuery,
   tagQuery
@@ -24,6 +26,8 @@ class Segoku {
     entryQuery: entryQuery,
     entryQueryM: entryQueryM,
     bigFuckingQuery: bigFuckingQuery,
+    bigFuckingQueryS: bigFuckingQueryS,
+    bigFuckingQueryM: bigFuckingQueryM,
     feedQuery: feedQuery,
     smolQuery: smolQuery,
     tagQuery: tagQuery,
@@ -31,6 +35,25 @@ class Segoku {
     headers: {
       "Content-type": "application/json",
       Accept: "application/json"
+    }
+  };
+
+  customQuery = async (query, requestObject) => {
+    const opt = {
+      method: "POST",
+      headers: this.segoku.headers,
+      body: JSON.stringify({
+        query: query,
+        variables: requestObject
+      })
+    };
+
+    try {
+      const response = await fetch(this.segoku.source, opt);
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(error);
     }
   };
   getSingle = async requestObject => {
@@ -48,7 +71,6 @@ class Segoku {
       const data = await response.json();
       return data;
     } catch (error) {
-      alert("Error, check console");
       console.error(error);
     }
   };
@@ -67,7 +89,6 @@ class Segoku {
       const data = await response.json();
       return data;
     } catch (error) {
-      alert("Error, check console");
       console.error(error);
     }
   };
@@ -86,7 +107,6 @@ class Segoku {
       const data = await response.json();
       return data;
     } catch (error) {
-      alert("Error, check console");
       console.error(error);
     }
   };
@@ -105,10 +125,29 @@ class Segoku {
       const data = await response.json();
       return data;
     } catch (error) {
-      alert("Error, check console");
       console.error(error);
     }
   };
+
+  getSimilar = async requestObjects => {
+    const opt = {
+      method: "POST",
+      headers: this.segoku.headers,
+      body: JSON.stringify({
+        query: this.segoku.bigFuckingQueryS,
+        variables: requestObjects
+      })
+    };
+
+    try {
+      const response = await fetch(this.segoku.source, opt);
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   get = async requestObjects => {
     const opt = {
       method: "POST",
@@ -124,7 +163,25 @@ class Segoku {
       const data = await response.json();
       return data;
     } catch (error) {
-      alert("Error, check console");
+      console.error(error);
+    }
+  };
+
+  getM = async requestObjects => {
+    const opt = {
+      method: "POST",
+      headers: this.segoku.headers,
+      body: JSON.stringify({
+        query: this.segoku.bigFuckingQueryM,
+        variables: requestObjects
+      })
+    };
+
+    try {
+      const response = await fetch(this.segoku.source, opt);
+      const data = await response.json();
+      return data;
+    } catch (error) {
       console.error(error);
     }
   };
@@ -145,7 +202,6 @@ class Segoku {
       const data = await response.json();
       return data;
     } catch (error) {
-      alert("Error, check console");
       console.error(error);
     }
   };

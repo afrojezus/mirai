@@ -20,7 +20,7 @@ const theme = createMuiTheme({
   },
   typography: {
     // Use the system font.
-    fontFamily: "'Segoe UI', BlinkMacSystemFont, -apple-system, 'Product Sans'"
+    fontFamily: "BlinkMacSystemFont, -apple-system, 'Roboto'"
   }
 });
 

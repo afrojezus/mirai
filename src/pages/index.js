@@ -38,6 +38,8 @@ import Watch from "./watch";
 import Monika from "./monika";
 import Settings from "./settings";
 import Search from "./search";
+import Fig from "./fig";
+import Read from "./read";
 
 const styles = theme => ({
   root: {},
@@ -148,14 +150,16 @@ class Index extends Component {
   };
 
   componentWillUnmount = async () =>
-    Database.ref("status")
-      .child(this.state.user.userID)
-      .remove()
-      .then(async () =>
-        Database.ref("users")
-          .child(Auth.currentUser.uid)
-          .update({ status: "Offline" })
-      );
+    this.state.user
+      ? Database.ref("status")
+          .child(this.state.user.userID)
+          .remove()
+          .then(async () =>
+            Database.ref("users")
+              .child(Auth.currentUser.uid)
+              .update({ status: "Offline" })
+          )
+      : null;
 
   render() {
     if (this.state.loading)
@@ -313,6 +317,30 @@ class Index extends Component {
                   exact
                   component={() => (
                     <Search
+                      user={this.state.user}
+                      history={history}
+                      meta={meta}
+                      twist={this.state.twistBase}
+                    />
+                  )}
+                />
+                <Route
+                  path="/read"
+                  exact
+                  component={() => (
+                    <Read
+                      user={this.state.user}
+                      history={history}
+                      meta={meta}
+                      twist={this.state.twistBase}
+                    />
+                  )}
+                />
+                <Route
+                  path="/fig"
+                  exact
+                  component={() => (
+                    <Fig
                       user={this.state.user}
                       history={history}
                       meta={meta}

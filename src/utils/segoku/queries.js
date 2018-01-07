@@ -438,6 +438,233 @@ query ($id: Int, $page: Int, $season: MediaSeason, $seasonYear: Int, $search: St
 
 `;
 
+export const bigFuckingQueryS = `
+
+query ($id: Int, $page: Int, $season: MediaSeason, $seasonYear: Int, $search: String, $status: MediaStatus, $isAdult: Boolean, $sort: [MediaSort], $tag: String) {
+
+  Page (page: $page) {
+
+    pageInfo {
+
+      total
+
+      currentPage
+
+      lastPage
+
+      hasNextPage
+
+      perPage
+
+    }
+
+    media (id: $id, search: $search, season: $season, seasonYear: $seasonYear, sort: $sort, status: $status, isAdult: $isAdult, tag: $tag type: ANIME) {
+
+      id
+
+      title {
+
+        romaji
+
+        english
+
+        native
+
+      }
+
+      startDate {
+
+          year,
+
+          month,
+
+          day
+
+      }
+
+      endDate {
+
+          year,
+
+          month,
+
+          day
+
+      }
+
+      coverImage {
+
+          large
+
+          medium
+
+      }
+
+      bannerImage
+
+      format
+
+      type
+
+      status
+
+      episodes
+
+      chapters
+
+      volumes
+
+      description
+
+      averageScore
+
+      meanScore
+
+      genres
+
+      season
+      
+      tags {
+        id
+        name
+        description
+        category
+        rank
+        isGeneralSpoiler
+        isMediaSpoiler
+        isAdult
+      }
+
+      isAdult
+
+      popularity
+
+      nextAiringEpisode {
+
+          airingAt
+
+          timeUntilAiring
+
+          episode
+
+      }
+
+    }
+
+  }
+
+}
+
+`;
+
+export const bigFuckingQueryM = `
+
+query ($id: Int, $page: Int, $season: MediaSeason, $seasonYear: Int, $search: String, $status: MediaStatus, $isAdult: Boolean, $sort: [MediaSort]) {
+
+  Page (page: $page) {
+
+    pageInfo {
+
+      total
+
+      currentPage
+
+      lastPage
+
+      hasNextPage
+
+      perPage
+
+    }
+
+    media (id: $id, search: $search, season: $season, seasonYear: $seasonYear, sort: $sort, status: $status, isAdult: $isAdult, type: MANGA) {
+
+      id
+
+      title {
+
+        romaji
+
+        english
+
+        native
+
+      }
+
+      startDate {
+
+          year,
+
+          month,
+
+          day
+
+      }
+
+      endDate {
+
+          year,
+
+          month,
+
+          day
+
+      }
+
+      coverImage {
+
+          large
+
+          medium
+
+      }
+
+      bannerImage
+
+      format
+
+      type
+
+      status
+
+      episodes
+
+      chapters
+
+      volumes
+
+      description
+
+      averageScore
+
+      meanScore
+
+      genres
+
+      season
+
+      isAdult
+
+      popularity
+
+      nextAiringEpisode {
+
+          airingAt
+
+          timeUntilAiring
+
+          episode
+
+      }
+
+    }
+
+  }
+
+}
+
+`;
+
 export const tagQuery = `
   query(
     $id: Int

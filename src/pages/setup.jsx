@@ -152,19 +152,23 @@ class Setup extends Component {
                   ? error
                   : mode.includes("login") ? "Login" : "Sign up"}
               </Typography>
-              <TextField
-                autoFocus
-                onChange={e => this.setState({ email: e.target.value })}
-                label="Email"
-                className={classes.textField}
-                type="email"
-              />
-              <TextField
-                onChange={e => this.setState({ password: e.target.value })}
-                label="Password"
-                className={classes.textField}
-                type="password"
-              />
+              <form>
+                <TextField
+                  autoFocus
+                  onChange={e => this.setState({ email: e.target.value })}
+                  label="Email"
+                  className={classes.textField}
+                  type="email"
+                  autoComplete="username"
+                />
+                <TextField
+                  onChange={e => this.setState({ password: e.target.value })}
+                  label="Password"
+                  className={classes.textField}
+                  type="password"
+                  autoComplete="current-password"
+                />
+              </form>
               <div className={classes.spacing} />
             </CardContent>
             <Divider className={classes.divider} />

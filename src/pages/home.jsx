@@ -33,6 +33,10 @@ import "localforage-observable";
 import Snackbar from "material-ui/Snackbar";
 import CloseIcon from "material-ui-icons/Close";
 
+import Segoku from "../utils/segoku/segoku";
+
+import ripple from "../assets/Ripple.mp4";
+
 const OngoingAnimes = ({ data: { Page, refetch } }) => (
   <Grid container>
     {Page &&
@@ -311,12 +315,37 @@ class Home extends Component {
     feeds: null,
     anchorEl: null,
     es: false,
-    loading: true
+    loading: true,
+    ongoing: null
   };
 
   componentDidMount = async () => {
     this.feedsObserve();
-    setTimeout(() => this.setState({ loading: false }), 300);
+    this.fetchOngoing().then(() =>
+      setTimeout(() => this.setState({ loading: false }), 300)
+    );
+  };
+
+  fetchOngoing = async () => {
+    const ongoing = await new Segoku().get({
+      page: 1,
+      isAdult: false,
+      sort: ["POPULARITY_DESC"],
+      status: "RELEASING"
+    });
+
+    const ongoingM = await new Segoku().getM({
+      page: 1,
+      isAdult: false,
+      sort: ["POPULARITY_DESC"],
+      status: "RELEASING"
+    });
+
+    try {
+      if (ongoing && ongoingM) this.setState({ ongoing, ongoingM });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   feedsObserve = () =>
@@ -330,14 +359,31 @@ class Home extends Component {
 
   render() {
     const { classes, status } = this.props;
-    const { user, feeds, anchorEl, es, loading } = this.state;
+    const {
+      user,
+      feeds,
+      anchorEl,
+      es,
+      loading,
+      ongoing,
+      ongoingM
+    } = this.state;
     const openFeed = Boolean(anchorEl);
 
     return (
       <div className={classes.frame} style={loading ? { opacity: 0 } : null}>
         {user && user.headers ? (
           <img src={user.headers} alt="" className={classes.bgImage} />
-        ) : null}
+        ) : (
+          <video
+            muted
+            loop
+            autoPlay
+            src={ripple}
+            alt=""
+            className={classes.bgImage}
+          />
+        )}
         <Snackbar
           anchorOrigin={{
             vertical: "top",
@@ -458,9 +504,9 @@ class Home extends Component {
                     </Grid>
                   ))}
               </Grid>
-              <Divider className={classes.divide} />
               {user && user.episodeProgress ? (
                 <div className={classes.fullWidth}>
+                  <Divider className={classes.divide} />
                   <Typography type="title" className={classes.headline}>
                     Animes you've watched previously
                   </Typography>
@@ -540,11 +586,88 @@ class Home extends Component {
                   </Grid>
                 </div>
               ) : null}
-              <Divider className={classes.divide} />
-              <Typography type="title" className={classes.headline}>
-                Currently ongoing anime
-              </Typography>
-              <OngoingAnimesQuery />
+              <Grid container>
+                {ongoing && ongoing.data ? (
+                  <Grid item xs className={classes.fullWidth}>
+                    <Divider className={classes.divide} />
+                    <Typography type="title" className={classes.headline}>
+                      Currently ongoing anime
+                    </Typography>
+                    <Grid container>
+                      {ongoing.data.Page.media.map((anime, index) => (
+                        <Grid
+                          className={classes.entityCard}
+                          item
+                          xs
+                          key={index}
+                        >
+                          <Card
+                            style={{ background: "transparent" }}
+                            onClick={() =>
+                              this.openEntity(`/show?s=${anime.id}`)
+                            }
+                          >
+                            <div className={classes.gradientCard}>
+                              <CardMedia
+                                className={classes.entityImage}
+                                image={anime.coverImage.large}
+                              />
+                            </div>
+                            <Typography
+                              type="headline"
+                              className={classes.entityTitle}
+                            >
+                              {anime.title.english
+                                ? anime.title.english
+                                : anime.title.romaji}
+                            </Typography>
+                          </Card>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </Grid>
+                ) : null}
+                {ongoingM && ongoingM.data ? (
+                  <Grid item xs className={classes.fullWidth}>
+                    <Divider className={classes.divide} />
+                    <Typography type="title" className={classes.headline}>
+                      Currently ongoing manga
+                    </Typography>
+                    <Grid container>
+                      {ongoingM.data.Page.media.map((manga, index) => (
+                        <Grid
+                          className={classes.entityCard}
+                          item
+                          xs
+                          key={index}
+                        >
+                          <Card
+                            style={{ background: "transparent" }}
+                            onClick={() =>
+                              this.openEntity(`/show?m=${manga.id}`)
+                            }
+                          >
+                            <div className={classes.gradientCard}>
+                              <CardMedia
+                                className={classes.entityImage}
+                                image={manga.coverImage.large}
+                              />
+                            </div>
+                            <Typography
+                              type="headline"
+                              className={classes.entityTitle}
+                            >
+                              {manga.title.english
+                                ? manga.title.english
+                                : manga.title.romaji}
+                            </Typography>
+                          </Card>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </Grid>
+                ) : null}
+              </Grid>
             </Grid>
           </Grid>
         </div>

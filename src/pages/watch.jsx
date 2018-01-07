@@ -115,11 +115,13 @@ class Watch extends Component {
     volEl: null
   };
 
-  componentWillMount = async () => {
-    /*const playerVolume = await localForage.getItem("player-settings-volume");
+  player = HTMLMediaElement;
 
-        if (playerVolume) this.setState({ volume: playerVolume });
-        else return;*/
+  componentWillMount = async () => {
+    const playerVolume = await localForage.getItem("player-settings-volume");
+
+    if (playerVolume) this.setState({ volume: playerVolume });
+    else return;
   };
 
   componentDidMount = async () => {
@@ -160,9 +162,24 @@ class Watch extends Component {
                   this.loadEp(this.state.eps[a.ep - 1], a.played);
                 } else throw new Error("");
               })
-              .catch(a => {
-                console.info("No metadata found, restart the entire viewing.");
-                this.loadEp(this.state.eps[0], null);
+              .catch(async a => {
+                if (
+                  this.props.user &&
+                  this.props.user.episodeProgress[this.state.showId]
+                ) {
+                  console.info("No metadata found locally, attempting remote.");
+                  this.loadEp(
+                    this.state.eps[
+                      this.props.user.episodeProgress[this.state.showId].ep
+                    ],
+                    this.props.user.episodeProgress[this.state.showId].played
+                  );
+                } else {
+                  console.info(
+                    "No metadata found locally and remotely, starting new session."
+                  );
+                  this.loadEp(this.state.eps[0], null);
+                }
               });
           });
         }
@@ -180,18 +197,12 @@ class Watch extends Component {
     if (this.state.menuEl) {
       this.closeMenu();
     }
-    if (this.state.source && this.state.loaded > 0)
-      this.setState({ status: "Loading episode...", source: "", loaded: 0 });
     const source = await Twist.getSource(ep.link);
     try {
       if (source) {
         this.setState({ source, ep: ep.ep }, () => {
           this.playPause();
-          /*if (resume) {
-                            setTimeout(() => {
-                                this.player.seekTo(resume)
-                            }, 5000);
-                    }*/
+          if (resume && this.state.loaded > 0) this.player.seekTo(resume);
         });
       }
     } catch (error) {
@@ -203,6 +214,13 @@ class Watch extends Component {
   closeMenu = () => this.setState({ menuEl: null });
 
   onProgress = state => {
+    const seekableEnd = this.player
+      .getInternalPlayer()
+      .seekable.end(this.player.getInternalPlayer().seekable.length - 1);
+
+    if (!seekableEnd) this.setState({ buffering: true });
+    else this.setState({ buffering: false });
+
     if (!this.state.seeking)
       this.setState(state, async () => {
         if (!this.state.menuEl && !this.state.volEl)
@@ -210,7 +228,7 @@ class Watch extends Component {
       });
   };
 
-  playPause = () => {
+  playPause = resume => {
     this.setState({ playing: !this.state.playing });
   };
 
