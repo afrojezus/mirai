@@ -6,6 +6,9 @@ import queryString from "query-string";
 import Segoku from "../utils/segoku/segoku";
 import * as Vibrant from "node-vibrant";
 
+import { connect } from "react-redux";
+import { firebaseConnect } from "react-redux-firebase";
+
 const styles = theme => ({
   loading: {
     height: "100%",
@@ -82,7 +85,8 @@ const styles = theme => ({
     objectFit: "cover",
     width: "100%",
     zIndex: -1,
-    overflow: "hidden"
+    overflow: "hidden",
+    transition: theme.transitions.create(["all"])
   },
   grDImage: {
     position: "fixed",
@@ -199,7 +203,8 @@ const styles = theme => ({
     height: "100%",
     width: "100%",
     objectFit: "cover",
-    background: "white"
+    background: "white",
+    transition: theme.transitions.create(["all"])
   },
   peopleCard: {
     height: "auto",
@@ -409,8 +414,23 @@ const styles = theme => ({
   },
   smallTitlebar: {
     display: "flex"
+  },
+  artworktype: {
+    fontSize: 16,
+    boxSizing: "border-box",
+    padding: theme.spacing.unit * 2,
+    width: "100%",
+    margin: "auto",
+    textAlign: "center",
+    background: "#111",
+    color: "white",
+    boxShadow: "0 2px 16px rgba(0,0,0,.2)",
+    borderRadius: 2,
+    fontWeight: 600
   }
 });
+
+const nameSwapper = (first, last) => (last ? first + " " + last : first);
 
 class Show extends Component {
   state = {
@@ -459,7 +479,24 @@ class Show extends Component {
           : await new Segoku().getSingle({ id: id.s });
         try {
           if (data) {
-            this.setState({ data, id: data.Media.id }, () => this.pasta());
+            this.setState(
+              {
+                data,
+                id: data.Media.id,
+                fav: this.props.history.location.search.includes("?s=")
+                  ? this.props.profile.favs &&
+                    this.props.profile.favs.show &&
+                    this.props.profile.favs.show.hasOwnProperty(id.s)
+                    ? true
+                    : false
+                  : this.props.profile.favs &&
+                    this.props.profile.favs.manga &&
+                    this.props.profile.favs.manga.hasOwnProperty(id.m)
+                    ? true
+                    : false
+              },
+              () => this.pasta()
+            );
           } else throw new Error("Metadata error");
         } catch (error) {
           this.setState({ error }, () =>
@@ -472,55 +509,43 @@ class Show extends Component {
   pasta = async () => {
     let data = this.state.data.Media;
     // this.props.meta.showTitle = data.title.english ? data.title.english : data.title.romaji
-    let image = this.state.data.Media.bannerImage
-      ? this.state.data.Media.bannerImage
-      : this.state.data.Media.coverImage.medium;
+    let image = this.state.data.Media.coverImage.medium;
 
     const similars = await new Segoku().getSimilar({
       tag: data.tags.length > 0 ? data.tags[0].name : null,
       sort: ["POPULARITY_DESC"],
       page: 1
     });
-
-    Vibrant.from("https://cors-anywhere.herokuapp.com/" + image).getPalette(
-      (err, pal) => {
-        if (err) console.error(err);
-        if (pal) {
-          this.setState({
-            hue: pal.DarkMuted.getHex(),
-            hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
-            hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
-          });
-        }
-      }
-    );
-    if (similars)
-      this.setState({ similars }, () =>
-        this.setState(
-          {
-            loading: false
-          },
-          () => {
-            if (this.frame)
-              setTimeout(() => (this.frame.style.opacity = "initial"), 400);
+    if (image && similars)
+      Vibrant.from("https://cors-anywhere.herokuapp.com/" + image).getPalette(
+        (err, pal) => {
+          if (err) console.error(err);
+          if (pal) {
+            this.setState(
+              {
+                hue: pal.DarkMuted.getHex(),
+                hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
+                hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex(),
+                similars
+              },
+              () =>
+                this.setState(
+                  {
+                    loading: false
+                  },
+                  () => {
+                    let superBar = document.getElementById("superBar");
+                    if (superBar) superBar.style.background = this.state.hue;
+                    if (this.frame)
+                      setTimeout(() => {
+                        this.frame.style.opacity = "initial";
+                      }, 400);
+                  }
+                )
+            );
           }
-        )
-      );
-    else
-      this.setState(
-        {
-          loading: false
-        },
-        () => {
-          if (this.frame)
-            setTimeout(() => (this.frame.style.opacity = "initial"), 400);
         }
       );
-  };
-
-  componentWillUnmount = () => {
-    let data = this.state.data.Media;
-    this.props.meta.showTitle = "";
   };
 
   tabChange = (e, val) => this.setState({ tabVal: val });
@@ -532,7 +557,12 @@ class Show extends Component {
     else this.props.history.push("/read?r=" + this.state.data.Media.id);
   };
 
-  componentWillUnmount = () => this.unlisten();
+  componentWillUnmount = () => {
+    let superBar = document.getElementById("superBar");
+    if (superBar) superBar.style.background = null;
+
+    this.unlisten();
+  };
 
   openEntity = link => {
     this.props.history.push(link);
@@ -545,8 +575,40 @@ class Show extends Component {
     }
   };
 
+  like = async () => {
+    let data = this.state.data.Media;
+    let name = data.title.english ? data.title.english : data.title.romaji;
+    let image = data.coverImage.large;
+    let entity = data.type.includes("ANIME") ? "show" : "manga";
+    if (this.props.profile)
+      this.props.firebase
+        .update(
+          `users/${this.props.profile.userID}/favs/${entity}/${data.id}`,
+          {
+            name,
+            image,
+            id: data.id,
+            link:
+              this.props.history.location.pathname +
+              this.props.history.location.search
+          }
+        )
+        .then(() => {
+          this.setState({ fav: true });
+        });
+  };
+
+  unlike = async () => {
+    let data = this.state.data.Media;
+    let entity = data.type.includes("ANIME") ? "show" : "manga";
+    if (this.props.profile)
+      this.props.firebase
+        .remove(`users/${this.props.profile.userID}/favs/${entity}/${data.id}`)
+        .then(() => this.setState({ fav: false }));
+  };
+
   render() {
-    const { classes, user, history, meta } = this.props;
+    const { classes } = this.props;
     const {
       data,
       loading,
@@ -554,8 +616,11 @@ class Show extends Component {
       hue,
       hueVib,
       hueVibN,
-      similars
+      similars,
+      fav
     } = this.state;
+
+    const user = this.props.profile;
     return (
       <div className={classes.frame}>
         {playerActive ? (
@@ -585,6 +650,8 @@ class Show extends Component {
                   }
                   alt=""
                   className={classes.bgImage}
+                  style={{ opacity: 0 }}
+                  onLoad={e => (e.currentTarget.style.opacity = null)}
                 />
               </div>
             </div>
@@ -599,22 +666,53 @@ class Show extends Component {
                     src={data.Media.coverImage.large}
                     alt=""
                     className={classes.artworkimg}
+                    style={{ opacity: 0 }}
+                    onLoad={e => (e.currentTarget.style.opacity = null)}
                   />
                   <M.Typography className="artworktitle" type="display1">
                     {data.Media.type.includes("MANGA") ? "Read" : "Play"}
+                  </M.Typography>
+                  <M.Typography
+                    className={classes.artworktype}
+                    style={{ background: hue }}
+                    type="display1"
+                  >
+                    {data.Media.status
+                      .replace("RELEASING", "ONGOING")
+                      .replace(/_/gi, " ")}{" "}
+                    {data.Media.type}
                   </M.Typography>
                 </div>
               </M.Grid>
               <M.Grid item xs className={classes.mainFrame}>
                 <div className={classes.smallTitlebar}>
-                  <M.Typography className={classes.smallTitle} type="display2">
-                    {data.Media.title.native} {"• " + data.Media.startDate.year}{" "}
-                    {"• " +
-                      Math.floor(data.Media.duration / 60) +
-                      " h " +
-                      data.Media.duration % 60 +
-                      " min"}
-                  </M.Typography>
+                  {data.Media.type.includes("ANIME") ? (
+                    <M.Typography
+                      className={classes.smallTitle}
+                      type="display2"
+                    >
+                      {data.Media.title.native}{" "}
+                      {"• " + data.Media.startDate.year}{" "}
+                      {"• " +
+                        Math.floor(data.Media.duration / 60) +
+                        " h " +
+                        data.Media.duration % 60 +
+                        " min"}
+                    </M.Typography>
+                  ) : (
+                    <M.Typography
+                      className={classes.smallTitle}
+                      type="display2"
+                    >
+                      {data.Media.title.native}{" "}
+                      {"• " + data.Media.startDate.year}{" "}
+                      {"• " +
+                        data.Media.chapters +
+                        " chapters in " +
+                        data.Media.volumes +
+                        " volumes"}
+                    </M.Typography>
+                  )}
                   <div style={{ flex: 1 }} />
                   <M.Typography
                     className={classes.smallTitle}
@@ -630,6 +728,7 @@ class Show extends Component {
                     ? data.Media.title.english
                     : data.Media.title.romaji}
                 </M.Typography>
+
                 <M.Divider />
                 <M.Typography
                   className={classes.desc}
@@ -900,13 +999,21 @@ class Show extends Component {
                   <M.IconButton
                     className={classes.commandoButton}
                     color="contrast"
+                    onClick={
+                      data.Media.type.includes("ANIME")
+                        ? user.favs &&
+                          user.favs.show &&
+                          user.favs.show.hasOwnProperty(this.state.id)
+                          ? this.unlike
+                          : this.like
+                        : user.favs &&
+                          user.favs.manga &&
+                          user.favs.manga.hasOwnProperty(this.state.id)
+                          ? this.unlike
+                          : this.like
+                    }
                   >
-                    {user.favs &&
-                    user.favs.show.hasOwnProperty(data.Media.id) ? (
-                      <Icon.Favorite />
-                    ) : (
-                      <Icon.FavoriteBorder />
-                    )}
+                    {fav ? <Icon.Favorite /> : <Icon.FavoriteBorder />}
                   </M.IconButton>
                 ) : null}
                 <M.IconButton color="contrast">
@@ -954,7 +1061,8 @@ class Show extends Component {
                             type="headline"
                             className={classes.entitySubTitle}
                           >
-                            {anime.node.type} {anime.relationType}
+                            {anime.node.type}{" "}
+                            {anime.relationType.replace(/_/gi, " ")}
                           </M.Typography>
                         </M.Card>
                       </M.Grid>
@@ -1049,6 +1157,11 @@ class Show extends Component {
                                 )
                               }
                               className={classes.peopleImage}
+                              imgProps={{
+                                style: { opacity: 0 },
+                                onLoad: e =>
+                                  (e.currentTarget.style.opacity = null)
+                              }}
                               classes={{ img: classes.fillImg }}
                               src={
                                 cast.voiceActors && cast.voiceActors.length > 0
@@ -1067,6 +1180,11 @@ class Show extends Component {
                                 className={classes.peopleCharImage}
                                 classes={{ img: classes.fillImg }}
                                 src={cast.node.image.large}
+                                imgProps={{
+                                  style: { opacity: 0 },
+                                  onLoad: e =>
+                                    (e.currentTarget.style.opacity = null)
+                                }}
                                 onClick={() =>
                                   this.openEntity(`/fig?c=${cast.node.id}`)
                                 }
@@ -1147,6 +1265,11 @@ class Show extends Component {
                             className={classes.peopleImage}
                             classes={{ img: classes.fillImg }}
                             src={staff.node.image.large}
+                            imgProps={{
+                              style: { opacity: 0 },
+                              onLoad: e =>
+                                (e.currentTarget.style.opacity = null)
+                            }}
                           />
                           <M.Typography
                             type="headline"
@@ -1178,4 +1301,8 @@ class Show extends Component {
   }
 }
 
-export default M.withStyles(styles)(Show);
+export default firebaseConnect()(
+  connect(({ firebase: { profile } }) => ({ profile }))(
+    M.withStyles(styles)(Show)
+  )
+);

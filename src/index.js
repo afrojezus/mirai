@@ -2,6 +2,9 @@
 
 import React from "react";
 import { render } from "react-dom";
+import { Provider } from "react-redux";
+import { ConnectedRouter } from "react-router-redux";
+import store, { history } from "./store";
 import { ApolloProvider } from "react-apollo";
 import { ApolloClient } from "apollo-client-preset";
 import { HttpLink } from "apollo-link-http";
@@ -19,7 +22,11 @@ const rootElement = document.querySelector("#root");
 if (rootElement) {
   render(
     <ApolloProvider client={client}>
-      <Index />
+      <Provider store={store}>
+        <ConnectedRouter history={history}>
+          <Index />
+        </ConnectedRouter>
+      </Provider>
     </ApolloProvider>,
     rootElement
   );
@@ -29,7 +36,11 @@ if (rootElement) {
       const NewLoad = require("./pages/index").default;
       render(
         <ApolloProvider client={client}>
-          <NewLoad />
+          <Provider store={store}>
+            <ConnectedRouter history={history}>
+              <NewLoad />
+            </ConnectedRouter>
+          </Provider>
         </ApolloProvider>,
         rootElement
       );

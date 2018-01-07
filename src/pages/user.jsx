@@ -2,7 +2,10 @@ import React, { Component } from "react";
 import * as M from "material-ui";
 import * as Icon from "material-ui-icons";
 
-import { Database, Auth } from "../utils/firebase";
+import { connect } from "react-redux";
+import { firebaseConnect } from "react-redux-firebase";
+
+import * as Vibrant from "node-vibrant";
 
 const style = theme => ({
   root: {
@@ -24,53 +27,402 @@ const style = theme => ({
     zIndex: -1
   },
   content: {
-    marginLeft: "auto",
-    marginRight: "auto",
-    padding: 24,
-    maxWidth: 1200,
-    paddingTop: theme.spacing.unit * 8,
-    [theme.breakpoints.up("md")]: {
-      maxWidth: "calc(100% - 64px)"
-    }
+    width: "100%",
+    paddingTop: theme.spacing.unit * 8
+  },
+  header: {
+    position: "relative",
+    margin: "auto",
+    paddingTop: theme.spacing.unit * 3
+  },
+  title: {
+    color: "white",
+    fontSize: 64,
+    fontWeight: 700,
+    textShadow: "0 3px 16px rgba(0,0,0,.4)",
+    padding: theme.spacing.unit,
+    textAlign: "center",
+    margin: "auto"
+  },
+  icon: {
+    boxShadow: "0 1px 12px rgba(0,0,0,.2)",
+    color: "white",
+    height: 92,
+    width: 92,
+    zIndex: -1,
+    background: "linear-gradient(to top, #9900ff 0%, #ff00ff 70%)",
+    borderRadius: "50%",
+    padding: theme.spacing.unit * 2
   },
   fillImg: {
     height: "100%",
     width: "100%",
-    objectFit: "cover"
+    objectFit: "cover",
+    background: "white"
   },
-  header: {
-    display: "flex",
-    width: "100%",
-    margin: "auto"
+  peopleCard: {
+    height: "auto",
+    width: 183,
+    flexGrow: "initial",
+    flexBasis: "initial",
+    margin: theme.spacing.unit / 2,
+    transition: theme.transitions.create(["all"]),
+    "&:hover": {
+      transform: "scale(1.05)",
+      overflow: "initial",
+      zIndex: 200,
+      boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
+      background: M.colors.blue.A200
+    },
+    "&:hover > * > h1": {
+      transform: "scale(1.1)",
+      textShadow: "0 2px 12px rgba(0,0,0,.7)"
+    },
+    position: "relative",
+    overflow: "hidden"
   },
-  avatar: {
-    width: 256,
-    height: 256,
-    boxShadow: "0 2px 16px rgba(0,0,0,.27)",
-    margin: "auto"
-  },
-  mainHead: {
-    flex: 1,
+  peopleImage: {
+    height: 156,
+    width: 156,
     margin: "auto",
-    padding: theme.spacing.unit,
-    width: "100%",
-    paddingLeft: theme.spacing.unit * 6
+    zIndex: 1,
+    borderRadius: "50%",
+    boxShadow: "0 2px 12px rgba(0,0,0,.2)",
+    transition: theme.transitions.create(["all"]),
+    "&:hover": {
+      boxShadow: "0 3px 16px rgba(0,0,0,.5)"
+    },
+    top: 0,
+    left: 0
   },
-  title: {
-    fontWeight: 700,
-    fontSize: 52,
-    color: "white",
-    textShadow: "0 1px 12px rgba(0,0,0,.17)"
+  peopleCharImage: {
+    height: 64,
+    width: 64,
+    margin: "auto",
+    zIndex: 2,
+    position: "absolute",
+    borderRadius: "50%",
+    boxShadow: "0 2px 12px rgba(0,0,0,.2)",
+    transition: theme.transitions.create(["all"]),
+    "&:hover": {
+      boxShadow: "0 3px 16px rgba(0,0,0,.5)",
+      transform: "scale(1.2)"
+    },
+    right: theme.spacing.unit * 3,
+    bottom: theme.spacing.unit * 7
   },
-  nicktitle: {
+  entityContext: {
+    "&:last-child": {
+      paddingBottom: 12
+    }
+  },
+  peopleTitle: {
+    fontSize: 14,
     fontWeight: 500,
-    color: "white",
-    fontSize: 28,
-    textShadow: "0 1px 12px rgba(0,0,0,.07)"
+    padding: theme.spacing.unit,
+    paddingBottom: theme.spacing.unit / 2,
+    transition: theme.transitions.create(["transform"]),
+    bottom: 0,
+    zIndex: 5,
+    margin: "auto",
+    textAlign: "center",
+    textShadow: "0 1px 12px rgba(0,0,0,.2)"
   },
-  motto: {
+  peopleSubTitle: {
+    fontSize: 14,
+    color: "rgba(255,255,255,.7)",
+    fontWeight: 600,
+    margin: "auto",
+    transition: theme.transitions.create(["transform"]),
+    zIndex: 5,
+    textShadow: "0 1px 12px rgba(0,0,0,.2)",
+    textAlign: "center",
+    whiteSpace: "nowrap"
+  },
+  entityCard: {
+    height: 200,
+    width: 183,
+    flexGrow: "initial",
+    flexBasis: "initial",
+    margin: theme.spacing.unit / 2,
+    transition: theme.transitions.create(["all"]),
+    "&:hover": {
+      transform: "scale(1.05)",
+      overflow: "initial",
+      zIndex: 200,
+      boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
+      background: M.colors.blue.A200
+    },
+    "&:hover > div": {
+      boxShadow: "none"
+    },
+    "&:hover > * > h1": {
+      transform: "scale(1.4)",
+      fontWeight: 700,
+      textShadow: "0 2px 12px rgba(0,0,0,.7)"
+    },
+    position: "relative",
+    overflow: "hidden"
+  },
+  entityCardDisabled: {
+    height: 200,
+    width: 183,
+    flexGrow: "initial",
+    flexBasis: "initial",
+    margin: theme.spacing.unit / 2,
+    transition: theme.transitions.create(["all"]),
+    filter: "brightness(.8)",
+    position: "relative",
+    overflow: "hidden"
+  },
+  entityImage: {
+    height: "100%",
+    width: "100%",
+    objectFit: "cover",
+    position: "absolute",
+    zIndex: -1,
+    transition: theme.transitions.create(["filter"]),
+    "&:hover": {
+      filter: "brightness(0.8)"
+    },
+    top: 0,
+    left: 0
+  },
+  entityTitle: {
+    fontSize: 14,
+    fontWeight: 500,
+    position: "absolute",
+    padding: theme.spacing.unit * 2,
+    transition: theme.transitions.create(["transform"]),
+    bottom: 0,
+    zIndex: 5,
+    left: 0,
+    textShadow: "0 1px 12px rgba(0,0,0,.2)"
+  },
+  entitySubTitle: {
+    fontSize: 14,
+    fontWeight: 600,
+    position: "absolute",
+    padding: theme.spacing.unit * 2,
+    transition: theme.transitions.create(["transform"]),
+    top: 0,
+    left: 0,
+    zIndex: 5,
+    textShadow: "0 1px 12px rgba(0,0,0,.2)"
+  },
+  itemcontainer: {
+    paddingBottom: theme.spacing.unit * 2,
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit
+  },
+  gradientCard: {
+    position: "relative",
+    background: "linear-gradient(to top, transparent, rgba(0,0,0,.6))",
+    height: 183,
+    width: "100%"
+  },
+  sectDivide: {
+    marginTop: theme.spacing.unit * 2
+  },
+  progressCon: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    maxWidth: 400,
+    margin: "auto"
+  },
+  progressTitle: {
+    display: "flex",
+    fontSize: 12,
+    margin: "auto",
+    textAlign: "center"
+  },
+  progressBar: {
+    background: "rgba(255,255,255,.3)",
+    margin: theme.spacing.unit / 2
+  },
+  progressBarActive: {
+    background: "white"
+  },
+  commandoBar: {
+    width: "100%",
+    padding: theme.spacing.unit,
+    display: "inline-flex",
+    boxSizing: "border-box",
+    background: "#222",
+    boxShadow: "0 3px 18px rgba(0,0,0,.1)"
+  },
+  commandoText: {
+    margin: "auto",
+    textAlign: "center"
+  },
+  commandoTextBox: {
+    paddingLeft: theme.spacing.unit,
+    paddingRight: theme.spacing.unit,
+    margin: "auto"
+  },
+  commandoTextLabel: {
+    fontSize: 10,
+    textAlign: "center",
+    color: "rgba(255,255,255,.8)"
+  },
+  smallTitlebar: {
+    display: "flex"
+  },
+  secTitle: {
+    padding: theme.spacing.unit,
+    fontWeight: 700,
+    fontSize: 22,
+    zIndex: "inherit",
+    paddingBottom: theme.spacing.unit * 2
+  },
+  secTitleSmall: {
+    padding: theme.spacing.unit,
+    fontSize: 16,
+    zIndex: "inherit",
+    color: "rgba(255,255,255,.5)",
+    paddingBottom: theme.spacing.unit * 2
+  },
+  backToolbar: {
+    marginTop: theme.spacing.unit * 8
+  },
+  bigBar: {
+    width: "100%",
+    height: "auto",
+    boxShadow: "0 2px 24px rgba(0,0,0,.2)",
+    background: "#111",
+    marginTop: theme.spacing.unit * 8,
+    position: "relative",
+    overflow: "hidden",
+    paddingBottom: theme.spacing.unit * 4,
+    marginBottom: theme.spacing.unit * 8,
+    transition: theme.transitions.create(["all"])
+  },
+  glassEffect: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.4,
+    height: "100vh",
+    objectFit: "cover",
+    width: "100%",
+    transform: "scale(20)"
+  },
+  rootInactive: {
+    opacity: 0,
+    pointerEvents: "none",
+    transition: theme.transitions.create(["all"])
+  },
+  container: {
+    marginLeft: "auto",
+    marginRight: "auto",
+    maxWidth: 1200,
+    [theme.breakpoints.up("md")]: {
+      maxWidth: "calc(100% - 64px)",
+      paddingTop: 24
+    },
+    margin: "auto"
+  },
+  frame: {
+    height: "100%",
+    width: "100%",
+    position: "relative",
+    transition: theme.transitions.create(["all"])
+  },
+  grDImage: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 1,
+    height: "100vh",
+    width: "100%",
+    zIndex: -1,
+    overflow: "hidden",
+    transition: theme.transitions.create(["all"])
+  },
+  mainFrame: {
+    marginLeft: 24
+  },
+  bigTitle: {
+    fontWeight: 700,
+    fontSize: 82,
     color: "white",
-    marginTop: theme.spacing.unit * 4
+    textShadow: "0 2px 12px rgba(0,0,0,.2)"
+  },
+  smallTitle: {
+    fontWeight: 600,
+    color: "white",
+    fontSize: 40,
+    textShadow: "0 2px 12px rgba(0,0,0,.17)"
+  },
+  tagBox: {
+    marginTop: theme.spacing.unit
+  },
+  tagTitle: {
+    fontSize: 16,
+    fontWeight: 600,
+    color: "white",
+    textShadow: "0 2px 12px rgba(0,0,0,.17)",
+    marginBottom: theme.spacing.unit
+  },
+  desc: {
+    marginTop: theme.spacing.unit * 4,
+    color: "white",
+    textShadow: "0 0 12px rgba(0,0,0,.1)",
+    marginBottom: theme.spacing.unit * 6
+  },
+  boldD: {
+    marginTop: theme.spacing.unit,
+    color: "white",
+    textShadow: "0 0 12px rgba(0,0,0,.1)",
+    marginBottom: theme.spacing.unit,
+    fontWeight: 600
+  },
+  smallD: {
+    marginLeft: theme.spacing.unit,
+    marginTop: theme.spacing.unit,
+    color: "white",
+    textShadow: "0 0 12px rgba(0,0,0,.1)",
+    marginBottom: theme.spacing.unit
+  },
+  sepD: {
+    display: "flex",
+    marginLeft: theme.spacing.unit
+  },
+  artworkimg: {
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    background: "white",
+    transition: theme.transitions.create(["all"]),
+    zIndex: -1
+  },
+  artwork: {
+    width: 400,
+    height: 400,
+    borderRadius: "50%",
+    overflow: "hidden",
+    margin: "auto",
+    boxShadow: "0 3px 18px rgba(0,0,0,.5)",
+    transition: theme.transitions.create(["all"]),
+    position: "relative",
+    zIndex: 500
+  },
+  loading: {
+    height: "100%",
+    width: "100%",
+    zIndex: -5,
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%,-50%)",
+    padding: 0,
+    margin: "auto",
+    transition: theme.transitions.create(["all"])
   }
 });
 
@@ -79,41 +431,406 @@ class User extends Component {
     loading: true
   };
 
-  componentDidMount = () =>
-    setTimeout(() => this.setState({ loading: false }, async () => {}), 300);
+  componentDidMount = () => this.vibrance();
+
+  vibrance = () => {
+    let image = this.props.profile
+      ? this.props.profile.headers
+        ? this.props.profile.headers
+        : this.props.profile.avatar
+      : null;
+    Vibrant.from("https://cors-anywhere.herokuapp.com/" + image).getPalette(
+      (err, pal) => {
+        if (pal) {
+          this.setState(
+            {
+              hue: pal.DarkMuted.getHex(),
+              hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
+              hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
+            },
+            () =>
+              setTimeout(
+                () =>
+                  this.setState({ loading: false }, async () => {
+                    let superBar = document.getElementById("superBar");
+                    if (superBar) superBar.style.background = this.state.hue;
+                  }),
+                200
+              )
+          );
+        }
+      }
+    );
+  };
+
+  componentWillUnmount = () => {
+    let superBar = document.getElementById("superBar");
+    if (superBar) superBar.style.background = null;
+  };
 
   render() {
-    const { classes, user, history, meta, status } = this.props;
-    const { loading } = this.state;
+    const { classes, history } = this.props;
+    const user = this.props.profile;
+    const { loading, hue } = this.state;
     if (!user) return null;
     return (
-      <div className={classes.root} style={loading ? { opacity: 0 } : null}>
-        <img src={user.headers} alt="" className={classes.bgImage} />
-        <M.Grid container spacing={0} className={classes.content}>
-          <div className={classes.header}>
-            <M.Avatar
-              src={user.avatar}
-              className={classes.avatar}
-              classes={{ img: classes.fillImg }}
-            />
-            <div className={classes.mainHead}>
-              <M.Typography type="display2" className={classes.title}>
-                {user.username}
-              </M.Typography>
-              <M.Typography type="display1" className={classes.nicktitle}>
-                {user.nick}
-              </M.Typography>
-              <M.Typography
-                type="body1"
-                className={classes.motto}
-                dangerouslySetInnerHTML={{ __html: user.motto }}
-              />
+      <div>
+        <M.CircularProgress
+          className={classes.loading}
+          style={!loading ? { opacity: 0 } : null}
+        />
+        <div className={classes.root} style={loading ? { opacity: 0 } : null}>
+          <img src={user.headers} alt="" className={classes.bgImage} />
+          <M.Grid container spacing={0} className={classes.content}>
+            <M.Grid container spacing={0} className={classes.container}>
+              <M.Grid
+                item
+                style={{ width: 400, flexGrow: 0, marginRight: 24 }}
+                xs
+              >
+                <M.Avatar
+                  src={user.avatar}
+                  className={classes.artwork}
+                  classes={{ img: classes.fillImg }}
+                  imgProps={{
+                    style: { opacity: 0 },
+                    onLoad: e => (e.currentTarget.style.opacity = null)
+                  }}
+                />
+              </M.Grid>
+              <M.Grid item xs style={{ margin: "auto" }}>
+                <M.Typography className={classes.bigTitle} type="display3">
+                  {user.username}
+                </M.Typography>
+                <M.Typography type="display1" className={classes.smallTitle}>
+                  {user.nick}
+                </M.Typography>
+                <M.Typography
+                  type="body1"
+                  className={classes.desc}
+                  dangerouslySetInnerHTML={{ __html: user.motto }}
+                />
+              </M.Grid>
+              {user.friends ? (
+                <M.Grid item xs style={{ margin: "auto" }}>
+                  <div className={classes.smallTitlebar}>
+                    <M.Typography
+                      type="display1"
+                      className={classes.smallTitle}
+                      style={{ fontSize: 16 }}
+                    >
+                      Friends
+                    </M.Typography>
+                  </div>
+                  <M.Grid container className={classes.itemcontainer}>
+                    {user &&
+                      user.friends &&
+                      Object.values(user.friends).map((friend, index) => (
+                        <M.Grid
+                          className={classes.peopleCard}
+                          item
+                          xs
+                          key={index}
+                        >
+                          <M.Card
+                            style={{
+                              background: "transparent",
+                              boxShadow: "none"
+                            }}
+                          >
+                            <M.Avatar
+                              onClick={() =>
+                                this.openEntity(`/user?f=${friend.id}`)
+                              }
+                              className={classes.peopleImage}
+                              src={friend.image}
+                              imgProps={{
+                                style: { opacity: 0 },
+                                onLoad: e =>
+                                  (e.currentTarget.style.opacity = null)
+                              }}
+                            />
+                            <M.Typography
+                              type="headline"
+                              className={classes.peopleTitle}
+                            >
+                              {friend.name}
+                            </M.Typography>
+                            <M.Typography
+                              type="headline"
+                              className={classes.peopleSubTitle}
+                            />
+                          </M.Card>
+                        </M.Grid>
+                      ))}
+                  </M.Grid>
+                </M.Grid>
+              ) : null}
+            </M.Grid>
+            <div className={classes.bigBar} style={{ background: hue }}>
+              <div className={classes.commandoBar} style={{ background: hue }}>
+                <div style={{ flex: 1 }} />
+                <M.IconButton color="contrast">
+                  <Icon.MoreVert />
+                </M.IconButton>
+              </div>
+              <M.Grid container className={classes.container}>
+                <M.Grid item xs style={{ zIndex: 10 }}>
+                  <M.Typography type="title" className={classes.secTitle}>
+                    Feed
+                  </M.Typography>
+                  <M.Grid container className={classes.itemcontainer} />
+                </M.Grid>
+                <M.Grid item xs={5} style={{ zIndex: 10 }}>
+                  <M.Typography type="title" className={classes.secTitle}>
+                    Favorites
+                  </M.Typography>
+                  <M.Typography type="title" className={classes.secTitleSmall}>
+                    Anime
+                  </M.Typography>
+                  <M.Grid container className={classes.itemcontainer}>
+                    {user && user.favs && user.favs.show ? (
+                      Object.values(user.favs.show).map((show, index) => (
+                        <M.Grid
+                          className={classes.entityCard}
+                          item
+                          xs
+                          key={index}
+                        >
+                          <M.Card
+                            style={{ background: "transparent" }}
+                            onClick={() =>
+                              this.props.history.push(`/show?s=${show.id}`)
+                            }
+                          >
+                            <div className={classes.gradientCard}>
+                              <M.CardMedia
+                                className={classes.entityImage}
+                                image={show.image}
+                              />
+                            </div>
+                            <M.Typography
+                              type="headline"
+                              className={classes.entityTitle}
+                            >
+                              {show.name}
+                            </M.Typography>
+                            <M.Typography
+                              type="headline"
+                              className={classes.entitySubTitle}
+                            />
+                          </M.Card>
+                        </M.Grid>
+                      ))
+                    ) : (
+                      <M.Typography type="body1">
+                        Doesn't seem like you've found yourself a good one
+                        yet...
+                      </M.Typography>
+                    )}
+                  </M.Grid>
+                  <M.Divider />
+                  <M.Typography type="title" className={classes.secTitleSmall}>
+                    Manga
+                  </M.Typography>
+                  <M.Grid container className={classes.itemcontainer}>
+                    {user && user.favs && user.favs.manga ? (
+                      Object.values(user.favs.manga).map((show, index) => (
+                        <M.Grid
+                          className={classes.entityCard}
+                          item
+                          xs
+                          key={index}
+                        >
+                          <M.Card
+                            style={{ background: "transparent" }}
+                            onClick={() =>
+                              this.props.history.push(`/show?m=${show.id}`)
+                            }
+                          >
+                            <div className={classes.gradientCard}>
+                              <M.CardMedia
+                                className={classes.entityImage}
+                                image={show.image}
+                              />
+                            </div>
+                            <M.Typography
+                              type="headline"
+                              className={classes.entityTitle}
+                            >
+                              {show.name}
+                            </M.Typography>
+                            <M.Typography
+                              type="headline"
+                              className={classes.entitySubTitle}
+                            />
+                          </M.Card>
+                        </M.Grid>
+                      ))
+                    ) : (
+                      <M.Typography type="body1">
+                        Not into reading? Understandable.
+                      </M.Typography>
+                    )}
+                  </M.Grid>
+                  <M.Divider />
+                  <M.Typography type="title" className={classes.secTitleSmall}>
+                    Characters
+                  </M.Typography>
+                  <M.Grid container className={classes.itemcontainer}>
+                    {user && user.favs && user.favs.char ? (
+                      Object.values(user.favs.char).map((cast, index) => (
+                        <M.Grid
+                          className={classes.peopleCard}
+                          item
+                          xs
+                          key={index}
+                        >
+                          <M.Card
+                            style={{
+                              background: "transparent",
+                              boxShadow: "none"
+                            }}
+                          >
+                            <M.Avatar
+                              onClick={() =>
+                                this.props.history.push(`/fig?c=${cast.id}`)
+                              }
+                              className={classes.peopleImage}
+                              src={cast.image}
+                              imgProps={{
+                                style: { opacity: 0 },
+                                onLoad: e =>
+                                  (e.currentTarget.style.opacity = null)
+                              }}
+                            />
+                            <M.Typography
+                              type="headline"
+                              className={classes.peopleTitle}
+                            >
+                              {cast.name}
+                            </M.Typography>
+                            <M.Typography
+                              type="headline"
+                              className={classes.peopleSubTitle}
+                            />
+                          </M.Card>
+                        </M.Grid>
+                      ))
+                    ) : (
+                      <M.Typography type="body1">
+                        Do you like any characters at all?
+                      </M.Typography>
+                    )}
+                  </M.Grid>
+                  <M.Divider />
+                  <M.Typography type="title" className={classes.secTitleSmall}>
+                    Staff & Actors
+                  </M.Typography>
+                  <M.Grid container className={classes.itemcontainer}>
+                    {user && user.favs && user.favs.staff ? (
+                      Object.values(user.favs.staff).map((cast, index) => (
+                        <M.Grid
+                          className={classes.peopleCard}
+                          item
+                          xs
+                          key={index}
+                        >
+                          <M.Card
+                            style={{
+                              background: "transparent",
+                              boxShadow: "none"
+                            }}
+                          >
+                            <M.Avatar
+                              onClick={() =>
+                                this.props.history.push(`/fig?s=${cast.id}`)
+                              }
+                              className={classes.peopleImage}
+                              src={cast.image}
+                              imgProps={{
+                                style: { opacity: 0 },
+                                onLoad: e =>
+                                  (e.currentTarget.style.opacity = null)
+                              }}
+                            />
+                            <M.Typography
+                              type="headline"
+                              className={classes.peopleTitle}
+                            >
+                              {cast.name}
+                            </M.Typography>
+                            <M.Typography
+                              type="headline"
+                              className={classes.peopleSubTitle}
+                            />
+                          </M.Card>
+                        </M.Grid>
+                      ))
+                    ) : (
+                      <M.Typography type="body1">
+                        Hmm... I suppose you don't find anyone that interesting
+                        to follow.
+                      </M.Typography>
+                    )}
+                  </M.Grid>
+                  <M.Divider />
+                  <M.Typography type="title" className={classes.secTitleSmall}>
+                    Studios
+                  </M.Typography>
+                  <M.Grid container className={classes.itemcontainer}>
+                    {user && user.favs && user.favs.studio ? (
+                      Object.values(user.favs.studio).map((show, index) => (
+                        <M.Grid
+                          className={classes.entityCard}
+                          item
+                          xs
+                          key={index}
+                        >
+                          <M.Card
+                            style={{ background: "transparent" }}
+                            onClick={() =>
+                              this.props.history.push(`/studio?s=${show.id}`)
+                            }
+                          >
+                            <div className={classes.gradientCard}>
+                              <M.CardMedia
+                                className={classes.entityImage}
+                                image={show.image}
+                              />
+                            </div>
+                            <M.Typography
+                              type="headline"
+                              className={classes.entityTitle}
+                            >
+                              {show.name}
+                            </M.Typography>
+                            <M.Typography
+                              type="headline"
+                              className={classes.entitySubTitle}
+                            />
+                          </M.Card>
+                        </M.Grid>
+                      ))
+                    ) : (
+                      <M.Typography type="body1">
+                        Studios can be rather abstract.. perhaps you enjoy works
+                        by Studio Ghibli or perhaps... Trigger?
+                      </M.Typography>
+                    )}
+                  </M.Grid>
+                </M.Grid>
+              </M.Grid>
             </div>
-          </div>
-        </M.Grid>
+          </M.Grid>
+        </div>
       </div>
     );
   }
 }
 
-export default M.withStyles(style)(User);
+export default firebaseConnect()(
+  connect(({ firebase: { profile } }) => ({ profile }))(
+    M.withStyles(style)(User)
+  )
+);

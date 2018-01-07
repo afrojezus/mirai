@@ -1,4 +1,4 @@
-import * as firebase from 'firebase'
+/*import * as firebase from 'firebase'
 import 'firebase/firestore'
 import {
     fireconfig
@@ -14,4 +14,4 @@ export const Storage = Firebase.storage()
 
 export const Firestore = Firebase.firestore()
 
-export default Firebase
+export default Firebase*/

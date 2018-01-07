@@ -14,7 +14,7 @@ const theme = createMuiTheme({
     background: {
       default: "#111",
       paper: "#111",
-      appBar: "rgba(0,0,0,.9)",
+      appBar: "#111",
       contentFrame: "#eeeeee"
     }
   },

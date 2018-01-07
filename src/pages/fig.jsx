@@ -5,6 +5,9 @@ import queryString from "query-string";
 import Segoku from "../utils/segoku/segoku";
 import * as Vibrant from "node-vibrant";
 
+import { connect } from "react-redux";
+import { firebaseConnect } from "react-redux-firebase";
+
 const style = theme => ({
   root: {
     height: "100%",
@@ -526,7 +529,8 @@ class Fig extends Component {
     type: "",
     hue: "#111",
     hueVib: "#222",
-    hueVibN: "#222"
+    hueVibN: "#222",
+    fav: false
   };
 
   unlisten = this.props.history.listen((location, action) => {
@@ -572,7 +576,20 @@ class Fig extends Component {
                             "?s="
                           )
                             ? "STAFF"
-                            : "CHARACTER"
+                            : "CHARACTER",
+                          fav: this.props.history.location.search.includes(
+                            "?c="
+                          )
+                            ? this.props.profile.favs &&
+                              this.props.profile.favs.char &&
+                              this.props.profile.favs.char.hasOwnProperty(id.c)
+                              ? true
+                              : false
+                            : this.props.profile.favs &&
+                              this.props.profile.favs.staff &&
+                              this.props.profile.favs.staff.hasOwnProperty(id.s)
+                              ? true
+                              : false
                         },
                         () => this.vibrance()
                       ),
@@ -594,11 +611,17 @@ class Fig extends Component {
     Vibrant.from("https://cors-anywhere.herokuapp.com/" + image).getPalette(
       (err, pal) => {
         if (pal) {
-          this.setState({
-            hue: pal.DarkMuted.getHex(),
-            hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
-            hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
-          });
+          this.setState(
+            {
+              hue: pal.DarkMuted.getHex(),
+              hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
+              hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
+            },
+            () => {
+              let superBar = document.getElementById("superBar");
+              if (superBar) superBar.style.background = this.state.hue;
+            }
+          );
         }
       }
     );
@@ -608,11 +631,58 @@ class Fig extends Component {
     this.props.history.push(link);
   };
 
-  componentWillUnmount = () => this.unlisten();
+  like = async () => {
+    let name = this.state.data.Character
+      ? nameSwapper(
+          this.state.data.Character.name.first,
+          this.state.data.Character.name.last
+        )
+      : nameSwapper(
+          this.state.data.Staff.name.first,
+          this.state.data.Staff.name.last
+        );
+    let image = this.state.data.Character
+      ? this.state.data.Character.image.large
+      : this.state.data.Staff.image.large;
+    let entity = this.state.type.includes("CHARACTER") ? "char" : "staff";
+    if (this.props.profile)
+      this.props.firebase
+        .update(
+          `users/${this.props.profile.userID}/favs/${entity}/${this.state.id}`,
+          {
+            name,
+            image,
+            id: this.state.id,
+            link:
+              this.props.history.location.pathname +
+              this.props.history.location.search
+          }
+        )
+        .then(() => {
+          this.setState({ fav: true });
+        });
+  };
+
+  unlike = async () => {
+    let entity = this.state.type.includes("CHARACTER") ? "char" : "staff";
+    if (this.props.profile)
+      this.props.firebase
+        .remove(
+          `users/${this.props.profile.userID}/favs/${entity}/${this.state.id}`
+        )
+        .then(() => this.setState({ fav: false }));
+  };
+
+  componentWillUnmount = () => {
+    let superBar = document.getElementById("superBar");
+    if (superBar) superBar.style.background = null;
+    this.unlisten();
+  };
 
   render() {
-    const { classes, user, history, meta } = this.props;
-    const { data, loading, hue } = this.state;
+    const { classes } = this.props;
+    const user = this.props.profile;
+    const { data, loading, hue, fav } = this.state;
     return (
       <div>
         <M.CircularProgress
@@ -629,6 +699,10 @@ class Fig extends Component {
                       ? data.Character.image.large
                       : data.Staff ? data.Staff.image.large : null
                   }
+                  imgProps={{
+                    style: { opacity: 0 },
+                    onLoad: e => (e.currentTarget.style.opacity = null)
+                  }}
                   alt=""
                   className={classes.bgImage}
                 />
@@ -691,28 +765,30 @@ class Fig extends Component {
                     <M.IconButton
                       className={classes.commandoButton}
                       color="contrast"
+                      onClick={
+                        user.favs &&
+                        user.favs.char &&
+                        user.favs.char.hasOwnProperty(this.state.id)
+                          ? this.unlike
+                          : this.like
+                      }
                     >
-                      {user.favs &&
-                      user.favs.char &&
-                      user.favs.char.hasOwnProperty(data.Character.id) ? (
-                        <Icon.Favorite />
-                      ) : (
-                        <Icon.FavoriteBorder />
-                      )}
+                      {fav ? <Icon.Favorite /> : <Icon.FavoriteBorder />}
                     </M.IconButton>
                   ) : null}
                   {user && data.Staff ? (
                     <M.IconButton
                       className={classes.commandoButton}
                       color="contrast"
+                      onClick={
+                        user.favs &&
+                        user.favs.staff &&
+                        user.favs.staff.hasOwnProperty(this.state.id)
+                          ? this.unlike
+                          : this.like
+                      }
                     >
-                      {user.favs &&
-                      user.favs.staff &&
-                      user.favs.staff.hasOwnProperty(data.Staff.id) ? (
-                        <Icon.Favorite />
-                      ) : (
-                        <Icon.FavoriteBorder />
-                      )}
+                      {fav ? <Icon.Favorite /> : <Icon.FavoriteBorder />}
                     </M.IconButton>
                   ) : null}
                   <M.IconButton color="contrast">
@@ -748,6 +824,11 @@ class Fig extends Component {
                                 }
                                 className={classes.peopleImage}
                                 src={cast.node.image.large}
+                                imgProps={{
+                                  style: { opacity: 0 },
+                                  onLoad: e =>
+                                    (e.currentTarget.style.opacity = null)
+                                }}
                               />
                               <M.Typography
                                 type="headline"
@@ -885,4 +966,8 @@ class Fig extends Component {
   }
 }
 
-export default M.withStyles(style)(Fig);
+export default firebaseConnect()(
+  connect(({ firebase: { profile } }) => ({ profile }))(
+    M.withStyles(style)(Fig)
+  )
+);

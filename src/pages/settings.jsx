@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import * as M from "material-ui";
 import * as Icon from "material-ui-icons";
-import { Database, Auth, Storage } from "../utils/firebase";
 import Dropzone from "react-dropzone";
+
+import { connect } from "react-redux";
+import { firebaseConnect } from "react-redux-firebase";
 
 const style = theme => ({
   root: {
@@ -130,15 +132,12 @@ class Settings extends Component {
 
   changeAva = () =>
     this.setState({ avaLoading: true }, async () =>
-      Storage.ref("userData")
-        .child("avatar")
-        .child(this.state.ava.name)
-        .put(this.state.ava)
+      this.props.firebase
+        .uploadFile("userData/avatar", this.state.ava.preview)
         .then(async s => {
           console.info("Avatar updated.");
-          await Database.ref("users")
-            .child(this.props.user.userID)
-            .update({ avatar: s.downloadURL })
+          this.props.firebase
+            .updateProfile({ avatar: s.downloadURL })
             .then(() => this.setState({ avaLoading: false }));
         })
     );
@@ -150,29 +149,24 @@ class Settings extends Component {
 
   changeBg = () =>
     this.setState({ bgLoading: true }, async () =>
-      Storage.ref("userData")
-        .child("header")
-        .child(this.state.bg.name)
-        .put(this.state.bg)
+      this.props.firebase
+        .uploadFile("userData/header", this.state.bg.preview)
         .then(async s => {
           console.info("Background updated.");
-          await Database.ref("users")
-            .child(this.props.user.userID)
-            .update({ headers: s.downloadURL })
+          this.props.firebase
+            .updateProfile({ headers: s.downloadURL })
             .then(() => this.setState({ bgLoading: false }));
         })
     );
 
   changeNick = async () =>
-    Database.ref("users")
-      .child(this.props.user.userID)
-      .update({ nick: this.state.nick })
+    this.props.firebase
+      .updateProfile({ nick: this.state.nick })
       .then(() => console.info("Nickname updated."));
 
   changeUsername = async () =>
-    Database.ref("users")
-      .child(this.props.user.userID)
-      .update({ username: this.state.user })
+    this.props.firebase
+      .updateProfile({ username: this.state.user })
       .then(() => console.info("Username updated."));
 
   changeEmail = async () => {};
@@ -180,7 +174,8 @@ class Settings extends Component {
   changePass = () => {};
 
   render() {
-    const { classes, user, history, meta } = this.props;
+    const { classes } = this.props;
+    const user = this.props.profile;
     if (!user) return null;
     return (
       <div className={classes.root}>
@@ -432,4 +427,8 @@ class Settings extends Component {
   }
 }
 
-export default M.withStyles(style)(Settings);
+export default firebaseConnect()(
+  connect(({ firebase: { profile } }) => ({ profile }))(
+    M.withStyles(style)(Settings)
+  )
+);

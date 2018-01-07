@@ -42,6 +42,8 @@ import Select from "material-ui/Select";
 
 import localForage from "localforage";
 
+import { connect } from "react-redux";
+
 import Autosuggest from "react-autosuggest";
 import TextField from "material-ui/TextField";
 import Paper from "material-ui/Paper";
@@ -50,85 +52,9 @@ import parse from "autosuggest-highlight/parse";
 
 import Tabs, { Tab } from "material-ui/Tabs";
 
-import { Auth, Database } from "../utils/firebase";
+import { firebaseConnect } from "react-redux-firebase";
 
 import NotificationForm from "./notificationForm";
-
-const renderInput = inputProps => {
-  const { classes, autoFocus, value, ref, ...other } = inputProps;
-
-  return (
-    <TextField
-      autoFocus={autoFocus}
-      className={classes.textField}
-      value={value}
-      inputRef={ref}
-      InputProps={{
-        classes: {
-          input: classes.input
-        },
-        ...other
-      }}
-    />
-  );
-};
-
-const renderSuggestion = (suggestion, { query, isHighlighted }) => {
-  const matches = match(suggestion.label, query);
-  const parts = parse(suggestion.label, matches);
-
-  return (
-    <MenuItem selected={isHighlighted} component="div">
-      <div>
-        {parts.map((part, index) => {
-          return part.highlight ? (
-            <span key={index} style={{ fontWeight: 300 }}>
-              {part.text}
-            </span>
-          ) : (
-            <strong key={index} style={{ fontWeight: 500 }}>
-              {part.text}
-            </strong>
-          );
-        })}
-      </div>
-    </MenuItem>
-  );
-};
-
-const renderSuggestionsContainer = options => {
-  const { containerProps, children } = options;
-
-  return (
-    <Paper {...containerProps} square>
-      {children}
-    </Paper>
-  );
-};
-
-const getSuggestionValue = suggestion => {
-  return suggestion.name;
-};
-
-const getSuggestions = (list, value) => {
-  const inputValue = value.trim().toLowerCase();
-  const inputLength = inputValue.length;
-  let count = 0;
-
-  return inputLength === 0
-    ? []
-    : list.filter(suggestion => {
-        const keep =
-          count < 5 &&
-          suggestion.name.toLowerCase().slice(0, inputLength) === inputValue;
-
-        if (keep) {
-          count += 1;
-        }
-
-        return keep;
-      });
-};
 
 const drawerWidth = 240;
 
@@ -139,14 +65,14 @@ const styles = theme => ({
   },
   gd: {
     width: "100%",
+    display: "none",
     height: 82,
     position: "fixed",
     transition: theme.transitions.create(["all"]),
     background: "linear-gradient(to top, transparent, rgba(0,0,0,.9))"
   },
   appBar: {
-    background: "transparent",
-    boxShadow: "none"
+    background: "#111"
   },
   appFrame: {
     position: "relative",
@@ -221,7 +147,8 @@ const styles = theme => ({
     objectFit: "cover",
     width: "100%",
     opacity: 0.4,
-    zIndex: -1
+    zIndex: -1,
+    transition: theme.transitions.create(["all"])
   },
   searchContainer: {
     flexGrow: 1,
@@ -310,7 +237,8 @@ const styles = theme => ({
   avatarImg: {
     height: "100%",
     width: "100%",
-    objectFit: "cover"
+    objectFit: "cover",
+    transition: theme.transitions.create(["all"])
   },
   statusForm: {
     width: "100%"
@@ -329,7 +257,8 @@ class Superbar extends Component {
     searchVal: "",
     notAtTop: true,
     currentPage: "",
-    watchIsOn: false
+    watchIsOn: false,
+    status: 0
   };
 
   componentWillMount = () => {
@@ -341,15 +270,7 @@ class Superbar extends Component {
     this.pageChange();
   };
 
-  /*componentDidMount = () => {
-    window.addEventListener("scroll", () => {
-      if (window.scrollY > 0) {
-        this.setState({ notAtTop: true });
-      } else {
-        this.setState({ notAtTop: false });
-      }
-    });
-  };*/
+  componentDidMount = () => {};
 
   handleMenu = event => {
     this.setState({ anchorEl: event.currentTarget });
@@ -368,24 +289,6 @@ class Superbar extends Component {
   };
 
   toggleDrawer = () => this.setState({ drawerOpen: !this.state.drawerOpen });
-
-  handleSuggestionsFetchRequested = ({ value }) => {
-    this.setState({
-      suggestions: getSuggestions(this.props.twistBase, value)
-    });
-  };
-
-  handleSuggestionsClearRequested = () => {
-    this.setState({
-      suggestions: []
-    });
-  };
-
-  handleChange = (event, { newValue }) => {
-    this.setState({
-      searchVal: newValue
-    });
-  };
 
   tabChange = (e, val) => {
     this.setState({ tabVal: val }, () => {
@@ -470,25 +373,20 @@ class Superbar extends Component {
 
   hideBar = () => (document.getElementById("superBar").style.opacity = 0);
 
-  handleStatus = e =>
-    this.setState({ status: e.target.value }, async () =>
-      Database.ref("users")
-        .child(this.props.user.userID)
-        .update({ status: this.state.status })
-    );
-
   render() {
-    const { classes, user, twistBase, status } = this.props;
+    const { classes } = this.props;
     const {
       anchorEl,
       infoEl,
       drawerOpen,
-      searchVal,
       notAtTop,
       tabVal,
       currentPage,
       watchIsOn
     } = this.state;
+
+    const user = this.props.profile;
+
     const open = Boolean(anchorEl);
     const infoOpen = Boolean(infoEl);
 
@@ -620,7 +518,7 @@ class Superbar extends Component {
         </List>
         <Divider className={classes.listDivider} />
         <Typography className={classes.footerCopy} type="headline">
-          {Object.keys(status).length - 1} online<br />2018 afroJ
+          {Object.keys(this.props.firebase).length - 1} online<br />2018 afroJ
         </Typography>
       </div>
     );
@@ -784,6 +682,10 @@ class Superbar extends Component {
                     alt=""
                     className={classes.userButton}
                     classes={{ img: classes.userButtonImg }}
+                    imgProps={{
+                      style: { opacity: 0 },
+                      onLoad: e => (e.currentTarget.style.opacity = null)
+                    }}
                   />
                 </IconButton>
                 <Menu
@@ -817,6 +719,10 @@ class Superbar extends Component {
                           src={user.avatar}
                           classes={{ img: classes.avatarImg }}
                           className={classes.avatar}
+                          imgProps={{
+                            style: { opacity: 0 },
+                            onLoad: e => (e.currentTarget.style.opacity = null)
+                          }}
                         />
                       }
                       title={user.username}
@@ -857,7 +763,8 @@ class Superbar extends Component {
                         button
                         onClick={() => {
                           this.handleRequestClose();
-                          Auth.signOut()
+                          this.props.firebase
+                            .logout()
                             .then(async () =>
                               localForage.removeItem("user", () => {
                                 this.tabChange(null, 4);
@@ -901,4 +808,8 @@ class Superbar extends Component {
   }
 }
 
-export default withStyles(styles)(Superbar);
+export default firebaseConnect()(
+  connect(({ firebase: { profile } }) => ({ profile }), null)(
+    withStyles(styles)(Superbar)
+  )
+);

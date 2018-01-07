@@ -8,7 +8,25 @@ import Twist from "../twist-api";
 
 import corrector from "../utils/bigfuck";
 
+import localForage from "localforage";
+
+import searchQuery, {
+  searchStaffQuery,
+  searchCharQuery,
+  searchStudiosQuery
+} from "../utils/searchquery";
+
 const style = theme => ({
+  container: {
+    marginLeft: "auto",
+    marginRight: "auto",
+    maxWidth: 1200,
+    [theme.breakpoints.up("md")]: {
+      maxWidth: "calc(100% - 64px)",
+      paddingTop: 24
+    },
+    margin: "auto"
+  },
   root: {
     height: "100%",
     width: "100%",
@@ -92,18 +110,22 @@ const style = theme => ({
     }
   },
   input: {
-    borderRadius: 4,
-    fontSize: 20,
-    textAlign: "center",
     padding: theme.spacing.unit * 2,
     width: "100%",
     transition: theme.transitions.create(["all"]),
     "&:focus": {
       boxShadow: "0 1pt 0.2rem rgba(0,0,0,.25)"
-    }
+    },
+    boxSizing: "border-box"
   },
   searchBar: {
     marginTop: theme.spacing.unit * 8
+  },
+  textInput: {
+    borderRadius: 4,
+    fontSize: 20,
+    padding: theme.spacing.unit,
+    textAlign: "center"
   },
   entityCard: {
     height: 200,
@@ -191,6 +213,137 @@ const style = theme => ({
     background: "linear-gradient(to top, transparent, rgba(0,0,0,.6))",
     height: 183,
     width: "100%"
+  },
+  secTitle: {
+    padding: theme.spacing.unit,
+    fontWeight: 700,
+    fontSize: 22,
+    zIndex: "inherit",
+    paddingBottom: theme.spacing.unit * 2
+  },
+  secTitleSmall: {
+    padding: theme.spacing.unit,
+    fontSize: 16,
+    zIndex: "inherit",
+    color: "rgba(255,255,255,.5)",
+    paddingBottom: theme.spacing.unit * 2
+  },
+  fillImg: {
+    height: "100%",
+    width: "100%",
+    objectFit: "cover",
+    background: "white"
+  },
+  peopleCard: {
+    height: "auto",
+    width: 183,
+    flexGrow: "initial",
+    flexBasis: "initial",
+    margin: theme.spacing.unit / 2,
+    transition: theme.transitions.create(["all"]),
+    "&:hover": {
+      transform: "scale(1.05)",
+      overflow: "initial",
+      zIndex: 200,
+      boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
+      background: M.colors.blue.A200
+    },
+    "&:hover > * > h1": {
+      transform: "scale(1.1)",
+      textShadow: "0 2px 12px rgba(0,0,0,.7)"
+    },
+    position: "relative",
+    overflow: "hidden"
+  },
+  peopleImage: {
+    height: 156,
+    width: 156,
+    margin: "auto",
+    zIndex: 1,
+    borderRadius: "50%",
+    boxShadow: "0 2px 12px rgba(0,0,0,.2)",
+    transition: theme.transitions.create(["all"]),
+    "&:hover": {
+      boxShadow: "0 3px 16px rgba(0,0,0,.5)"
+    },
+    top: 0,
+    left: 0
+  },
+  peopleCharImage: {
+    height: 64,
+    width: 64,
+    margin: "auto",
+    zIndex: 2,
+    position: "absolute",
+    borderRadius: "50%",
+    boxShadow: "0 2px 12px rgba(0,0,0,.2)",
+    transition: theme.transitions.create(["all"]),
+    "&:hover": {
+      boxShadow: "0 3px 16px rgba(0,0,0,.5)",
+      transform: "scale(1.2)"
+    },
+    right: theme.spacing.unit * 3,
+    bottom: theme.spacing.unit * 7
+  },
+  peopleTitle: {
+    fontSize: 14,
+    fontWeight: 500,
+    padding: theme.spacing.unit,
+    paddingBottom: theme.spacing.unit / 2,
+    transition: theme.transitions.create(["transform"]),
+    bottom: 0,
+    zIndex: 5,
+    margin: "auto",
+    textAlign: "center",
+    textShadow: "0 1px 12px rgba(0,0,0,.2)"
+  },
+  peopleSubTitle: {
+    fontSize: 14,
+    color: "rgba(255,255,255,.7)",
+    fontWeight: 600,
+    margin: "auto",
+    transition: theme.transitions.create(["transform"]),
+    zIndex: 5,
+    textShadow: "0 1px 12px rgba(0,0,0,.2)",
+    textAlign: "center",
+    whiteSpace: "nowrap"
+  },
+  loading: {
+    height: "100%",
+    width: "100%",
+    zIndex: -5,
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%,-50%)",
+    padding: 0,
+    margin: "auto",
+    transition: theme.transitions.create(["all"])
+  },
+  commandoBar: {
+    width: "100%",
+    padding: theme.spacing.unit,
+    display: "inline-flex",
+    boxSizing: "border-box",
+    background: "#222",
+    boxShadow: "0 3px 18px rgba(0,0,0,.1)"
+  },
+  commandoText: {
+    margin: "auto",
+    textAlign: "center"
+  },
+  commandoTextBox: {
+    paddingLeft: theme.spacing.unit,
+    paddingRight: theme.spacing.unit,
+    margin: "auto"
+  },
+  commandoTextLabel: {
+    fontSize: 10,
+    textAlign: "center",
+    color: "rgba(255,255,255,.8)"
+  },
+  cox: {
+    transition: theme.transitions.create(["all"])
   }
 });
 
@@ -201,108 +354,332 @@ class Search extends Component {
     data: []
   };
 
-  componentDidMount = () => {
-    setTimeout(() => this.setState({ loading: false }, () => this.uwu()), 300);
+  componentDidMount = async () => {
+    const prevSearch = await localForage.getItem("prevSearch");
+    if (prevSearch)
+      this.setState(prevSearch, () =>
+        setTimeout(() => this.setState({ loading: false }, async () => {}), 300)
+      );
+    else
+      setTimeout(() => this.setState({ loading: false }, async () => {}), 300);
   };
 
-  uwu = async () => {
-    const { data } = await new Segoku().get({
-      search: this.state.searchVal,
-      isAdult: false,
-      page: 1
-    });
+  uwu = () =>
+    this.setState(
+      {
+        data: null,
+        characters: null,
+        staff: null,
+        studios: null,
+        loading: true
+      },
+      async () => {
+        const { data } = await new Segoku().customQuery(searchQuery, {
+          search: this.state.searchVal,
+          isAdult: false,
+          page: 1
+        });
 
-    if (data) {
-      var filtArray = data.Page.media.filter(array_el => {
-        return (
-          this.props.twist.filter(anotherOne_el => {
-            return (
-              anotherOne_el.name.toLowerCase() ===
-              corrector(array_el.title.romaji.toLowerCase())
-            );
-          }).length === 0
-        );
-      });
-      this.setState({ data: data.Page.media });
-    }
-  };
+        const characters = await new Segoku().customQuery(searchCharQuery, {
+          search: this.state.searchVal,
+          page: 1
+        });
+
+        const staff = await new Segoku().customQuery(searchStaffQuery, {
+          search: this.state.searchVal,
+          page: 1
+        });
+
+        const studios = await new Segoku().customQuery(searchStudiosQuery, {
+          search: this.state.searchVal,
+          page: 1
+        });
+
+        if (data && characters && staff && studios) {
+          console.log(data);
+          console.log(characters);
+          console.log(staff);
+          console.log(studios);
+          this.setState({
+            anime: data.Page.media.filter(s => s.type === "ANIME"),
+            manga: data.Page.media.filter(s => s.type === "MANGA"),
+            characters: characters,
+            staff: staff,
+            studios: studios,
+            loading: false
+          });
+        }
+      }
+    );
 
   openEntity = link => {
     this.props.history.push(link);
   };
 
   handleChange = e => {
-    this.setState(
-      {
-        searchVal: e.target.value
-      },
-      async () => this.uwu()
-    );
+    this.setState({
+      searchVal: e.target.value
+    });
   };
+
+  handleSubmit = async e => {
+    e.preventDefault();
+    if (this.state.searchVal.length > 3) this.uwu();
+  };
+
+  componentWillUnmount = async () =>
+    this.state.searchVal.length > 3 && this.state.searchVal !== ""
+      ? await localForage.setItem("prevSearch", this.state)
+      : null;
 
   render() {
     const { classes, user, history, meta, twist } = this.props;
-    const { searchVal, loading, data } = this.state;
+    const {
+      searchVal,
+      loading,
+      anime,
+      manga,
+      characters,
+      staff,
+      studios
+    } = this.state;
     return (
-      <div className={classes.root} style={loading ? { opacity: 0 } : null}>
-        <M.Toolbar className={classes.searchBar}>
-          <M.TextField
-            placeholder="Search"
-            className={classes.input}
-            value={searchVal}
-            onChange={this.handleChange}
-            type="search"
-          />
-        </M.Toolbar>
-        <img src={Aqua4} alt="" className={classes.bgImage} />
-        <M.Grid container spacing={0} className={classes.content}>
-          <M.Grid container className={classes.itemcontainer}>
-            {data
-              ? data.map((anime, index) => (
-                  <M.Grid
-                    className={
-                      anime.type.includes("ANIME")
-                        ? classes.entityCard
-                        : classes.entityCardDisabled
-                    }
-                    item
-                    xs
-                    key={index}
-                  >
-                    <M.Card
-                      style={{ background: "transparent" }}
-                      onClick={
-                        anime.type.includes("ANIME")
-                          ? () => this.openEntity(`/show?s=${anime.id}`)
-                          : null
-                      }
-                    >
-                      <div className={classes.gradientCard}>
-                        <M.CardMedia
-                          className={classes.entityImage}
-                          image={anime.coverImage.large}
-                        />
-                      </div>
-                      <M.Typography
-                        type="headline"
-                        className={classes.entityTitle}
-                      >
-                        {anime.title.english
-                          ? anime.title.english
-                          : anime.title.romaji}
-                      </M.Typography>
-                      <M.Typography
-                        type="headline"
-                        className={classes.entitySubTitle}
-                      >
-                        {!anime.type.includes("ANIME") ? anime.type : null}
-                      </M.Typography>
-                    </M.Card>
+      <div>
+        <M.CircularProgress
+          className={classes.loading}
+          style={!loading ? { opacity: 0 } : null}
+        />
+        <div className={classes.root}>
+          <M.Toolbar className={classes.searchBar}>
+            <form
+              onSubmit={this.handleSubmit}
+              style={{ width: "100%", margin: "auto", textAlign: "center" }}
+            >
+              <M.TextField
+                placeholder="Search (Min. 4 character)"
+                className={classes.input}
+                value={searchVal}
+                inputClassName={classes.textInput}
+                onChange={this.handleChange}
+                type="search"
+              />
+            </form>
+          </M.Toolbar>
+          <div className={classes.cox} style={loading ? { opacity: 0 } : null}>
+            <M.Grid container spacing={0} className={classes.content}>
+              {anime && anime.length > 0 ? (
+                <M.Grid container className={classes.container}>
+                  <M.Typography type="title" className={classes.secTitle}>
+                    Anime
+                  </M.Typography>
+                  <M.Grid container className={classes.itemcontainer}>
+                    {anime
+                      ? anime.map((anime, index) => (
+                          <M.Grid
+                            className={classes.entityCard}
+                            item
+                            xs
+                            key={index}
+                          >
+                            <M.Card
+                              style={{ background: "transparent" }}
+                              onClick={() =>
+                                this.openEntity(`/show?s=${anime.id}`)
+                              }
+                            >
+                              <div className={classes.gradientCard}>
+                                <M.CardMedia
+                                  className={classes.entityImage}
+                                  image={anime.coverImage.large}
+                                />
+                              </div>
+                              <M.Typography
+                                type="headline"
+                                className={classes.entityTitle}
+                              >
+                                {anime.title.english
+                                  ? anime.title.english
+                                  : anime.title.romaji}
+                              </M.Typography>
+                              <M.Typography
+                                type="headline"
+                                className={classes.entitySubTitle}
+                              />
+                            </M.Card>
+                          </M.Grid>
+                        ))
+                      : null}
                   </M.Grid>
-                ))
-              : null}
-          </M.Grid>
-        </M.Grid>
+                </M.Grid>
+              ) : null}
+              {manga && manga.length > 0 ? (
+                <M.Grid container className={classes.container}>
+                  <M.Typography type="title" className={classes.secTitle}>
+                    Manga
+                  </M.Typography>
+                  <M.Grid container className={classes.itemcontainer}>
+                    {manga
+                      ? manga.map((anime, index) => (
+                          <M.Grid
+                            className={classes.entityCard}
+                            item
+                            xs
+                            key={index}
+                          >
+                            <M.Card
+                              style={{ background: "transparent" }}
+                              onClick={() =>
+                                this.openEntity(`/show?m=${anime.id}`)
+                              }
+                            >
+                              <div className={classes.gradientCard}>
+                                <M.CardMedia
+                                  className={classes.entityImage}
+                                  image={anime.coverImage.large}
+                                />
+                              </div>
+                              <M.Typography
+                                type="headline"
+                                className={classes.entityTitle}
+                              >
+                                {anime.title.english
+                                  ? anime.title.english
+                                  : anime.title.romaji}
+                              </M.Typography>
+                              <M.Typography
+                                type="headline"
+                                className={classes.entitySubTitle}
+                              />
+                            </M.Card>
+                          </M.Grid>
+                        ))
+                      : null}
+                  </M.Grid>
+                </M.Grid>
+              ) : null}
+              {characters && characters.data.Page.characters.length > 0 ? (
+                <M.Grid container className={classes.container}>
+                  <M.Typography type="title" className={classes.secTitle}>
+                    Characters
+                  </M.Typography>
+                  <M.Grid container className={classes.itemcontainer}>
+                    {characters
+                      ? characters.data.Page.characters.map((anime, index) => (
+                          <M.Grid
+                            className={classes.peopleCard}
+                            item
+                            xs
+                            key={index}
+                          >
+                            <M.Card
+                              style={{
+                                background: "transparent",
+                                boxShadow: "none"
+                              }}
+                              onClick={() =>
+                                this.props.history.push(`/fig?c=${anime.id}`)
+                              }
+                            >
+                              <M.Avatar
+                                className={classes.peopleImage}
+                                classes={{ img: classes.fillImg }}
+                                src={anime.image.large}
+                              />
+                              <M.Typography
+                                type="headline"
+                                className={classes.peopleTitle}
+                              >
+                                {anime.name.last
+                                  ? anime.name.first + " " + anime.name.last
+                                  : anime.name.first}
+                              </M.Typography>
+                            </M.Card>
+                          </M.Grid>
+                        ))
+                      : null}
+                  </M.Grid>
+                </M.Grid>
+              ) : null}
+              {staff && staff.data.Page.staff.length > 0 ? (
+                <M.Grid container className={classes.container}>
+                  <M.Typography type="title" className={classes.secTitle}>
+                    Staff & Actors
+                  </M.Typography>
+                  <M.Grid container className={classes.itemcontainer}>
+                    {staff
+                      ? staff.data.Page.staff.map((anime, index) => (
+                          <M.Grid
+                            className={classes.peopleCard}
+                            item
+                            xs
+                            key={index}
+                          >
+                            <M.Card
+                              style={{
+                                background: "transparent",
+                                boxShadow: "none"
+                              }}
+                              onClick={() =>
+                                this.props.history.push(`/fig?s=${anime.id}`)
+                              }
+                            >
+                              <M.Avatar
+                                className={classes.peopleImage}
+                                classes={{ img: classes.fillImg }}
+                                src={anime.image.large}
+                              />
+                              <M.Typography
+                                type="headline"
+                                className={classes.peopleTitle}
+                              >
+                                {anime.name.last
+                                  ? anime.name.first + " " + anime.name.last
+                                  : anime.name.first}
+                              </M.Typography>
+                            </M.Card>
+                          </M.Grid>
+                        ))
+                      : null}
+                  </M.Grid>
+                </M.Grid>
+              ) : null}
+              {studios && studios.data.Page.studios.length > 0 ? (
+                <M.Grid container className={classes.container}>
+                  <M.Typography type="title" className={classes.secTitle}>
+                    Studios
+                  </M.Typography>
+                  <M.Grid container className={classes.itemcontainer}>
+                    {studios
+                      ? studios.data.Page.studios.map((anime, index) => (
+                          <M.Grid
+                            className={classes.entityCard}
+                            item
+                            xs
+                            key={index}
+                          >
+                            <M.Card
+                              style={{ background: "transparent" }}
+                              onClick={() =>
+                                this.props.history.push(`/studio?s=${anime.id}`)
+                              }
+                            >
+                              <div className={classes.gradientCard} />
+                              <M.Typography
+                                type="headline"
+                                className={classes.entityTitle}
+                              >
+                                {anime.name}
+                              </M.Typography>
+                            </M.Card>
+                          </M.Grid>
+                        ))
+                      : null}
+                  </M.Grid>
+                </M.Grid>
+              ) : null}
+            </M.Grid>
+          </div>
+        </div>
       </div>
     );
   }
