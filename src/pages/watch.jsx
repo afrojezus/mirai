@@ -11,7 +11,8 @@ import localForage from "localforage";
 import queryString from "query-string";
 import corrector from "../utils/bigfuck";
 
-import FadeIn from "react-fade-in";
+import { connect } from "react-redux";
+import { firebaseConnect } from "react-redux-firebase";
 
 const style = theme => ({
   root: {
@@ -128,7 +129,9 @@ class Watch extends Component {
     const id = queryString.parse(this.props.history.location.search);
     try {
       const { data } = await new Segoku().getSingle({ id: id.w });
-      if (data) await this.getSource(data.Media);
+      const twist = await Twist.load();
+      if (data && twist)
+        this.setState({ twist }, async () => await this.getSource(data.Media));
     } catch (error) {
       console.error(error);
       this.setState({
@@ -145,7 +148,7 @@ class Watch extends Component {
       showArtwork: data.coverImage.large,
       showDesc: data.description
     });
-    const meta = this.props.twist.filter(
+    const meta = this.state.twist.filter(
       s => s.name.toLowerCase() === corrector(data.title.romaji.toLowerCase())
     );
     console.log(meta);
@@ -164,15 +167,15 @@ class Watch extends Component {
               })
               .catch(async a => {
                 if (
-                  this.props.user &&
-                  this.props.user.episodeProgress[this.state.showId]
+                  this.props.profile &&
+                  this.props.profile.episodeProgress[this.state.showId]
                 ) {
                   console.info("No metadata found locally, attempting remote.");
                   this.loadEp(
                     this.state.eps[
-                      this.props.user.episodeProgress[this.state.showId].ep
+                      this.props.profile.episodeProgress[this.state.showId].ep
                     ],
-                    this.props.user.episodeProgress[this.state.showId].played
+                    this.props.profile.episodeProgress[this.state.showId].played
                   );
                 } else {
                   console.info(
@@ -342,7 +345,7 @@ class Watch extends Component {
   componentWillUnmount = async () => {
     if (this.props.user) {
       const episodePro = Database.ref("users")
-        .child(`${this.props.user.userID}`)
+        .child(`${this.props.profile.userID}`)
         .child("episodeProgress");
       localForage.getItem("player-state").then(async a => {
         if (a && a.showId) episodePro.child(`${a.showId}`).update(a);
@@ -351,7 +354,7 @@ class Watch extends Component {
   };
 
   render() {
-    const { classes, user, history, meta } = this.props;
+    const { classes } = this.props;
     const {
       playing,
       buffering,
@@ -587,4 +590,8 @@ class Watch extends Component {
   }
 }
 
-export default M.withStyles(style)(Watch);
+export default firebaseConnect()(
+  connect(({ firebase: { profile } }) => ({ profile }))(
+    M.withStyles(style)(Watch)
+  )
+);
