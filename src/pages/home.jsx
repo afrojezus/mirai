@@ -48,6 +48,8 @@ import { push } from "react-router-redux";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
+import superTable from "../components/supertable";
+
 const styles = theme => ({
   root: {
     paddingTop: theme.spacing.unit * 8
@@ -84,6 +86,14 @@ const styles = theme => ({
     margin: "auto",
     transition: theme.transitions.create(["all"])
   },
+  topHeaderBig: {
+    width: "100%",
+    maxHeight: 520,
+    position: "relative",
+    margin: "auto",
+    transition: theme.transitions.create(["all"]),
+    background: "black"
+  },
   cardBg: {
     objectFit: "cover",
     height: "100%",
@@ -111,6 +121,12 @@ const styles = theme => ({
   },
   headline: {
     marginBottom: 24
+  },
+  headlineTitle: {
+    marginBottom: 24,
+    fontSize: 32,
+    fontWeight: 700,
+    textShadow: "0 2px 16px rgba(0,0,0,.3)"
   },
   fullWidth: {
     width: "100%"
@@ -500,6 +516,15 @@ class Home extends Component {
               </IconButton>
             }
           />
+          <div className={classes.topHeaderBig}>
+            <Grid container spacing={16} className={classes.container}>
+              <Grid item xs className={classes.itemContainer}>
+                <Typography type="title" className={classes.headlineTitle}>
+                  Mirai. The Japanese-media platform of the future.
+                </Typography>
+              </Grid>
+            </Grid>
+          </div>
           <div className={classes.root}>
             <Grid
               container
@@ -518,62 +543,23 @@ class Home extends Component {
                   className={classes.headline}
                   style={{ marginBottom: 0 }}
                 >
-                  Ongoing anime
+                  Currently ongoing anime
                 </Typography>
               </Grid>
             </Grid>
             {ongoing && ongoing.data ? (
               <div className={classes.topHeader}>
-                <Slider {...settings}>
-                  {ongoing.data.Page.media.map((anime, index) => (
-                    <Card className={classes.bigCard}>
-                      <div className={classes.bigCardImage}>
-                        <img
-                          src={
-                            anime.bannerImage
-                              ? anime.bannerImage
-                              : anime.coverImage.large
-                          }
-                          alt=""
-                          className={classes.bigCardImageImg}
-                        />
-                      </div>
-                      <div className={classes.bigCardRow}>
-                        <img
-                          src={anime.coverImage.large}
-                          alt=""
-                          className={classes.bigCardIcon}
-                          onClick={() => this.openEntity(`/show?s=${anime.id}`)}
-                        />
-                        <div className={classes.bigCardText}>
-                          <Typography
-                            type="display2"
-                            className={classes.bigCardVerySmallTitle}
-                          >
-                            {anime.genres[0]}
-                          </Typography>
-                          <Typography
-                            type="display2"
-                            className={classes.bigCardTitle}
-                          >
-                            {anime.title.english
-                              ? anime.title.english
-                              : anime.title.romaji}
-                          </Typography>
-                          <Dotdotdot clamp={3}>
-                            <Typography
-                              type="display2"
-                              className={classes.bigCardSmallTitle}
-                              dangerouslySetInnerHTML={{
-                                __html: anime.description
-                              }}
-                            />
-                          </Dotdotdot>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </Slider>
+                <superTable
+                  settings={settings}
+                  data={ongoing.data.Page.media
+                    .filter(s => s.nextAiringEpisode)
+                    .sort(
+                      (a, b) =>
+                        a.nextAiringEpisode.timeUntilAiring -
+                        b.nextAiringEpisode.timeUntilAiring
+                    )}
+                  type="s"
+                />
               </div>
             ) : null}
             <Grid
@@ -593,62 +579,17 @@ class Home extends Component {
                   className={classes.headline}
                   style={{ marginBottom: 0 }}
                 >
-                  Ongoing manga
+                  Currently ongoing manga
                 </Typography>
               </Grid>
             </Grid>
             {ongoingM && ongoingM.data ? (
               <div className={classes.topHeader}>
-                <Slider {...settings}>
-                  {ongoingM.data.Page.media.map((anime, index) => (
-                    <Card className={classes.bigCard}>
-                      <div className={classes.bigCardImage}>
-                        <img
-                          src={
-                            anime.bannerImage
-                              ? anime.bannerImage
-                              : anime.coverImage.large
-                          }
-                          alt=""
-                          className={classes.bigCardImageImg}
-                        />
-                      </div>
-                      <div className={classes.bigCardRow}>
-                        <img
-                          src={anime.coverImage.large}
-                          alt=""
-                          className={classes.bigCardIcon}
-                          onClick={() => this.openEntity(`/show?m=${anime.id}`)}
-                        />
-                        <div className={classes.bigCardText}>
-                          <Typography
-                            type="display2"
-                            className={classes.bigCardVerySmallTitle}
-                          >
-                            {anime.genres[0]}
-                          </Typography>
-                          <Typography
-                            type="display2"
-                            className={classes.bigCardTitle}
-                          >
-                            {anime.title.english
-                              ? anime.title.english
-                              : anime.title.romaji}
-                          </Typography>
-                          <Dotdotdot clamp={3}>
-                            <Typography
-                              type="display2"
-                              className={classes.bigCardSmallTitle}
-                              dangerouslySetInnerHTML={{
-                                __html: anime.description
-                              }}
-                            />
-                          </Dotdotdot>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </Slider>
+                <superTable
+                  settings={settings}
+                  data={ongoingM.data.Page.media}
+                  type="m"
+                />
               </div>
             ) : null}
             <Grid
@@ -1066,88 +1007,6 @@ class Home extends Component {
                     </Grid>
                   </div>
                 ) : null}
-                <Grid container>
-                  {ongoing && ongoing.data ? (
-                    <Grid item xs className={classes.fullWidth}>
-                      <Divider className={classes.divide} />
-                      <Typography type="title" className={classes.headline}>
-                        Currently ongoing anime
-                      </Typography>
-                      <Grid container>
-                        {ongoing.data.Page.media.map((anime, index) => (
-                          <Grid
-                            className={classes.entityCard}
-                            item
-                            xs
-                            key={index}
-                          >
-                            <Card
-                              style={{ background: "transparent" }}
-                              onClick={() =>
-                                this.openEntity(`/show?s=${anime.id}`)
-                              }
-                            >
-                              <div className={classes.gradientCard}>
-                                <CardMedia
-                                  className={classes.entityImage}
-                                  image={anime.coverImage.large}
-                                />
-                              </div>
-                              <Typography
-                                type="headline"
-                                className={classes.entityTitle}
-                              >
-                                {anime.title.english
-                                  ? anime.title.english
-                                  : anime.title.romaji}
-                              </Typography>
-                            </Card>
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </Grid>
-                  ) : null}
-                  {ongoingM && ongoingM.data ? (
-                    <Grid item xs className={classes.fullWidth}>
-                      <Divider className={classes.divide} />
-                      <Typography type="title" className={classes.headline}>
-                        Currently ongoing manga
-                      </Typography>
-                      <Grid container>
-                        {ongoingM.data.Page.media.map((manga, index) => (
-                          <Grid
-                            className={classes.entityCard}
-                            item
-                            xs
-                            key={index}
-                          >
-                            <Card
-                              style={{ background: "transparent" }}
-                              onClick={() =>
-                                this.openEntity(`/show?m=${manga.id}`)
-                              }
-                            >
-                              <div className={classes.gradientCard}>
-                                <CardMedia
-                                  className={classes.entityImage}
-                                  image={manga.coverImage.large}
-                                />
-                              </div>
-                              <Typography
-                                type="headline"
-                                className={classes.entityTitle}
-                              >
-                                {manga.title.english
-                                  ? manga.title.english
-                                  : manga.title.romaji}
-                              </Typography>
-                            </Card>
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </Grid>
-                  ) : null}
-                </Grid>
               </Grid>
             </Grid>
           </div>

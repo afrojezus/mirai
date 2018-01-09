@@ -32,6 +32,7 @@ import Settings from "./settings";
 import Search from "./search";
 import Fig from "./fig";
 import Read from "./read";
+import PageNotFound from "./pnf";
 import Typography from "material-ui/Typography/Typography";
 
 const styles = theme => ({

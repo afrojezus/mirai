@@ -72,11 +72,14 @@ const styles = theme => ({
     height: 82,
     position: "fixed",
     transition: theme.transitions.create(["all"]),
-    background: "linear-gradient(to top, transparent, rgba(0,0,0,.9))"
+    background: "linear-gradient(to top, transparent, rgba(0,0,0,.1))"
   },
   appBar: {
     background: "rgba(0,0,0,.87)",
     boxShadow: "0 2px 16px rgba(0,0,0,.3)"
+  },
+  appBarTop: {
+    background: "transparent"
   },
   appFrame: {
     position: "relative",
@@ -260,9 +263,14 @@ class Superbar extends Component {
     mirTitle: ""
   };
 
+  unlistenScroller = window.addEventListener("scroll", e => {
+    if (window.scrollY > 0) this.setState({ notAtTop: true });
+    else this.setState({ notAtTop: false });
+  });
+
   componentWillMount = () => {
     if (this.props.history.location.pathname === "/")
-      this.setState({ tabVal: 0 });
+      this.setState({ tabVal: 0, currentPage: "Mirai" });
     else {
       this.setState({ tabVal: 4 });
     }
@@ -441,6 +449,10 @@ class Superbar extends Component {
     setTimeout(() => this.setState({ loading: false }), 200);
   };
 
+  componentWillUnmount = () => {
+    this.unlistenScroller();
+  };
+
   render() {
     const { classes } = this.props;
     const {
@@ -607,14 +619,14 @@ class Superbar extends Component {
         <AppBar
           id="superBar"
           classes={{ root: classes.root }}
-          className={classes.appBar}
+          className={notAtTop ? classes.appBar : classes.appBarTop}
           style={watchIsOn ? { opacity: 0 } : null}
           onMouseEnter={watchIsOn ? this.revealBar : null}
           onMouseLeave={watchIsOn ? this.hideBar : null}
         >
           <div
             className={classes.gd}
-            style={!notAtTop ? { opacity: 0.5 } : { opacity: 1 }}
+            style={!notAtTop ? { opacity: 1 } : { opacity: 0 }}
           />
           <Toolbar>
             <IconButton

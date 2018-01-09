@@ -1,7 +1,7 @@
 import fetchCheerioObject from "fetch-cheerio-object";
 
-let Proxy2 = "https://cors-anywhere.herokuapp.com/";
-let Proxy1 = "https://cors.now.sh/";
+let Proxy1 = "https://cors-anywhere.herokuapp.com/";
+let Proxy2 = "https://cors.now.sh/";
 
 let URL = "https://twist.moe/";
 /**
