@@ -12,12 +12,9 @@ import Superbar from "../components/superbar";
 import meta from "../meta";
 
 import { history } from "../store";
-import {
-  firebaseConnect,
-  isLoaded,
-  isEmpty,
-  connect
-} from "react-redux-firebase";
+import { firebaseConnect, isLoaded, isEmpty } from "react-redux-firebase";
+
+import { connect } from "react-redux";
 
 import Twist from "../twist-api";
 
@@ -35,22 +32,35 @@ import Settings from "./settings";
 import Search from "./search";
 import Fig from "./fig";
 import Read from "./read";
+import Typography from "material-ui/Typography/Typography";
 
 const styles = theme => ({
   root: {},
   loadingRoot: {
     height: "100%",
     width: "100%",
-    display: "flex"
+    display: "flex",
+    flexDirection: "column",
+    animation: "loadIn .3s ease",
+    transition: theme.transitions.create(["all"])
   },
   loadingCircle: {
     margin: "auto"
+  },
+  welcomeMessage: {
+    margin: "auto",
+    flex: 0,
+    marginBottom: -500,
+    color: "white",
+    fontWeight: 700,
+    transition: theme.transitions.create(["all"])
   }
 });
 
 class Index extends Component {
   state = {
-    open: false
+    open: false,
+    loading: true
   };
 
   componentWillMount = async () => localForage.ready();
@@ -60,6 +70,7 @@ class Index extends Component {
     if (isLoaded(auth)) {
       if (isEmpty(auth)) {
         console.log("Logged off");
+
         this.setState({ loading: false });
       } else {
         console.log("Logged in");
@@ -95,7 +106,7 @@ class Index extends Component {
       : null;*/
 
   render() {
-    if (this.props.loading)
+    if (this.state.loading)
       return (
         <div className={this.props.classes.loadingRoot}>
           <CircularProgress className={this.props.classes.loadingCircle} />
@@ -103,11 +114,7 @@ class Index extends Component {
       );
     return (
       <div className={this.props.classes.root}>
-        <Superbar
-          meta={meta}
-          history={history}
-          user={this.props.firebase.profile}
-        >
+        <Superbar meta={meta} history={history}>
           <Route path="/" exact component={Home} />
           <Route path="/setup" exact component={Setup} />
           <Route path="/show" exact component={Show} />

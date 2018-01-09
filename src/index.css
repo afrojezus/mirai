@@ -1,6 +1,188 @@
 @font-face {
-  font-family: 'Aller';
-  src: url('./assets/fonts/Aller_Rg.ttf');
+  font-family: "Aller";
+  src: url("./assets/fonts/Aller_Rg.ttf");
+}
+
+/*---------------------------------------------------------------------------*
+ * SF UI Display
+ *---------------------------------------------------------------------------*/
+
+/** Black */
+
+@font-face {
+  font-family: "SF Display";
+  font-weight: 900;
+  src: url("./assets/fonts/SF-UI-Display-Black.otf");
+}
+
+/** Bold */
+
+@font-face {
+  font-family: "SF Display";
+  font-weight: 700;
+  src: url("./assets/fonts/SF-UI-Display-Bold.otf");
+}
+
+/** Heavy */
+
+@font-face {
+  font-family: "SF Display";
+  font-weight: 800;
+  src: url("./assets/fonts/SF-UI-Display-Heavy.otf");
+}
+
+/** Light */
+
+@font-face {
+  font-family: "SF Display";
+  font-weight: 200;
+  src: url("./assets/fonts/SF-UI-Display-Light.otf");
+}
+
+/** Medium */
+
+@font-face {
+  font-family: "SF Display";
+  font-weight: 500;
+  src: url("./assets/fonts/SF-UI-Display-Medium.otf");
+}
+
+/** Regular */
+
+@font-face {
+  font-family: "SF Display";
+  font-weight: 400;
+  src: url("./assets/fonts/SF-UI-Display-Regular.otf");
+}
+
+/** Semibold */
+
+@font-face {
+  font-family: "SF Display";
+  font-weight: 600;
+  src: url("./assets/fonts/SF-UI-Display-Semibold.otf");
+}
+
+/** Thin */
+
+@font-face {
+  font-family: "SF Display";
+  font-weight: 300;
+  src: url("./assets/fonts/SF-UI-Display-Thin.otf");
+}
+
+/** Ultralight */
+
+@font-face {
+  font-family: "SF Display";
+  font-weight: 100;
+  src: url("./assets/fonts/SF-UI-Display-Ultralight.otf");
+}
+
+/*---------------------------------------------------------------------------*
+   * SF Mono
+   *---------------------------------------------------------------------------*/
+
+/** Bold */
+
+@font-face {
+  font-family: "SF Mono";
+  font-weight: 700;
+  src: url("./assets/fonts/SFMono-Bold.otf");
+}
+
+/** Bold Italic */
+
+@font-face {
+  font-family: "SF Mono";
+  font-weight: 700;
+  font-style: italic;
+  src: url("./assets/fonts/SFMono-BoldItalic.otf");
+}
+
+/** Heavy */
+
+@font-face {
+  font-family: "SF Mono";
+  font-weight: 800;
+  src: url("./assets/fonts/SFMono-Heavy.otf");
+}
+
+/** Heavy Italic */
+
+@font-face {
+  font-family: "SF Mono";
+  font-weight: 800;
+  font-style: italic;
+  src: url("./assets/fonts/SFMono-HeavyItalic.otf");
+}
+
+/** Light */
+
+@font-face {
+  font-family: "SF Mono";
+  font-weight: 200;
+  src: url("./assets/fonts/SFMono-Light.otf");
+}
+
+/** Light Italic */
+
+@font-face {
+  font-family: "SF Mono";
+  font-weight: 200;
+  font-style: italic;
+  src: url("./assets/fonts/SFMono-HeavyItalic.otf");
+}
+
+/** Medium */
+
+@font-face {
+  font-family: "SF Mono";
+  font-weight: 500;
+  src: url("./assets/fonts/SFMono-Medium.otf");
+}
+
+/** Medium Italic */
+
+@font-face {
+  font-family: "SF Mono";
+  font-weight: 500;
+  font-style: italic;
+  src: url("./assets/fonts/SFMono-MediumItalic.otf");
+}
+
+/** Regular */
+
+@font-face {
+  font-family: "SF Mono";
+  font-weight: 400;
+  src: url("./assets/fonts/SFMono-Regular.otf");
+}
+
+/** Regular Italic */
+
+@font-face {
+  font-family: "SF Mono";
+  font-weight: 400;
+  font-style: italic;
+  src: url("./assets/fonts/SFMono-RegularItalic.otf");
+}
+
+/** Semibold */
+
+@font-face {
+  font-family: "SF Mono";
+  font-weight: 600;
+  src: url("./assets/fonts/SFMono-Semibold.otf");
+}
+
+/** Smibold Italic */
+
+@font-face {
+  font-family: "SF Mono";
+  font-weight: 600;
+  font-style: italic;
+  src: url("./assets/fonts/SFMono-SemiboldItalic.otf");
 }
 
 ::-webkit-scrollbar {
@@ -47,7 +229,7 @@
   position: absolute;
   top: 25%;
   transform: scale(1.4) translateX(-15%);
-  transition: all .5s ease;
+  transition: all 0.5s ease;
   font-weight: 700 !important;
   text-align: center;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
@@ -60,7 +242,7 @@
 }
 
 .artworktitle {
-  transition: all .3s ease;
+  transition: all 0.3s ease;
   z-index: 90000000;
   position: absolute;
   bottom: 0;
@@ -84,95 +266,92 @@
 }
 
 @keyframes floating3D {
-	0% {
-		box-shadow: 0 5px 24px 0px rgba(0,0,0,0.2);
-    transform: translateY(0px)
-    rotate3d(0, 0, 0, 0deg);
-	}
-	35% {
-		box-shadow: 0 32px 32px 0px rgba(0,0,0,0.03);
-    transform: translateY(-20px)
-    perspective(400px)
-    rotate3d(-10, 50, -10, 5deg);
+  0% {
+    box-shadow: 0 5px 24px 0px rgba(0, 0, 0, 0.2);
+    transform: translateY(0px) rotate3d(0, 0, 0, 0deg);
+  }
+  35% {
+    box-shadow: 0 32px 32px 0px rgba(0, 0, 0, 0.03);
+    transform: translateY(-20px) perspective(400px) rotate3d(-10, 50, -10, 5deg);
   }
   65% {
-		box-shadow: 0 32px 32px 0px rgba(0,0,0,0.03);
-    transform: translateY(-20px)
-    perspective(400px)
-    rotate3d(-75, 50, 0, -5deg);
-	}
-	100% {
-		box-shadow: 0 5px 24px 0px rgba(0,0,0,0.2);
-		transform: translateY(0px)
-    rotate3d(0, 0, 0, 0deg);
-	}
+    box-shadow: 0 32px 32px 0px rgba(0, 0, 0, 0.03);
+    transform: translateY(-20px) perspective(400px) rotate3d(-75, 50, 0, -5deg);
+  }
+  100% {
+    box-shadow: 0 5px 24px 0px rgba(0, 0, 0, 0.2);
+    transform: translateY(0px) rotate3d(0, 0, 0, 0deg);
+  }
 }
 
 @keyframes floating3DX {
-	0% {
-		box-shadow: 0 5px 24px 0px rgba(0,0,0,0.2);
-    transform: translateY(0px)
-    rotate3d(0, 0, 0, 0deg);
-	}
-	35% {
-		box-shadow: 0 32px 32px 0px rgba(0,0,0,0.03);
-    transform: translateY(-1px)
-    perspective(400px)
-    rotate3d(-10, 50, -10, 5deg);
+  0% {
+    box-shadow: 0 5px 24px 0px rgba(0, 0, 0, 0.2);
+    transform: translateY(0px) rotate3d(0, 0, 0, 0deg);
+  }
+  35% {
+    box-shadow: 0 32px 32px 0px rgba(0, 0, 0, 0.03);
+    transform: translateY(-1px) perspective(400px) rotate3d(-10, 50, -10, 5deg);
   }
   65% {
-		box-shadow: 0 32px 32px 0px rgba(0,0,0,0.03);
-    transform: translateY(-1px)
-    perspective(400px)
-    rotate3d(10, 50, 10, -5deg);
-	}
-	100% {
-		box-shadow: 0 5px 24px 0px rgba(0,0,0,0.2);
-		transform: translateY(0px)
-    rotate3d(0, 0, 0, 0deg);
-	}
+    box-shadow: 0 32px 32px 0px rgba(0, 0, 0, 0.03);
+    transform: translateY(-1px) perspective(400px) rotate3d(10, 50, 10, -5deg);
+  }
+  100% {
+    box-shadow: 0 5px 24px 0px rgba(0, 0, 0, 0.2);
+    transform: translateY(0px) rotate3d(0, 0, 0, 0deg);
+  }
 }
 
-
 @keyframes floating3DSelected {
-	0% {
-		box-shadow: 0 5px 24px 0px rgba(0,0,0,0.2);
-	}
-	35% {
-		box-shadow: 0 32px 32px 0px rgba(0,0,0,0.03);
+  0% {
+    box-shadow: 0 5px 24px 0px rgba(0, 0, 0, 0.2);
+  }
+  35% {
+    box-shadow: 0 32px 32px 0px rgba(0, 0, 0, 0.03);
   }
   65% {
-		box-shadow: 0 32px 32px 0px rgba(0,0,0,0.03);
-	}
-	100% {
-		box-shadow: 0 5px 24px 0px rgba(0,0,0,0.2);
-	}
+    box-shadow: 0 32px 32px 0px rgba(0, 0, 0, 0.03);
+  }
+  100% {
+    box-shadow: 0 5px 24px 0px rgba(0, 0, 0, 0.2);
+  }
 }
 
 @keyframes typing {
-  from { width: 0 }
-  to { width: 100% }
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
 }
 
 @keyframes fuck {
   0% {
-		transform: translateY(0px)
-    rotate3d(0, 0, 0, 0deg);
-	}
-	50% {
-    transform: scale(1.05)
-    perspective(400px)
-    rotate3d(-1, 1, 0, 1deg);
+    transform: translateY(0px) rotate3d(0, 0, 0, 0deg);
   }
-	100% {
-    transform: translateY(0px)
-    rotate3d(0, 0, 0, 0deg);
-	}
+  50% {
+    transform: scale(1.05) perspective(400px) rotate3d(-1, 1, 0, 1deg);
+  }
+  100% {
+    transform: translateY(0px) rotate3d(0, 0, 0, 0deg);
+  }
 }
 
 @keyframes load {
   from {
     opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes loadIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
   }
   to {
     opacity: 1;

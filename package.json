@@ -43,6 +43,7 @@
     "react-router-redux": "^5.0.0-alpha.9",
     "react-router-transition": "^1.1.2",
     "react-scripts": "latest",
+    "react-slick": "^0.16.0",
     "recompose": "latest",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",

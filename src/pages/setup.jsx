@@ -9,7 +9,8 @@ import Divider from "material-ui/Divider";
 import TextField from "material-ui/TextField";
 import Button from "material-ui/Button";
 
-import { Auth, Database } from "../utils/firebase";
+import { connect } from "react-redux";
+import { firebaseConnect } from "react-redux-firebase";
 
 import ripple from "../assets/Ripple.mp4";
 
@@ -86,8 +87,18 @@ class Setup extends Component {
     });
 
   login = () =>
-    Auth.signInWithEmailAndPassword(this.state.email, this.state.password)
-      .then(() => this.props.history.push("/"))
+    this.props.firebase
+      .login({ email: this.state.email, password: this.state.password })
+      .then(() => {
+        // temporary fix for LOGIN after SET_PROFILE issue
+        if (this.props.profile.isEmpty) {
+          document.body.style.opacity = 0;
+          setTimeout(() => {
+            this.props.history.push("/");
+            window.location.reload();
+          }, 500);
+        }
+      })
       .catch(error =>
         this.setState({ error: error.message }, () =>
           setTimeout(() => {
@@ -97,21 +108,29 @@ class Setup extends Component {
       );
 
   signup = () =>
-    Auth.createUserWithEmailAndPassword(this.state.email, this.state.password)
-      .then(() =>
-        Database.ref("users")
-          .child(Auth.currentUser.uid)
-          .update({
-            username: `Mirai User ${Auth.currentUser.uid}`,
+    this.props.firebase
+      .createUser({ email: this.state.email, password: this.state.password })
+      .then(userData =>
+        this.props.firebase
+          .updateProfile({
+            username: `Mirai User ${userData.uid}`,
             headers: "",
             avatar:
               "https://firebasestorage.googleapis.com/v0/b/yura-a8e86.appspot.com/o/userData%2Favatar%2Fstock%2Fmirai-icon.png?alt=media&token=56972279-adea-4ad9-a79e-6aa6a964bf61",
             nick: "Hi, I'm new here",
             motto: "",
-            email: Auth.currentUser.email,
-            userID: Auth.currentUser.uid
+            email: userData.email,
+            userID: userData.uid
           })
-          .then(() => this.props.history.push("/wizard"))
+          .then(() => {
+            if (this.props.profile.isEmpty) {
+              document.body.style.opacity = 0;
+              setTimeout(() => {
+                this.props.history.push("/wizard");
+                window.location.reload();
+              }, 500);
+            }
+          })
       )
       .catch(error =>
         this.setState({ error: error.message }, () =>
@@ -194,4 +213,8 @@ class Setup extends Component {
   }
 }
 
-export default withStyles(styles)(Setup);
+export default firebaseConnect()(
+  connect(({ firebase: { auth, profile } }) => ({ auth, profile }))(
+    withStyles(styles)(Setup)
+  )
+);

@@ -10,7 +10,8 @@ const style = theme => ({
   root: {
     height: "100%",
     width: "100%",
-    position: "relative"
+    position: "relative",
+    transition: theme.transitions.create(["all"])
   },
   bgImage: {
     position: "fixed",
@@ -30,7 +31,7 @@ const style = theme => ({
     marginRight: "auto",
     padding: 24,
     maxWidth: 1200,
-    paddingTop: theme.spacing.unit * 8,
+    paddingTop: theme.spacing.unit * 12,
     [theme.breakpoints.up("md")]: {
       maxWidth: "calc(100% - 64px)"
     },
@@ -121,9 +122,14 @@ class Settings extends Component {
     user: "",
     email: "",
     pass: "",
+    motto: "",
     avaLoading: false,
-    bgLoading: false
+    bgLoading: false,
+    loading: true
   };
+
+  componentDidMount = () =>
+    setTimeout(() => this.setState({ loading: false }), 300);
 
   handleAva = accept =>
     accept.forEach(file =>
@@ -131,16 +137,31 @@ class Settings extends Component {
     );
 
   changeAva = () =>
-    this.setState({ avaLoading: true }, async () =>
-      this.props.firebase
-        .uploadFile("userData/avatar", this.state.ava.preview)
-        .then(async s => {
-          console.info("Avatar updated.");
+    this.setState({ avaLoading: true }, async () => {
+      const ava = this.props.firebase
+        .storage()
+        .ref("userData")
+        .child("avatar")
+        .child(this.state.ava.name)
+        .put(this.state.ava);
+
+      ava.on(
+        "state_changed",
+        () => {},
+        error => console.error(error),
+        () => {
+          console.log(ava);
           this.props.firebase
-            .updateProfile({ avatar: s.downloadURL })
-            .then(() => this.setState({ avaLoading: false }));
-        })
-    );
+            .updateProfile({
+              avatar: ava.snapshot.downloadURL
+            })
+            .then(() => {
+              console.info("Avatar updated.");
+              this.setState({ avaLoading: false });
+            });
+        }
+      );
+    });
 
   handleBg = accept =>
     accept.forEach(file =>
@@ -148,16 +169,29 @@ class Settings extends Component {
     );
 
   changeBg = () =>
-    this.setState({ bgLoading: true }, async () =>
-      this.props.firebase
-        .uploadFile("userData/header", this.state.bg.preview)
-        .then(async s => {
-          console.info("Background updated.");
+    this.setState({ bgLoading: true }, async () => {
+      const bg = this.props.firebase
+        .storage()
+        .ref("userData")
+        .child("header")
+        .child(this.state.bg.name)
+        .put(this.state.bg);
+
+      bg.on(
+        "state_changed",
+        () => {},
+        error => console.error(error),
+        () => {
+          console.log(bg);
           this.props.firebase
-            .updateProfile({ headers: s.downloadURL })
-            .then(() => this.setState({ bgLoading: false }));
-        })
-    );
+            .updateProfile({ headers: bg.snapshot.downloadURL })
+            .then(() => {
+              console.info("Background updated.");
+              this.setState({ bgLoading: false });
+            });
+        }
+      );
+    });
 
   changeNick = async () =>
     this.props.firebase
@@ -166,8 +200,15 @@ class Settings extends Component {
 
   changeUsername = async () =>
     this.props.firebase
-      .updateProfile({ username: this.state.user })
+      .updateProfile({
+        username: this.state.user
+      })
       .then(() => console.info("Username updated."));
+
+  changeMotto = async () =>
+    this.props.firebase
+      .updateProfile({ motto: this.state.motto })
+      .then(() => console.info("Motto updated."));
 
   changeEmail = async () => {};
 
@@ -175,16 +216,12 @@ class Settings extends Component {
 
   render() {
     const { classes } = this.props;
+    const { loading } = this.state;
     const user = this.props.profile;
     if (!user) return null;
     return (
-      <div className={classes.root}>
+      <div className={classes.root} style={loading ? { opacity: 0 } : null}>
         <M.Grid container spacing={0} className={classes.content}>
-          <div className={classes.header}>
-            <M.Typography type="display2" className={classes.title}>
-              Settings
-            </M.Typography>
-          </div>
           <M.Typography type="headline" className={classes.headline}>
             Aesthetics
           </M.Typography>
@@ -222,11 +259,8 @@ class Settings extends Component {
               ) : null}
               {this.state.ava ? (
                 <M.Button dense onClick={this.changeAva} color="primary">
-                  {this.state.avaLoading ? (
-                    <M.CircularProgress />
-                  ) : (
-                    "Use as avatar"
-                  )}
+                  {this.state.avaLoading ? <M.CircularProgress /> : null}
+                  Use as avatar
                 </M.Button>
               ) : null}
             </M.ExpansionPanelActions>
@@ -265,11 +299,8 @@ class Settings extends Component {
               ) : null}
               {this.state.bg ? (
                 <M.Button dense onClick={this.changeBg} color="primary">
-                  {this.state.bgLoading ? (
-                    <M.CircularProgress />
-                  ) : (
-                    "Use as background"
-                  )}
+                  {this.state.bgLoading ? <M.CircularProgress /> : null}
+                  Use as background
                 </M.Button>
               ) : null}
             </M.ExpansionPanelActions>
@@ -352,9 +383,26 @@ class Settings extends Component {
               </div>
             </M.ExpansionPanelSummary>
             <M.ExpansionPanelDetails>
-              <M.Typography type="body1">Work in progress.</M.Typography>
+              <M.TextField
+                value={this.state.motto}
+                onChange={e => this.setState({ motto: e.target.value })}
+                helperText="Change your motto, make it your own!"
+                fullWidth
+                margin="normal"
+              />
             </M.ExpansionPanelDetails>
-            <M.ExpansionPanelActions />
+            <M.ExpansionPanelActions>
+              {this.state.motto !== "" ? (
+                <M.Button dense onClick={() => this.setState({ motto: "" })}>
+                  Cancel
+                </M.Button>
+              ) : null}
+              {this.state.motto !== "" ? (
+                <M.Button dense onClick={this.changeMotto} color="primary">
+                  Use as motto
+                </M.Button>
+              ) : null}
+            </M.ExpansionPanelActions>
           </M.ExpansionPanel>
           <div className={classes.divide} />
           <M.Typography type="headline" className={classes.headline}>

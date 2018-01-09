@@ -5,6 +5,8 @@ import queryString from "query-string";
 import Segoku from "../utils/segoku/segoku";
 import * as Vibrant from "node-vibrant";
 
+import { MIR_SET_TITLE } from "../constants";
+
 import { connect } from "react-redux";
 import { firebaseConnect } from "react-redux-firebase";
 
@@ -608,6 +610,18 @@ class Fig extends Component {
     let image = this.state.data.Character
       ? this.state.data.Character.image.medium
       : this.state.data.Staff.image.medium;
+
+    this.props.sendTitleToMir(
+      this.state.type.includes("CHARACTER")
+        ? nameSwapper(
+            this.state.data.Character.name.first,
+            this.state.data.Character.name.last
+          )
+        : nameSwapper(
+            this.state.data.Staff.name.first,
+            this.state.data.Staff.name.last
+          )
+    );
     Vibrant.from("https://cors-anywhere.herokuapp.com/" + image).getPalette(
       (err, pal) => {
         if (pal) {
@@ -699,10 +713,8 @@ class Fig extends Component {
                       ? data.Character.image.large
                       : data.Staff ? data.Staff.image.large : null
                   }
-                  imgProps={{
-                    style: { opacity: 0 },
-                    onLoad: e => (e.currentTarget.style.opacity = null)
-                  }}
+                  style={{ opacity: 0 }}
+                  onLoad={e => (e.currentTarget.style.opacity = null)}
                   alt=""
                   className={classes.bgImage}
                 />
@@ -966,8 +978,19 @@ class Fig extends Component {
   }
 }
 
+const mapPTS = dispatch => {
+  return {
+    sendTitleToMir: title => dispatch(updateMirTitle(title))
+  };
+};
+
+export const updateMirTitle = title => ({
+  type: MIR_SET_TITLE,
+  title
+});
+
 export default firebaseConnect()(
-  connect(({ firebase: { profile } }) => ({ profile }))(
+  connect(({ firebase: { profile } }) => ({ profile }), mapPTS)(
     M.withStyles(style)(Fig)
   )
 );

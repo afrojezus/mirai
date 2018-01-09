@@ -7,6 +7,7 @@ import localForage from "localforage";
 import Grid from "material-ui/Grid";
 import Divider from "material-ui/Divider";
 import Avatar from "material-ui/Avatar";
+import Slider from "react-slick";
 import Card, {
   CardContent,
   CardMedia,
@@ -17,6 +18,10 @@ import { grey } from "material-ui/colors";
 import IconButton from "material-ui/IconButton";
 import { graphql } from "react-apollo";
 import gql from "graphql-tag";
+
+import Twist from "../twist-api";
+
+import { MIR_TWIST_LOAD } from "../constants";
 
 import PlusOneIcon from "material-ui-icons/PlusOne";
 import Button from "material-ui/Button";
@@ -67,27 +72,15 @@ const styles = theme => ({
     height: "100vh",
     objectFit: "cover",
     width: "100%",
-    zIndex: -1
+    zIndex: -1,
+    transition: theme.transitions.create(["all"])
   },
   topHeader: {
-    width: 700,
-    minHeight: 256,
+    width: "100%",
+    maxHeight: 520,
     position: "relative",
-    display: "flex",
     margin: "auto",
-    boxShadow: "0 3px 16px rgba(0,0,0,.4)",
-    transition: theme.transitions.create(["all"]),
-    "&:hover": {
-      transform: "scale(0.8)",
-      overflow: "initial",
-      zIndex: 200,
-      boxShadow: "0 2px 14px rgba(0,0,0,.4)"
-    },
-    "&:hover > h1": {
-      transform: "scale(1.5) translateX(-20%)",
-      fontWeight: 700,
-      textShadow: "0 2px 12px rgba(0,0,0,.7)"
-    }
+    transition: theme.transitions.create(["all"])
   },
   cardBg: {
     objectFit: "cover",
@@ -233,6 +226,146 @@ const styles = theme => ({
     padding: 0,
     margin: "auto",
     transition: theme.transitions.create(["all"])
+  },
+  bigCard: {
+    margin: theme.spacing.unit * 3,
+    padding: theme.spacing.unit * 2,
+    display: "flex",
+    boxShadow: "0 2px 18px rgba(0,0,0,.4)",
+    background: "rgba(255,255,255,0)",
+    height: "100%",
+    minHeight: "300px !important",
+    width: "100%",
+    boxSizing: "border-box",
+    transition: theme.transitions.create(["all"]),
+    "&:last-child": {
+      marginRight: theme.spacing.unit * 9
+    },
+    "&:first-child": {
+      marginLeft: theme.spacing.unit * 9
+    },
+    position: "relative",
+    "&:hover": {
+      background: `rgba(0,55,230,.3)`
+    },
+    "&:hover > div:nth-of-type(2) > img": {
+      zIndex: 200,
+      boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
+      borderColor: blue.A200
+    }
+  },
+  bigCardIcon: {
+    background: "white",
+    zIndex: 4,
+    width: 156,
+    height: 228,
+    boxShadow: "0 3px 24px rgba(0,0,0,.6)",
+    objectFit: "cover",
+    marginRight: theme.spacing.unit * 2,
+    transition: theme.transitions.create(["all"]),
+    border: "8px solid transparent",
+    "&:hover": {
+      filter: "brightness(0.8)"
+    }
+  },
+  bigCardImage: {
+    position: "absolute",
+    height: "100%",
+    width: "100%",
+    objectFit: "cover",
+    top: 0,
+    left: 0,
+    display: "inline-block",
+    background: "linear-gradient(to top, rgba(0,0,0,.7), transparent)"
+  },
+  bigCardImageImg: {
+    position: "relative",
+    height: "100%",
+    width: "100%",
+    objectFit: "cover",
+    top: 0,
+    left: 0,
+    zIndex: -1,
+    display: "block"
+  },
+  bigCardRow: {
+    display: "flex",
+    zIndex: 3,
+    position: "absolute",
+    width: "100%",
+    bottom: -theme.spacing.unit * 2,
+    left: -theme.spacing.unit * 2
+  },
+  bigCardTitle: {
+    zIndex: 3,
+    color: "white",
+    fontWeight: 700,
+    fontSize: 32,
+    textShadow: "0 3px 20px rgba(0,0,0,.87)"
+  },
+  bigCardText: {
+    display: "flex",
+    flexDirection: "column",
+    margin: "auto 0"
+  },
+  bigCardSmallTitle: {
+    zIndex: 3,
+    color: "white",
+    fontWeight: 400,
+    marginTop: theme.spacing.unit,
+    lineHeight: 1,
+    fontSize: 18,
+    textShadow: "0 3px 20px rgba(0,0,0,.7)"
+  },
+  bigCardVerySmallTitle: {
+    zIndex: 3,
+    color: "white",
+    fontWeight: 700,
+    fontSize: 14,
+    textShadow: "0 3px 20px rgba(0,0,0,.7)",
+    marginBottom: theme.spacing.unit
+  },
+  sliderBig: {
+    height: "100%",
+    marginBottom: theme.spacing.unit * 2,
+    "& > .slick-list": {}
+  },
+  sliderDots: {
+    color: "white",
+    position: "absolute",
+    width: "100%",
+    display: "flex !important",
+    listStyle: "none",
+    boxSizing: "border-box",
+    justifyContent: "center",
+    "& > .slick-active > button": {
+      background: "white"
+    },
+    "& > li": {
+      filter: "drop-shadow(0 2px 18px rgba(0,0,0,.5))",
+      padding: 0,
+      margin: "0 5px",
+      height: 24,
+      width: 24,
+      display: "inline-block",
+      position: "relative",
+      cursor: "pointer",
+      "& > button": {
+        filter: "drop-shadow(0 2px 18px rgba(0,0,0,.5))",
+        fontSize: 0,
+        lineHeight: 0,
+        display: "block",
+        width: 10,
+        height: 10,
+        padding: 5,
+        cursor: "pointer",
+        color: "transparent",
+        border: 0,
+        outline: 0,
+        background: "rgba(255,255,255,.2)",
+        borderRadius: "50%"
+      }
+    }
   }
 });
 
@@ -247,9 +380,15 @@ class Home extends Component {
 
   componentDidMount = async () => {
     this.feedsObserve();
+    this.twistLoad();
     this.fetchOngoing().then(() =>
       setTimeout(() => this.setState({ loading: false }), 300)
     );
+  };
+
+  twistLoad = async () => {
+    if (this.props.mir && this.props.mir.twist) return null;
+    else Twist.load().then(twist => this.props.twistInit(twist));
   };
 
   fetchOngoing = async () => {
@@ -292,6 +431,21 @@ class Home extends Component {
 
     const openFeed = Boolean(anchorEl);
 
+    const settings = {
+      className: classes.sliderBig,
+      dots: true,
+      infinite: false,
+      dotsClass: classes.sliderDots,
+      arrows: false,
+      focusOnSelect: true,
+      easing: "ease",
+      speed: 300,
+      slidesToShow: 3,
+      slidesToScroll: 1,
+      autoPlay: true,
+      autoPlaySpeed: 1000
+    };
+
     return (
       <div>
         <CircularProgress
@@ -300,7 +454,13 @@ class Home extends Component {
         />
         <div className={classes.frame} style={loading ? { opacity: 0 } : null}>
           {user && user.headers ? (
-            <img src={user.headers} alt="" className={classes.bgImage} />
+            <img
+              src={user.headers}
+              alt=""
+              className={classes.bgImage}
+              style={{ opacity: 0 }}
+              onLoad={e => (e.currentTarget.style.opacity = null)}
+            />
           ) : (
             <video
               muted
@@ -309,6 +469,8 @@ class Home extends Component {
               src={ripple}
               alt=""
               className={classes.bgImage}
+              style={{ opacity: 0 }}
+              onLoad={e => (e.currentTarget.style.opacity = null)}
             />
           )}
           <Snackbar
@@ -336,11 +498,212 @@ class Home extends Component {
             }
           />
           <div className={classes.root}>
-            <Card className={classes.topHeader}>
-              <Typography type="display2" className="specialTitleHeader">
-                未来
-              </Typography>
-            </Card>
+            <div className={classes.topHeader}>
+              <Slider {...settings}>
+                <Card className={classes.bigCard}>
+                  <div className={classes.bigCardImage}>
+                    <img
+                      src="https://cdn.anilist.co/img/dir/anime/banner/98707-j0WtWtjACgJm.jpg"
+                      alt=""
+                      className={classes.bigCardImageImg}
+                    />
+                  </div>
+                  <div className={classes.bigCardRow}>
+                    <img
+                      src="https://cdn.anilist.co/img/dir/anime/reg/98707-yKcrtBTmFjEu.png"
+                      alt=""
+                      className={classes.bigCardIcon}
+                      onClick={() => this.openEntity("/show?s=98707")}
+                    />
+                    <div className={classes.bigCardText}>
+                      <Typography
+                        type="display2"
+                        className={classes.bigCardVerySmallTitle}
+                      >
+                        <span role="img" aria-label="gemstone">
+                          💎
+                        </span>{" "}
+                        GEM OF LAST SEASON
+                      </Typography>
+                      <Typography
+                        type="display2"
+                        className={classes.bigCardTitle}
+                      >
+                        Land of The Lustrous
+                      </Typography>
+                      <Typography
+                        type="display2"
+                        className={classes.bigCardSmallTitle}
+                      >
+                        Gems. A Monk. Moon people, and a whole lot more that we
+                        can't explain
+                      </Typography>
+                    </div>
+                  </div>
+                </Card>
+                <Card className={classes.bigCard}>
+                  <div className={classes.bigCardImage}>
+                    <img
+                      src="https://cdn.anilist.co/img/dir/anime/banner/21827-axEmcLTtSMay.jpg"
+                      alt=""
+                      className={classes.bigCardImageImg}
+                    />
+                  </div>
+                  <div className={classes.bigCardRow}>
+                    <img
+                      src="https://cdn.anilist.co/img/dir/anime/reg/21827-Xlo8r4tIfrJI.jpg"
+                      alt=""
+                      className={classes.bigCardIcon}
+                      onClick={() => this.openEntity("/show?s=21827")}
+                    />
+                    <div className={classes.bigCardText}>
+                      <Typography
+                        type="display2"
+                        className={classes.bigCardVerySmallTitle}
+                      >
+                        <span role="img" aria-label="gemstone">
+                          ⭐
+                        </span>{" "}
+                        POPULAR UNDERDOG OF THE SEASON
+                      </Typography>
+                      <Typography
+                        type="display2"
+                        className={classes.bigCardTitle}
+                      >
+                        Violet Evergarden
+                      </Typography>
+                      <Typography
+                        type="display2"
+                        className={classes.bigCardSmallTitle}
+                      >
+                        Perhaps KyoAnis most prestigious work yet, well we've
+                        yet to see
+                      </Typography>
+                    </div>
+                  </div>
+                </Card>
+                <Card className={classes.bigCard}>
+                  <div className={classes.bigCardImage}>
+                    <img
+                      src=" https://cdn.anilist.co/img/dir/anime/reg/98549-XfLyPhrP5Ors.jpg"
+                      alt=""
+                      className={classes.bigCardImageImg}
+                    />
+                  </div>
+                  <div className={classes.bigCardRow}>
+                    <img
+                      src="https://cdn.anilist.co/img/dir/anime/reg/98549-XfLyPhrP5Ors.jpg"
+                      alt=""
+                      className={classes.bigCardIcon}
+                      onClick={() => this.openEntity("/show?s=98549")}
+                    />
+                    <div className={classes.bigCardText}>
+                      <Typography
+                        type="display2"
+                        className={classes.bigCardVerySmallTitle}
+                      >
+                        <span role="img" aria-label="gemstone">
+                          😂
+                        </span>{" "}
+                        IT'S JOKE
+                      </Typography>
+                      <Typography
+                        type="display2"
+                        className={classes.bigCardTitle}
+                      >
+                        Pop Team Epic
+                      </Typography>
+                      <Typography
+                        type="display2"
+                        className={classes.bigCardSmallTitle}
+                      >
+                        A modern piece of comedy, a masterful shitpost
+                      </Typography>
+                    </div>
+                  </div>
+                </Card>
+                <Card className={classes.bigCard}>
+                  <div className={classes.bigCardImage}>
+                    <img
+                      src="https://cdn.anilist.co/img/dir/anime/reg/97832-XPMLlgFULgJW.jpg"
+                      alt=""
+                      className={classes.bigCardImageImg}
+                      onClick={() => this.openEntity("/show?s=97832")}
+                    />
+                  </div>
+                  <div className={classes.bigCardRow}>
+                    <img
+                      src="https://cdn.anilist.co/img/dir/anime/reg/97832-XPMLlgFULgJW.jpg"
+                      alt=""
+                      className={classes.bigCardIcon}
+                    />
+                    <div className={classes.bigCardText}>
+                      <Typography
+                        type="display2"
+                        className={classes.bigCardVerySmallTitle}
+                      >
+                        <span role="img" aria-label="gemstone">
+                          ⛸️
+                        </span>{" "}
+                        THE (LITERALLY) YURI ON ICE ONE THIS SEASON
+                      </Typography>
+                      <Typography
+                        type="display2"
+                        className={classes.bigCardTitle}
+                      >
+                        Citrus
+                      </Typography>
+                      <Typography
+                        type="display2"
+                        className={classes.bigCardSmallTitle}
+                      >
+                        Gay girls.
+                      </Typography>
+                    </div>
+                  </div>
+                </Card>
+                <Card className={classes.bigCard}>
+                  <div className={classes.bigCardImage}>
+                    <img
+                      src="https://cdn.anilist.co/img/dir/anime/reg/99468-9Ij1UpsehSVx.jpg"
+                      alt=""
+                      className={classes.bigCardImageImg}
+                      onClick={() => this.openEntity("/show?s=99468")}
+                    />
+                  </div>
+                  <div className={classes.bigCardRow}>
+                    <img
+                      src="https://cdn.anilist.co/img/dir/anime/reg/99468-9Ij1UpsehSVx.jpg"
+                      alt=""
+                      className={classes.bigCardIcon}
+                    />
+                    <div className={classes.bigCardText}>
+                      <Typography
+                        type="display2"
+                        className={classes.bigCardVerySmallTitle}
+                      >
+                        <span role="img" aria-label="gemstone">
+                          👺
+                        </span>{" "}
+                        THE MOST GENERIC ONE THIS SEASON
+                      </Typography>
+                      <Typography
+                        type="display2"
+                        className={classes.bigCardTitle}
+                      >
+                        Karakai Jozu no Takagi-san
+                      </Typography>
+                      <Typography
+                        type="display2"
+                        className={classes.bigCardSmallTitle}
+                      >
+                        Idk, you tell me.
+                      </Typography>
+                    </div>
+                  </div>
+                </Card>
+              </Slider>
+            </div>
             <Grid container spacing={16} className={classes.container}>
               <Grid item xs className={classes.itemContainer}>
                 <Typography type="title" className={classes.headline}>
@@ -623,13 +986,26 @@ class Home extends Component {
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      changePage: page => push(page)
+      changePage: page => push(page),
+      twistInit: twist => twistLoad(twist)
     },
     dispatch
   );
 
+const twistLoad = twist => {
+  return {
+    type: MIR_TWIST_LOAD,
+    twist
+  };
+};
+
 export default firebaseConnect()(
-  connect(({ firebase: { profile } }) => ({ profile }), mapDispatchToProps)(
-    withStyles(styles)(Home)
-  )
+  connect(
+    ({ firebase: { auth, profile }, mir }) => ({
+      auth,
+      profile,
+      mir
+    }),
+    mapDispatchToProps
+  )(withStyles(styles)(Home))
 );

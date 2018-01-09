@@ -35,10 +35,13 @@ import BellIcon from "material-ui-icons/Notifications";
 import BellOffIcon from "material-ui-icons/NotificationsNone";
 import StarIcon from "material-ui-icons/Star";
 import Avatar from "material-ui/Avatar";
+import ArrowBackIcon from "material-ui-icons/ArrowBack";
 import MoreVert from "material-ui-icons/MoreVert";
 import Input, { InputLabel } from "material-ui/Input";
 import { FormControl, FormHelperText } from "material-ui/Form";
 import Select from "material-ui/Select";
+
+import * as Vibrant from "node-vibrant";
 
 import localForage from "localforage";
 
@@ -72,7 +75,8 @@ const styles = theme => ({
     background: "linear-gradient(to top, transparent, rgba(0,0,0,.9))"
   },
   appBar: {
-    background: "#111"
+    background: "rgba(0,0,0,.87)",
+    boxShadow: "0 2px 16px rgba(0,0,0,.3)"
   },
   appFrame: {
     position: "relative",
@@ -90,12 +94,6 @@ const styles = theme => ({
   logoButton: {
     width: 32,
     borderRadius: "50%"
-  },
-  logoTitle: {
-    marginLeft: -24
-  },
-  barTitle: {
-    marginLeft: 24
   },
   userButton: {
     width: 32,
@@ -258,7 +256,8 @@ class Superbar extends Component {
     notAtTop: true,
     currentPage: "",
     watchIsOn: false,
-    status: 0
+    status: 0,
+    mirTitle: ""
   };
 
   componentWillMount = () => {
@@ -270,7 +269,14 @@ class Superbar extends Component {
     this.pageChange();
   };
 
-  componentDidMount = () => {};
+  componentDidMount = async () => this.vibrance();
+
+  componentWillReceiveProps = nextProps => {
+    if (this.props.mir)
+      if (this.props.mir.title !== nextProps.mir.title) {
+        this.setState({ mirTitle: nextProps.mir.title });
+      }
+  };
 
   handleMenu = event => {
     this.setState({ anchorEl: event.currentTarget });
@@ -327,7 +333,7 @@ class Superbar extends Component {
           this.setState({ currentPage: "", tabVal: 3, watchIsOn: false });
           break;
         case "/user":
-          this.setState({ currentPage: "", tabVal: 4, watchIsOn: false });
+          this.setState({ currentPage: "You", tabVal: 4, watchIsOn: false });
           break;
         case "/history":
           this.setState({
@@ -342,26 +348,48 @@ class Superbar extends Component {
         case "/help":
           this.setState({ currentPage: "Help", tabVal: 4, watchIsOn: false });
           break;
+        case "/studio":
+          this.setState({
+            currentPage: "",
+            tabVal: 4,
+            watchIsOn: false
+          });
+          break;
+        case "/fig":
+          this.setState({
+            currentPage: "",
+            tabVal: 4,
+            watchIsOn: false
+          });
+          break;
         case "/show":
-          this.setState({ currentPage: "", tabVal: 4, watchIsOn: false });
+          this.setState({
+            currentPage: "",
+            tabVal: 4,
+            watchIsOn: false
+          });
           break;
         case "/settings":
-          this.setState({ currentPage: "", tabVal: 4, watchIsOn: false });
+          this.setState({
+            currentPage: "Settings",
+            tabVal: 4,
+            watchIsOn: false
+          });
           break;
         case "/setup":
-          this.setState({ currentPage: "", tabVal: 4, watchIsOn: false });
+          this.setState({ currentPage: "Setup", tabVal: 4, watchIsOn: false });
           break;
         case "/wizard":
-          this.setState({ currentPage: "", tabVal: 4, watchIsOn: false });
+          this.setState({ currentPage: "Wizard", tabVal: 4, watchIsOn: false });
           break;
         case "/watch":
           this.setState({ currentPage: "", tabVaL: 4, watchIsOn: true });
           break;
         case "/monika":
-          this.setState({ currentPage: "", tabVal: 4, watchIsOn: false });
+          this.setState({ currentPage: "Monika", tabVal: 4, watchIsOn: false });
           break;
         case "/search":
-          this.setState({ currentPage: "", tabVal: 4, watchIsOn: false });
+          this.setState({ currentPage: "Search", tabVal: 4, watchIsOn: false });
           break;
         default:
           break;
@@ -373,6 +401,44 @@ class Superbar extends Component {
 
   hideBar = () => (document.getElementById("superBar").style.opacity = 0);
 
+  vibrance = async () => {
+    let image = this.props.profile ? this.props.profile.avatar : null;
+    let hues = await localForage.getItem("user-hue");
+
+    if (image && !hues)
+      Vibrant.from("https://cors-anywhere.herokuapp.com/" + image).getPalette(
+        (err, pal) => {
+          if (pal) {
+            this.setState({
+              hue: pal.DarkMuted.getHex(),
+              hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
+              hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
+            });
+          }
+        }
+      );
+    else if (image && hues && hues.image !== image)
+      Vibrant.from("https://cors-anywhere.herokuapp.com/" + image).getPalette(
+        (err, pal) => {
+          if (pal) {
+            this.setState({
+              hue: pal.DarkMuted.getHex(),
+              hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
+              hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
+            });
+          }
+        }
+      );
+    else if (image && hues)
+      this.setState({
+        hue: hues.hue,
+        hueVib: hues.vib,
+        hueVibN: hues.vibn
+      });
+
+    setTimeout(() => this.setState({ loading: false }), 200);
+  };
+
   render() {
     const { classes } = this.props;
     const {
@@ -382,7 +448,9 @@ class Superbar extends Component {
       notAtTop,
       tabVal,
       currentPage,
-      watchIsOn
+      watchIsOn,
+      hue,
+      mirTitle
     } = this.state;
 
     const user = this.props.profile;
@@ -518,7 +586,16 @@ class Superbar extends Component {
         </List>
         <Divider className={classes.listDivider} />
         <Typography className={classes.footerCopy} type="headline">
-          {Object.keys(this.props.firebase).length - 1} online<br />2018 afroJ
+          {Object.keys(this.props.firebase).length - 1} online{this.props.mir &&
+          this.props.mir.twist ? (
+            <br />
+          ) : null}
+          {this.props.mir && this.props.mir.twist
+            ? Object.keys(this.props.mir.twist).length -
+              1 +
+              " animes in database"
+            : null}
+          <br />2018 afroJ
         </Typography>
       </div>
     );
@@ -546,16 +623,25 @@ class Superbar extends Component {
             >
               <MenuIcon />
             </IconButton>
-            <IconButton
-              className={classes.logoTitle}
-              onClick={() => {
-                this.props.history.push("/");
-              }}
-            >
-              <img alt="" className={classes.logoButton} src={miraiLogo} />
-            </IconButton>
+            {currentPage !== "" ? null : mirTitle ? null : (
+              <IconButton
+                className={classes.logoTitle}
+                onClick={() => {
+                  this.props.history.push("/");
+                }}
+              >
+                {currentPage !== "" ? (
+                  <ArrowBackIcon />
+                ) : (
+                  <Typography type="title">未来</Typography>
+                )}
+              </IconButton>
+            )}
             <Typography className={classes.barTitle} type="title">
-              {currentPage}
+              {this.props.history.location.pathname.includes("/show") ||
+              this.props.history.location.pathname.includes("/fig")
+                ? mirTitle
+                : currentPage}
             </Typography>
             <div className={classes.flex} />
             {/**<Autosuggest
@@ -669,7 +755,7 @@ class Superbar extends Component {
                 <NotificationForm />
               </Menu>
             </div>
-            {user ? (
+            {!user.isEmpty ? (
               <div>
                 <IconButton
                   aria-owns={open ? "profile-menu" : null}
@@ -809,7 +895,11 @@ class Superbar extends Component {
 }
 
 export default firebaseConnect()(
-  connect(({ firebase: { profile } }) => ({ profile }), null)(
-    withStyles(styles)(Superbar)
-  )
+  connect(
+    ({ firebase: { profile }, mir }) => ({
+      profile,
+      mir
+    }),
+    null
+  )(withStyles(styles)(Superbar))
 );

@@ -8,12 +8,19 @@ import {
   getFirebase
 } from "react-redux-firebase";
 import firebase from "firebase";
-
+import mirReducer from "./modules";
 import { fireconfig } from "./utils/config.json";
 
 const rrfConfig = {
   userProfile: "users",
-  enableLogging: true
+  enableLogging: true,
+  fileMetadataFactory: uploadRes => {
+    // upload response from Firebase's storage upload
+    const { metadata: { downloadURLs } } = uploadRes;
+    // default factory includes name, fullPath, downloadURL
+    return downloadURLs[0];
+  },
+  resetBeforeLogin: false
 };
 
 firebase.initializeApp(fireconfig);
@@ -37,7 +44,8 @@ if (process.env.NODE_ENV === "development") {
 
 const rootReducer = combineReducers({
   firebase: firebaseReducer,
-  routing: routerReducer
+  routing: routerReducer,
+  mir: mirReducer
 });
 
 const createStoreWithFirebase = compose(

@@ -18,7 +18,8 @@ const styles = theme => ({
     },
     body: {
       margin: 0,
-      height: "100%"
+      height: "100%",
+      transition: theme.transitions.create(["all"])
     }
   }
 });

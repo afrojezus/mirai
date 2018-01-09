@@ -6,6 +6,8 @@ import queryString from "query-string";
 import Segoku from "../utils/segoku/segoku";
 import * as Vibrant from "node-vibrant";
 
+import { MIR_SET_TITLE } from "../constants";
+
 import { connect } from "react-redux";
 import { firebaseConnect } from "react-redux-firebase";
 
@@ -80,12 +82,13 @@ const styles = theme => ({
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0.2,
+    opacity: 0.6,
     height: "100vh",
     objectFit: "cover",
     width: "100%",
     zIndex: -1,
     overflow: "hidden",
+    filter: "brightness(.3)",
     transition: theme.transitions.create(["all"])
   },
   grDImage: {
@@ -129,7 +132,7 @@ const styles = theme => ({
     marginTop: theme.spacing.unit,
     color: "white",
     textShadow: "0 0 12px rgba(0,0,0,.1)",
-    marginBottom: theme.spacing.unit * 6
+    marginBottom: theme.spacing.unit
   },
   boldD: {
     marginTop: theme.spacing.unit,
@@ -408,7 +411,7 @@ const styles = theme => ({
     margin: "auto"
   },
   commandoTextLabel: {
-    fontSize: 10,
+    fontSize: 12,
     textAlign: "center",
     color: "rgba(255,255,255,.8)"
   },
@@ -425,7 +428,6 @@ const styles = theme => ({
     background: "#111",
     color: "white",
     boxShadow: "0 2px 16px rgba(0,0,0,.2)",
-    borderRadius: 2,
     fontWeight: 600
   }
 });
@@ -448,9 +450,10 @@ class Show extends Component {
 
   unlisten = this.props.history.listen((location, action) => {
     let id = queryString.parse(location.search);
-    if (id.s !== this.state.id) {
-      this.init();
-    }
+    if (location.pathname === "/show")
+      if (id.s !== this.state.id) {
+        this.init();
+      }
   });
 
   componentWillMount = () => {
@@ -461,62 +464,69 @@ class Show extends Component {
     this.init();
   };
 
-  componentWillReceiveProps = nextProps => {
-    if (
-      this.props.history.location.search !== nextProps.history.location.search
-    ) {
-      window.scrollTo(0, 0);
-      this.init();
-    }
-  };
-
   init = () =>
-    this.setState({ data: {}, loading: true }, async () => {
-      let id = queryString.parse(this.props.history.location.search);
-      if (id) {
-        const { data } = this.props.history.location.search.includes("?m=")
-          ? await new Segoku().getSingleManga({ id: id.m })
-          : await new Segoku().getSingle({ id: id.s });
-        try {
-          if (data) {
-            this.setState(
-              {
-                data,
-                id: data.Media.id,
-                fav: this.props.history.location.search.includes("?s=")
-                  ? this.props.profile.favs &&
-                    this.props.profile.favs.show &&
-                    this.props.profile.favs.show.hasOwnProperty(id.s)
-                    ? true
-                    : false
-                  : this.props.profile.favs &&
-                    this.props.profile.favs.manga &&
-                    this.props.profile.favs.manga.hasOwnProperty(id.m)
-                    ? true
-                    : false
-              },
-              () => this.pasta()
-            );
-          } else throw new Error("Metadata error");
-        } catch (error) {
-          this.setState({ error }, () =>
-            setTimeout(() => this.setState({ error: "" }), 3000)
-          );
-        }
-      }
-    });
+    this.setState(
+      {
+        data: null,
+        loading: true,
+        hue: "#111",
+        hueVib: M.colors.blue.A200,
+        hueVibN: M.colors.grey.A700
+      },
+      async () =>
+        setTimeout(async () => {
+          let superBar = document.getElementById("superBar");
+          if (superBar) superBar.style.background = null;
+          let id = queryString.parse(this.props.history.location.search);
+          if (id) {
+            const { data } = this.props.history.location.search.includes("?m=")
+              ? await new Segoku().getSingleManga({ id: id.m })
+              : await new Segoku().getSingle({ id: id.s });
+            try {
+              if (data) {
+                this.setState(
+                  {
+                    data,
+                    id: data.Media.id,
+                    fav: this.props.history.location.search.includes("?s=")
+                      ? this.props.profile.favs &&
+                        this.props.profile.favs.show &&
+                        this.props.profile.favs.show.hasOwnProperty(id.s)
+                        ? true
+                        : false
+                      : this.props.profile.favs &&
+                        this.props.profile.favs.manga &&
+                        this.props.profile.favs.manga.hasOwnProperty(id.m)
+                        ? true
+                        : false
+                  },
+                  () => this.pasta()
+                );
+              } else throw new Error("Metadata error");
+            } catch (error) {
+              this.setState({ error }, () =>
+                setTimeout(() => this.setState({ error: "" }), 3000)
+              );
+            }
+          }
+        }, 300)
+    );
 
   pasta = async () => {
     let data = this.state.data.Media;
-    // this.props.meta.showTitle = data.title.english ? data.title.english : data.title.romaji
-    let image = this.state.data.Media.coverImage.medium;
+    this.props.sendTitleToMir(
+      data.title.english ? data.title.english : data.title.romaji
+    );
+    let image = this.state.data.Media.bannerImage
+      ? this.state.data.Media.bannerImage
+      : this.state.data.Media.coverImage.medium;
 
     const similars = await new Segoku().getSimilar({
       tag: data.tags.length > 0 ? data.tags[0].name : null,
       sort: ["POPULARITY_DESC"],
       page: 1
     });
-    if (image && similars)
+    if (image)
       Vibrant.from("https://cors-anywhere.herokuapp.com/" + image).getPalette(
         (err, pal) => {
           if (err) console.error(err);
@@ -528,24 +538,20 @@ class Show extends Component {
                 hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex(),
                 similars
               },
-              () =>
-                this.setState(
-                  {
-                    loading: false
-                  },
-                  () => {
-                    let superBar = document.getElementById("superBar");
-                    if (superBar) superBar.style.background = this.state.hue;
-                    if (this.frame)
-                      setTimeout(() => {
-                        this.frame.style.opacity = "initial";
-                      }, 400);
-                  }
-                )
+              () => {
+                let superBar = document.getElementById("superBar");
+                if (superBar) superBar.style.background = this.state.hue;
+              }
             );
           }
         }
       );
+
+    if (similars) this.setState({ similars });
+    if (this.state.data)
+      this.setState({
+        loading: false
+      });
   };
 
   tabChange = (e, val) => this.setState({ tabVal: val });
@@ -634,498 +640,639 @@ class Show extends Component {
           className={classes.loading}
           style={!loading ? { opacity: 0 } : null}
         />
-        {data && data.Media ? (
-          <div
-            id="previewFrame"
-            className={classes.root}
-            style={loading ? { opacity: 0 } : null}
-          >
-            <div className={classes.grImage}>
-              <div className={classes.grDImage} style={{ background: hueVibN }}>
-                <img
-                  src={
-                    data.Media.bannerImage
-                      ? data.Media.bannerImage
-                      : data.Media.coverImage.large
-                  }
-                  alt=""
-                  className={classes.bgImage}
-                  style={{ opacity: 0 }}
-                  onLoad={e => (e.currentTarget.style.opacity = null)}
-                />
-              </div>
-            </div>
-            <M.Grid container spacing={16} className={classes.container}>
-              <M.Grid item xs={3}>
+        <div
+          id="previewFrame"
+          className={classes.root}
+          style={loading ? { opacity: 0 } : null}
+        >
+          {data && data.Media ? (
+            <div>
+              <div className={classes.grImage}>
                 <div
-                  className={classes.artwork}
-                  style={{ background: hueVib }}
-                  onClick={this.play}
+                  className={classes.grDImage}
+                  style={{ background: hueVibN }}
                 >
                   <img
-                    src={data.Media.coverImage.large}
+                    src={
+                      data.Media.bannerImage
+                        ? data.Media.bannerImage
+                        : data.Media.coverImage.large
+                    }
                     alt=""
-                    className={classes.artworkimg}
+                    className={classes.bgImage}
                     style={{ opacity: 0 }}
                     onLoad={e => (e.currentTarget.style.opacity = null)}
                   />
-                  <M.Typography className="artworktitle" type="display1">
-                    {data.Media.type.includes("MANGA") ? "Read" : "Play"}
-                  </M.Typography>
-                  <M.Typography
-                    className={classes.artworktype}
-                    style={{ background: hue }}
-                    type="display1"
-                  >
-                    {data.Media.status
-                      .replace("RELEASING", "ONGOING")
-                      .replace(/_/gi, " ")}{" "}
-                    {data.Media.type}
-                  </M.Typography>
                 </div>
-              </M.Grid>
-              <M.Grid item xs className={classes.mainFrame}>
-                <div className={classes.smallTitlebar}>
-                  {data.Media.type.includes("ANIME") ? (
-                    <M.Typography
-                      className={classes.smallTitle}
-                      type="display2"
-                    >
-                      {data.Media.title.native}{" "}
-                      {"• " + data.Media.startDate.year}{" "}
-                      {"• " +
-                        Math.floor(data.Media.duration / 60) +
-                        " h " +
-                        data.Media.duration % 60 +
-                        " min"}
-                    </M.Typography>
-                  ) : (
-                    <M.Typography
-                      className={classes.smallTitle}
-                      type="display2"
-                    >
-                      {data.Media.title.native}{" "}
-                      {"• " + data.Media.startDate.year}{" "}
-                      {"• " +
-                        data.Media.chapters +
-                        " chapters in " +
-                        data.Media.volumes +
-                        " volumes"}
-                    </M.Typography>
-                  )}
-                  <div style={{ flex: 1 }} />
-                  <M.Typography
-                    className={classes.smallTitle}
-                    style={{ cursor: "pointer" }}
-                    onClick={() => window.open(data.Media.siteUrl)}
-                    type="display2"
-                  >
-                    Data provided by AniList
-                  </M.Typography>
-                </div>
-                <M.Typography className={classes.bigTitle} type="display3">
-                  {data.Media.title.english
-                    ? data.Media.title.english
-                    : data.Media.title.romaji}
-                </M.Typography>
-
-                <M.Divider />
-                <M.Typography
-                  className={classes.desc}
-                  type="body1"
-                  dangerouslySetInnerHTML={{ __html: data.Media.description }}
-                />
-                {data.Media.characters &&
-                data.Media.characters.edges.length > 0 &&
-                data.Media.characters.edges.filter(s => s.role === "MAIN")[0] &&
-                data.Media.characters.edges[0] &&
-                data.Media.characters.edges[0].voiceActors &&
-                data.Media.characters.edges[0].voiceActors.length > 0 ? (
+              </div>
+              <M.Grid container spacing={16} className={classes.container}>
+                <M.Grid item xs={3}>
                   <div
-                    style={{
-                      display: "flex",
-                      flexDirection:
-                        data.Media.characters.edges.filter(
-                          s => s.role === "MAIN"
-                        ).length > 2
-                          ? "column"
-                          : null
-                    }}
+                    className={classes.artwork}
+                    style={{ background: hueVib }}
+                    onClick={this.play}
                   >
-                    <M.Typography className={classes.boldD} type="headline">
-                      Starring{" "}
+                    <img
+                      src={data.Media.coverImage.large}
+                      alt=""
+                      className={classes.artworkimg}
+                      style={{ opacity: 0 }}
+                      onLoad={e => (e.currentTarget.style.opacity = null)}
+                    />
+                    <M.Typography className="artworktitle" type="display1">
+                      {data.Media.type.includes("MANGA") ? "Read" : "Play"}
                     </M.Typography>
-                    {data.Media.characters.edges.filter(s => s.role === "MAIN")
-                      .length > 0 &&
-                      data.Media.characters.edges
-                        .filter(s => s.role === "MAIN")
-                        .map((o, i) => (
-                          <M.Typography
-                            key={i}
-                            className={classes.smallD}
-                            type="headline"
-                          >
-                            {o.voiceActors[0].name.last
-                              ? o.voiceActors[0].name.first +
-                                " " +
-                                o.voiceActors[0].name.last
-                              : o.voiceActors[0].name.first}{" "}
-                            as{" "}
-                            {o.node.name.last
-                              ? o.node.name.first + " " + o.node.name.last
-                              : o.node.name.first}
-                          </M.Typography>
-                        ))
-                        .reduce((pre, cur) => [
-                          pre,
+                    <M.Typography
+                      className={classes.artworktype}
+                      style={{ background: hue }}
+                      type="display1"
+                    >
+                      {data.Media.status
+                        .replace("RELEASING", "ONGOING")
+                        .replace(/_/gi, " ")}{" "}
+                      {data.Media.type}
+                    </M.Typography>
+                  </div>
+                </M.Grid>
+                <M.Grid item xs className={classes.mainFrame}>
+                  <div className={classes.smallTitlebar}>
+                    {data.Media.type.includes("ANIME") ? (
+                      <M.Typography
+                        className={classes.smallTitle}
+                        type="display2"
+                      >
+                        {data.Media.title.native}{" "}
+                        {"• " + data.Media.startDate.year}{" "}
+                        {"• " +
+                          Math.floor(data.Media.duration / 60) +
+                          " h " +
+                          data.Media.duration % 60 +
+                          " min"}
+                      </M.Typography>
+                    ) : (
+                      <M.Typography
+                        className={classes.smallTitle}
+                        type="display2"
+                      >
+                        {data.Media.title.native}{" "}
+                        {"• " + data.Media.startDate.year}{" "}
+                        {"• " +
+                          data.Media.chapters +
+                          " chapters in " +
+                          data.Media.volumes +
+                          " volumes"}
+                      </M.Typography>
+                    )}
+                    <div style={{ flex: 1 }} />
+                    <M.Typography
+                      className={classes.smallTitle}
+                      style={{ cursor: "pointer" }}
+                      onClick={() => window.open(data.Media.siteUrl)}
+                      type="display2"
+                    >
+                      Data provided by AniList
+                    </M.Typography>
+                  </div>
+                  <M.Typography className={classes.bigTitle} type="display3">
+                    {data.Media.title.english
+                      ? data.Media.title.english
+                      : data.Media.title.romaji}
+                  </M.Typography>
+
+                  <M.Divider />
+                  <M.Typography
+                    className={classes.desc}
+                    type="body1"
+                    dangerouslySetInnerHTML={{ __html: data.Media.description }}
+                  />
+                  {data.Media.characters &&
+                  data.Media.characters.edges.length > 0 &&
+                  data.Media.characters.edges.filter(
+                    s => s.role === "MAIN"
+                  )[0] &&
+                  data.Media.characters.edges[0] &&
+                  data.Media.characters.edges[0].voiceActors &&
+                  data.Media.characters.edges[0].voiceActors.length > 0 ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection:
                           data.Media.characters.edges.filter(
                             s => s.role === "MAIN"
-                          ).length > 2 ? null : (
+                          ).length > 2
+                            ? "column"
+                            : null
+                      }}
+                    >
+                      <M.Typography className={classes.boldD} type="headline">
+                        Starring{" "}
+                      </M.Typography>
+                      {data.Media.characters.edges.filter(
+                        s => s.role === "MAIN"
+                      ).length > 0 &&
+                        data.Media.characters.edges
+                          .filter(s => s.role === "MAIN")
+                          .map((o, i) => (
                             <M.Typography
+                              key={i}
                               className={classes.smallD}
-                              style={{ marginLeft: 0 }}
                               type="headline"
                             >
-                              ,
+                              {o.voiceActors[0].name.last
+                                ? o.voiceActors[0].name.first +
+                                  " " +
+                                  o.voiceActors[0].name.last
+                                : o.voiceActors[0].name.first}{" "}
+                              as{" "}
+                              {o.node.name.last
+                                ? o.node.name.first + " " + o.node.name.last
+                                : o.node.name.first}
                             </M.Typography>
-                          ),
-                          cur
-                        ])}
-                  </div>
-                ) : null}
-                <div style={{ display: "flex" }}>
-                  {data.Media.staff.edges.filter(
-                    s => s.role === "Director"
-                  )[0] ? (
-                    <M.Typography className={classes.boldD} type="headline">
-                      Directed by{" "}
-                    </M.Typography>
+                          ))
+                          .reduce((pre, cur) => [
+                            pre,
+                            data.Media.characters.edges.filter(
+                              s => s.role === "MAIN"
+                            ).length > 2 ? null : (
+                              <M.Typography
+                                className={classes.smallD}
+                                style={{ marginLeft: 0 }}
+                                type="headline"
+                              >
+                                ,
+                              </M.Typography>
+                            ),
+                            cur
+                          ])}
+                    </div>
                   ) : null}
-                  {data.Media.staff.edges.filter(
-                    s => s.role === "Director"
-                  )[0] ? (
-                    <M.Typography className={classes.smallD} type="headline">
-                      {
-                        data.Media.staff.edges.filter(
-                          s => s.role === "Director"
-                        )[0].node.name.first
-                      }{" "}
-                      {data.Media.staff.edges.filter(
-                        s => s.role === "Director"
-                      )[0].node.name.last
-                        ? data.Media.staff.edges.filter(
-                            s => s.role === "Director"
-                          )[0].node.name.last
-                        : null}
-                    </M.Typography>
-                  ) : null}
-                  {data.Media.staff.edges.filter(
-                    s => s.role === "Original Creator"
-                  )[0] ? (
-                    <div className={classes.sepD}>
+                  <div style={{ display: "flex" }}>
+                    {data.Media.staff.edges.filter(
+                      s => s.role === "Director"
+                    )[0] ? (
                       <M.Typography className={classes.boldD} type="headline">
-                        {data.Media.staff.edges.filter(
-                          s => s.role === "Director"
-                        )[0]
-                          ? "and written by"
-                          : "Written by"}
+                        Directed by{" "}
                       </M.Typography>
+                    ) : null}
+                    {data.Media.staff.edges.filter(
+                      s => s.role === "Director"
+                    )[0] ? (
                       <M.Typography className={classes.smallD} type="headline">
                         {
                           data.Media.staff.edges.filter(
-                            s => s.role === "Original Creator"
+                            s => s.role === "Director"
                           )[0].node.name.first
                         }{" "}
                         {data.Media.staff.edges.filter(
-                          s => s.role === "Original Creator"
+                          s => s.role === "Director"
                         )[0].node.name.last
                           ? data.Media.staff.edges.filter(
-                              s => s.role === "Original Creator"
+                              s => s.role === "Director"
                             )[0].node.name.last
                           : null}
                       </M.Typography>
-                    </div>
-                  ) : null}
-                </div>
-                <M.Divider />
-                <M.Grid container>
-                  <M.Grid item xs className={classes.tagBox}>
-                    <M.Typography className={classes.tagTitle} type="title">
-                      Genres
-                    </M.Typography>
-                    <div className={classes.genreRow}>
-                      {data.Media.genres
-                        ? data.Media.genres.map((o, i) => (
-                            <M.Chip
-                              className={classes.tagChip}
-                              key={i}
-                              label={o}
-                            />
-                          ))
-                        : null}
-                    </div>
-                  </M.Grid>
-                  <M.Grid item xs className={classes.tagBox}>
-                    <M.Typography className={classes.tagTitle} type="title">
-                      Tags
-                    </M.Typography>
-                    <div className={classes.genreRow}>
-                      {data.Media.tags.map((o, i) => (
-                        <M.Chip
-                          className={classes.tagChip}
-                          key={i}
-                          label={o.name}
-                        />
-                      ))}
-                    </div>
-                  </M.Grid>
-                  {data.Media.type.includes("MANGA") ? null : (
+                    ) : null}
+                    {data.Media.staff.edges.filter(
+                      s => s.role === "Original Creator"
+                    )[0] ? (
+                      <div className={classes.sepD}>
+                        <M.Typography className={classes.boldD} type="headline">
+                          {data.Media.staff.edges.filter(
+                            s => s.role === "Director"
+                          )[0]
+                            ? "and written by"
+                            : "Written by"}
+                        </M.Typography>
+                        <M.Typography
+                          className={classes.smallD}
+                          type="headline"
+                        >
+                          {
+                            data.Media.staff.edges.filter(
+                              s => s.role === "Original Creator"
+                            )[0].node.name.first
+                          }{" "}
+                          {data.Media.staff.edges.filter(
+                            s => s.role === "Original Creator"
+                          )[0].node.name.last
+                            ? data.Media.staff.edges.filter(
+                                s => s.role === "Original Creator"
+                              )[0].node.name.last
+                            : null}
+                        </M.Typography>
+                      </div>
+                    ) : null}
+                  </div>
+                  <M.Divider />
+                  <M.Grid container>
                     <M.Grid item xs className={classes.tagBox}>
                       <M.Typography className={classes.tagTitle} type="title">
-                        Studios
+                        Genres
                       </M.Typography>
                       <div className={classes.genreRow}>
-                        {data.Media.studios.edges.map((o, i) => (
+                        {data.Media.genres
+                          ? data.Media.genres.map((o, i) => (
+                              <M.Chip
+                                className={classes.tagChip}
+                                key={i}
+                                label={o}
+                              />
+                            ))
+                          : null}
+                      </div>
+                    </M.Grid>
+                    <M.Grid item xs className={classes.tagBox}>
+                      <M.Typography className={classes.tagTitle} type="title">
+                        Tags
+                      </M.Typography>
+                      <div className={classes.genreRow}>
+                        {data.Media.tags.map((o, i) => (
                           <M.Chip
                             className={classes.tagChip}
                             key={i}
-                            label={o.node.name}
+                            label={o.name}
                           />
                         ))}
                       </div>
                     </M.Grid>
-                  )}
+                    {data.Media.type.includes("MANGA") ? null : (
+                      <M.Grid item xs className={classes.tagBox}>
+                        <M.Typography className={classes.tagTitle} type="title">
+                          Studios
+                        </M.Typography>
+                        <div className={classes.genreRow}>
+                          {data.Media.studios.edges.map((o, i) => (
+                            <M.Chip
+                              className={classes.tagChip}
+                              key={i}
+                              label={o.node.name}
+                            />
+                          ))}
+                        </div>
+                      </M.Grid>
+                    )}
+                  </M.Grid>
                 </M.Grid>
               </M.Grid>
-            </M.Grid>
-            <div className={classes.bigBar} style={{ background: hue }}>
-              <div className={classes.commandoBar} style={{ background: hue }}>
-                {data.Media.averageScore ? (
-                  <div className={classes.commandoTextBox}>
-                    <M.Typography
-                      type="title"
-                      className={classes.commandoText}
-                      style={{ color: hueVib }}
-                    >
-                      {data.Media.averageScore}%
-                    </M.Typography>
-                    <M.Typography
-                      type="body1"
-                      className={classes.commandoTextLabel}
-                    >
-                      Average Score
-                    </M.Typography>
-                  </div>
-                ) : null}
-                {data.Media.meanScore ? (
-                  <div className={classes.commandoTextBox}>
-                    <M.Typography type="title" className={classes.commandoText}>
-                      {data.Media.meanScore}%
-                    </M.Typography>
-                    <M.Typography
-                      type="body1"
-                      className={classes.commandoTextLabel}
-                    >
-                      Mean Score
-                    </M.Typography>
-                  </div>
-                ) : null}
-                {data.Media.type.includes("MANGA") ? null : (
-                  <div className={classes.commandoTextBox}>
-                    <M.Typography type="title" className={classes.commandoText}>
-                      {data.Media.season + " " + data.Media.startDate.year}
-                    </M.Typography>
-                    <M.Typography
-                      type="body1"
-                      className={classes.commandoTextLabel}
-                    >
-                      Season
-                    </M.Typography>
-                  </div>
-                )}
-                <div style={{ flex: 1 }} />
-                {user &&
-                user.episodeProgress &&
-                user.episodeProgress.hasOwnProperty(data.Media.id) ? (
-                  <div className={classes.progressCon}>
-                    <M.Typography
-                      type="title"
-                      className={classes.progressTitle}
-                    >
-                      Episode {user.episodeProgress[data.Media.id].ep}
-                    </M.Typography>
-                    <M.LinearProgress
-                      mode="determinate"
-                      value={user.episodeProgress[data.Media.id].played * 100}
-                      classes={{
-                        primaryColor: classes.progressBar,
-                        primaryColorBar: classes.progressBarActive
-                      }}
-                    />
-                    <M.Typography
-                      type="body1"
-                      className={classes.commandoTextLabel}
-                    >
-                      Your progress
-                    </M.Typography>
-                  </div>
-                ) : null}
-                <div style={{ flex: 1 }} />
-                {data.Media.hashtag ? (
-                  <M.Button
-                    color="contrast"
-                    onClick={() =>
-                      window.open(
-                        `https://twitter.com/hashtag/${data.Media.hashtag.replace(
-                          "#",
-                          ""
-                        )}`
-                      )
-                    }
-                  >
-                    <svg
-                      style={{ width: 28, height: 28, marginRight: 8 }}
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        fill="#FFFFFF"
-                        d="M22.46,6C21.69,6.35 20.86,6.58 20,6.69C20.88,6.16 21.56,5.32 21.88,4.31C21.05,4.81 20.13,5.16 19.16,5.36C18.37,4.5 17.26,4 16,4C13.65,4 11.73,5.92 11.73,8.29C11.73,8.63 11.77,8.96 11.84,9.27C8.28,9.09 5.11,7.38 3,4.79C2.63,5.42 2.42,6.16 2.42,6.94C2.42,8.43 3.17,9.75 4.33,10.5C3.62,10.5 2.96,10.3 2.38,10C2.38,10 2.38,10 2.38,10.03C2.38,12.11 3.86,13.85 5.82,14.24C5.46,14.34 5.08,14.39 4.69,14.39C4.42,14.39 4.15,14.36 3.89,14.31C4.43,16 6,17.26 7.89,17.29C6.43,18.45 4.58,19.13 2.56,19.13C2.22,19.13 1.88,19.11 1.54,19.07C3.44,20.29 5.7,21 8.12,21C16,21 20.33,14.46 20.33,8.79C20.33,8.6 20.33,8.42 20.32,8.23C21.16,7.63 21.88,6.87 22.46,6Z"
-                      />
-                    </svg>{" "}
-                    {data.Media.hashtag}
-                  </M.Button>
-                ) : null}
-                {user ? (
-                  <M.IconButton
-                    className={classes.commandoButton}
-                    color="contrast"
-                    onClick={
-                      data.Media.type.includes("ANIME")
-                        ? user.favs &&
-                          user.favs.show &&
-                          user.favs.show.hasOwnProperty(this.state.id)
-                          ? this.unlike
-                          : this.like
-                        : user.favs &&
-                          user.favs.manga &&
-                          user.favs.manga.hasOwnProperty(this.state.id)
-                          ? this.unlike
-                          : this.like
-                    }
-                  >
-                    {fav ? <Icon.Favorite /> : <Icon.FavoriteBorder />}
-                  </M.IconButton>
-                ) : null}
-                <M.IconButton color="contrast">
-                  <Icon.MoreVert />
-                </M.IconButton>
-              </div>
-              <M.Grid container className={classes.container}>
-                <M.Grid item xs style={{ zIndex: 10 }}>
-                  <M.Typography type="title" className={classes.secTitle}>
-                    Similar to this one
-                  </M.Typography>
-                  <M.Grid container className={classes.itemcontainer}>
-                    {data.Media.relations.edges.map((anime, index) => (
-                      <M.Grid
-                        className={classes.entityCard}
-                        item
-                        xs
-                        key={index}
+              <div className={classes.bigBar} style={{ background: hue }}>
+                <div
+                  className={classes.commandoBar}
+                  style={{ background: hue }}
+                >
+                  {data.Media.averageScore ? (
+                    <div className={classes.commandoTextBox}>
+                      <M.Typography
+                        type="title"
+                        className={classes.commandoText}
+                        style={{ color: hueVib }}
                       >
-                        <M.Card
-                          style={{ background: "transparent" }}
-                          onClick={() =>
-                            this.openEntity(
-                              `/show?${
-                                anime.node.type.includes("ANIME") ? "s" : "m"
-                              }=${anime.node.id}`
-                            )
-                          }
+                        {data.Media.averageScore}%
+                      </M.Typography>
+                      <M.Typography
+                        type="body1"
+                        className={classes.commandoTextLabel}
+                      >
+                        Average Score
+                      </M.Typography>
+                    </div>
+                  ) : null}
+                  {data.Media.meanScore ? (
+                    <div className={classes.commandoTextBox}>
+                      <M.Typography
+                        type="title"
+                        className={classes.commandoText}
+                      >
+                        {data.Media.meanScore}%
+                      </M.Typography>
+                      <M.Typography
+                        type="body1"
+                        className={classes.commandoTextLabel}
+                      >
+                        Mean Score
+                      </M.Typography>
+                    </div>
+                  ) : null}
+                  {data.Media.type.includes("MANGA") ? null : (
+                    <div className={classes.commandoTextBox}>
+                      <M.Typography
+                        type="title"
+                        className={classes.commandoText}
+                      >
+                        {data.Media.season + " " + data.Media.startDate.year}
+                      </M.Typography>
+                      <M.Typography
+                        type="body1"
+                        className={classes.commandoTextLabel}
+                      >
+                        Season
+                      </M.Typography>
+                    </div>
+                  )}
+                  <div style={{ flex: 1 }} />
+                  {user &&
+                  user.episodeProgress &&
+                  user.episodeProgress.hasOwnProperty(data.Media.id) ? (
+                    <div className={classes.progressCon}>
+                      <M.Typography
+                        type="title"
+                        className={classes.progressTitle}
+                      >
+                        Episode {user.episodeProgress[data.Media.id].ep}
+                      </M.Typography>
+                      <M.LinearProgress
+                        mode="determinate"
+                        value={user.episodeProgress[data.Media.id].played * 100}
+                        classes={{
+                          primaryColor: classes.progressBar,
+                          primaryColorBar: classes.progressBarActive
+                        }}
+                      />
+                      <M.Typography
+                        type="body1"
+                        className={classes.commandoTextLabel}
+                      >
+                        Your progress
+                      </M.Typography>
+                    </div>
+                  ) : null}
+                  <div style={{ flex: 1 }} />
+                  {data.Media.hashtag ? (
+                    <M.Button
+                      color="contrast"
+                      onClick={() =>
+                        window.open(
+                          `https://twitter.com/hashtag/${data.Media.hashtag.replace(
+                            "#",
+                            ""
+                          )}`
+                        )
+                      }
+                    >
+                      <svg
+                        style={{ width: 28, height: 28, marginRight: 8 }}
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          fill="#FFFFFF"
+                          d="M22.46,6C21.69,6.35 20.86,6.58 20,6.69C20.88,6.16 21.56,5.32 21.88,4.31C21.05,4.81 20.13,5.16 19.16,5.36C18.37,4.5 17.26,4 16,4C13.65,4 11.73,5.92 11.73,8.29C11.73,8.63 11.77,8.96 11.84,9.27C8.28,9.09 5.11,7.38 3,4.79C2.63,5.42 2.42,6.16 2.42,6.94C2.42,8.43 3.17,9.75 4.33,10.5C3.62,10.5 2.96,10.3 2.38,10C2.38,10 2.38,10 2.38,10.03C2.38,12.11 3.86,13.85 5.82,14.24C5.46,14.34 5.08,14.39 4.69,14.39C4.42,14.39 4.15,14.36 3.89,14.31C4.43,16 6,17.26 7.89,17.29C6.43,18.45 4.58,19.13 2.56,19.13C2.22,19.13 1.88,19.11 1.54,19.07C3.44,20.29 5.7,21 8.12,21C16,21 20.33,14.46 20.33,8.79C20.33,8.6 20.33,8.42 20.32,8.23C21.16,7.63 21.88,6.87 22.46,6Z"
+                        />
+                      </svg>{" "}
+                      {data.Media.hashtag}
+                    </M.Button>
+                  ) : null}
+                  {user ? (
+                    <M.IconButton
+                      className={classes.commandoButton}
+                      color="contrast"
+                      onClick={
+                        data.Media.type.includes("ANIME")
+                          ? user.favs &&
+                            user.favs.show &&
+                            user.favs.show.hasOwnProperty(this.state.id)
+                            ? this.unlike
+                            : this.like
+                          : user.favs &&
+                            user.favs.manga &&
+                            user.favs.manga.hasOwnProperty(this.state.id)
+                            ? this.unlike
+                            : this.like
+                      }
+                    >
+                      {fav ? <Icon.Favorite /> : <Icon.FavoriteBorder />}
+                    </M.IconButton>
+                  ) : null}
+                  <M.IconButton color="contrast">
+                    <Icon.MoreVert />
+                  </M.IconButton>
+                </div>
+                <M.Grid container className={classes.container}>
+                  <M.Grid item xs style={{ zIndex: 10 }}>
+                    <M.Typography type="title" className={classes.secTitle}>
+                      Similar to this one
+                    </M.Typography>
+                    <M.Grid container className={classes.itemcontainer}>
+                      {data.Media.relations.edges.map((anime, index) => (
+                        <M.Grid
+                          className={classes.entityCard}
+                          item
+                          xs
+                          key={index}
                         >
-                          <div className={classes.gradientCard}>
-                            <M.CardMedia
-                              className={classes.entityImage}
-                              image={anime.node.coverImage.large}
-                            />
-                          </div>
-                          <M.Typography
-                            type="headline"
-                            className={classes.entityTitle}
+                          <M.Card
+                            style={{ background: "transparent" }}
+                            onClick={() =>
+                              this.openEntity(
+                                `/show?${
+                                  anime.node.type.includes("ANIME") ? "s" : "m"
+                                }=${anime.node.id}`
+                              )
+                            }
                           >
-                            {anime.node.title.english
-                              ? anime.node.title.english
-                              : anime.node.title.romaji}
-                          </M.Typography>
-                          <M.Typography
-                            type="headline"
-                            className={classes.entitySubTitle}
-                          >
-                            {anime.node.type}{" "}
-                            {anime.relationType.replace(/_/gi, " ")}
-                          </M.Typography>
-                        </M.Card>
-                      </M.Grid>
-                    ))}
-                    {data.Media.tags.length > 0 &&
-                      similars &&
-                      similars.data &&
-                      similars.data.Page.media
-                        .slice(0, 8)
-                        .map((anime, index) => (
+                            <div className={classes.gradientCard}>
+                              <M.CardMedia
+                                className={classes.entityImage}
+                                image={anime.node.coverImage.large}
+                              />
+                            </div>
+                            <M.Typography
+                              type="headline"
+                              className={classes.entityTitle}
+                            >
+                              {anime.node.title.english
+                                ? anime.node.title.english
+                                : anime.node.title.romaji}
+                            </M.Typography>
+                            <M.Typography
+                              type="headline"
+                              className={classes.entitySubTitle}
+                            >
+                              {anime.node.type}{" "}
+                              {anime.relationType.replace(/_/gi, " ")}
+                            </M.Typography>
+                          </M.Card>
+                        </M.Grid>
+                      ))}
+                      {data.Media.tags.length > 0 &&
+                        similars &&
+                        similars.data &&
+                        similars.data.Page.media
+                          .slice(0, 8)
+                          .map((anime, index) => (
+                            <M.Grid
+                              className={classes.entityCard}
+                              item
+                              xs
+                              key={index}
+                            >
+                              <M.Card
+                                style={{ background: "transparent" }}
+                                onClick={() =>
+                                  this.openEntity(
+                                    `/show?${
+                                      anime.type.includes("ANIME") ? "s" : "m"
+                                    }=${anime.id}`
+                                  )
+                                }
+                              >
+                                <div className={classes.gradientCard}>
+                                  <M.CardMedia
+                                    className={classes.entityImage}
+                                    image={anime.coverImage.large}
+                                  />
+                                </div>
+                                <M.Typography
+                                  type="headline"
+                                  className={classes.entityTitle}
+                                >
+                                  {anime.title.english
+                                    ? anime.title.english
+                                    : anime.title.romaji}
+                                </M.Typography>
+                                <M.Typography
+                                  type="headline"
+                                  className={classes.entitySubTitle}
+                                >
+                                  COMMON TAGS
+                                </M.Typography>
+                              </M.Card>
+                            </M.Grid>
+                          ))}
+                    </M.Grid>
+                    {data.Media.characters.edges.length > 0 ? (
+                      <M.Divider />
+                    ) : null}
+                    {data.Media.characters.edges.length > 0 ? (
+                      <M.Typography type="title" className={classes.secTitle}>
+                        {data.Media.type.includes("ANIME")
+                          ? "Cast"
+                          : "Characters"}
+                      </M.Typography>
+                    ) : null}
+                    {data.Media.characters.edges.length > 0 ? (
+                      <M.Grid container className={classes.itemcontainer}>
+                        {data.Media.characters.edges.map((cast, index) => (
                           <M.Grid
-                            className={classes.entityCard}
+                            className={classes.peopleCard}
                             item
                             xs
                             key={index}
                           >
                             <M.Card
-                              style={{ background: "transparent" }}
-                              onClick={() =>
-                                this.openEntity(
-                                  `/show?${
-                                    anime.type.includes("ANIME") ? "s" : "m"
-                                  }=${anime.id}`
-                                )
-                              }
+                              style={{
+                                background: "transparent",
+                                boxShadow: "none"
+                              }}
                             >
-                              <div className={classes.gradientCard}>
-                                <M.CardMedia
-                                  className={classes.entityImage}
-                                  image={anime.coverImage.large}
+                              <M.Avatar
+                                onClick={() =>
+                                  this.props.history.push(
+                                    `/fig?${
+                                      cast.voiceActors &&
+                                      cast.voiceActors.length > 0
+                                        ? "s"
+                                        : "c"
+                                    }=${
+                                      cast.voiceActors &&
+                                      cast.voiceActors.length > 0
+                                        ? cast.voiceActors.filter(
+                                            j => j.language === "JAPANESE"
+                                          )[0].id
+                                        : cast.node.id
+                                    }`
+                                  )
+                                }
+                                className={classes.peopleImage}
+                                imgProps={{
+                                  style: { opacity: 0 },
+                                  onLoad: e =>
+                                    (e.currentTarget.style.opacity = null)
+                                }}
+                                classes={{ img: classes.fillImg }}
+                                src={
+                                  cast.voiceActors &&
+                                  cast.voiceActors.length > 0
+                                    ? cast.voiceActors.filter(
+                                        j => j.language === "JAPANESE"
+                                      )[0]
+                                      ? cast.voiceActors.filter(
+                                          j => j.language === "JAPANESE"
+                                        )[0].image.large
+                                      : null
+                                    : cast.node.image.large
+                                }
+                              />
+                              {cast.voiceActors &&
+                              cast.voiceActors.length > 0 ? (
+                                <M.Avatar
+                                  className={classes.peopleCharImage}
+                                  classes={{ img: classes.fillImg }}
+                                  src={cast.node.image.large}
+                                  imgProps={{
+                                    style: { opacity: 0 },
+                                    onLoad: e =>
+                                      (e.currentTarget.style.opacity = null)
+                                  }}
+                                  onClick={() =>
+                                    this.openEntity(`/fig?c=${cast.node.id}`)
+                                  }
                                 />
-                              </div>
+                              ) : null}
                               <M.Typography
                                 type="headline"
-                                className={classes.entityTitle}
+                                className={classes.peopleTitle}
                               >
-                                {anime.title.english
-                                  ? anime.title.english
-                                  : anime.title.romaji}
+                                {cast.voiceActors && cast.voiceActors.length > 0
+                                  ? cast.voiceActors.filter(
+                                      j => j.language === "JAPANESE"
+                                    )[0] &&
+                                    cast.voiceActors.filter(
+                                      j => j.language === "JAPANESE"
+                                    )[0].name.last
+                                    ? cast.voiceActors.filter(
+                                        j => j.language === "JAPANESE"
+                                      )[0].name.first +
+                                      " " +
+                                      cast.voiceActors.filter(
+                                        j => j.language === "JAPANESE"
+                                      )[0].name.last
+                                    : cast.voiceActors.filter(
+                                        j => j.language === "JAPANESE"
+                                      )[0]
+                                      ? cast.voiceActors.filter(
+                                          j => j.language === "JAPANESE"
+                                        )[0].name.last
+                                      : "Unknown"
+                                  : cast.node.name.last
+                                    ? cast.node.name.first +
+                                      " " +
+                                      cast.node.name.last
+                                    : cast.node.name.first}
                               </M.Typography>
                               <M.Typography
                                 type="headline"
-                                className={classes.entitySubTitle}
+                                className={classes.peopleSubTitle}
                               >
-                                COMMON TAGS
+                                {cast.voiceActors && cast.voiceActors.length > 0
+                                  ? `as ${
+                                      cast.node.name.last
+                                        ? cast.node.name.first +
+                                          " " +
+                                          cast.node.name.last
+                                        : cast.node.name.first
+                                    }`
+                                  : cast.role}
                               </M.Typography>
                             </M.Card>
                           </M.Grid>
                         ))}
-                  </M.Grid>
-                  {data.Media.characters.edges.length > 0 ? (
+                      </M.Grid>
+                    ) : null}
                     <M.Divider />
-                  ) : null}
-                  {data.Media.characters.edges.length > 0 ? (
                     <M.Typography type="title" className={classes.secTitle}>
-                      {data.Media.type.includes("ANIME")
-                        ? "Cast"
-                        : "Characters"}
+                      Staff
                     </M.Typography>
-                  ) : null}
-                  {data.Media.characters.edges.length > 0 ? (
                     <M.Grid container className={classes.itemcontainer}>
-                      {data.Media.characters.edges.map((cast, index) => (
+                      {data.Media.staff.edges.map((staff, index) => (
                         <M.Grid
                           className={classes.peopleCard}
                           item
@@ -1137,172 +1284,64 @@ class Show extends Component {
                               background: "transparent",
                               boxShadow: "none"
                             }}
+                            onClick={() =>
+                              this.props.history.push(`/fig?s=${staff.node.id}`)
+                            }
                           >
                             <M.Avatar
-                              onClick={() =>
-                                this.props.history.push(
-                                  `/fig?${
-                                    cast.voiceActors &&
-                                    cast.voiceActors.length > 0
-                                      ? "s"
-                                      : "c"
-                                  }=${
-                                    cast.voiceActors &&
-                                    cast.voiceActors.length > 0
-                                      ? cast.voiceActors.filter(
-                                          j => j.language === "JAPANESE"
-                                        )[0].id
-                                      : cast.node.id
-                                  }`
-                                )
-                              }
                               className={classes.peopleImage}
+                              classes={{ img: classes.fillImg }}
+                              src={staff.node.image.large}
                               imgProps={{
                                 style: { opacity: 0 },
                                 onLoad: e =>
                                   (e.currentTarget.style.opacity = null)
                               }}
-                              classes={{ img: classes.fillImg }}
-                              src={
-                                cast.voiceActors && cast.voiceActors.length > 0
-                                  ? cast.voiceActors.filter(
-                                      j => j.language === "JAPANESE"
-                                    )[0]
-                                    ? cast.voiceActors.filter(
-                                        j => j.language === "JAPANESE"
-                                      )[0].image.large
-                                    : null
-                                  : cast.node.image.large
-                              }
                             />
-                            {cast.voiceActors && cast.voiceActors.length > 0 ? (
-                              <M.Avatar
-                                className={classes.peopleCharImage}
-                                classes={{ img: classes.fillImg }}
-                                src={cast.node.image.large}
-                                imgProps={{
-                                  style: { opacity: 0 },
-                                  onLoad: e =>
-                                    (e.currentTarget.style.opacity = null)
-                                }}
-                                onClick={() =>
-                                  this.openEntity(`/fig?c=${cast.node.id}`)
-                                }
-                              />
-                            ) : null}
                             <M.Typography
                               type="headline"
                               className={classes.peopleTitle}
                             >
-                              {cast.voiceActors && cast.voiceActors.length > 0
-                                ? cast.voiceActors.filter(
-                                    j => j.language === "JAPANESE"
-                                  )[0] &&
-                                  cast.voiceActors.filter(
-                                    j => j.language === "JAPANESE"
-                                  )[0].name.last
-                                  ? cast.voiceActors.filter(
-                                      j => j.language === "JAPANESE"
-                                    )[0].name.first +
-                                    " " +
-                                    cast.voiceActors.filter(
-                                      j => j.language === "JAPANESE"
-                                    )[0].name.last
-                                  : cast.voiceActors.filter(
-                                      j => j.language === "JAPANESE"
-                                    )[0]
-                                    ? cast.voiceActors.filter(
-                                        j => j.language === "JAPANESE"
-                                      )[0].name.last
-                                    : "Unknown"
-                                : cast.node.name.last
-                                  ? cast.node.name.first +
-                                    " " +
-                                    cast.node.name.last
-                                  : cast.node.name.first}
+                              {staff.node.name.last
+                                ? staff.node.name.first +
+                                  " " +
+                                  staff.node.name.last
+                                : staff.node.name.first}
                             </M.Typography>
                             <M.Typography
                               type="headline"
                               className={classes.peopleSubTitle}
                             >
-                              {cast.voiceActors && cast.voiceActors.length > 0
-                                ? `as ${
-                                    cast.node.name.last
-                                      ? cast.node.name.first +
-                                        " " +
-                                        cast.node.name.last
-                                      : cast.node.name.first
-                                  }`
-                                : cast.role}
+                              {staff.role}
                             </M.Typography>
                           </M.Card>
                         </M.Grid>
                       ))}
                     </M.Grid>
-                  ) : null}
-                  <M.Divider />
-                  <M.Typography type="title" className={classes.secTitle}>
-                    Staff
-                  </M.Typography>
-                  <M.Grid container className={classes.itemcontainer}>
-                    {data.Media.staff.edges.map((staff, index) => (
-                      <M.Grid
-                        className={classes.peopleCard}
-                        item
-                        xs
-                        key={index}
-                      >
-                        <M.Card
-                          style={{
-                            background: "transparent",
-                            boxShadow: "none"
-                          }}
-                          onClick={() =>
-                            this.props.history.push(`/fig?s=${staff.node.id}`)
-                          }
-                        >
-                          <M.Avatar
-                            className={classes.peopleImage}
-                            classes={{ img: classes.fillImg }}
-                            src={staff.node.image.large}
-                            imgProps={{
-                              style: { opacity: 0 },
-                              onLoad: e =>
-                                (e.currentTarget.style.opacity = null)
-                            }}
-                          />
-                          <M.Typography
-                            type="headline"
-                            className={classes.peopleTitle}
-                          >
-                            {staff.node.name.last
-                              ? staff.node.name.first +
-                                " " +
-                                staff.node.name.last
-                              : staff.node.name.first}
-                          </M.Typography>
-                          <M.Typography
-                            type="headline"
-                            className={classes.peopleSubTitle}
-                          >
-                            {staff.role}
-                          </M.Typography>
-                        </M.Card>
-                      </M.Grid>
-                    ))}
                   </M.Grid>
                 </M.Grid>
-              </M.Grid>
+              </div>
             </div>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
       </div>
     );
   }
 }
 
+const mapPTS = dispatch => {
+  return {
+    sendTitleToMir: title => dispatch(updateMirTitle(title))
+  };
+};
+
+export const updateMirTitle = title => ({
+  type: MIR_SET_TITLE,
+  title
+});
+
 export default firebaseConnect()(
-  connect(({ firebase: { profile } }) => ({ profile }))(
+  connect(({ firebase: { profile }, mir }) => ({ profile, mir }), mapPTS)(
     M.withStyles(styles)(Show)
   )
 );

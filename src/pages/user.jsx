@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import * as M from "material-ui";
 import * as Icon from "material-ui-icons";
+import localForage from "localforage";
 
 import { connect } from "react-redux";
 import { firebaseConnect } from "react-redux-firebase";
@@ -431,36 +432,80 @@ class User extends Component {
     loading: true
   };
 
-  componentDidMount = () => this.vibrance();
+  componentDidMount = async () => this.vibrance();
 
-  vibrance = () => {
+  vibrance = async () => {
     let image = this.props.profile
       ? this.props.profile.headers
         ? this.props.profile.headers
         : this.props.profile.avatar
       : null;
-    Vibrant.from("https://cors-anywhere.herokuapp.com/" + image).getPalette(
-      (err, pal) => {
-        if (pal) {
-          this.setState(
-            {
-              hue: pal.DarkMuted.getHex(),
-              hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
-              hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
-            },
-            () =>
-              setTimeout(
-                () =>
-                  this.setState({ loading: false }, async () => {
-                    let superBar = document.getElementById("superBar");
-                    if (superBar) superBar.style.background = this.state.hue;
-                  }),
-                200
-              )
-          );
+    let hues = await localForage.getItem("user-hue");
+
+    if (image && !hues)
+      Vibrant.from("https://cors-anywhere.herokuapp.com/" + image).getPalette(
+        (err, pal) => {
+          if (pal) {
+            this.setState(
+              {
+                hue: pal.DarkMuted.getHex(),
+                hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
+                hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
+              },
+              async () => {
+                let superBar = document.getElementById("superBar");
+                if (superBar) superBar.style.background = this.state.hue;
+
+                await localForage.setItem("user-hue", {
+                  hue: this.state.hue,
+                  vib: this.state.hueVib,
+                  vibn: this.state.hueVibN,
+                  image
+                });
+              }
+            );
+          }
         }
-      }
-    );
+      );
+    else if (image && hues && hues.image !== image)
+      Vibrant.from("https://cors-anywhere.herokuapp.com/" + image).getPalette(
+        (err, pal) => {
+          if (pal) {
+            this.setState(
+              {
+                hue: pal.DarkMuted.getHex(),
+                hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
+                hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
+              },
+              async () => {
+                let superBar = document.getElementById("superBar");
+                if (superBar) superBar.style.background = this.state.hue;
+
+                await localForage.setItem("user-hue", {
+                  hue: this.state.hue,
+                  vib: this.state.hueVib,
+                  vibn: this.state.hueVibN,
+                  image
+                });
+              }
+            );
+          }
+        }
+      );
+    else if (image && hues)
+      this.setState(
+        {
+          hue: hues.hue,
+          hueVib: hues.vib,
+          hueVibN: hues.vibn
+        },
+        () => {
+          let superBar = document.getElementById("superBar");
+          if (superBar) superBar.style.background = this.state.hue;
+        }
+      );
+
+    setTimeout(() => this.setState({ loading: false }), 200);
   };
 
   componentWillUnmount = () => {
@@ -581,7 +626,7 @@ class User extends Component {
                   </M.Typography>
                   <M.Grid container className={classes.itemcontainer} />
                 </M.Grid>
-                <M.Grid item xs={5} style={{ zIndex: 10 }}>
+                <M.Grid item xs={5} style={{ zIndex: 10 }} id="favourites">
                   <M.Typography type="title" className={classes.secTitle}>
                     Favorites
                   </M.Typography>
