@@ -185,10 +185,6 @@
   src: url("./assets/fonts/SFMono-SemiboldItalic.otf");
 }
 
-::-webkit-scrollbar {
-  display: none;
-}
-
 #root {
   height: 100%;
   width: 100%;

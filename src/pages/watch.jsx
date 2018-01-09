@@ -129,9 +129,7 @@ class Watch extends Component {
     const id = queryString.parse(this.props.history.location.search);
     try {
       const { data } = await new Segoku().getSingle({ id: id.w });
-      const twist = await Twist.load();
-      if (data && twist)
-        this.setState({ twist }, async () => await this.getSource(data.Media));
+      if (data) this.getSource(data.Media);
     } catch (error) {
       console.error(error);
       this.setState({
@@ -148,7 +146,7 @@ class Watch extends Component {
       showArtwork: data.coverImage.large,
       showDesc: data.description
     });
-    const meta = this.state.twist.filter(
+    const meta = this.props.mir.twist.filter(
       s => s.name.toLowerCase() === corrector(data.title.romaji.toLowerCase())
     );
     console.log(meta);
@@ -197,6 +195,7 @@ class Watch extends Component {
   };
 
   loadEp = async (ep, resume) => {
+    console.log(ep);
     if (this.state.menuEl) {
       this.closeMenu();
     }
@@ -591,7 +590,7 @@ class Watch extends Component {
 }
 
 export default firebaseConnect()(
-  connect(({ firebase: { profile } }) => ({ profile }))(
+  connect(({ firebase: { profile }, mir }) => ({ profile, mir }))(
     M.withStyles(style)(Watch)
   )
 );

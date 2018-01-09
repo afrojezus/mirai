@@ -690,6 +690,7 @@ class Fig extends Component {
   componentWillUnmount = () => {
     let superBar = document.getElementById("superBar");
     if (superBar) superBar.style.background = null;
+    this.props.sendTitleToMir("");
     this.unlisten();
   };
 

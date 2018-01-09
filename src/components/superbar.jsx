@@ -274,7 +274,9 @@ class Superbar extends Component {
   componentWillReceiveProps = nextProps => {
     if (this.props.mir)
       if (this.props.mir.title !== nextProps.mir.title) {
-        this.setState({ mirTitle: nextProps.mir.title });
+        this.setState({ mirTitle: "" }, () =>
+          this.setState({ mirTitle: nextProps.mir.title })
+        );
       }
   };
 
@@ -321,16 +323,16 @@ class Superbar extends Component {
     this.props.history.listen((location, action) => {
       switch (location.pathname) {
         case "/":
-          this.setState({ currentPage: "", tabVal: 0, watchIsOn: false });
+          this.setState({ currentPage: "Mirai", tabVal: 0, watchIsOn: false });
           break;
         case "/feeds":
-          this.setState({ currentPage: "", tabVal: 1, watchIsOn: false });
+          this.setState({ currentPage: "Mirai", tabVal: 1, watchIsOn: false });
           break;
         case "/rankings":
-          this.setState({ currentPage: "", tabVal: 2, watchIsOn: false });
+          this.setState({ currentPage: "Mirai", tabVal: 2, watchIsOn: false });
           break;
         case "/live":
-          this.setState({ currentPage: "", tabVal: 3, watchIsOn: false });
+          this.setState({ currentPage: "Mirai", tabVal: 3, watchIsOn: false });
           break;
         case "/user":
           this.setState({ currentPage: "You", tabVal: 4, watchIsOn: false });
@@ -623,21 +625,15 @@ class Superbar extends Component {
             >
               <MenuIcon />
             </IconButton>
-            {currentPage !== "" ? null : mirTitle ? null : (
-              <IconButton
-                className={classes.logoTitle}
-                onClick={() => {
-                  this.props.history.push("/");
-                }}
-              >
-                {currentPage !== "" ? (
-                  <ArrowBackIcon />
-                ) : (
-                  <Typography type="title">未来</Typography>
-                )}
-              </IconButton>
-            )}
-            <Typography className={classes.barTitle} type="title">
+            <Typography
+              className={classes.barTitle}
+              type="title"
+              style={
+                currentPage === "Mirai"
+                  ? { fontFamily: "Product Sans", fontWeight: 500 }
+                  : null
+              }
+            >
               {this.props.history.location.pathname.includes("/show") ||
               this.props.history.location.pathname.includes("/fig")
                 ? mirTitle

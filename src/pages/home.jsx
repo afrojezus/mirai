@@ -21,6 +21,8 @@ import gql from "graphql-tag";
 
 import Twist from "../twist-api";
 
+import Dotdotdot from "react-dotdotdot";
+
 import { MIR_TWIST_LOAD } from "../constants";
 
 import PlusOneIcon from "material-ui-icons/PlusOne";
@@ -323,7 +325,8 @@ const styles = theme => ({
     fontWeight: 700,
     fontSize: 14,
     textShadow: "0 3px 20px rgba(0,0,0,.7)",
-    marginBottom: theme.spacing.unit
+    marginBottom: theme.spacing.unit,
+    textTransform: "uppercase"
   },
   sliderBig: {
     height: "100%",
@@ -498,6 +501,177 @@ class Home extends Component {
             }
           />
           <div className={classes.root}>
+            <Grid
+              container
+              spacing={16}
+              className={classes.container}
+              style={{ paddingBottom: 0 }}
+            >
+              <Grid
+                item
+                xs
+                className={classes.itemContainer}
+                style={{ marginBottom: 0 }}
+              >
+                <Typography
+                  type="title"
+                  className={classes.headline}
+                  style={{ marginBottom: 0 }}
+                >
+                  Ongoing anime
+                </Typography>
+              </Grid>
+            </Grid>
+            {ongoing && ongoing.data ? (
+              <div className={classes.topHeader}>
+                <Slider {...settings}>
+                  {ongoing.data.Page.media.map((anime, index) => (
+                    <Card className={classes.bigCard}>
+                      <div className={classes.bigCardImage}>
+                        <img
+                          src={
+                            anime.bannerImage
+                              ? anime.bannerImage
+                              : anime.coverImage.large
+                          }
+                          alt=""
+                          className={classes.bigCardImageImg}
+                        />
+                      </div>
+                      <div className={classes.bigCardRow}>
+                        <img
+                          src={anime.coverImage.large}
+                          alt=""
+                          className={classes.bigCardIcon}
+                          onClick={() => this.openEntity(`/show?s=${anime.id}`)}
+                        />
+                        <div className={classes.bigCardText}>
+                          <Typography
+                            type="display2"
+                            className={classes.bigCardVerySmallTitle}
+                          >
+                            {anime.genres[0]}
+                          </Typography>
+                          <Typography
+                            type="display2"
+                            className={classes.bigCardTitle}
+                          >
+                            {anime.title.english
+                              ? anime.title.english
+                              : anime.title.romaji}
+                          </Typography>
+                          <Dotdotdot clamp={3}>
+                            <Typography
+                              type="display2"
+                              className={classes.bigCardSmallTitle}
+                              dangerouslySetInnerHTML={{
+                                __html: anime.description
+                              }}
+                            />
+                          </Dotdotdot>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </Slider>
+              </div>
+            ) : null}
+            <Grid
+              container
+              spacing={16}
+              className={classes.container}
+              style={{ paddingBottom: 0 }}
+            >
+              <Grid
+                item
+                xs
+                className={classes.itemContainer}
+                style={{ marginBottom: 0 }}
+              >
+                <Typography
+                  type="title"
+                  className={classes.headline}
+                  style={{ marginBottom: 0 }}
+                >
+                  Ongoing manga
+                </Typography>
+              </Grid>
+            </Grid>
+            {ongoingM && ongoingM.data ? (
+              <div className={classes.topHeader}>
+                <Slider {...settings}>
+                  {ongoingM.data.Page.media.map((anime, index) => (
+                    <Card className={classes.bigCard}>
+                      <div className={classes.bigCardImage}>
+                        <img
+                          src={
+                            anime.bannerImage
+                              ? anime.bannerImage
+                              : anime.coverImage.large
+                          }
+                          alt=""
+                          className={classes.bigCardImageImg}
+                        />
+                      </div>
+                      <div className={classes.bigCardRow}>
+                        <img
+                          src={anime.coverImage.large}
+                          alt=""
+                          className={classes.bigCardIcon}
+                          onClick={() => this.openEntity(`/show?m=${anime.id}`)}
+                        />
+                        <div className={classes.bigCardText}>
+                          <Typography
+                            type="display2"
+                            className={classes.bigCardVerySmallTitle}
+                          >
+                            {anime.genres[0]}
+                          </Typography>
+                          <Typography
+                            type="display2"
+                            className={classes.bigCardTitle}
+                          >
+                            {anime.title.english
+                              ? anime.title.english
+                              : anime.title.romaji}
+                          </Typography>
+                          <Dotdotdot clamp={3}>
+                            <Typography
+                              type="display2"
+                              className={classes.bigCardSmallTitle}
+                              dangerouslySetInnerHTML={{
+                                __html: anime.description
+                              }}
+                            />
+                          </Dotdotdot>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </Slider>
+              </div>
+            ) : null}
+            <Grid
+              container
+              spacing={16}
+              className={classes.container}
+              style={{ paddingBottom: 0 }}
+            >
+              <Grid
+                item
+                xs
+                className={classes.itemContainer}
+                style={{ marginBottom: 0 }}
+              >
+                <Typography
+                  type="title"
+                  className={classes.headline}
+                  style={{ marginBottom: 0 }}
+                >
+                  Ranking
+                </Typography>
+              </Grid>
+            </Grid>
             <div className={classes.topHeader}>
               <Slider {...settings}>
                 <Card className={classes.bigCard}>

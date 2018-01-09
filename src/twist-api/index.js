@@ -1,7 +1,7 @@
 import fetchCheerioObject from "fetch-cheerio-object";
 
-let Proxy1 = 'https://cors-anywhere.herokuapp.com/'
-let Proxy2 = 'https://cors.now.sh/'
+let Proxy2 = "https://cors-anywhere.herokuapp.com/";
+let Proxy1 = "https://cors.now.sh/";
 
 let URL = "https://twist.moe/";
 /**
@@ -19,13 +19,16 @@ const load = async () => {
             ? source(index)
                 .children("a")
                 .text()
-                .replace("ONGOING", "").trim()
+                .replace("ONGOING", "")
+                .trim()
             : source(index)
                 .children("a")
-                .text().trim(),
+                .text()
+                .trim(),
           ongoing: source(index).children("a")[1] ? true : false,
           link:
-            Proxy1 + URL +
+            Proxy1 +
+            URL +
             source(index)
               .children("a")
               .attr("href")
