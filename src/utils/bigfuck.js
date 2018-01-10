@@ -11,5 +11,7 @@ export default string => {
     .replace(".", "")
     .replace("houseki no kuni", "houseki no kuni (tv)")
     .replace("macross frontier", "macross f")
-    .replace("macross delta", "macross d");
+    .replace("macross delta", "macross d")
+    .replace("is <infinite stratos>", "is: infinite stratos")
+    .replace("is <infinite stratos> 2", "is: infinite stratos 2");
 };

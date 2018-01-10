@@ -112,7 +112,7 @@ const style = theme => ({
   }
 });
 
-const timeFormatter = time => {
+export const timeFormatter = time => {
   let sec_num = parseInt(time, 10); // don't forget the second param
   let hours = Math.floor(sec_num / 3600);
   let minutes = Math.floor((sec_num - hours * 3600) / 60);
@@ -156,7 +156,11 @@ const superTable = props => (
                 : props.typeof === "ranking"
                   ? anime.bg
                   : props.typeof === "progress"
-                    ? anime.anime ? anime.anime.meta.a : anime.showArtwork
+                    ? anime.anime
+                      ? anime.anime.meta.a
+                      : anime.showHeaders
+                        ? anime.showHeaders
+                        : anime.showArtwork
                     : props.typeof === "favs" ? anime.image : null
             }
             alt=""

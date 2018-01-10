@@ -90,17 +90,29 @@ const style = theme => ({
     "&:hover": {
       opacity: 1
     }
+  },
+  loading: {
+    height: "100%",
+    width: "100%",
+    zIndex: 1000,
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%,-50%)",
+    padding: 0,
+    margin: "auto",
+    transition: theme.transitions.create(["all"])
   }
 });
 
 class Watch extends Component {
   state = {
     playing: false,
-    buffering: false,
+    buffering: true,
     source: "",
     duration: 0,
     volume: 0.5,
-    status: "Fetching...",
+    status: "",
     title: "",
     fullscreen: false,
     played: 0,
@@ -147,7 +159,8 @@ class Watch extends Component {
       title: data.title.english ? data.title.english : data.title.romaji,
       showId: data.id,
       showArtwork: data.coverImage.large,
-      showDesc: data.description
+      showDesc: data.description,
+      showHeaders: data.bannerImage ? data.bannerImage : data.coverImage.large
     });
     const meta = this.props.mir.twist.filter(
       s => s.name.toLowerCase() === corrector(data.title.romaji.toLowerCase())
@@ -285,7 +298,7 @@ class Watch extends Component {
   };
 
   onSeekMouseUp = e => {
-    this.setState({ seeking: false });
+    this.setState({ seeking: false, buffering: true });
     this.player.seekTo(parseFloat(e.target.value));
   };
 
@@ -406,6 +419,10 @@ class Watch extends Component {
         onMouseMove={this.reveal}
         onTouchMove={this.reveal}
       >
+        <M.CircularProgress
+          className={classes.loading}
+          style={!buffering ? { opacity: 0 } : null}
+        />
         <M.Toolbar id="backbutton" className={classes.backToolbar}>
           <M.IconButton onClick={() => this.props.history.goBack()}>
             <Icon.ArrowBack />

@@ -10,6 +10,7 @@ import { MIR_SET_TITLE } from "../constants";
 
 import { connect } from "react-redux";
 import { firebaseConnect } from "react-redux-firebase";
+import { timeFormatter } from "../components/supertable";
 
 const styles = theme => ({
   loading: {
@@ -712,7 +713,14 @@ class Show extends Component {
                       {data.Media.status
                         .replace("RELEASING", "ONGOING")
                         .replace(/_/gi, " ")}{" "}
-                      {data.Media.type}
+                      {data.Media.type} <br />
+                      {data.Media.nextAiringEpisode
+                        ? timeFormatter(
+                            data.Media.nextAiringEpisode.timeUntilAiring
+                          ) +
+                          " till Episode " +
+                          data.Media.nextAiringEpisode.episode
+                        : null}
                     </M.Typography>
                   </div>
                 </M.Grid>

@@ -485,7 +485,7 @@ class Home extends Component {
       focusOnSelect: true,
       easing: "ease",
       speed: 300,
-      slidesToShow: 5,
+      slidesToShow: 4,
       slidesToScroll: 1,
       autoPlay: true,
       autoPlaySpeed: 1000,
