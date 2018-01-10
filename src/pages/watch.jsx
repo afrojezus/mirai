@@ -130,7 +130,9 @@ class Watch extends Component {
     const id = queryString.parse(this.props.history.location.search);
     try {
       const { data } = await new Segoku().getSingle({ id: id.w });
-      if (data) this.getSource(data.Media);
+      if (data && this.props.mir && this.props.mir.twist)
+        this.getSource(data.Media);
+      else this.componentDidMount();
     } catch (error) {
       console.error(error);
       this.setState({
@@ -366,7 +368,10 @@ class Watch extends Component {
         .child(`${this.props.profile.userID}`)
         .child("episodeProgress");
       localForage.getItem("player-state").then(async a => {
-        if (a && a.showId) episodePro.child(`${a.showId}`).update(a);
+        if (a && a.showId) {
+          episodePro.child(`${a.showId}`).update(a);
+          return true;
+        }
       });
     }
   };
@@ -501,7 +506,7 @@ class Watch extends Component {
                 horizontal: "right"
               }}
               open={volumeMenu}
-              onRequestClose={() => this.setState({ volEl: null })}
+              onClose={() => this.setState({ volEl: null })}
               PaperProps={{
                 style: {
                   outline: "none",
@@ -556,7 +561,7 @@ class Watch extends Component {
                     horizontal: "right"
                   }}
                   open={menu}
-                  onRequestClose={this.closeMenu}
+                  onClose={this.closeMenu}
                   PaperProps={{
                     style: {
                       width: 300,

@@ -15,7 +15,9 @@ import { history } from "../store";
 import { firebaseConnect, isLoaded, isEmpty } from "react-redux-firebase";
 
 import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
+import { MIR_TWIST_LOAD } from "../constants";
 import Twist from "../twist-api";
 
 import Home from "./home";
@@ -78,14 +80,17 @@ class Index extends Component {
         this.setState({ loading: false });
       }
     }
-    const twistBase = await Twist.load();
-    if (twistBase) this.setState({ twistBase });
   };
 
   handleRequestClose = () => {
     this.setState({
       open: false
     });
+  };
+
+  twistLoad = async () => {
+    if (this.props.mir && this.props.mir.twist) return null;
+    else Twist.load().then(twist => this.props.twistInit(twist));
   };
 
   handleClick = () => {
@@ -138,6 +143,21 @@ class Index extends Component {
 
 Index.propTypes = {
   classes: PropTypes.object.isRequired
+};
+
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    {
+      twistInit: twist => twistLoad(twist)
+    },
+    dispatch
+  );
+
+const twistLoad = twist => {
+  return {
+    type: MIR_TWIST_LOAD,
+    twist
+  };
 };
 
 export default firebaseConnect()(withRoot(withStyles(styles)(Index)));

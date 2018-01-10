@@ -23,8 +23,6 @@ import Twist from "../twist-api";
 
 import Dotdotdot from "react-dotdotdot";
 
-import { MIR_TWIST_LOAD } from "../constants";
-
 import PlusOneIcon from "material-ui-icons/PlusOne";
 import Button from "material-ui/Button";
 import MoreVertIcon from "material-ui-icons/MoreVert";
@@ -404,15 +402,15 @@ class Home extends Component {
   componentDidMount = async () => {
     this.feedsObserve();
     this.rankingsObserve();
-    this.twistLoad();
+    this.makeTitlebarWhite();
     this.fetchOngoing().then(() =>
       setTimeout(() => this.setState({ loading: false }), 300)
     );
   };
 
-  twistLoad = async () => {
-    if (this.props.mir && this.props.mir.twist) return null;
-    else Twist.load().then(twist => this.props.twistInit(twist));
+  makeTitlebarWhite = () => {
+    let superbar = document.getElementById("superBar");
+    if (superbar) superbar.classList.add("whiteshit");
   };
 
   fetchOngoing = async () => {
@@ -457,6 +455,11 @@ class Home extends Component {
 
   easterEggOne = () => this.setState({ es: !this.state.es });
 
+  componentWillUnmount = () => {
+    let superbar = document.getElementById("superBar");
+    if (superbar) superbar.classList.remove("whiteshit");
+  };
+
   render() {
     const { classes, status } = this.props;
     const {
@@ -482,10 +485,14 @@ class Home extends Component {
       focusOnSelect: true,
       easing: "ease",
       speed: 300,
-      slidesToShow: 3,
+      slidesToShow: 5,
       slidesToScroll: 1,
       autoPlay: true,
-      autoPlaySpeed: 1000
+      autoPlaySpeed: 1000,
+      responsive: [
+        { breakpoint: 2000, settings: { slidesToShow: 3 } },
+        { breakpoint: 1200, settings: { slidesToShow: 1 } }
+      ]
     };
 
     return (
@@ -515,35 +522,13 @@ class Home extends Component {
               onLoad={e => (e.currentTarget.style.opacity = null)}
             />
           )}
-          <Snackbar
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "right"
-            }}
-            open={es}
-            autoHideDuration={6000}
-            onRequestClose={this.easterEggOne}
-            SnackbarContentProps={{
-              "aria-describedby": "message-id"
-            }}
-            className={classes.snackBar}
-            message={<span id="message-id">hahahahahah.</span>}
-            action={
-              <IconButton
-                key="close"
-                aria-label="Close"
-                color="inherit"
-                onClick={this.easterEggOne}
-              >
-                <CloseIcon />
-              </IconButton>
-            }
-          />
           <div className={classes.topHeaderBig}>
             <Grid container spacing={16} className={classes.container}>
               <Grid item xs className={classes.itemContainer}>
                 <Typography type="title" className={classes.headlineTitle}>
-                  Mirai. The Japanese-media platform of the future.
+                  {user && user.username
+                    ? "Welcome to the Mirai Preview Program, " + user.username
+                    : "What once started with Y now starts with M."}
                 </Typography>
               </Grid>
             </Grid>
@@ -693,18 +678,6 @@ class Home extends Component {
                             }
                             title={feed.name}
                             subheader={feed.user.name + " - " + feed.date}
-                            action={
-                              <IconButton
-                                aria-label="More"
-                                aria-owns={openFeed ? "feed-menu" : null}
-                                aria-haspopup="true"
-                                onClick={e =>
-                                  this.setState({ anchorEl: e.currentTarget })
-                                }
-                              >
-                                <MoreVertIcon />
-                              </IconButton>
-                            }
                           />
                           {feed.image ? <CardMedia image={feed.image} /> : null}
                           <CardContent>
@@ -798,8 +771,7 @@ class Home extends Component {
                       className={classes.headline}
                       style={{ marginBottom: 0 }}
                     >
-                      {Object.values(user.episodeProgress).length - 1} animes
-                      seen
+                      {Object.values(user.episodeProgress).length} animes seen
                     </Typography>
                   </Grid>
                 </Grid>
@@ -847,14 +819,15 @@ class Home extends Component {
                       className={classes.headline}
                       style={{ marginBottom: 0 }}
                     >
-                      {Object.values(user.favs.show).length - 1} anime
-                      favourties
+                      {Object.values(user.favs.show).length} anime favourties
                     </Typography>
                   </Grid>
                 </Grid>
                 <div className={classes.topHeader}>
                   <SuperTable
-                    data={Object.values(user.favs.show)}
+                    data={Object.values(user.favs.show).sort(
+                      (a, b) => a.name - b.name
+                    )}
                     limit={24}
                     type="s"
                     typeof="favs"
@@ -870,29 +843,10 @@ class Home extends Component {
   }
 }
 
-const mapDispatchToProps = dispatch =>
-  bindActionCreators(
-    {
-      changePage: page => push(page),
-      twistInit: twist => twistLoad(twist)
-    },
-    dispatch
-  );
-
-const twistLoad = twist => {
-  return {
-    type: MIR_TWIST_LOAD,
-    twist
-  };
-};
-
 export default firebaseConnect()(
-  connect(
-    ({ firebase: { auth, profile }, mir }) => ({
-      auth,
-      profile,
-      mir
-    }),
-    mapDispatchToProps
-  )(withStyles(styles)(Home))
+  connect(({ firebase: { auth, profile }, mir }) => ({
+    auth,
+    profile,
+    mir
+  }))(withStyles(styles)(Home))
 );

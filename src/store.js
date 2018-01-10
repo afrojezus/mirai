@@ -10,7 +10,9 @@ import {
 } from "react-redux-firebase";
 import firebase from "firebase";
 import mirReducer from "./modules";
+import { MIR_TWIST_LOAD } from "./constants";
 import { fireconfig } from "./utils/config.json";
+import Twist from "./twist-api";
 
 const rrfConfig = {
   userProfile: "users",
@@ -56,5 +58,20 @@ const createStoreWithFirebase = compose(
 )(createStore);
 
 const store = createStoreWithFirebase(rootReducer, initialState);
+
+const twistInit = twist => {
+  return {
+    type: MIR_TWIST_LOAD,
+    twist
+  };
+};
+
+const twistLoad = async () => {
+  let state = store.getState();
+  if (state.mir && state.mir.twist) return null;
+  else Twist.load().then(twist => store.dispatch(twistInit(twist)));
+};
+
+twistLoad();
 
 export default store;

@@ -3,7 +3,7 @@ import fetchCheerioObject from "fetch-cheerio-object";
 let Proxy1 = "https://cors-anywhere.herokuapp.com/";
 let Proxy2 = "https://cors.now.sh/";
 
-let URL = "https://twist.moe/";
+let URL = "https://twist.moe";
 /**
  * Twist.load() - Get the entire list of animes from Anime Twist
  */
@@ -85,9 +85,13 @@ const getSource = async ep => {
       .children("noscript")
       .children("video")
       .attr("src");
-    const url = `https://twist.moe${video}`;
-    if (url)
-      return decodeURI(url).replace("https://twist.moe ", "https://twist.moe");
+    console.log(video);
+    const url = decodeURI(`https://twist.moe${video}`);
+    console.log(url);
+    let urlX = url.includes("https://twist.moe ")
+      ? url.replace("https://twist.moe ", "https://twist.moe")
+      : url;
+    if (url) return decodeURI(urlX);
   } catch (error) {
     return error;
   }

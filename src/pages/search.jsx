@@ -10,6 +10,9 @@ import corrector from "../utils/bigfuck";
 
 import localForage from "localforage";
 
+import { connect } from "react-redux";
+import { firebaseConnect } from "react-redux-firebase";
+
 import searchQuery, {
   searchStaffQuery,
   searchCharQuery,
@@ -351,7 +354,8 @@ class Search extends Component {
   state = {
     searchVal: "",
     loading: true,
-    data: []
+    data: [],
+    users: null
   };
 
   componentDidMount = async () => {
@@ -371,6 +375,7 @@ class Search extends Component {
         characters: null,
         staff: null,
         studios: null,
+        users: null,
         loading: true
       },
       async () => {
@@ -395,17 +400,48 @@ class Search extends Component {
           page: 1
         });
 
-        if (data && characters && staff && studios) {
+        const users = await this.props.firebase
+          .database()
+          .ref("users")
+          .once("value");
+
+        if (
+          data &&
+          characters &&
+          staff &&
+          studios &&
+          users &&
+          this.props.mir &&
+          this.props.mir.twist
+        ) {
           console.log(data);
           console.log(characters);
           console.log(staff);
           console.log(studios);
           this.setState({
-            anime: data.Page.media.filter(s => s.type === "ANIME"),
+            anime: data.Page.media
+              .filter(s => s.type === "ANIME")
+              .filter(s => s.title.romaji)
+              .filter(s =>
+                s.title.romaji
+                  .toLowerCase()
+                  .match(
+                    `${this.props.mir.twist.filter(t =>
+                      t.name.toLowerCase().match(`${s.title.romaji}`)
+                    )}`
+                  )
+              ),
             manga: data.Page.media.filter(s => s.type === "MANGA"),
             characters: characters,
             staff: staff,
             studios: studios,
+            users: Object.values(users.val())
+              .filter(s => s.username)
+              .filter(s =>
+                s.username
+                  .toLowerCase()
+                  .match(`${this.state.searchVal.toLowerCase()}`)
+              ),
             loading: false
           });
         }
@@ -441,7 +477,8 @@ class Search extends Component {
       manga,
       characters,
       staff,
-      studios
+      studios,
+      users
     } = this.state;
     return (
       <div>
@@ -677,6 +714,56 @@ class Search extends Component {
                   </M.Grid>
                 </M.Grid>
               ) : null}
+              {users && users.length > 0 ? (
+                <M.Grid container className={classes.container}>
+                  <M.Typography type="title" className={classes.secTitle}>
+                    Users
+                  </M.Typography>
+                  <M.Grid container className={classes.itemcontainer}>
+                    {users
+                      ? users.map((user, index) => (
+                          <M.Grid
+                            className={classes.peopleCard}
+                            item
+                            xs
+                            key={index}
+                          >
+                            <M.Card
+                              style={{
+                                background: "transparent",
+                                boxShadow: "none"
+                              }}
+                              onClick={() =>
+                                this.props.history.push(
+                                  `/user${
+                                    this.props.profile
+                                      ? user.userID ===
+                                        this.props.profile.userID
+                                        ? ``
+                                        : `?u=${user.userID}`
+                                      : `?u=${user.userID}`
+                                  }`
+                                )
+                              }
+                            >
+                              <M.Avatar
+                                className={classes.peopleImage}
+                                classes={{ img: classes.fillImg }}
+                                src={user.avatar}
+                              />
+                              <M.Typography
+                                type="headline"
+                                className={classes.peopleTitle}
+                              >
+                                {user.username}
+                              </M.Typography>
+                            </M.Card>
+                          </M.Grid>
+                        ))
+                      : null}
+                  </M.Grid>
+                </M.Grid>
+              ) : null}
             </M.Grid>
           </div>
         </div>
@@ -685,4 +772,8 @@ class Search extends Component {
   }
 }
 
-export default M.withStyles(style)(Search);
+export default firebaseConnect()(
+  connect(({ firebase: profile, mir }) => ({ profile, mir }))(
+    M.withStyles(style)(Search)
+  )
+);

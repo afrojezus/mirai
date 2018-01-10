@@ -106,6 +106,9 @@ const style = theme => ({
     textShadow: "0 3px 20px rgba(0,0,0,.7)",
     marginBottom: theme.spacing.unit,
     textTransform: "uppercase"
+  },
+  dotdot: {
+    overflow: "initial !important"
   }
 });
 
@@ -205,7 +208,7 @@ const superTable = props => (
                     ? anime.ep ? "EPISODE " + anime.ep : null
                     : null}
             </M.Typography>
-            <Dotdotdot clamp={2}>
+            <Dotdotdot clamp={2} className={props.classes.dotdot}>
               <M.Typography
                 type="display2"
                 className={props.classes.bigCardTitle}
@@ -258,7 +261,7 @@ const mapDispatchToProps = dispatch => ({
   changePage: page => dispatch(push(page))
 });
 
-superTable.PropTypes = {
+superTable.propTypes = {
   type: PropTypes.string.isRequired,
   data: PropTypes.array.isRequired,
   classes: PropTypes.object.isRequired,

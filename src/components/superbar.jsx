@@ -37,6 +37,8 @@ import StarIcon from "material-ui-icons/Star";
 import Avatar from "material-ui/Avatar";
 import ArrowBackIcon from "material-ui-icons/ArrowBack";
 import MoreVert from "material-ui-icons/MoreVert";
+import CloseIcon from "material-ui-icons/Close";
+import AppsIcon from "material-ui-icons/Apps";
 import Input, { InputLabel } from "material-ui/Input";
 import { FormControl, FormHelperText } from "material-ui/Form";
 import Select from "material-ui/Select";
@@ -485,7 +487,7 @@ class Superbar extends Component {
             aria-label="Menu"
             onClick={this.toggleDrawer}
           >
-            <MenuIcon />
+            <CloseIcon />
           </IconButton>
           <Typography type="title">Mirai</Typography>
         </Toolbar>
@@ -744,7 +746,7 @@ class Superbar extends Component {
                 }}
                 MenuListProps={{ style: { padding: 0 } }}
                 open={infoOpen}
-                onRequestClose={this.handleInfoRequestClose}
+                onClose={this.handleInfoRequestClose}
               >
                 <NotificationForm />
               </Menu>
@@ -780,7 +782,7 @@ class Superbar extends Component {
                     horizontal: "right"
                   }}
                   open={open}
-                  onRequestClose={this.handleRequestClose}
+                  onClose={this.handleRequestClose}
                   PopoverClasses={{ paper: classes.menuPadding }}
                 >
                   <div

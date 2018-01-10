@@ -14,7 +14,8 @@ const styles = theme => ({
       WebkitFontSmoothing: "antialiased", // Antialiasing.
       MozOsxFontSmoothing: "grayscale", // Antialiasing.,
       height: "100%",
-      overflowX: "hidden"
+      overflowX: "hidden",
+      boxSizing: "border-box"
     },
     body: {
       margin: 0,
