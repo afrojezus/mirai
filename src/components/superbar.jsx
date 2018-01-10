@@ -68,18 +68,18 @@ const styles = theme => ({
   },
   gd: {
     width: "100%",
-    display: "none",
     height: 82,
     position: "fixed",
     transition: theme.transitions.create(["all"]),
-    background: "linear-gradient(to top, transparent, rgba(0,0,0,.1))"
+    background: "linear-gradient(to top, transparent, rgba(0,0,0,.3))"
   },
   appBar: {
     background: "rgba(0,0,0,.87)",
     boxShadow: "0 2px 16px rgba(0,0,0,.3)"
   },
   appBarTop: {
-    background: "transparent"
+    background: "transparent",
+    boxShadow: "none"
   },
   appFrame: {
     position: "relative",
@@ -227,7 +227,11 @@ const styles = theme => ({
   },
   tabLine: {
     filter: "drop-shadow(0 1px 12px rgba(0,0,255,.2))",
-    height: 4
+    height: 2,
+    background: "white"
+  },
+  tab: {
+    height: 64
   },
   avatar: {
     marginLeft: -theme.spacing.unit * 4,
@@ -263,10 +267,10 @@ class Superbar extends Component {
     mirTitle: ""
   };
 
-  unlistenScroller = window.addEventListener("scroll", e => {
+  unlistenScroller = () => {}; /* window.addEventListener("scroll", e => {
     if (window.scrollY > 0) this.setState({ notAtTop: true });
     else this.setState({ notAtTop: false });
-  });
+  });*/
 
   componentWillMount = () => {
     if (this.props.history.location.pathname === "/")
@@ -624,10 +628,6 @@ class Superbar extends Component {
           onMouseEnter={watchIsOn ? this.revealBar : null}
           onMouseLeave={watchIsOn ? this.hideBar : null}
         >
-          <div
-            className={classes.gd}
-            style={!notAtTop ? { opacity: 1 } : { opacity: 0 }}
-          />
           <Toolbar>
             <IconButton
               className={classes.menuButton}
@@ -679,54 +679,40 @@ class Superbar extends Component {
               className={classes.contextBar}
               value={tabVal}
               onChange={this.tabChange}
+              indicatorClassName={classes.tabLine}
+              centered
             >
               <Tab
                 classes={{
+                  root: classes.tab,
                   label:
-                    tabVal === 0 ? classes.tabLabelActive : classes.tabLabel,
-                  rootAccent: classes.tabLine
+                    tabVal === 0 ? classes.tabLabelActive : classes.tabLabel
                 }}
-                label={
-                  this.props.history.location.pathname.includes("monika")
-                    ? "Just Monika"
-                    : "Home"
-                }
+                icon={<HomeIcon />}
               />
               <Tab
+                icon={<DashboardIcon />}
                 classes={{
+                  root: classes.tab,
                   label:
-                    tabVal === 1 ? classes.tabLabelActive : classes.tabLabel,
-                  rootAccent: classes.tabLine
+                    tabVal === 1 ? classes.tabLabelActive : classes.tabLabel
                 }}
-                label={
-                  this.props.history.location.pathname.includes("monika")
-                    ? "Just Monika"
-                    : "Feeds"
-                }
               />
               <Tab
+                icon={<StarIcon />}
                 classes={{
+                  root: classes.tab,
                   label:
-                    tabVal === 2 ? classes.tabLabelActive : classes.tabLabel,
-                  rootAccent: classes.tabLine
+                    tabVal === 2 ? classes.tabLabelActive : classes.tabLabel
                 }}
-                label={
-                  this.props.history.location.pathname.includes("monika")
-                    ? "Just Monika"
-                    : "Rankings"
-                }
               />
               <Tab
+                icon={<LiveTvIcon />}
                 classes={{
+                  root: classes.tab,
                   label:
-                    tabVal === 3 ? classes.tabLabelActive : classes.tabLabel,
-                  rootAccent: classes.tabLine
+                    tabVal === 3 ? classes.tabLabelActive : classes.tabLabel
                 }}
-                label={
-                  this.props.history.location.pathname.includes("monika")
-                    ? "Just Monika"
-                    : "Live"
-                }
               />
               <Tab style={{ display: "none" }} />
             </Tabs>

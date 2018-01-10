@@ -179,7 +179,7 @@ const superTable = props => (
 );
 
 const mapDispatchToProps = dispatch => ({
-  changePage: page => push(page)
+  changePage: page => dispatch(push(page))
 });
 
 superTable.PropTypes = {

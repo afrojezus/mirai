@@ -86,7 +86,8 @@ const getSource = async ep => {
       .children("video")
       .attr("src");
     const url = `https://twist.moe${video}`;
-    if (url) return decodeURI(url);
+    if (url)
+      return decodeURI(url).replace("https://twist.moe ", "https://twist.moe");
   } catch (error) {
     return error;
   }

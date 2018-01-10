@@ -157,10 +157,7 @@ const styles = theme => ({
     height: "100%",
     objectFit: "cover",
     background: "white",
-    transition: theme.transitions.create(["all"]),
-    "&:hover": {
-      filter: "brightness(0.8)"
-    }
+    transition: theme.transitions.create(["all"])
   },
   artwork: {
     maxWidth: 400,
@@ -179,9 +176,22 @@ const styles = theme => ({
       transform: "scale(1.2)"
     },
     "&:hover > img": {
-      transform: "scale(0.9)"
+      transform: "scale(0.9)",
+      filter: "brightness(0.9)"
     },
     "&:active": {
+      opacity: 0.7
+    },
+    zIndex: 500
+  },
+  artworkDisabled: {
+    maxWidth: 400,
+    height: 400,
+    margin: "auto",
+    boxShadow: "0 3px 18px rgba(0,0,0,.5)",
+    transition: theme.transitions.create(["all"]),
+    position: "relative",
+    "& > img": {
       opacity: 0.7
     },
     zIndex: 500
@@ -670,9 +680,17 @@ class Show extends Component {
               <M.Grid container spacing={16} className={classes.container}>
                 <M.Grid item xs={3}>
                   <div
-                    className={classes.artwork}
+                    className={
+                      data.Media.status.includes("NOT_YET_RELEASED")
+                        ? classes.artworkDisabled
+                        : classes.artwork
+                    }
                     style={{ background: hueVib }}
-                    onClick={this.play}
+                    onClick={
+                      data.Media.status.includes("NOT_YET_RELEASED")
+                        ? null
+                        : this.play
+                    }
                   >
                     <img
                       src={data.Media.coverImage.large}
@@ -682,7 +700,9 @@ class Show extends Component {
                       onLoad={e => (e.currentTarget.style.opacity = null)}
                     />
                     <M.Typography className="artworktitle" type="display1">
-                      {data.Media.type.includes("MANGA") ? "Read" : "Play"}
+                      {data.Media.status.includes("NOT_YET_RELEASED")
+                        ? "TBA"
+                        : data.Media.type.includes("MANGA") ? "Read" : "Play"}
                     </M.Typography>
                     <M.Typography
                       className={classes.artworktype}

@@ -479,7 +479,7 @@ class User extends Component {
               },
               async () => {
                 let superBar = document.getElementById("superBar");
-                if (superBar) superBar.style.background = this.state.hue;
+                //if (superBar) superBar.style.background = this.state.hue;
 
                 await localForage.setItem("user-hue", {
                   hue: this.state.hue,

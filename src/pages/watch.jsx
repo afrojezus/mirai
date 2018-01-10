@@ -61,7 +61,8 @@ const style = theme => ({
     transition: "none"
   },
   duration: {
-    padding: theme.spacing.unit
+    padding: theme.spacing.unit,
+    fontFamily: "SF Mono"
   },
   left: {
     padding: theme.spacing.unit
@@ -194,24 +195,36 @@ class Watch extends Component {
     }
   };
 
-  loadEp = async (ep, resume) => {
-    console.log(ep);
-    if (this.state.menuEl) {
-      this.closeMenu();
-    }
-    const source = await Twist.getSource(ep.link);
-    try {
-      if (source) {
-        this.setState({ source, ep: ep.ep }, () => {
-          this.playPause();
-          if (resume && this.state.loaded > 0) this.player.seekTo(resume);
-        });
+  loadEp = (ep, resume) =>
+    this.setState(
+      {
+        playing: false,
+        source: null,
+        buffering: true,
+        status: "Loading...",
+        loaded: 0,
+        played: 0
+      },
+      async () => {
+        if (this.state.menuEl) {
+          this.closeMenu();
+        }
+        const source = await Twist.getSource(ep.link);
+        try {
+          if (source) {
+            this.setState(
+              { source, ep: ep.ep, resume: resume ? resume : null },
+              () => {
+                this.playPause();
+              }
+            );
+          }
+        } catch (error) {
+          console.error(error);
+          this.setState({ error: true, status: "Error" });
+        }
       }
-    } catch (error) {
-      console.error(error);
-      this.setState({ error: true, status: "Error" });
-    }
-  };
+    );
 
   closeMenu = () => this.setState({ menuEl: null });
 
@@ -225,6 +238,10 @@ class Watch extends Component {
 
     if (!this.state.seeking)
       this.setState(state, async () => {
+        if (this.state.resume) {
+          let resume = this.state.resume;
+          this.setState({ resume: null }, () => this.player.seekTo(resume));
+        }
         if (!this.state.menuEl && !this.state.volEl)
           await localForage.setItem("player-state", this.state);
       });
@@ -342,8 +359,10 @@ class Watch extends Component {
     });
 
   componentWillUnmount = async () => {
-    if (this.props.user) {
-      const episodePro = Database.ref("users")
+    if (this.props.profile) {
+      const episodePro = this.props.firebase
+        .database()
+        .ref("users")
         .child(`${this.props.profile.userID}`)
         .child("episodeProgress");
       localForage.getItem("player-state").then(async a => {
@@ -442,7 +461,7 @@ class Watch extends Component {
             {source ? (
               <M.IconButton onClick={this.playPause}>
                 {playing ? (
-                  loaded === 0 ? (
+                  loaded === 0 || buffering ? (
                     <M.CircularProgress />
                   ) : (
                     <Icon.Pause />

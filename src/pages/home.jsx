@@ -48,11 +48,11 @@ import { push } from "react-router-redux";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 
-import superTable from "../components/supertable";
+import SuperTable from "../components/supertable";
 
 const styles = theme => ({
   root: {
-    paddingTop: theme.spacing.unit * 8
+    // paddingTop: theme.spacing.unit * 8
   },
   container: {
     marginLeft: "auto",
@@ -72,7 +72,7 @@ const styles = theme => ({
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0.4,
+    opacity: 0.1,
     height: "100vh",
     objectFit: "cover",
     width: "100%",
@@ -92,7 +92,8 @@ const styles = theme => ({
     position: "relative",
     margin: "auto",
     transition: theme.transitions.create(["all"]),
-    background: "black"
+    background: "white",
+    paddingTop: theme.spacing.unit * 12
   },
   cardBg: {
     objectFit: "cover",
@@ -124,9 +125,10 @@ const styles = theme => ({
   },
   headlineTitle: {
     marginBottom: 24,
-    fontSize: 32,
-    fontWeight: 700,
-    textShadow: "0 2px 16px rgba(0,0,0,.3)"
+    fontSize: 48,
+    fontWeight: 500,
+    color: "#111",
+    fontFamily: "Product Sans"
   },
   fullWidth: {
     width: "100%"
@@ -549,7 +551,7 @@ class Home extends Component {
             </Grid>
             {ongoing && ongoing.data ? (
               <div className={classes.topHeader}>
-                <superTable
+                <SuperTable
                   settings={settings}
                   data={ongoing.data.Page.media
                     .filter(s => s.nextAiringEpisode)
@@ -585,7 +587,7 @@ class Home extends Component {
             </Grid>
             {ongoingM && ongoingM.data ? (
               <div className={classes.topHeader}>
-                <superTable
+                <SuperTable
                   settings={settings}
                   data={ongoingM.data.Page.media}
                   type="m"
