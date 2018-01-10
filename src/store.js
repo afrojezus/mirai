@@ -14,7 +14,7 @@ import { fireconfig } from "./utils/config.json";
 
 const rrfConfig = {
   userProfile: "users",
-  enableLogging: true,
+  enableLogging: false,
   fileMetadataFactory: uploadRes => {
     // upload response from Firebase's storage upload
     const { metadata: { downloadURLs } } = uploadRes;

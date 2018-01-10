@@ -349,7 +349,8 @@ const styles = theme => ({
   sliderBig: {
     height: "100%",
     marginBottom: theme.spacing.unit * 2,
-    "& > .slick-list": {}
+    "& > .slick-list": {},
+    flexFlow: "row nowrap"
   },
   sliderDots: {
     color: "white",
@@ -396,11 +397,13 @@ class Home extends Component {
     anchorEl: null,
     es: false,
     loading: true,
-    ongoing: null
+    ongoing: null,
+    rankingMentionable: null
   };
 
   componentDidMount = async () => {
     this.feedsObserve();
+    this.rankingsObserve();
     this.twistLoad();
     this.fetchOngoing().then(() =>
       setTimeout(() => this.setState({ loading: false }), 300)
@@ -434,6 +437,16 @@ class Home extends Component {
     }
   };
 
+  rankingsObserve = () =>
+    this.props.firebase
+      .ref("ranking")
+      .child("mentionable")
+      .on("value", mentionables =>
+        this.setState({
+          rankingMentionable: Object.values(mentionables.val())
+        })
+      );
+
   feedsObserve = () =>
     this.props.firebase
       .ref("social")
@@ -446,7 +459,15 @@ class Home extends Component {
 
   render() {
     const { classes, status } = this.props;
-    const { feeds, anchorEl, es, loading, ongoing, ongoingM } = this.state;
+    const {
+      feeds,
+      anchorEl,
+      es,
+      loading,
+      ongoing,
+      ongoingM,
+      rankingMentionable
+    } = this.state;
 
     const user = this.props.profile;
 
@@ -457,7 +478,7 @@ class Home extends Component {
       dots: true,
       infinite: false,
       dotsClass: classes.sliderDots,
-      arrows: false,
+      arrows: true,
       focusOnSelect: true,
       easing: "ease",
       speed: 300,
@@ -538,7 +559,11 @@ class Home extends Component {
                 item
                 xs
                 className={classes.itemContainer}
-                style={{ marginBottom: 0 }}
+                style={{
+                  marginBottom: 0,
+                  flexDirection: "row",
+                  display: "flex"
+                }}
               >
                 <Typography
                   type="title"
@@ -546,6 +571,20 @@ class Home extends Component {
                   style={{ marginBottom: 0 }}
                 >
                   Currently ongoing anime
+                </Typography>
+                <div style={{ flex: 1 }} />
+                <Typography
+                  type="title"
+                  className={classes.headline}
+                  style={{ marginBottom: 0 }}
+                >
+                  {this.props.mir && this.props.mir.twist
+                    ? Object.values(this.props.mir.twist).filter(
+                        s => s.ongoing === true
+                      ).length -
+                      1 +
+                      " ongoing animes in database"
+                    : null}
                 </Typography>
               </Grid>
             </Grid>
@@ -561,10 +600,12 @@ class Home extends Component {
                         b.nextAiringEpisode.timeUntilAiring
                     )}
                   type="s"
+                  typeof="ongoing"
+                  limit={12}
                 />
               </div>
             ) : null}
-            <Grid
+            {/*<Grid
               container
               spacing={16}
               className={classes.container}
@@ -591,9 +632,11 @@ class Home extends Component {
                   settings={settings}
                   data={ongoingM.data.Page.media}
                   type="m"
+                  typeof="ongoing"
+                  limit={12}
                 />
               </div>
-            ) : null}
+            ) : null}*/}
             <Grid
               container
               spacing={16}
@@ -604,7 +647,11 @@ class Home extends Component {
                 item
                 xs
                 className={classes.itemContainer}
-                style={{ marginBottom: 0 }}
+                style={{
+                  marginBottom: 0,
+                  flexDirection: "row",
+                  display: "flex"
+                }}
               >
                 <Typography
                   type="title"
@@ -616,210 +663,15 @@ class Home extends Component {
               </Grid>
             </Grid>
             <div className={classes.topHeader}>
-              <Slider {...settings}>
-                <Card className={classes.bigCard}>
-                  <div className={classes.bigCardImage}>
-                    <img
-                      src="https://cdn.anilist.co/img/dir/anime/banner/98707-j0WtWtjACgJm.jpg"
-                      alt=""
-                      className={classes.bigCardImageImg}
-                    />
-                  </div>
-                  <div className={classes.bigCardRow}>
-                    <img
-                      src="https://cdn.anilist.co/img/dir/anime/reg/98707-yKcrtBTmFjEu.png"
-                      alt=""
-                      className={classes.bigCardIcon}
-                      onClick={() => this.openEntity("/show?s=98707")}
-                    />
-                    <div className={classes.bigCardText}>
-                      <Typography
-                        type="display2"
-                        className={classes.bigCardVerySmallTitle}
-                      >
-                        <span role="img" aria-label="gemstone">
-                          💎
-                        </span>{" "}
-                        GEM OF LAST SEASON
-                      </Typography>
-                      <Typography
-                        type="display2"
-                        className={classes.bigCardTitle}
-                      >
-                        Land of The Lustrous
-                      </Typography>
-                      <Typography
-                        type="display2"
-                        className={classes.bigCardSmallTitle}
-                      >
-                        Gems. A Monk. Moon people, and a whole lot more that we
-                        can't explain
-                      </Typography>
-                    </div>
-                  </div>
-                </Card>
-                <Card className={classes.bigCard}>
-                  <div className={classes.bigCardImage}>
-                    <img
-                      src="https://cdn.anilist.co/img/dir/anime/banner/21827-axEmcLTtSMay.jpg"
-                      alt=""
-                      className={classes.bigCardImageImg}
-                    />
-                  </div>
-                  <div className={classes.bigCardRow}>
-                    <img
-                      src="https://cdn.anilist.co/img/dir/anime/reg/21827-Xlo8r4tIfrJI.jpg"
-                      alt=""
-                      className={classes.bigCardIcon}
-                      onClick={() => this.openEntity("/show?s=21827")}
-                    />
-                    <div className={classes.bigCardText}>
-                      <Typography
-                        type="display2"
-                        className={classes.bigCardVerySmallTitle}
-                      >
-                        <span role="img" aria-label="gemstone">
-                          ⭐
-                        </span>{" "}
-                        POPULAR UNDERDOG OF THE SEASON
-                      </Typography>
-                      <Typography
-                        type="display2"
-                        className={classes.bigCardTitle}
-                      >
-                        Violet Evergarden
-                      </Typography>
-                      <Typography
-                        type="display2"
-                        className={classes.bigCardSmallTitle}
-                      >
-                        Perhaps KyoAnis most prestigious work yet, well we've
-                        yet to see
-                      </Typography>
-                    </div>
-                  </div>
-                </Card>
-                <Card className={classes.bigCard}>
-                  <div className={classes.bigCardImage}>
-                    <img
-                      src=" https://cdn.anilist.co/img/dir/anime/reg/98549-XfLyPhrP5Ors.jpg"
-                      alt=""
-                      className={classes.bigCardImageImg}
-                    />
-                  </div>
-                  <div className={classes.bigCardRow}>
-                    <img
-                      src="https://cdn.anilist.co/img/dir/anime/reg/98549-XfLyPhrP5Ors.jpg"
-                      alt=""
-                      className={classes.bigCardIcon}
-                      onClick={() => this.openEntity("/show?s=98549")}
-                    />
-                    <div className={classes.bigCardText}>
-                      <Typography
-                        type="display2"
-                        className={classes.bigCardVerySmallTitle}
-                      >
-                        <span role="img" aria-label="gemstone">
-                          😂
-                        </span>{" "}
-                        IT'S JOKE
-                      </Typography>
-                      <Typography
-                        type="display2"
-                        className={classes.bigCardTitle}
-                      >
-                        Pop Team Epic
-                      </Typography>
-                      <Typography
-                        type="display2"
-                        className={classes.bigCardSmallTitle}
-                      >
-                        A modern piece of comedy, a masterful shitpost
-                      </Typography>
-                    </div>
-                  </div>
-                </Card>
-                <Card className={classes.bigCard}>
-                  <div className={classes.bigCardImage}>
-                    <img
-                      src="https://cdn.anilist.co/img/dir/anime/reg/97832-XPMLlgFULgJW.jpg"
-                      alt=""
-                      className={classes.bigCardImageImg}
-                      onClick={() => this.openEntity("/show?s=97832")}
-                    />
-                  </div>
-                  <div className={classes.bigCardRow}>
-                    <img
-                      src="https://cdn.anilist.co/img/dir/anime/reg/97832-XPMLlgFULgJW.jpg"
-                      alt=""
-                      className={classes.bigCardIcon}
-                    />
-                    <div className={classes.bigCardText}>
-                      <Typography
-                        type="display2"
-                        className={classes.bigCardVerySmallTitle}
-                      >
-                        <span role="img" aria-label="gemstone">
-                          ⛸️
-                        </span>{" "}
-                        THE (LITERALLY) YURI ON ICE ONE THIS SEASON
-                      </Typography>
-                      <Typography
-                        type="display2"
-                        className={classes.bigCardTitle}
-                      >
-                        Citrus
-                      </Typography>
-                      <Typography
-                        type="display2"
-                        className={classes.bigCardSmallTitle}
-                      >
-                        Gay girls.
-                      </Typography>
-                    </div>
-                  </div>
-                </Card>
-                <Card className={classes.bigCard}>
-                  <div className={classes.bigCardImage}>
-                    <img
-                      src="https://cdn.anilist.co/img/dir/anime/reg/99468-9Ij1UpsehSVx.jpg"
-                      alt=""
-                      className={classes.bigCardImageImg}
-                      onClick={() => this.openEntity("/show?s=99468")}
-                    />
-                  </div>
-                  <div className={classes.bigCardRow}>
-                    <img
-                      src="https://cdn.anilist.co/img/dir/anime/reg/99468-9Ij1UpsehSVx.jpg"
-                      alt=""
-                      className={classes.bigCardIcon}
-                    />
-                    <div className={classes.bigCardText}>
-                      <Typography
-                        type="display2"
-                        className={classes.bigCardVerySmallTitle}
-                      >
-                        <span role="img" aria-label="gemstone">
-                          👺
-                        </span>{" "}
-                        THE MOST GENERIC ONE THIS SEASON
-                      </Typography>
-                      <Typography
-                        type="display2"
-                        className={classes.bigCardTitle}
-                      >
-                        Karakai Jozu no Takagi-san
-                      </Typography>
-                      <Typography
-                        type="display2"
-                        className={classes.bigCardSmallTitle}
-                      >
-                        Idk, you tell me.
-                      </Typography>
-                    </div>
-                  </div>
-                </Card>
-              </Slider>
+              {rankingMentionable ? (
+                <SuperTable
+                  data={Object.values(rankingMentionable[0])}
+                  settings={settings}
+                  type="s"
+                  typeof="ranking"
+                  limit={12}
+                />
+              ) : null}
             </div>
             <Grid container spacing={16} className={classes.container}>
               <Grid item xs className={classes.itemContainer}>
@@ -913,104 +765,104 @@ class Home extends Component {
                       </Grid>
                     ))}
                 </Grid>
-                {user && user.episodeProgress ? (
-                  <div className={classes.fullWidth}>
-                    <Divider className={classes.divide} />
-                    <Typography type="title" className={classes.headline}>
-                      Animes you've watched previously
-                    </Typography>
-                    <Grid container>
-                      {Object.values(user.episodeProgress).map(
-                        (anime, index) => (
-                          <Grid
-                            className={classes.entityCard}
-                            item
-                            xs
-                            key={index}
-                          >
-                            <Card
-                              style={{ background: "transparent" }}
-                              onClick={() =>
-                                this.openEntity(
-                                  `/show?s=${
-                                    anime.anime
-                                      ? anime.anime.meta.i
-                                      : anime.showId
-                                  }`
-                                )
-                              }
-                            >
-                              <div className={classes.gradientCard}>
-                                <CardMedia
-                                  className={classes.entityImage}
-                                  image={
-                                    anime.anime
-                                      ? anime.anime.meta.a
-                                      : anime.showArtwork
-                                  }
-                                />
-                              </div>
-                              <Typography
-                                type="headline"
-                                className={classes.entityTitle}
-                              >
-                                {anime.anime
-                                  ? anime.anime.meta.t
-                                    ? anime.anime.meta.t
-                                    : anime.anime.meta.r
-                                  : anime.title}
-                              </Typography>
-                              <Typography
-                                type="headline"
-                                className={classes.entitySubTitle}
-                              >
-                                {anime.ep ? "EPISODE " + anime.ep : null}
-                              </Typography>
-                            </Card>
-                          </Grid>
-                        )
-                      )}
-                    </Grid>
-                  </div>
-                ) : null}
-                {user && user.favs && user.favs.show && user.favs.show ? (
-                  <div className={classes.fullWidth}>
-                    <Divider className={classes.divide} />
-                    <Typography type="title" className={classes.headline}>
-                      Your favourites
-                    </Typography>
-                    <Grid container>
-                      {Object.values(user.favs.show).map((anime, index) => (
-                        <Grid
-                          className={classes.entityCard}
-                          item
-                          xs
-                          key={index}
-                        >
-                          <Card
-                            style={{ background: "transparent" }}
-                            onClick={() => this.openEntity(anime.link)}
-                          >
-                            <div className={classes.gradientCard}>
-                              <CardMedia
-                                className={classes.entityImage}
-                                image={anime.image}
-                              />
-                            </div>
-                            <Typography
-                              type="headline"
-                              className={classes.entityTitle}
-                            >
-                              {anime.name}
-                            </Typography>
-                          </Card>
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </div>
-                ) : null}
               </Grid>
             </Grid>
+            {user && user.episodeProgress ? (
+              <div>
+                <Grid
+                  container
+                  spacing={16}
+                  className={classes.container}
+                  style={{ paddingBottom: 0 }}
+                >
+                  <Grid
+                    item
+                    xs
+                    className={classes.itemContainer}
+                    style={{
+                      marginBottom: 0,
+                      flexDirection: "row",
+                      display: "flex"
+                    }}
+                  >
+                    <Typography
+                      type="title"
+                      className={classes.headline}
+                      style={{ marginBottom: 0 }}
+                    >
+                      Animes you've watched previously
+                    </Typography>
+                    <div style={{ flex: 1 }} />
+                    <Typography
+                      type="title"
+                      className={classes.headline}
+                      style={{ marginBottom: 0 }}
+                    >
+                      {Object.values(user.episodeProgress).length - 1} animes
+                      seen
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <div className={classes.topHeader}>
+                  <SuperTable
+                    data={Object.values(user.episodeProgress)
+                      .filter(s => s.recentlyWatched)
+                      .sort((a, b) => b.recentlyWatched - a.recentlyWatched)}
+                    limit={24}
+                    type="s"
+                    typeof="progress"
+                    settings={settings}
+                  />
+                </div>
+              </div>
+            ) : null}
+            {user && user.favs && user.favs.show && user.favs.show ? (
+              <div>
+                <Grid
+                  container
+                  spacing={16}
+                  className={classes.container}
+                  style={{ paddingBottom: 0 }}
+                >
+                  <Grid
+                    item
+                    xs
+                    className={classes.itemContainer}
+                    style={{
+                      marginBottom: 0,
+                      flexDirection: "row",
+                      display: "flex"
+                    }}
+                  >
+                    <Typography
+                      type="title"
+                      className={classes.headline}
+                      style={{ marginBottom: 0 }}
+                    >
+                      Your anime favorites
+                    </Typography>
+                    <div style={{ flex: 1 }} />
+                    <Typography
+                      type="title"
+                      className={classes.headline}
+                      style={{ marginBottom: 0 }}
+                    >
+                      {Object.values(user.favs.show).length - 1} anime
+                      favourties
+                    </Typography>
+                  </Grid>
+                </Grid>
+                <div className={classes.topHeader}>
+                  <SuperTable
+                    data={Object.values(user.favs.show)}
+                    limit={24}
+                    type="s"
+                    typeof="favs"
+                    settings={settings}
+                  />
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

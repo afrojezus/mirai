@@ -114,6 +114,7 @@ const timeFormatter = time => {
   let hours = Math.floor(sec_num / 3600);
   let minutes = Math.floor((sec_num - hours * 3600) / 60);
   let seconds = sec_num - hours * 3600 - minutes * 60;
+  let days = Math.floor(sec_num / (3600 * 24));
 
   if (hours < 10) {
     hours = "0" + hours;
@@ -124,52 +125,127 @@ const timeFormatter = time => {
   if (seconds < 10) {
     seconds = "0" + seconds;
   }
-  return hours + ":" + minutes + ":" + seconds;
+  if (days === 0) {
+    days = null;
+  }
+  return (
+    (days ? days + (days > 1 ? " days " : " day ") : null) +
+    hours +
+    " hr " +
+    minutes +
+    " min"
+  );
+};
+
+const timeFormatToReadable = time => {
+  return new Date(time).toDateString();
 };
 
 const superTable = props => (
   <Slider {...props.settings}>
-    {props.data.map((anime, index) => (
-      <M.Card className={props.classes.bigCard}>
+    {props.data.splice(0, props.limit).map((anime, index) => (
+      <M.Card className={props.classes.bigCard} key={index}>
         <div className={props.classes.bigCardImage}>
           <img
-            src={anime.bannerImage ? anime.bannerImage : anime.coverImage.large}
+            src={
+              props.typeof === "ongoing"
+                ? anime.bannerImage ? anime.bannerImage : anime.coverImage.large
+                : props.typeof === "ranking"
+                  ? anime.bg
+                  : props.typeof === "progress"
+                    ? anime.anime ? anime.anime.meta.a : anime.showArtwork
+                    : props.typeof === "favs" ? anime.image : null
+            }
             alt=""
             className={props.classes.bigCardImageImg}
           />
         </div>
         <div className={props.classes.bigCardRow}>
           <img
-            src={anime.coverImage.large}
+            src={
+              props.typeof === "ongoing"
+                ? anime.coverImage.large
+                : props.typeof === "ranking"
+                  ? anime.bg
+                  : props.typeof === "progress"
+                    ? anime.anime ? anime.anime.meta.a : anime.showArtwork
+                    : props.typeof === "favs" ? anime.image : null
+            }
             alt=""
             className={props.classes.bigCardIcon}
-            onClick={() => props.changePage(`/show?${props.type}=${anime.id}`)}
+            onClick={() =>
+              props.changePage(
+                `/show?${props.type}=${
+                  props.typeof === "progress"
+                    ? anime.anime ? anime.anime.meta.i : anime.showId
+                    : anime.id
+                }`
+              )
+            }
           />
           <div className={props.classes.bigCardText}>
             <M.Typography
               type="display2"
               className={props.classes.bigCardVerySmallTitle}
             >
-              {props.type.includes("m")
-                ? null
-                : timeFormatter(anime.nextAiringEpisode.timeUntilAiring) +
-                  " till Episode " +
-                  anime.nextAiringEpisode.episode}
+              {props.typeof === "ranking" ? (
+                <span role="img" aria-label="emoji">
+                  {anime.emoji}
+                </span>
+              ) : null}
+              {props.typeof === "ongoing"
+                ? props.type.includes("m")
+                  ? null
+                  : timeFormatter(anime.nextAiringEpisode.timeUntilAiring) +
+                    " till Episode " +
+                    anime.nextAiringEpisode.episode
+                : props.typeof === "ranking"
+                  ? anime.category
+                  : props.typeof === "progress"
+                    ? anime.ep ? "EPISODE " + anime.ep : null
+                    : null}
             </M.Typography>
-            <M.Typography
-              type="display2"
-              className={props.classes.bigCardTitle}
-            >
-              {anime.title.english ? anime.title.english : anime.title.romaji}
-            </M.Typography>
+            <Dotdotdot clamp={2}>
+              <M.Typography
+                type="display2"
+                className={props.classes.bigCardTitle}
+              >
+                {props.typeof === "ongoing"
+                  ? anime.title.english
+                    ? anime.title.english
+                    : anime.title.romaji
+                  : props.typeof === "ranking"
+                    ? anime.name
+                    : props.typeof === "progress"
+                      ? anime.anime
+                        ? anime.anime.meta.t
+                          ? anime.anime.meta.t
+                          : anime.anime.meta.r
+                        : anime.title
+                      : props.typeof === "favs" ? anime.name : null}
+              </M.Typography>
+            </Dotdotdot>
             <Dotdotdot clamp={3}>
               <M.Typography
                 type="display2"
                 className={props.classes.bigCardSmallTitle}
-                dangerouslySetInnerHTML={{
-                  __html: anime.description
-                }}
-              />
+                dangerouslySetInnerHTML={
+                  props.typeof === "ongoing"
+                    ? {
+                        __html: anime.description
+                      }
+                    : props.typeof === "ranking"
+                      ? {
+                          __html: anime.desc
+                        }
+                      : null
+                }
+              >
+                {props.typeof === "progress"
+                  ? "Last watched " +
+                    timeFormatToReadable(anime.recentlyWatched)
+                  : null}
+              </M.Typography>
             </Dotdotdot>
           </div>
         </div>
@@ -187,7 +263,9 @@ superTable.PropTypes = {
   data: PropTypes.array.isRequired,
   classes: PropTypes.object.isRequired,
   settings: PropTypes.object.isRequired,
-  routing: PropTypes.object
+  routing: PropTypes.object,
+  typeof: PropTypes.string.isRequired,
+  limit: PropTypes.number.isRequired
 };
 
 export default connect(({ routing }) => ({ routing }), mapDispatchToProps)(

@@ -895,6 +895,9 @@ class Show extends Component {
                         {data.Media.genres
                           ? data.Media.genres.map((o, i) => (
                               <M.Chip
+                                onClick={() =>
+                                  this.props.history.push(`/tag?g=${o}`)
+                                }
                                 className={classes.tagChip}
                                 key={i}
                                 label={o}
@@ -910,6 +913,9 @@ class Show extends Component {
                       <div className={classes.genreRow}>
                         {data.Media.tags.map((o, i) => (
                           <M.Chip
+                            onClick={() =>
+                              this.props.history.push(`/tag?t=${o.id}`)
+                            }
                             className={classes.tagChip}
                             key={i}
                             label={o.name}
@@ -925,6 +931,9 @@ class Show extends Component {
                         <div className={classes.genreRow}>
                           {data.Media.studios.edges.map((o, i) => (
                             <M.Chip
+                              onClick={() =>
+                                this.props.history.push(`/tag?s=${o.node.id}`)
+                              }
                               className={classes.tagChip}
                               key={i}
                               label={o.node.name}
