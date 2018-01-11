@@ -9,6 +9,7 @@ export default string => {
     .replace("?", "")
     .replace("aho-girl", "aho girl")
     .replace(".", "")
+    .replace("†", " ")
     .replace("houseki no kuni", "houseki no kuni (tv)")
     .replace("macross frontier", "macross f")
     .replace("macross delta", "macross d")

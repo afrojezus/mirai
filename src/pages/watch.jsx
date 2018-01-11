@@ -162,8 +162,9 @@ class Watch extends Component {
       showDesc: data.description,
       showHeaders: data.bannerImage ? data.bannerImage : data.coverImage.large
     });
-    const meta = this.props.mir.twist.filter(
-      s => s.name.toLowerCase() === corrector(data.title.romaji.toLowerCase())
+    let correctedtitle = data.title.romaji.toLowerCase();
+    const meta = this.props.mir.twist.filter(s =>
+      s.name.toLowerCase().match(`${correctedtitle}`)
     );
     console.log(meta);
     try {
@@ -374,7 +375,7 @@ class Watch extends Component {
     });
 
   componentWillUnmount = async () => {
-    if (this.props.profile) {
+    if (this.props.profile && this.state.loaded > 0) {
       const episodePro = this.props.firebase
         .database()
         .ref("users")
