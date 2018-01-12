@@ -489,7 +489,6 @@ class Superbar extends Component {
           >
             <CloseIcon />
           </IconButton>
-          <Typography type="title">Mirai</Typography>
         </Toolbar>
         <List>
           <ListItem

@@ -131,8 +131,9 @@ export const timeFormatter = time => {
   if (days === 0) {
     days = null;
   }
+
   return (
-    (days ? days + (days > 1 ? " days " : " day ") : null) +
+    (days ? days + (days > 1 ? " days " : " day ") : "") +
     hours +
     " hr " +
     minutes +

@@ -34,6 +34,7 @@ import Settings from "./settings";
 import Search from "./search";
 import Fig from "./fig";
 import Read from "./read";
+import Tag from "./tag";
 import PageNotFound from "./pnf";
 import Typography from "material-ui/Typography/Typography";
 
@@ -135,6 +136,7 @@ class Index extends Component {
           <Route path="/search" exact component={Search} />
           <Route path="/read" exact component={Read} />
           <Route path="/fig" exact component={Fig} />
+          <Route path="/tag" exact component={Tag} />
         </Superbar>
       </div>
     );

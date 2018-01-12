@@ -9,7 +9,7 @@ let URL = "https://twist.moe";
  */
 const load = async () => {
   let output = [];
-  const source = await fetchCheerioObject(Proxy1 + URL);
+  const source = await fetchCheerioObject(Proxy2 + URL);
   try {
     const data = source(".series ul")
       .children("li")
@@ -27,7 +27,7 @@ const load = async () => {
                 .trim(),
           ongoing: source(index).children("a")[1] ? true : false,
           link:
-            Proxy1 +
+            Proxy2 +
             URL +
             source(index)
               .children("a")
@@ -77,7 +77,7 @@ const get = async query => {
 
 const getSource = async ep => {
   try {
-    const source = await fetchCheerioObject(Proxy1 + ep);
+    const source = await fetchCheerioObject(Proxy2 + ep);
     let video = source("body")
       .children("section")
       .children("main")
