@@ -90,7 +90,7 @@ const styles = theme => ({
     position: "relative",
     margin: "auto",
     transition: theme.transitions.create(["all"]),
-    background: "white",
+    background: "black",
     paddingTop: theme.spacing.unit * 12
   },
   cardBg: {
@@ -125,7 +125,6 @@ const styles = theme => ({
     marginBottom: 24,
     fontSize: 48,
     fontWeight: 500,
-    color: "#111",
     fontFamily: "Product Sans"
   },
   fullWidth: {
@@ -410,7 +409,7 @@ class Home extends Component {
 
   makeTitlebarWhite = () => {
     let superbar = document.getElementById("superBar");
-    if (superbar) superbar.classList.add("whiteshit");
+    //if (superbar) superbar.classList.add("whiteshit");
   };
 
   fetchOngoing = async () => {
@@ -429,7 +428,11 @@ class Home extends Component {
     });
 
     try {
-      if (ongoing && ongoingM) this.setState({ ongoing, ongoingM });
+      if (ongoing && ongoingM)
+        this.setState({
+          ongoing,
+          ongoingM
+        });
     } catch (error) {
       console.error(error);
     }
@@ -457,7 +460,7 @@ class Home extends Component {
 
   componentWillUnmount = () => {
     let superbar = document.getElementById("superBar");
-    if (superbar) superbar.classList.remove("whiteshit");
+    // if (superbar) superbar.classList.remove("whiteshit");
   };
 
   render() {
@@ -573,12 +576,20 @@ class Home extends Component {
                 </Typography>
               </Grid>
             </Grid>
-            {ongoing && ongoing.data ? (
+            {ongoing &&
+            ongoing.data &&
+            this.props.mir &&
+            this.props.mir.twist ? (
               <div className={classes.topHeader}>
                 <SuperTable
                   settings={settings}
                   data={ongoing.data.Page.media
                     .filter(s => s.nextAiringEpisode)
+                    .filter(d =>
+                      this.props.mir.twist.filter(s =>
+                        s.name.match(d.title.romaji)
+                      )
+                    )
                     .sort(
                       (a, b) =>
                         a.nextAiringEpisode.timeUntilAiring -
@@ -590,7 +601,7 @@ class Home extends Component {
                 />
               </div>
             ) : null}
-            {/*<Grid
+            <Grid
               container
               spacing={16}
               className={classes.container}
@@ -621,7 +632,7 @@ class Home extends Component {
                   limit={12}
                 />
               </div>
-            ) : null}*/}
+            ) : null}
             <Grid
               container
               spacing={16}

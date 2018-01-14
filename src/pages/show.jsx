@@ -6,6 +6,8 @@ import queryString from "query-string";
 import Segoku from "../utils/segoku/segoku";
 import * as Vibrant from "node-vibrant";
 
+import Twist from "../twist-api";
+
 import { MIR_SET_TITLE } from "../constants";
 
 import { connect } from "react-redux";
@@ -454,7 +456,9 @@ class Show extends Component {
     id: 0,
     hue: "#111",
     hueVib: M.colors.blue.A200,
-    hueVibN: M.colors.grey.A700
+    hueVibN: M.colors.grey.A700,
+    eps: null,
+    epError: false
   };
 
   frame = document.getElementById("previewFrame");
@@ -482,7 +486,9 @@ class Show extends Component {
         loading: true,
         hue: "#111",
         hueVib: M.colors.blue.A200,
-        hueVibN: M.colors.grey.A700
+        hueVibN: M.colors.grey.A700,
+        eps: null,
+        epError: false
       },
       async () =>
         setTimeout(async () => {
@@ -557,21 +563,70 @@ class Show extends Component {
           }
         }
       );
-
     if (similars) this.setState({ similars });
     if (this.state.data)
-      this.setState({
-        loading: false
-      });
+      this.setState(
+        {
+          loading: false
+        },
+        async () => {
+          if (data.type.includes("MANGA"))
+            this.setState({ eps: null, epError: false });
+          else if (
+            data.format.includes("OVA") ||
+            data.format.includes("ONA") ||
+            data.format.includes("SPIN_OFF")
+          ) {
+            this.setState({ eps: null, epError: true });
+          } else {
+            await this.executeTwist();
+          }
+        }
+      );
+  };
+
+  executeTwist = async () => {
+    if (this.props.mir && this.props.mir.twist) {
+      let correctedtitle = this.state.data.Media.title.romaji
+        .toLowerCase()
+        .replace("(tv)", "");
+      const meta = this.props.mir.twist.filter(s =>
+        s.name.toLowerCase().match(`${correctedtitle}`)
+      );
+      console.log(meta);
+      if (meta.length > 0) {
+        const eps = await Twist.get(meta[0].link);
+        try {
+          if (eps) return this.setState({ eps });
+        } catch (error) {
+          return this.setState({ epError: true });
+        }
+      } else {
+        return this.setState({ epError: true });
+      }
+    } else {
+      return this.setState({ epError: true });
+    }
   };
 
   tabChange = (e, val) => this.setState({ tabVal: val });
 
   play = () => {
     window.scrollTo(0, 0);
-    if (this.state.data.Media && this.state.data.Media.type.includes("ANIME"))
-      this.props.history.push("/watch?w=" + this.state.data.Media.id);
-    else this.props.history.push("/read?r=" + this.state.data.Media.id);
+    if (
+      this.state.data.Media &&
+      this.state.data.Media.type.includes("ANIME") &&
+      this.state.eps
+    )
+      this.props.history.push("/watch?w=" + this.state.data.Media.id, {
+        meta: this.state.data.Media,
+        eps: this.state.eps
+      });
+    else
+      this.props.history.push(
+        "/read?r=" + this.state.data.Media.id,
+        this.state.data.Media
+      );
   };
 
   componentWillUnmount = () => {
@@ -636,7 +691,9 @@ class Show extends Component {
       hueVib,
       hueVibN,
       similars,
-      fav
+      fav,
+      eps,
+      epError
     } = this.state;
 
     const user = this.props.profile;
@@ -682,15 +739,19 @@ class Show extends Component {
                 <M.Grid item xs={3}>
                   <div
                     className={
-                      data.Media.status.includes("NOT_YET_RELEASED")
-                        ? classes.artworkDisabled
-                        : classes.artwork
+                      data.Media.type.includes("MANGA")
+                        ? classes.artwork
+                        : data.Media.status.includes("NOT_YET_RELEASED") || !eps
+                          ? classes.artworkDisabled
+                          : classes.artwork
                     }
                     style={{ background: hueVib }}
                     onClick={
-                      data.Media.status.includes("NOT_YET_RELEASED")
-                        ? null
-                        : this.play
+                      data.Media.type.includes("MANGA")
+                        ? this.play
+                        : data.Media.status.includes("NOT_YET_RELEASED") || !eps
+                          ? null
+                          : this.play
                     }
                   >
                     <img
@@ -703,7 +764,11 @@ class Show extends Component {
                     <M.Typography className="artworktitle" type="display1">
                       {data.Media.status.includes("NOT_YET_RELEASED")
                         ? "TBA"
-                        : data.Media.type.includes("MANGA") ? "Read" : "Play"}
+                        : data.Media.type.includes("MANGA")
+                          ? "Read"
+                          : eps
+                            ? "Play"
+                            : epError ? "Not avaliable" : "Loading"}
                     </M.Typography>
                     <M.Typography
                       className={classes.artworktype}
@@ -775,67 +840,6 @@ class Show extends Component {
                     type="body1"
                     dangerouslySetInnerHTML={{ __html: data.Media.description }}
                   />
-                  {data.Media.characters &&
-                  data.Media.characters.edges.length > 0 &&
-                  data.Media.characters.edges.filter(
-                    s => s.role === "MAIN"
-                  )[0] &&
-                  data.Media.characters.edges[0] &&
-                  data.Media.characters.edges[0].voiceActors &&
-                  data.Media.characters.edges[0].voiceActors.length > 0 ? (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection:
-                          data.Media.characters.edges.filter(
-                            s => s.role === "MAIN"
-                          ).length > 2
-                            ? "column"
-                            : null
-                      }}
-                    >
-                      <M.Typography className={classes.boldD} type="headline">
-                        Starring{" "}
-                      </M.Typography>
-                      {data.Media.characters.edges.filter(
-                        s => s.role === "MAIN"
-                      ).length > 0 &&
-                        data.Media.characters.edges
-                          .filter(s => s.role === "MAIN")
-                          .map((o, i) => (
-                            <M.Typography
-                              key={i}
-                              className={classes.smallD}
-                              type="headline"
-                            >
-                              {o.voiceActors[0].name.last
-                                ? o.voiceActors[0].name.first +
-                                  " " +
-                                  o.voiceActors[0].name.last
-                                : o.voiceActors[0].name.first}{" "}
-                              as{" "}
-                              {o.node.name.last
-                                ? o.node.name.first + " " + o.node.name.last
-                                : o.node.name.first}
-                            </M.Typography>
-                          ))
-                          .reduce((pre, cur) => [
-                            pre,
-                            data.Media.characters.edges.filter(
-                              s => s.role === "MAIN"
-                            ).length > 2 ? null : (
-                              <M.Typography
-                                className={classes.smallD}
-                                style={{ marginLeft: 0 }}
-                                type="headline"
-                              >
-                                ,
-                              </M.Typography>
-                            ),
-                            cur
-                          ])}
-                    </div>
-                  ) : null}
                   <div style={{ display: "flex" }}>
                     {data.Media.staff.edges.filter(
                       s => s.role === "Director"
@@ -1004,6 +1008,22 @@ class Show extends Component {
                         className={classes.commandoTextLabel}
                       >
                         Season
+                      </M.Typography>
+                    </div>
+                  )}
+                  {data.Media.type.includes("MANGA") || !eps ? null : (
+                    <div className={classes.commandoTextBox}>
+                      <M.Typography
+                        type="title"
+                        className={classes.commandoText}
+                      >
+                        {eps ? eps.length : "..."}
+                      </M.Typography>
+                      <M.Typography
+                        type="body1"
+                        className={classes.commandoTextLabel}
+                      >
+                        Episodes
                       </M.Typography>
                     </div>
                   )}

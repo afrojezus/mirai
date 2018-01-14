@@ -401,6 +401,16 @@ class Superbar extends Component {
         case "/watch":
           this.setState({ currentPage: "", tabVaL: 4, watchIsOn: true });
           break;
+        case "/tag":
+          this.setState({ currentPage: "", tabVal: 4, watchIsOn: false });
+          break;
+        case "/tou":
+          this.setState({
+            currentPage: "Terms of Usage",
+            tabVal: 4,
+            watchIsOn: false
+          });
+          break;
         case "/monika":
           this.setState({ currentPage: "Monika", tabVal: 4, watchIsOn: false });
           break;
@@ -597,6 +607,16 @@ class Superbar extends Component {
             onClick={() => {
               this.toggleDrawer();
               this.tabChange(null, 4);
+              this.props.history.push("/tou");
+            }}
+          >
+            <ListItemText primary="Terms of Usage" />
+          </ListItem>
+          <ListItem
+            button
+            onClick={() => {
+              this.toggleDrawer();
+              this.tabChange(null, 4);
               this.props.history.push("/monika");
             }}
           >
@@ -689,10 +709,10 @@ class Superbar extends Component {
                   label:
                     tabVal === 0 ? classes.tabLabelActive : classes.tabLabel
                 }}
-                icon={<HomeIcon />}
+                label="Home"
               />
               <Tab
-                icon={<DashboardIcon />}
+                label="Feeds"
                 classes={{
                   root: classes.tab,
                   label:
@@ -700,7 +720,7 @@ class Superbar extends Component {
                 }}
               />
               <Tab
-                icon={<StarIcon />}
+                label="Rankings"
                 classes={{
                   root: classes.tab,
                   label:
@@ -708,7 +728,7 @@ class Superbar extends Component {
                 }}
               />
               <Tab
-                icon={<LiveTvIcon />}
+                label="Live"
                 classes={{
                   root: classes.tab,
                   label:

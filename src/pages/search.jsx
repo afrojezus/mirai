@@ -414,23 +414,18 @@ class Search extends Component {
           this.props.mir &&
           this.props.mir.twist
         ) {
-          console.log(data);
-          console.log(characters);
-          console.log(staff);
-          console.log(studios);
+          console.log(
+            data.Page.media
+              .filter(s => s.type === "ANIME")
+              .filter(s => s.title.romaji)
+              .filter(d =>
+                this.props.mir.twist.filter(s => s.name.match(d.title.romaji))
+              )
+          );
           this.setState({
             anime: data.Page.media
               .filter(s => s.type === "ANIME")
-              .filter(s => s.title.romaji)
-              .filter(s =>
-                s.title.romaji
-                  .toLowerCase()
-                  .match(
-                    `${this.props.mir.twist.filter(t =>
-                      t.name.toLowerCase().match(`${s.title.romaji}`)
-                    )}`
-                  )
-              ),
+              .filter(s => s.title.romaji),
             manga: data.Page.media.filter(s => s.type === "MANGA"),
             characters: characters,
             staff: staff,
@@ -504,47 +499,56 @@ class Search extends Component {
           </M.Toolbar>
           <div className={classes.cox} style={loading ? { opacity: 0 } : null}>
             <M.Grid container spacing={0} className={classes.content}>
-              {anime && anime.length > 0 ? (
+              {anime &&
+              anime.length > 0 &&
+              this.props.mir &&
+              this.props.mir.twist ? (
                 <M.Grid container className={classes.container}>
                   <M.Typography type="title" className={classes.secTitle}>
                     Anime
                   </M.Typography>
                   <M.Grid container className={classes.itemcontainer}>
                     {anime
-                      ? anime.map((anime, index) => (
-                          <M.Grid
-                            className={classes.entityCard}
-                            item
-                            xs
-                            key={index}
-                          >
-                            <M.Card
-                              style={{ background: "transparent" }}
-                              onClick={() =>
-                                this.openEntity(`/show?s=${anime.id}`)
-                              }
+                      ? anime
+                          .filter(d =>
+                            this.props.mir.twist.filter(s =>
+                              s.name.match(d.title.romaji)
+                            )
+                          )
+                          .map((anime, index) => (
+                            <M.Grid
+                              className={classes.entityCard}
+                              item
+                              xs
+                              key={index}
                             >
-                              <div className={classes.gradientCard}>
-                                <M.CardMedia
-                                  className={classes.entityImage}
-                                  image={anime.coverImage.large}
-                                />
-                              </div>
-                              <M.Typography
-                                type="headline"
-                                className={classes.entityTitle}
+                              <M.Card
+                                style={{ background: "transparent" }}
+                                onClick={() =>
+                                  this.openEntity(`/show?s=${anime.id}`)
+                                }
                               >
-                                {anime.title.english
-                                  ? anime.title.english
-                                  : anime.title.romaji}
-                              </M.Typography>
-                              <M.Typography
-                                type="headline"
-                                className={classes.entitySubTitle}
-                              />
-                            </M.Card>
-                          </M.Grid>
-                        ))
+                                <div className={classes.gradientCard}>
+                                  <M.CardMedia
+                                    className={classes.entityImage}
+                                    image={anime.coverImage.large}
+                                  />
+                                </div>
+                                <M.Typography
+                                  type="headline"
+                                  className={classes.entityTitle}
+                                >
+                                  {anime.title.english
+                                    ? anime.title.english
+                                    : anime.title.romaji}
+                                </M.Typography>
+                                <M.Typography
+                                  type="headline"
+                                  className={classes.entitySubTitle}
+                                />
+                              </M.Card>
+                            </M.Grid>
+                          ))
                       : null}
                   </M.Grid>
                 </M.Grid>

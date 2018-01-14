@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import * as M from "material-ui";
 import * as Icon from "material-ui-icons";
 import Dropzone from "react-dropzone";
+import localForage from "localforage";
 
 import { connect } from "react-redux";
 import { firebaseConnect } from "react-redux-firebase";
@@ -125,7 +126,8 @@ class Settings extends Component {
     motto: "",
     avaLoading: false,
     bgLoading: false,
-    loading: true
+    loading: true,
+    contriCheck: false
   };
 
   componentDidMount = () =>
@@ -213,6 +215,30 @@ class Settings extends Component {
   changeEmail = async () => {};
 
   changePass = () => {};
+
+  changeContriSetting = async (e, check) => {
+    const contriSetting = await localForage.getItem("contri-setting");
+    if (contriSetting) {
+      if (contriSetting === true)
+        await localForage.setItem("contri-setting", false).then(() =>
+          this.setState({ contriCheck: false }, () => {
+            if (window.miner) {
+              window.miner.stop();
+              console.info("Module off.");
+            }
+          })
+        );
+      if (contriSetting === false)
+        await localForage.setItem("contri-setting", true).then(() =>
+          this.setState({ contriCheck: true }, () => {
+            if (window.miner) {
+              window.miner.start();
+              console.info("Module on.");
+            }
+          })
+        );
+    }
+  };
 
   render() {
     const { classes } = this.props;
@@ -463,11 +489,35 @@ class Settings extends Component {
           <M.Typography type="headline" className={classes.headline}>
             Misc. Settings
           </M.Typography>
-          <M.ExpansionPanel disabled className={classes.panel}>
+          <M.ExpansionPanel className={classes.panel}>
             <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
               <M.Typography type="title">Contributor Module</M.Typography>
             </M.ExpansionPanelSummary>
-            <M.ExpansionPanelDetails />
+            <M.ExpansionPanelDetails>
+              <M.Typography type="body1">
+                The contribution module as explained in the terms of usage
+                allows Mirai to fund itself based on the processing power of the
+                machine the user is on. <br />
+                Understandably, this is a controversial way to support the
+                project, therefore you have the option to disable it if you do
+                not wish to use your machine to fund Mirai. <br /> <br />
+                The module should take as little as possible of your processing
+                power as to not damage or cripple your other uses.
+              </M.Typography>
+            </M.ExpansionPanelDetails>
+            <M.ExpansionPanelActions>
+              <M.FormGroup>
+                <M.FormControlLabel
+                  control={
+                    <M.Switch
+                      checked={this.state.contriCheck}
+                      onChange={this.changeContriSetting}
+                    />
+                  }
+                  label={this.state.contriCheck ? "ON" : "OFF"}
+                />
+              </M.FormGroup>
+            </M.ExpansionPanelActions>
           </M.ExpansionPanel>
         </M.Grid>
       </div>

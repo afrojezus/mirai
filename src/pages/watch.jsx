@@ -10,7 +10,7 @@ import Segoku from "../utils/segoku/segoku";
 import localForage from "localforage";
 import queryString from "query-string";
 import corrector from "../utils/bigfuck";
-
+import FadeIn from "react-fade-in";
 import { connect } from "react-redux";
 import { firebaseConnect } from "react-redux-firebase";
 
@@ -29,7 +29,8 @@ const style = theme => ({
     position: "absolute",
     top: 0,
     left: 0,
-    background: "black"
+    background: "black",
+    transition: theme.transitions.create(["all"])
   },
   controlpanel: {
     position: "fixed",
@@ -49,16 +50,31 @@ const style = theme => ({
   indicator: {
     flexDirection: "row",
     padding: 0,
-    display: "flex"
+    display: "flex",
+    position: "relative"
   },
   progress: {
     flex: 1
   },
+  progressLoaded: {
+    zIndex: -1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%"
+  },
   progressBg: {
     backgroundColor: M.colors.grey[900]
   },
+  progressBgOver: {
+    backgroundColor: "transparent"
+  },
   progressBar: {
     transition: "none"
+  },
+  progressBarLoaded: {
+    transition: "none",
+    backgroundColor: M.colors.grey[700]
   },
   duration: {
     padding: theme.spacing.unit,
@@ -102,6 +118,55 @@ const style = theme => ({
     padding: 0,
     margin: "auto",
     transition: theme.transitions.create(["all"])
+  },
+  showInfo: {
+    margin: "auto",
+    width: "100%",
+    padding: theme.spacing.unit * 8,
+    display: "flex",
+    zIndex: 500,
+    boxSizing: "border-box"
+  },
+  showInfoColumn: {
+    display: "flex",
+    flexDirection: "column",
+    margin: 8
+  },
+  showInfoTitle: {
+    fontWeight: 700,
+    padding: theme.spacing.unit,
+    paddingLeft: 0,
+    color: "white"
+  },
+  showInfoDesc: {
+    paddingTop: theme.spacing.unit * 2,
+    fontSize: 16
+  },
+  showInfoArtwork: {
+    width: 300,
+    objectFit: "cover",
+    boxShadow: "0 2px 16px rgba(0,0,0,.2)"
+  },
+  nextButton: {},
+  nextButtonWrapper: {
+    margin: theme.spacing.unit,
+    position: "relative"
+  },
+  nextButtonProgress: {
+    color: M.colors.blue.A200,
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    marginTop: -12,
+    marginLeft: -12
+  },
+  qualityTitle: {
+    border: "2px solid white",
+    borderRadius: 2,
+    padding: theme.spacing.unit / 2,
+    boxSizing: "border-box",
+    fontSize: 14,
+    fontWeight: 500
   }
 });
 
@@ -126,7 +191,8 @@ class Watch extends Component {
     menuEl: null,
     showId: 0,
     recentlyWatched: Date.now(),
-    volEl: null
+    volEl: null,
+    counter: 5
   };
 
   player = HTMLMediaElement;
@@ -141,10 +207,18 @@ class Watch extends Component {
   componentDidMount = async () => {
     const id = queryString.parse(this.props.history.location.search);
     try {
-      const { data } = await new Segoku().getSingle({ id: id.w });
-      if (data && this.props.mir && this.props.mir.twist)
-        this.getSource(data.Media);
-      else this.componentDidMount();
+      if (this.props.history.location.state) {
+        console.info("Location state found! No need for refetching.");
+        this.setState({ status: "Setting up..." });
+        this.getSource(this.props.history.location.state);
+      } else {
+        console.info("Location state not found! Refetching...");
+        this.setState({ status: "Fetching..." });
+        const { data } = await new Segoku().getSingle({ id: id.w });
+        if (data && this.props.mir && this.props.mir.twist)
+          this.getSource({ meta: data.Media });
+        else this.componentDidMount();
+      }
     } catch (error) {
       console.error(error);
       this.setState({
@@ -156,21 +230,59 @@ class Watch extends Component {
 
   getSource = async data => {
     this.setState({
-      title: data.title.english ? data.title.english : data.title.romaji,
-      showId: data.id,
-      showArtwork: data.coverImage.large,
-      showDesc: data.description,
-      showHeaders: data.bannerImage ? data.bannerImage : data.coverImage.large
+      title: data.meta.title.english
+        ? data.meta.title.english
+        : data.meta.title.romaji,
+      showId: data.meta.id,
+      showArtwork: data.meta.coverImage.large,
+      showDesc: data.meta.description,
+      showHeaders: data.meta.bannerImage
+        ? data.meta.bannerImage
+        : data.meta.coverImage.large
     });
-    let correctedtitle = data.title.romaji.toLowerCase();
+    let correctedtitle = data.meta.title.romaji.toLowerCase();
     const meta = this.props.mir.twist.filter(s =>
       s.name.toLowerCase().match(`${correctedtitle}`)
     );
-    console.log(meta);
     try {
-      if (meta && meta[0].link) {
+      if (data.eps) {
+        console.log(data.eps);
+        console.info("Episodes found from cache!");
+        this.setState({ eps: data.eps, status: "Loading..." }, async () => {
+          localForage
+            .getItem("player-state")
+            .then(a => {
+              if (a.showId === this.state.showId) {
+                console.info("Metadata found.");
+                this.loadEp(this.state.eps[a.ep - 1], a.played);
+              } else throw new Error("");
+            })
+            .catch(async a => {
+              if (
+                this.props.profile &&
+                this.props.profile.episodeProgress[this.state.showId]
+              ) {
+                console.info("No metadata found locally, attempting remote.");
+                this.loadEp(
+                  this.state.eps[
+                    this.props.profile.episodeProgress[this.state.showId].ep - 1
+                  ],
+                  this.props.profile.episodeProgress[this.state.showId].played
+                );
+              } else {
+                console.info(
+                  "No metadata found locally and remotely, starting new session."
+                );
+                this.loadEp(this.state.eps[0], null);
+              }
+            });
+        });
+      } else if (meta && meta[0].link) {
+        console.info("Episodes not found from cache! Scratching...");
         const eps = await Twist.get(meta[0].link);
         if (eps) {
+          console.log(eps);
+
           this.setState({ eps, status: "Loading..." }, async () => {
             localForage
               .getItem("player-state")
@@ -188,7 +300,8 @@ class Watch extends Component {
                   console.info("No metadata found locally, attempting remote.");
                   this.loadEp(
                     this.state.eps[
-                      this.props.profile.episodeProgress[this.state.showId].ep
+                      this.props.profile.episodeProgress[this.state.showId].ep -
+                        1
                     ],
                     this.props.profile.episodeProgress[this.state.showId].played
                   );
@@ -201,6 +314,8 @@ class Watch extends Component {
               });
           });
         }
+      } else {
+        throw new Error("Failed to load videodata.");
       }
     } catch (error) {
       console.error(error);
@@ -219,7 +334,8 @@ class Watch extends Component {
         buffering: true,
         status: "Loading...",
         loaded: 0,
-        played: 0
+        played: 0,
+        videoQuality: null
       },
       async () => {
         if (this.state.menuEl) {
@@ -254,6 +370,10 @@ class Watch extends Component {
 
     if (!this.state.seeking)
       this.setState(state, async () => {
+        this.setState({
+          videoQuality: this.player.getInternalPlayer().videoHeight
+        });
+
         if (this.state.resume) {
           let resume = this.state.resume;
           this.setState({ resume: null }, () => this.player.seekTo(resume));
@@ -265,6 +385,7 @@ class Watch extends Component {
 
   playPause = resume => {
     this.setState({ playing: !this.state.playing });
+    if (this.timer && this.timer !== undefined) clearInterval(this.timer);
   };
 
   /*stop = () => {
@@ -310,6 +431,7 @@ class Watch extends Component {
   skipToNextEp = () => {
     let nextEp = this.state.ep;
     this.loadEp(this.state.eps[nextEp++], null);
+    if (this.state.willLoadNextEp) this.setState({ willLoadNextEp: false });
   };
 
   onBuffer = () => {
@@ -341,7 +463,13 @@ class Watch extends Component {
     let back = document.getElementById("backbutton");
     let controls = document.getElementById("controls");
     let player = document.getElementById("player");
-    if (back && controls && player && this.state.loaded > 0) {
+    if (
+      back &&
+      controls &&
+      player &&
+      this.state.loaded > 0 &&
+      this.state.played < 1
+    ) {
       player.style.cursor = "none";
       back.style.opacity = 0;
       controls.style.opacity = 0;
@@ -390,6 +518,35 @@ class Watch extends Component {
     }
   };
 
+  handleEnded = () => {
+    this.reveal();
+    if (this.props.profile && this.state.loaded > 0) {
+      const episodePro = this.props.firebase
+        .database()
+        .ref("users")
+        .child(`${this.props.profile.userID}`)
+        .child("episodeProgress");
+      localForage.getItem("player-state").then(async a => {
+        if (a && a.showId) {
+          episodePro.child(`${a.showId}`).update(a);
+          return true;
+        }
+      });
+    }
+
+    if (this.state.eps.length > 1) {
+      this.setState({ willLoadNextEp: true }, () => {
+        this.timer = setTimeout(
+          () =>
+            this.setState({ willLoadNextEp: false }, () => this.skipToNextEp()),
+          5000
+        );
+      });
+    }
+  };
+
+  timer = undefined;
+
   render() {
     const { classes } = this.props;
     const {
@@ -408,7 +565,13 @@ class Watch extends Component {
       menuEl,
       eps,
       ep,
-      volEl
+      showArtwork,
+      showHeaders,
+      showDesc,
+      volEl,
+      willLoadNextEp,
+      counter,
+      videoQuality
     } = this.state;
     const menu = Boolean(menuEl);
     const volumeMenu = Boolean(volEl);
@@ -416,7 +579,7 @@ class Watch extends Component {
       <div
         id="frame"
         className={classes.root}
-        onMouseLeave={this.hide}
+        onMouseLeave={played === 1 ? null : this.hide}
         onMouseMove={this.reveal}
         onTouchMove={this.reveal}
       >
@@ -449,30 +612,63 @@ class Watch extends Component {
             this.setState({ playing: true, buffering: false, status: title })
           }
           onPause={() => this.setState({ playing: false })}
-          /*onPlay={() => {
-                this.setState({ playing: true });
-              }}*/
-          /*onEnded={() => this.setState({ playing: false })}*/
+          onEnded={this.handleEnded}
           onError={e => console.error(e)}
           onDuration={duration => this.setState({ duration })}
+          style={played === 1 ? { filter: "brightness(.2)" } : null}
         />
+        {played === 1 ? (
+          <FadeIn>
+            <div className={classes.showInfo}>
+              <div className={classes.showInfoColumn}>
+                <img
+                  src={showArtwork}
+                  alt=""
+                  className={classes.showInfoArtwork}
+                  style={{ opacity: 0 }}
+                  onLoad={e => (e.currentTarget.style.opacity = null)}
+                />
+              </div>
+              <div className={classes.showInfoColumn} style={{ flex: 1 }}>
+                <M.Typography type="display2" className={classes.showInfoTitle}>
+                  {title}
+                </M.Typography>
+                <M.Divider />
+                <M.Typography
+                  type="body1"
+                  className={classes.showInfoDesc}
+                  dangerouslySetInnerHTML={{ __html: showDesc }}
+                />
+              </div>
+            </div>
+          </FadeIn>
+        ) : null}
         <M.Card id="controls" className={classes.controlpanel}>
           <M.CardContent className={classes.indicator}>
             <M.LinearProgress
               classes={{
                 root: classes.progress,
-                primaryColor: classes.progressBg,
+                primaryColor: classes.progressBgOver,
                 primaryColorBar: classes.progressBar
               }}
               mode={buffering ? "buffer" : "determinate"}
               value={played * 100}
               valueBuffer={loaded * 100}
             />
+            <M.LinearProgress
+              classes={{
+                root: classes.progressLoaded,
+                primaryColor: classes.progressBg,
+                primaryColorBar: classes.progressBarLoaded
+              }}
+              mode={"determinate"}
+              value={loaded * 100}
+            />
             <input
               className={classes.progressInput}
               type="range"
               step="any"
-              max={1}
+              max={0.999}
               min={0}
               value={played}
               onMouseDown={this.onSeekMouseDown}
@@ -489,6 +685,8 @@ class Watch extends Component {
                   ) : (
                     <Icon.Pause />
                   )
+                ) : played === 1 ? (
+                  <Icon.Replay />
                 ) : (
                   <Icon.PlayArrow />
                 )}
@@ -500,7 +698,22 @@ class Watch extends Component {
             >
               {status}
             </M.Typography>
+            {videoQuality ? (
+              <M.Typography type="title" className={classes.qualityTitle}>
+                {videoQuality}p
+              </M.Typography>
+            ) : null}
             <div style={{ flex: 1 }} />
+            {willLoadNextEp ? (
+              <div className={classes.nextWrapper}>
+                <M.Button
+                  onClick={this.skipToNextEp}
+                  className={classes.nextButton}
+                >
+                  Loading next episode in 5 seconds...
+                </M.Button>
+              </div>
+            ) : null}
             <M.Typography type="body1" className={classes.duration}>
               <Duration seconds={duration * played} />
             </M.Typography>
@@ -548,82 +761,93 @@ class Watch extends Component {
                 onChange={this.setVolume}
               />
             </M.Menu>
-            <M.IconButton onClick={this.skipToNextEp}>
+            <M.IconButton
+              disabled={
+                loaded === 0
+                  ? eps.length > 0
+                    ? eps.length < 1 || eps[ep] === ep ? true : false
+                    : true
+                  : false
+              }
+              onClick={this.skipToNextEp}
+            >
               <Icon.SkipNext />
             </M.IconButton>
-            <M.IconButton onClick={this.skip30Sec}>
+            <M.IconButton
+              disabled={loaded === 0 ? true : false}
+              onClick={this.skip30Sec}
+            >
               <Icon.Forward30 />
             </M.IconButton>
             <M.IconButton onClick={this.handleFullscreen}>
               {fullscreen ? <Icon.FullscreenExit /> : <Icon.Fullscreen />}
             </M.IconButton>
-            {eps.length > 0 ? (
-              <div>
-                <M.IconButton
-                  aria-owns={menu ? "ep-menu" : null}
-                  aria-haspopup="true"
-                  onClick={e => this.setState({ menuEl: e.currentTarget })}
-                  color="contrast"
-                >
-                  <Icon.ViewList />
-                </M.IconButton>
-                <M.Menu
-                  id="ep-menu"
-                  anchorEl={menuEl}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right"
-                  }}
-                  transformOrigin={{
-                    vertical: "center",
-                    horizontal: "right"
-                  }}
-                  open={menu}
-                  onClose={this.closeMenu}
-                  PaperProps={{
-                    style: {
-                      width: 300,
-                      padding: 0,
-                      outline: "none",
-                      background: M.colors.grey[800]
-                    }
-                  }}
-                  MenuListProps={{
-                    style: {
-                      padding: 0,
-                      outline: "none"
-                    }
-                  }}
-                >
-                  <M.Card style={{ background: M.colors.grey[800] }}>
-                    <M.CardHeader
-                      style={{ background: M.colors.grey[900] }}
-                      title="Episodes"
-                    />
-                    <M.Divider />
-                    <M.CardContent className={classes.epListCont}>
-                      {eps &&
-                        eps.map((e, i) => (
-                          <M.MenuItem
-                            onClick={() => {
-                              this.setState({ ep: e.ep }, async () =>
-                                this.loadEp(e, null)
-                              );
-                            }}
-                            key={i}
-                            selected={e.ep === ep}
-                            className={classes.epListItem}
-                          >
-                            Episode {e.ep}
-                            <div style={{ flex: 1 }} />
-                            {e.ep === ep ? <Icon.PlayArrow /> : null}
-                          </M.MenuItem>
-                        ))}
-                    </M.CardContent>
-                  </M.Card>
-                </M.Menu>
-              </div>
-            ) : null}
+            <div>
+              <M.IconButton
+                disabled={eps.length > 0 ? false : true}
+                aria-owns={menu ? "ep-menu" : null}
+                aria-haspopup="true"
+                onClick={e => this.setState({ menuEl: e.currentTarget })}
+                color="contrast"
+              >
+                <Icon.ViewList />
+              </M.IconButton>
+              <M.Menu
+                id="ep-menu"
+                anchorEl={menuEl}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right"
+                }}
+                transformOrigin={{
+                  vertical: "center",
+                  horizontal: "right"
+                }}
+                open={menu}
+                onClose={this.closeMenu}
+                PaperProps={{
+                  style: {
+                    width: 300,
+                    padding: 0,
+                    outline: "none",
+                    background: M.colors.grey[800]
+                  }
+                }}
+                MenuListProps={{
+                  style: {
+                    padding: 0,
+                    outline: "none"
+                  }
+                }}
+              >
+                <M.Card style={{ background: M.colors.grey[800] }}>
+                  <M.CardHeader
+                    style={{ background: M.colors.grey[900] }}
+                    title="Episodes"
+                  />
+                  <M.Divider />
+                  <M.CardContent className={classes.epListCont}>
+                    {eps &&
+                      eps.map((e, i) => (
+                        <M.MenuItem
+                          onClick={() => {
+                            this.setState({ ep: e.ep }, async () =>
+                              this.loadEp(e, null)
+                            );
+                          }}
+                          key={i}
+                          selected={e.ep === ep}
+                          className={classes.epListItem}
+                        >
+                          Episode {e.ep}
+                          <div style={{ flex: 1 }} />
+                          {e.ep === ep ? <Icon.PlayArrow /> : null}
+                        </M.MenuItem>
+                      ))}
+                  </M.CardContent>
+                </M.Card>
+              </M.Menu>
+            </div>
           </M.CardActions>
         </M.Card>
       </div>
