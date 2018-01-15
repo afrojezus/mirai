@@ -184,9 +184,9 @@ const superTable = props => (
             onClick={() =>
               props.changePage(
                 `/show?${props.type}=${
-                  props.typeof === "progress"
-                    ? anime.anime ? anime.anime.meta.i : anime.showId
-                    : anime.id
+                props.typeof === "progress"
+                  ? anime.anime ? anime.anime.meta.i : anime.showId
+                  : anime.id
                 }`
               )
             }
@@ -205,8 +205,8 @@ const superTable = props => (
                 ? props.type.includes("m")
                   ? null
                   : timeFormatter(anime.nextAiringEpisode.timeUntilAiring) +
-                    " till Episode " +
-                    anime.nextAiringEpisode.episode
+                  " till Episode " +
+                  anime.nextAiringEpisode.episode
                 : props.typeof === "ranking"
                   ? anime.category
                   : props.typeof === "progress"
@@ -240,18 +240,18 @@ const superTable = props => (
                 dangerouslySetInnerHTML={
                   props.typeof === "ongoing"
                     ? {
-                        __html: anime.description
-                      }
+                      __html: anime.description
+                    }
                     : props.typeof === "ranking"
                       ? {
-                          __html: anime.desc
-                        }
+                        __html: anime.desc
+                      }
                       : null
                 }
               >
                 {props.typeof === "progress"
                   ? "Last watched " +
-                    timeFormatToReadable(anime.recentlyWatched)
+                  timeFormatToReadable(anime.recentlyWatched)
                   : null}
               </M.Typography>
             </Dotdotdot>

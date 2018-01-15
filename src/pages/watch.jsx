@@ -210,7 +210,8 @@ class Watch extends Component {
       if (this.props.history.location.state) {
         console.info("Location state found! No need for refetching.");
         this.setState({ status: "Setting up..." });
-        this.getSource(this.props.history.location.state);
+        if (this.props.mir && this.props.mir.twist)
+          this.getSource(this.props.history.location.state);
       } else {
         console.info("Location state not found! Refetching...");
         this.setState({ status: "Fetching..." });
@@ -265,7 +266,7 @@ class Watch extends Component {
                 console.info("No metadata found locally, attempting remote.");
                 this.loadEp(
                   this.state.eps[
-                    this.props.profile.episodeProgress[this.state.showId].ep - 1
+                  this.props.profile.episodeProgress[this.state.showId].ep - 1
                   ],
                   this.props.profile.episodeProgress[this.state.showId].played
                 );
@@ -300,8 +301,8 @@ class Watch extends Component {
                   console.info("No metadata found locally, attempting remote.");
                   this.loadEp(
                     this.state.eps[
-                      this.props.profile.episodeProgress[this.state.showId].ep -
-                        1
+                    this.props.profile.episodeProgress[this.state.showId].ep -
+                    1
                     ],
                     this.props.profile.episodeProgress[this.state.showId].played
                   );
@@ -435,7 +436,7 @@ class Watch extends Component {
   };
 
   onBuffer = () => {
-    this.setState({ buffering: true, status: "Buffering..." }, () => {});
+    this.setState({ buffering: true, status: "Buffering..." }, () => { });
   };
 
   inactivityTimeout;
@@ -683,13 +684,13 @@ class Watch extends Component {
                   loaded === 0 || buffering ? (
                     <M.CircularProgress />
                   ) : (
-                    <Icon.Pause />
-                  )
+                      <Icon.Pause />
+                    )
                 ) : played === 1 ? (
                   <Icon.Replay />
                 ) : (
-                  <Icon.PlayArrow />
-                )}
+                      <Icon.PlayArrow />
+                    )}
               </M.IconButton>
             ) : null}
             <M.Typography
@@ -765,7 +766,7 @@ class Watch extends Component {
               disabled={
                 loaded === 0
                   ? eps.length > 0
-                    ? eps.length < 1 || eps[ep] === ep ? true : false
+                    ? eps.length < 1 || eps.length - 1 === ep ? true : false
                     : true
                   : false
               }

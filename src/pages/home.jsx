@@ -29,6 +29,8 @@ import MoreVertIcon from "material-ui-icons/MoreVert";
 import ShareIcon from "material-ui-icons/Share";
 import { Menu } from "material-ui";
 import miraiIcon from "../assets/mirai-icon.png";
+import ArrowForward from 'material-ui-icons/ArrowForward'
+import ArrowBack from 'material-ui-icons/ArrowBack'
 
 import { firebaseConnect } from "react-redux-firebase";
 
@@ -388,6 +390,9 @@ const styles = theme => ({
   }
 });
 
+const nextArrow = (props) => <IconButton {...props}><ArrowForward /></IconButton>
+const prevArrow = (props) => <IconButton {...props}><ArrowBack /></IconButton>
+
 class Home extends Component {
   state = {
     feeds: null,
@@ -490,12 +495,15 @@ class Home extends Component {
       speed: 300,
       slidesToShow: 4,
       slidesToScroll: 1,
-      autoPlay: true,
-      autoPlaySpeed: 1000,
+      autoplay: true,
+      autoplaySpeed: 3000,
+      pauseOnHover: true,
       responsive: [
         { breakpoint: 2000, settings: { slidesToShow: 3 } },
         { breakpoint: 1200, settings: { slidesToShow: 1 } }
-      ]
+      ],
+      //     nextArrow,
+      //     prevArrow
     };
 
     return (
@@ -514,17 +522,17 @@ class Home extends Component {
               onLoad={e => (e.currentTarget.style.opacity = null)}
             />
           ) : (
-            <video
-              muted
-              loop
-              autoPlay
-              src={ripple}
-              alt=""
-              className={classes.bgImage}
-              style={{ opacity: 0 }}
-              onLoad={e => (e.currentTarget.style.opacity = null)}
-            />
-          )}
+              <video
+                muted
+                loop
+                autoPlay
+                src={ripple}
+                alt=""
+                className={classes.bgImage}
+                style={{ opacity: 0 }}
+                onLoad={e => (e.currentTarget.style.opacity = null)}
+              />
+            )}
           <div className={classes.topHeaderBig}>
             <Grid container spacing={16} className={classes.container}>
               <Grid item xs className={classes.itemContainer}>
@@ -568,39 +576,39 @@ class Home extends Component {
                 >
                   {this.props.mir && this.props.mir.twist
                     ? Object.values(this.props.mir.twist).filter(
-                        s => s.ongoing === true
-                      ).length -
-                      1 +
-                      " ongoing animes in database"
+                      s => s.ongoing === true
+                    ).length -
+                    1 +
+                    " ongoing animes in database"
                     : null}
                 </Typography>
               </Grid>
             </Grid>
             {ongoing &&
-            ongoing.data &&
-            this.props.mir &&
-            this.props.mir.twist ? (
-              <div className={classes.topHeader}>
-                <SuperTable
-                  settings={settings}
-                  data={ongoing.data.Page.media
-                    .filter(s => s.nextAiringEpisode)
-                    .filter(d =>
-                      this.props.mir.twist.filter(s =>
-                        s.name.match(d.title.romaji)
+              ongoing.data &&
+              this.props.mir &&
+              this.props.mir.twist ? (
+                <div className={classes.topHeader}>
+                  <SuperTable
+                    settings={settings}
+                    data={ongoing.data.Page.media
+                      .filter(s => s.nextAiringEpisode)
+                      .filter(d =>
+                        this.props.mir.twist.filter(s =>
+                          s.name.match(d.title.romaji)
+                        )
                       )
-                    )
-                    .sort(
+                      .sort(
                       (a, b) =>
                         a.nextAiringEpisode.timeUntilAiring -
                         b.nextAiringEpisode.timeUntilAiring
-                    )}
-                  type="s"
-                  typeof="ongoing"
-                  limit={12}
-                />
-              </div>
-            ) : null}
+                      )}
+                    type="s"
+                    typeof="ongoing"
+                    limit={12}
+                  />
+                </div>
+              ) : null}
             <Grid
               container
               spacing={16}
