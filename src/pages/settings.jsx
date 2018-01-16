@@ -31,11 +31,8 @@ const style = theme => ({
     marginLeft: "auto",
     marginRight: "auto",
     padding: 24,
-    maxWidth: 1200,
+    maxWidth: 1600,
     paddingTop: theme.spacing.unit * 12,
-    [theme.breakpoints.up("md")]: {
-      maxWidth: "calc(100% - 64px)"
-    },
     display: "flex",
     flexDirection: "column"
   },

@@ -23,11 +23,7 @@ const style = theme => ({
   container: {
     marginLeft: "auto",
     marginRight: "auto",
-    maxWidth: 1200,
-    [theme.breakpoints.up("md")]: {
-      maxWidth: "calc(100% - 64px)",
-      paddingTop: 24
-    },
+    maxWidth: 1600,
     margin: "auto"
   },
   root: {
@@ -48,16 +44,7 @@ const style = theme => ({
     width: "100%",
     zIndex: -1
   },
-  content: {
-    marginLeft: "auto",
-    marginRight: "auto",
-    padding: 24,
-    maxWidth: 1200,
-    paddingTop: theme.spacing.unit * 8,
-    [theme.breakpoints.up("md")]: {
-      maxWidth: "calc(100% - 64px)"
-    }
-  },
+  content: {},
   header: {
     position: "relative",
     margin: "auto",

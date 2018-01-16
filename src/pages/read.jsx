@@ -24,11 +24,8 @@ const style = theme => ({
     marginLeft: "auto",
     marginRight: "auto",
     padding: 24,
-    maxWidth: 1200,
-    paddingTop: theme.spacing.unit * 8,
-    [theme.breakpoints.up("md")]: {
-      maxWidth: "calc(100% - 64px)"
-    }
+    maxWidth: 1600,
+    paddingTop: theme.spacing.unit * 8
   },
   header: {
     position: "relative",

@@ -23,7 +23,11 @@ const style = theme => ({
   },
   content: {
     width: "100%",
-    paddingTop: theme.spacing.unit * 8
+    paddingTop: theme.spacing.unit * 8,
+    marginLeft: "auto",
+    marginRight: "auto",
+    padding: 24,
+    maxWidth: 1600
   },
   header: {
     position: "relative",

@@ -29,8 +29,10 @@ const style = theme => ({
     zIndex: -1
   },
   content: {
-    width: "100%",
-    paddingTop: theme.spacing.unit * 8
+    paddingTop: theme.spacing.unit * 8,
+    marginLeft: "auto",
+    marginRight: "auto",
+    maxWidth: 1600
   },
   header: {
     position: "relative",

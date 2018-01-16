@@ -15,10 +15,7 @@ const styles = theme => ({
     marginLeft: "auto",
     marginRight: "auto",
     padding: 24,
-    maxWidth: 1200,
-    [theme.breakpoints.up("md")]: {
-      maxWidth: "calc(100% - 64px)"
-    }
+    maxWidth: 1600
   },
   itemContainer: {
     margin: theme.spacing.unit

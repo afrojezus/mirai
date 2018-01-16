@@ -12,9 +12,11 @@ import { firebaseConnect } from "react-redux-firebase";
 
 const style = theme => ({
   root: {
-    height: "100%",
-    width: "100%",
+    marginLeft: "auto",
+    marginRight: "auto",
+    maxWidth: 1600,
     position: "relative",
+    paddingTop: theme.spacing.unit * 8,
     transition: theme.transitions.create(["all"])
   },
   bgImage: {
@@ -31,8 +33,8 @@ const style = theme => ({
     transform: "scale(10)"
   },
   content: {
-    width: "100%",
-    paddingTop: theme.spacing.unit * 8
+    padding: theme.spacing.unit * 3,
+    boxSizing: "border-box"
   },
   header: {
     position: "relative",
@@ -723,7 +725,7 @@ class Fig extends Component {
             ) : null
           ) : null}
           {(data && data.Character) || (data && data.Staff) ? (
-            <M.Grid container spacing={0} className={classes.content}>
+            <M.Grid container spacing={0}>
               <M.Grid container spacing={0} className={classes.container}>
                 <M.Grid
                   item

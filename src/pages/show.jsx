@@ -30,7 +30,10 @@ const styles = theme => ({
   root: {
     paddingTop: theme.spacing.unit * 8,
     transition: theme.transitions.create(["all"]),
-    animation: "load .3s ease"
+    animation: "load .3s ease",
+    marginLeft: "auto",
+    marginRight: "auto",
+    maxWidth: 1600
   },
   backToolbar: {
     marginTop: theme.spacing.unit * 8
@@ -65,13 +68,8 @@ const styles = theme => ({
     transition: theme.transitions.create(["all"])
   },
   container: {
-    marginLeft: "auto",
-    marginRight: "auto",
-    maxWidth: 1200,
-    [theme.breakpoints.up("md")]: {
-      maxWidth: "calc(100% - 64px)",
-      paddingTop: 24
-    }
+    padding: theme.spacing.unit * 3,
+    boxSizing: "border-box"
   },
   frame: {
     height: "100%",
@@ -442,6 +440,13 @@ const styles = theme => ({
     color: "white",
     boxShadow: "0 2px 16px rgba(0,0,0,.2)",
     fontWeight: 600
+  },
+  loadingArtwork: {
+    margin: "auto",
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)"
   }
 });
 
@@ -760,6 +765,16 @@ class Show extends Component {
                       className={classes.artworkimg}
                       style={{ opacity: 0 }}
                       onLoad={e => (e.currentTarget.style.opacity = null)}
+                    />
+                    <M.CircularProgress
+                      className={classes.loadingArtwork}
+                      style={
+                        data.Media.type.includes("MANGA")
+                          ? { opacity: 0 }
+                          : eps
+                            ? { opacity: 0 }
+                            : epError ? { opacity: 0 } : null
+                      }
                     />
                     <M.Typography className="artworktitle" type="display1">
                       {data.Media.status.includes("NOT_YET_RELEASED")
