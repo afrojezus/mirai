@@ -9,7 +9,6 @@ import { connect } from "react-redux";
 import { push } from "react-router-redux";
 const style = theme => ({
   bigCard: {
-    margin: theme.spacing.unit * 3,
     padding: theme.spacing.unit * 2,
     display: "flex",
     boxShadow: "0 2px 18px rgba(0,0,0,.4)",
@@ -19,12 +18,6 @@ const style = theme => ({
     width: "100%",
     boxSizing: "border-box",
     transition: theme.transitions.create(["all"]),
-    "&:last-child": {
-      marginRight: theme.spacing.unit * 9
-    },
-    "&:first-child": {
-      marginLeft: theme.spacing.unit * 9
-    },
     position: "relative",
     "&:hover": {
       background: `rgba(0,55,230,.3)`
@@ -74,8 +67,7 @@ const style = theme => ({
     zIndex: 3,
     position: "absolute",
     width: "100%",
-    bottom: -theme.spacing.unit * 2,
-    left: -theme.spacing.unit * 2
+    margin: 'auto'
   },
   bigCardTitle: {
     zIndex: 3,
@@ -109,6 +101,49 @@ const style = theme => ({
   },
   dotdot: {
     overflow: "initial !important"
+  },
+  sliderBig: {
+    height: 300,
+    marginBottom: theme.spacing.unit * 2,
+    "& > .slick-list": {},
+    flexFlow: "row nowrap"
+  },
+  sliderDots: {
+    color: "white",
+    position: "absolute",
+    width: "100%",
+    display: "flex !important",
+    listStyle: "none",
+    boxSizing: "border-box",
+    justifyContent: "center",
+    "& > .slick-active > button": {
+      background: "white"
+    },
+    "& > li": {
+      filter: "drop-shadow(0 2px 18px rgba(0,0,0,.5))",
+      padding: 0,
+      margin: "0 5px",
+      height: 24,
+      width: 24,
+      display: "inline-block",
+      position: "relative",
+      cursor: "pointer",
+      "& > button": {
+        filter: "drop-shadow(0 2px 18px rgba(0,0,0,.5))",
+        fontSize: 0,
+        lineHeight: 0,
+        display: "block",
+        width: 10,
+        height: 10,
+        padding: 5,
+        cursor: "pointer",
+        color: "transparent",
+        border: 0,
+        outline: 0,
+        background: "rgba(255,255,255,.2)",
+        borderRadius: "50%"
+      }
+    }
   }
 });
 
@@ -146,7 +181,21 @@ const timeFormatToReadable = time => {
 };
 
 const superTable = props => (
-  <Slider {...props.settings}>
+  <Slider
+    className={props.classes.sliderBig}
+    dots
+    dotsClass={props.classes.sliderDots}
+    arrows
+    focusOnSelect
+    easing="ease"
+    speed={700}
+    slidesToShow={4}
+    slidesToScroll={1}
+    pauseOnHover
+    responsive={[
+      { breakpoint: 2000, settings: { slidesToShow: 3 } },
+      { breakpoint: 1200, settings: { slidesToShow: 1 } }
+    ]}>
     {props.data.splice(0, props.limit).map((anime, index) => (
       <M.Card className={props.classes.bigCard} key={index}>
         <div className={props.classes.bigCardImage}>

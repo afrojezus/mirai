@@ -80,8 +80,7 @@ const styles = theme => ({
   headlineTitle: {
     marginBottom: 24,
     fontSize: 48,
-    fontWeight: 500,
-    fontFamily: "Product Sans"
+    fontWeight: 800,
   },
   fullWidth: {
     width: "100%"

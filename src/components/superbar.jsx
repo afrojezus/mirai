@@ -60,13 +60,17 @@ import Tabs, { Tab } from "material-ui/Tabs";
 import { firebaseConnect } from "react-redux-firebase";
 
 import NotificationForm from "./notificationForm";
+import BottomNavigation from "material-ui/BottomNavigation/BottomNavigation";
+import BottomNavigationAction from "material-ui/BottomNavigation/BottomNavigationAction";
 
 const drawerWidth = 240;
 
 const styles = theme => ({
   root: {
     width: "100%",
-    transition: theme.transitions.create(["all"])
+    transition: theme.transitions.create(["all"]),
+    paddingLeft: 'env(safe-area-inset-left)',
+    paddingRight: 'env(safe-area-inset-right)'
   },
   gd: {
     width: "100%",
@@ -124,7 +128,11 @@ const styles = theme => ({
   drawer: {
     width: drawerWidth,
     height: "100%",
-    backgroundColor: "#111"
+    backgroundColor: "#111",
+    paddingLeft: 'env(safe-area-inset-left)',
+    [theme.breakpoints.down("md")]: {
+      height: 'calc(100% - 56px)'
+    }
   },
   drawerDocked: {
     height: "100%",
@@ -202,12 +210,13 @@ const styles = theme => ({
     "& > div": {
       position: "absolute",
       width: "100%"
-    }
+    },
+    [theme.breakpoints.down("md")]: {
+      height: 'calc(100% - 56px)'
+    },
   },
   footerCopy: {
     fontWeight: 700,
-    position: "fixed",
-    bottom: 0,
     padding: theme.spacing.unit * 3,
     fontSize: 12,
     color: grey[800]
@@ -249,6 +258,12 @@ const styles = theme => ({
   },
   statusForm: {
     width: "100%"
+  },
+  navBar: {
+    position: 'fixed',
+    width: '100%',
+    bottom: 0,
+    zIndex: 9999
   }
 });
 
@@ -269,7 +284,7 @@ class Superbar extends Component {
     mirTitle: ""
   };
 
-  unlistenScroller = () => {}; /* window.addEventListener("scroll", e => {
+  unlistenScroller = () => { }; /* window.addEventListener("scroll", e => {
     if (window.scrollY > 0) this.setState({ notAtTop: true });
     else this.setState({ notAtTop: false });
   });*/
@@ -626,13 +641,13 @@ class Superbar extends Component {
         <Divider className={classes.listDivider} />
         <Typography className={classes.footerCopy} type="headline">
           {Object.keys(this.props.firebase).length - 1} online{this.props.mir &&
-          this.props.mir.twist ? (
-            <br />
-          ) : null}
+            this.props.mir.twist ? (
+              <br />
+            ) : null}
           {this.props.mir && this.props.mir.twist
             ? Object.keys(this.props.mir.twist).length -
-              1 +
-              " animes in database"
+            1 +
+            " animes in database"
             : null}
           <br />2018 afroJ
         </Typography>
@@ -663,12 +678,12 @@ class Superbar extends Component {
               type="title"
               style={
                 currentPage === "Mirai"
-                  ? { fontFamily: "Product Sans", fontWeight: 500 }
+                  ? { fontWeight: 500, letterSpacing: 1 }
                   : null
               }
             >
               {this.props.history.location.pathname.includes("/show") ||
-              this.props.history.location.pathname.includes("/fig")
+                this.props.history.location.pathname.includes("/fig")
                 ? mirTitle
                 : currentPage}
             </Typography>
@@ -882,14 +897,14 @@ class Superbar extends Component {
                 </Menu>
               </div>
             ) : (
-              <IconButton
-                onClick={() => {
-                  this.props.history.push("/setup");
-                }}
-              >
-                <AccountCircle />
-              </IconButton>
-            )}
+                <IconButton
+                  onClick={() => {
+                    this.props.history.push("/setup");
+                  }}
+                >
+                  <AccountCircle />
+                </IconButton>
+              )}
           </Toolbar>
         </AppBar>
         <Drawer
@@ -904,6 +919,17 @@ class Superbar extends Component {
           {menuList}
         </Drawer>
         <div className={classes.content}>{this.props.children}</div>
+        <Hidden mdUp>
+          <BottomNavigation value={tabVal}
+            onChange={this.tabChange}
+            showLabels
+            className={classes.navBar}>
+            <BottomNavigationAction label="Home" icon={<HomeIcon />} />
+            <BottomNavigationAction label="Feeds" icon={<DashboardIcon />} />
+            <BottomNavigationAction label="Rankings" icon={<StarIcon />} />
+            <BottomNavigationAction label="Live" icon={<LiveTvIcon />} />
+          </BottomNavigation>
+        </Hidden>
       </div>
     );
   }

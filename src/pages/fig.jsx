@@ -252,7 +252,6 @@ const style = theme => ({
   },
   commandoBar: {
     width: "100%",
-    padding: theme.spacing.unit,
     display: "inline-flex",
     boxSizing: "border-box",
     background: "#222",
@@ -616,13 +615,13 @@ class Fig extends Component {
     this.props.sendTitleToMir(
       this.state.type.includes("CHARACTER")
         ? nameSwapper(
-            this.state.data.Character.name.first,
-            this.state.data.Character.name.last
-          )
+          this.state.data.Character.name.first,
+          this.state.data.Character.name.last
+        )
         : nameSwapper(
-            this.state.data.Staff.name.first,
-            this.state.data.Staff.name.last
-          )
+          this.state.data.Staff.name.first,
+          this.state.data.Staff.name.last
+        )
     );
     Vibrant.from("https://cors-anywhere.herokuapp.com/" + image).getPalette(
       (err, pal) => {
@@ -650,13 +649,13 @@ class Fig extends Component {
   like = async () => {
     let name = this.state.data.Character
       ? nameSwapper(
-          this.state.data.Character.name.first,
-          this.state.data.Character.name.last
-        )
+        this.state.data.Character.name.first,
+        this.state.data.Character.name.last
+      )
       : nameSwapper(
-          this.state.data.Staff.name.first,
-          this.state.data.Staff.name.last
-        );
+        this.state.data.Staff.name.first,
+        this.state.data.Staff.name.last
+      );
     let image = this.state.data.Character
       ? this.state.data.Character.image.large
       : this.state.data.Staff.image.large;
@@ -664,15 +663,15 @@ class Fig extends Component {
     if (this.props.profile)
       this.props.firebase
         .update(
-          `users/${this.props.profile.userID}/favs/${entity}/${this.state.id}`,
-          {
-            name,
-            image,
-            id: this.state.id,
-            link:
-              this.props.history.location.pathname +
-              this.props.history.location.search
-          }
+        `users/${this.props.profile.userID}/favs/${entity}/${this.state.id}`,
+        {
+          name,
+          image,
+          id: this.state.id,
+          link:
+            this.props.history.location.pathname +
+            this.props.history.location.search
+        }
         )
         .then(() => {
           this.setState({ fav: true });
@@ -684,7 +683,7 @@ class Fig extends Component {
     if (this.props.profile)
       this.props.firebase
         .remove(
-          `users/${this.props.profile.userID}/favs/${entity}/${this.state.id}`
+        `users/${this.props.profile.userID}/favs/${entity}/${this.state.id}`
         )
         .then(() => this.setState({ fav: false }));
   };
@@ -748,14 +747,14 @@ class Fig extends Component {
                   <M.Typography className={classes.bigTitle} type="display3">
                     {data.Character
                       ? nameSwapper(
-                          data.Character.name.first,
-                          data.Character.name.last
-                        )
+                        data.Character.name.first,
+                        data.Character.name.last
+                      )
                       : data.Staff
                         ? nameSwapper(
-                            data.Staff.name.first,
-                            data.Staff.name.last
-                          )
+                          data.Staff.name.first,
+                          data.Staff.name.last
+                        )
                         : null}
                   </M.Typography>
                   <M.Divider />
@@ -771,7 +770,7 @@ class Fig extends Component {
                 </M.Grid>
               </M.Grid>
               <div className={classes.bigBar} style={{ background: hue }}>
-                <div
+                <M.Toolbar
                   className={classes.commandoBar}
                   style={{ background: hue }}
                 >
@@ -782,8 +781,8 @@ class Fig extends Component {
                       color="contrast"
                       onClick={
                         user.favs &&
-                        user.favs.char &&
-                        user.favs.char.hasOwnProperty(this.state.id)
+                          user.favs.char &&
+                          user.favs.char.hasOwnProperty(this.state.id)
                           ? this.unlike
                           : this.like
                       }
@@ -797,8 +796,8 @@ class Fig extends Component {
                       color="contrast"
                       onClick={
                         user.favs &&
-                        user.favs.staff &&
-                        user.favs.staff.hasOwnProperty(this.state.id)
+                          user.favs.staff &&
+                          user.favs.staff.hasOwnProperty(this.state.id)
                           ? this.unlike
                           : this.like
                       }
@@ -809,117 +808,117 @@ class Fig extends Component {
                   <M.IconButton color="contrast">
                     <Icon.MoreVert />
                   </M.IconButton>
-                </div>
+                </M.Toolbar>
                 <M.Grid container className={classes.container}>
                   {data.Staff &&
-                  data.Staff.characters &&
-                  data.Staff.characters.edges &&
-                  data.Staff.characters.edges.length > 0 ? (
-                    <M.Grid item xs style={{ zIndex: 10 }}>
-                      <M.Typography type="title" className={classes.secTitle}>
-                        Voice actor for
+                    data.Staff.characters &&
+                    data.Staff.characters.edges &&
+                    data.Staff.characters.edges.length > 0 ? (
+                      <M.Grid item xs style={{ zIndex: 10 }}>
+                        <M.Typography type="title" className={classes.secTitle}>
+                          Voice actor for
                       </M.Typography>
-                      <M.Grid container className={classes.itemcontainer}>
-                        {data.Staff.characters.edges.map((cast, index) => (
-                          <M.Grid
-                            className={classes.peopleCard}
-                            item
-                            xs
-                            key={index}
-                          >
-                            <M.Card
-                              style={{
-                                background: "transparent",
-                                boxShadow: "none"
-                              }}
+                        <M.Grid container className={classes.itemcontainer}>
+                          {data.Staff.characters.edges.map((cast, index) => (
+                            <M.Grid
+                              className={classes.peopleCard}
+                              item
+                              xs
+                              key={index}
                             >
-                              <M.Avatar
-                                onClick={() =>
-                                  this.openEntity(`/fig?c=${cast.node.id}`)
-                                }
-                                className={classes.peopleImage}
-                                src={cast.node.image.large}
-                                imgProps={{
-                                  style: { opacity: 0 },
-                                  onLoad: e =>
-                                    (e.currentTarget.style.opacity = null)
+                              <M.Card
+                                style={{
+                                  background: "transparent",
+                                  boxShadow: "none"
                                 }}
-                              />
-                              <M.Typography
-                                type="headline"
-                                className={classes.peopleTitle}
                               >
-                                {nameSwapper(
-                                  cast.node.name.first,
-                                  cast.node.name.last
-                                )}
-                              </M.Typography>
-                              <M.Typography
-                                type="headline"
-                                className={classes.peopleSubTitle}
-                              >
-                                {cast.role}
-                              </M.Typography>
-                            </M.Card>
-                          </M.Grid>
-                        ))}
+                                <M.Avatar
+                                  onClick={() =>
+                                    this.openEntity(`/fig?c=${cast.node.id}`)
+                                  }
+                                  className={classes.peopleImage}
+                                  src={cast.node.image.large}
+                                  imgProps={{
+                                    style: { opacity: 0 },
+                                    onLoad: e =>
+                                      (e.currentTarget.style.opacity = null)
+                                  }}
+                                />
+                                <M.Typography
+                                  type="headline"
+                                  className={classes.peopleTitle}
+                                >
+                                  {nameSwapper(
+                                    cast.node.name.first,
+                                    cast.node.name.last
+                                  )}
+                                </M.Typography>
+                                <M.Typography
+                                  type="headline"
+                                  className={classes.peopleSubTitle}
+                                >
+                                  {cast.role}
+                                </M.Typography>
+                              </M.Card>
+                            </M.Grid>
+                          ))}
+                        </M.Grid>
                       </M.Grid>
-                    </M.Grid>
-                  ) : null}
+                    ) : null}
                   {data.Staff &&
-                  data.Staff.staffMedia &&
-                  data.Staff.staffMedia.edges &&
-                  data.Staff.staffMedia.edges.length > 0 ? (
-                    <M.Grid item xs style={{ zIndex: 10 }}>
-                      <M.Typography type="title" className={classes.secTitle}>
-                        Works
+                    data.Staff.staffMedia &&
+                    data.Staff.staffMedia.edges &&
+                    data.Staff.staffMedia.edges.length > 0 ? (
+                      <M.Grid item xs style={{ zIndex: 10 }}>
+                        <M.Typography type="title" className={classes.secTitle}>
+                          Works
                       </M.Typography>
-                      <M.Grid container className={classes.itemcontainer}>
-                        {data.Staff.staffMedia.edges.map((anime, index) => (
-                          <M.Grid
-                            className={classes.entityCard}
-                            item
-                            xs
-                            key={index}
-                          >
-                            <M.Card
-                              style={{ background: "transparent" }}
-                              onClick={() =>
-                                this.props.history.push(
-                                  `/show?${
+                        <M.Grid container className={classes.itemcontainer}>
+                          {data.Staff.staffMedia.edges.map((anime, index) => (
+                            <M.Grid
+                              className={classes.entityCard}
+                              item
+                              xs
+                              key={index}
+                            >
+                              <M.Card
+                                style={{ background: "transparent" }}
+                                onClick={() =>
+                                  this.props.history.push(
+                                    `/show?${
                                     anime.node.type.includes("ANIME")
                                       ? "s"
                                       : "m"
-                                  }=${anime.node.id}`
-                                )
-                              }
-                            >
-                              <div className={classes.gradientCard}>
-                                <M.CardMedia
-                                  className={classes.entityImage}
-                                  image={anime.node.coverImage.large}
-                                />
-                              </div>
-                              <M.Typography
-                                type="headline"
-                                className={classes.entityTitle}
+                                    }=${anime.node.id}`
+                                  )
+                                }
                               >
-                                {anime.node.title.english
-                                  ? anime.node.title.english
-                                  : anime.node.title.romaji}
-                              </M.Typography>
-                              <M.Typography
-                                type="headline"
-                                className={classes.entitySubTitle}
-                              >
-                                {anime.staffRole}
-                              </M.Typography>
-                            </M.Card>
-                          </M.Grid>
-                        ))}
+                                <div className={classes.gradientCard}>
+                                  <M.CardMedia
+                                    className={classes.entityImage}
+                                    image={anime.node.coverImage.large}
+                                  />
+                                </div>
+                                <M.Typography
+                                  type="headline"
+                                  className={classes.entityTitle}
+                                >
+                                  {anime.node.title.english
+                                    ? anime.node.title.english
+                                    : anime.node.title.romaji}
+                                </M.Typography>
+                                <M.Typography
+                                  type="headline"
+                                  className={classes.entitySubTitle}
+                                >
+                                  {anime.staffRole}
+                                </M.Typography>
+                              </M.Card>
+                            </M.Grid>
+                          ))}
+                        </M.Grid>
                       </M.Grid>
-                    </M.Grid>
-                  ) : null}
+                    ) : null}
                   {data.Character ? (
                     <M.Grid item xs style={{ zIndex: 10 }}>
                       <M.Typography type="title" className={classes.secTitle}>
@@ -938,9 +937,9 @@ class Fig extends Component {
                               onClick={() =>
                                 this.openEntity(
                                   `/show?${
-                                    anime.node.type.includes("ANIME")
-                                      ? "s"
-                                      : "m"
+                                  anime.node.type.includes("ANIME")
+                                    ? "s"
+                                    : "m"
                                   }=${anime.node.id}`
                                 )
                               }

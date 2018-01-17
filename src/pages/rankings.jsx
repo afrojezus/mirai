@@ -15,7 +15,9 @@ const styles = theme => ({
     marginLeft: "auto",
     marginRight: "auto",
     padding: 24,
-    maxWidth: 1600
+    maxWidth: 1600,
+    paddingLeft: 'env(safe-area-inset-left)',
+    paddingRight: 'env(safe-area-inset-right)'
   },
   itemContainer: {
     margin: theme.spacing.unit
@@ -80,8 +82,7 @@ const styles = theme => ({
   headlineTitle: {
     marginBottom: 24,
     fontSize: 48,
-    fontWeight: 500,
-    fontFamily: "Product Sans"
+    fontWeight: 800,
   },
   fullWidth: {
     width: "100%"

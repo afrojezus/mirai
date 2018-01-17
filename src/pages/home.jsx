@@ -58,7 +58,9 @@ const styles = theme => ({
     marginLeft: "auto",
     marginRight: "auto",
     padding: 24,
-    maxWidth: 1600
+    maxWidth: 1600,
+    paddingLeft: 'env(safe-area-inset-left)',
+    paddingRight: 'env(safe-area-inset-right)'
   },
   itemContainer: {
     margin: theme.spacing.unit
@@ -123,8 +125,7 @@ const styles = theme => ({
   headlineTitle: {
     marginBottom: 24,
     fontSize: 48,
-    fontWeight: 500,
-    fontFamily: "Product Sans"
+    fontWeight: 800,
   },
   fullWidth: {
     width: "100%"
@@ -342,49 +343,6 @@ const styles = theme => ({
     marginBottom: theme.spacing.unit,
     textTransform: "uppercase"
   },
-  sliderBig: {
-    height: "100%",
-    marginBottom: theme.spacing.unit * 2,
-    "& > .slick-list": {},
-    flexFlow: "row nowrap"
-  },
-  sliderDots: {
-    color: "white",
-    position: "absolute",
-    width: "100%",
-    display: "flex !important",
-    listStyle: "none",
-    boxSizing: "border-box",
-    justifyContent: "center",
-    "& > .slick-active > button": {
-      background: "white"
-    },
-    "& > li": {
-      filter: "drop-shadow(0 2px 18px rgba(0,0,0,.5))",
-      padding: 0,
-      margin: "0 5px",
-      height: 24,
-      width: 24,
-      display: "inline-block",
-      position: "relative",
-      cursor: "pointer",
-      "& > button": {
-        filter: "drop-shadow(0 2px 18px rgba(0,0,0,.5))",
-        fontSize: 0,
-        lineHeight: 0,
-        display: "block",
-        width: 10,
-        height: 10,
-        padding: 5,
-        cursor: "pointer",
-        color: "transparent",
-        border: 0,
-        outline: 0,
-        background: "rgba(255,255,255,.2)",
-        borderRadius: "50%"
-      }
-    }
-  }
 });
 
 const nextArrow = props => (
@@ -489,28 +447,6 @@ class Home extends Component {
 
     const openFeed = Boolean(anchorEl);
 
-    const settings = {
-      className: classes.sliderBig,
-      dots: true,
-      infinite: false,
-      dotsClass: classes.sliderDots,
-      arrows: true,
-      focusOnSelect: true,
-      easing: "ease",
-      speed: 300,
-      slidesToShow: 4,
-      slidesToScroll: 1,
-      autoplay: true,
-      autoplaySpeed: 3000,
-      pauseOnHover: true,
-      responsive: [
-        { breakpoint: 2000, settings: { slidesToShow: 3 } },
-        { breakpoint: 1200, settings: { slidesToShow: 1 } }
-      ]
-      //     nextArrow,
-      //     prevArrow
-    };
-
     return (
       <div>
         <CircularProgress
@@ -527,17 +463,17 @@ class Home extends Component {
               onLoad={e => (e.currentTarget.style.opacity = null)}
             />
           ) : (
-            <video
-              muted
-              loop
-              autoPlay
-              src={ripple}
-              alt=""
-              className={classes.bgImage}
-              style={{ opacity: 0 }}
-              onLoad={e => (e.currentTarget.style.opacity = null)}
-            />
-          )}
+              <video
+                muted
+                loop
+                autoPlay
+                src={ripple}
+                alt=""
+                className={classes.bgImage}
+                style={{ opacity: 0 }}
+                onLoad={e => (e.currentTarget.style.opacity = null)}
+              />
+            )}
           <div className={classes.topHeaderBig}>
             <Grid container spacing={16} className={classes.container}>
               <Grid item xs className={classes.itemContainer}>
@@ -550,12 +486,7 @@ class Home extends Component {
             </Grid>
           </div>
           <div className={classes.root}>
-            <Grid
-              container
-              spacing={16}
-              className={classes.container}
-              style={{ paddingBottom: 0 }}
-            >
+            <Grid container spacing={16} className={classes.container}>
               <Grid
                 item
                 xs
@@ -569,7 +500,6 @@ class Home extends Component {
                 <Typography
                   type="title"
                   className={classes.headline}
-                  style={{ marginBottom: 0 }}
                 >
                   Currently ongoing anime
                 </Typography>
@@ -577,49 +507,38 @@ class Home extends Component {
                 <Typography
                   type="title"
                   className={classes.headline}
-                  style={{ marginBottom: 0 }}
                 >
                   {this.props.mir && this.props.mir.twist
                     ? Object.values(this.props.mir.twist).filter(
-                        s => s.ongoing === true
-                      ).length -
-                      1 +
-                      " ongoing animes in database"
+                      s => s.ongoing === true
+                    ).length -
+                    1 +
+                    " ongoing animes in database"
                     : null}
                 </Typography>
               </Grid>
-            </Grid>
-            {ongoing &&
-            ongoing.data &&
-            this.props.mir &&
-            this.props.mir.twist ? (
-              <div className={classes.topHeader}>
-                <SuperTable
-                  settings={settings}
-                  data={ongoing.data.Page.media
-                    .filter(s => s.nextAiringEpisode)
-                    .filter(d =>
-                      this.props.mir.twist.filter(s =>
-                        s.name.match(d.title.romaji)
+              {ongoing &&
+                ongoing.data &&
+                this.props.mir &&
+                this.props.mir.twist ? (
+                  <SuperTable
+                    data={ongoing.data.Page.media
+                      .filter(s => s.nextAiringEpisode)
+                      .filter(d =>
+                        this.props.mir.twist.filter(s =>
+                          s.name.match(d.title.romaji)
+                        )
                       )
-                    )
-                    .sort(
+                      .sort(
                       (a, b) =>
                         a.nextAiringEpisode.timeUntilAiring -
                         b.nextAiringEpisode.timeUntilAiring
-                    )}
-                  type="s"
-                  typeof="ongoing"
-                  limit={12}
-                />
-              </div>
-            ) : null}
-            <Grid
-              container
-              spacing={16}
-              className={classes.container}
-              style={{ paddingBottom: 0 }}
-            >
+                      )}
+                    type="s"
+                    typeof="ongoing"
+                    limit={12}
+                  />
+                ) : null}
               <Grid
                 item
                 xs
@@ -629,29 +548,18 @@ class Home extends Component {
                 <Typography
                   type="title"
                   className={classes.headline}
-                  style={{ marginBottom: 0 }}
                 >
                   Currently ongoing manga
                 </Typography>
               </Grid>
-            </Grid>
-            {ongoingM && ongoingM.data ? (
-              <div className={classes.topHeader}>
+              {ongoingM && ongoingM.data ? (
                 <SuperTable
-                  settings={settings}
                   data={ongoingM.data.Page.media}
                   type="m"
                   typeof="ongoing"
                   limit={12}
                 />
-              </div>
-            ) : null}
-            <Grid
-              container
-              spacing={16}
-              className={classes.container}
-              style={{ paddingBottom: 0 }}
-            >
+              ) : null}
               <Grid
                 item
                 xs
@@ -665,24 +573,18 @@ class Home extends Component {
                 <Typography
                   type="title"
                   className={classes.headline}
-                  style={{ marginBottom: 0 }}
                 >
                   Ranking
                 </Typography>
               </Grid>
-            </Grid>
-            <div className={classes.topHeader}>
               {rankingMentionable ? (
                 <SuperTable
                   data={Object.values(rankingMentionable[0])}
-                  settings={settings}
                   type="s"
                   typeof="ranking"
                   limit={12}
                 />
               ) : null}
-            </div>
-            <Grid container spacing={16} className={classes.container}>
               <Grid item xs className={classes.itemContainer}>
                 <Typography type="title" className={classes.headline}>
                   Public feeds
@@ -763,15 +665,8 @@ class Home extends Component {
                     ))}
                 </Grid>
               </Grid>
-            </Grid>
-            {user && user.episodeProgress ? (
-              <div>
-                <Grid
-                  container
-                  spacing={16}
-                  className={classes.container}
-                  style={{ paddingBottom: 0 }}
-                >
+              {user && user.episodeProgress ? (
+                <div>
                   <Grid
                     item
                     xs
@@ -785,7 +680,6 @@ class Home extends Component {
                     <Typography
                       type="title"
                       className={classes.headline}
-                      style={{ marginBottom: 0 }}
                     >
                       Animes you've watched previously
                     </Typography>
@@ -798,8 +692,6 @@ class Home extends Component {
                       {Object.values(user.episodeProgress).length} animes seen
                     </Typography>
                   </Grid>
-                </Grid>
-                <div className={classes.topHeader}>
                   <SuperTable
                     data={Object.values(user.episodeProgress)
                       .filter(s => s.recentlyWatched)
@@ -807,19 +699,11 @@ class Home extends Component {
                     limit={24}
                     type="s"
                     typeof="progress"
-                    settings={settings}
                   />
                 </div>
-              </div>
-            ) : null}
-            {user && user.favs && user.favs.show && user.favs.show ? (
-              <div>
-                <Grid
-                  container
-                  spacing={16}
-                  className={classes.container}
-                  style={{ paddingBottom: 0 }}
-                >
+              ) : null}
+              {user && user.favs && user.favs.show && user.favs.show ? (
+                <div>
                   <Grid
                     item
                     xs
@@ -833,7 +717,6 @@ class Home extends Component {
                     <Typography
                       type="title"
                       className={classes.headline}
-                      style={{ marginBottom: 0 }}
                     >
                       Your anime favorites
                     </Typography>
@@ -846,8 +729,6 @@ class Home extends Component {
                       {Object.values(user.favs.show).length} anime favourties
                     </Typography>
                   </Grid>
-                </Grid>
-                <div className={classes.topHeader}>
                   <SuperTable
                     data={Object.values(user.favs.show).sort(
                       (a, b) => a.name - b.name
@@ -855,11 +736,11 @@ class Home extends Component {
                     limit={24}
                     type="s"
                     typeof="favs"
-                    settings={settings}
                   />
+
                 </div>
-              </div>
-            ) : null}
+              ) : null}
+            </Grid>
           </div>
         </div>
       </div>
