@@ -13,9 +13,7 @@ const style = theme => ({
     display: "flex",
     boxShadow: "0 2px 18px rgba(0,0,0,.4)",
     background: "rgba(255,255,255,0)",
-    height: "100%",
     minHeight: "300px !important",
-    width: "100%",
     boxSizing: "border-box",
     transition: theme.transitions.create(["all"]),
     position: "relative",
@@ -157,6 +155,9 @@ export const timeFormatter = time => {
   if (hours < 10) {
     hours = "0" + hours;
   }
+  if (hours === '00') {
+    hours = null;
+  }
   if (minutes < 10) {
     minutes = "0" + minutes;
   }
@@ -169,8 +170,8 @@ export const timeFormatter = time => {
 
   return (
     (days ? days + (days > 1 ? " days " : " day ") : "") +
-    hours +
-    " hr " +
+    (hours ? hours +
+      " hr " : '') +
     minutes +
     " min"
   );
@@ -319,7 +320,6 @@ superTable.propTypes = {
   type: PropTypes.string.isRequired,
   data: PropTypes.array.isRequired,
   classes: PropTypes.object.isRequired,
-  settings: PropTypes.object.isRequired,
   routing: PropTypes.object,
   typeof: PropTypes.string.isRequired,
   limit: PropTypes.number.isRequired

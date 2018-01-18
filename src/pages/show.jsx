@@ -437,7 +437,7 @@ const styles = theme => ({
 		display: 'flex',
 	},
 	artworktype: {
-		fontSize: 16,
+		fontSize: 12,
 		boxSizing: 'border-box',
 		padding: theme.spacing.unit * 2,
 		width: '100%',
@@ -464,6 +464,25 @@ const styles = theme => ({
 			width: '100%',
 		},
 	},
+	fabPlayButton: {
+		position: 'fixed',
+		bottom: theme.spacing.unit * 4,
+		right: theme.spacing.unit * 4,
+		zIndex: 10000
+	},
+	fabProgress: {
+		color: 'white',
+		zIndex: 10001
+	},
+	fabWrapper: {
+		margin: theme.spacing.unit,
+		position: 'relative',
+		zIndex: 10000
+	},
+	fabContainer: {
+		transition: theme.transitions.create(['all']),
+		opacity: 0
+	}
 });
 
 const nameSwapper = (first, last) => (last ? first + ' ' + last : first);
@@ -565,6 +584,13 @@ class Show extends Component {
 			sort: ['POPULARITY_DESC'],
 			page: 1,
 		});
+
+		if (data) {
+			this.props.firebase
+				.push(`users/${this.props.profile.userID}/feed`, { date: Date.now(), type: 'SHOW', activity: `Checked out ${data.title.english ? data.title.english : data.title.romaji}`, bgImg: data.bannerImage && data.bannerImage, coverImg: data.coverImage.large, user: this.props.profile })
+				.then(() => console.info('Logged!'))
+		}
+
 		if (image)
 			Vibrant.from('https://cors-anywhere.herokuapp.com/' + image).getPalette(
 				(err, pal) => {
@@ -577,7 +603,7 @@ class Show extends Component {
 								hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex(),
 								similars,
 							},
-							() => {}
+							() => { }
 						);
 					}
 				}
@@ -650,7 +676,6 @@ class Show extends Component {
 
 	componentWillUnmount = () => {
 		this.props.sendTitleToMir('');
-
 		this.unlisten();
 	};
 
@@ -673,15 +698,15 @@ class Show extends Component {
 		if (this.props.profile)
 			this.props.firebase
 				.update(
-					`users/${this.props.profile.userID}/favs/${entity}/${data.id}`,
-					{
-						name,
-						image,
-						id: data.id,
-						link:
-							this.props.history.location.pathname +
-							this.props.history.location.search,
-					}
+				`users/${this.props.profile.userID}/favs/${entity}/${data.id}`,
+				{
+					name,
+					image,
+					id: data.id,
+					link:
+						this.props.history.location.pathname +
+						this.props.history.location.search,
+				}
 				)
 				.then(() => {
 					this.setState({ fav: true });
@@ -730,7 +755,8 @@ class Show extends Component {
 				open={openMenu}
 				onClose={() => this.setState({ menuEl: null })}
 			>
-				<M.MenuItem>Edit entry</M.MenuItem>
+				<M.MenuItem onClick={this.reportError}>Report error</M.MenuItem>
+				<M.MenuItem onClick={this.editEntry}>Edit entry</M.MenuItem>
 			</M.Menu>
 		);
 
@@ -754,6 +780,17 @@ class Show extends Component {
 				>
 					{data && data.Media ? (
 						<div>
+							<div id='fabShowButton' className={classes.fabContainer}>
+								<M.Button color='primary' disabled={data.Media.type.includes('MANGA')
+									? false
+									: data.Media.status.includes('NOT_YET_RELEASED') || !eps
+										? true
+										: false} className={classes.fabPlayButton} fab style={{ background: hueVib }} onClick={this.play}>{data.Media.type.includes('MANGA')
+											? <Icon.PlayArrow />
+											: data.Media.status.includes('NOT_YET_RELEASED') || !eps
+												? <M.CircularProgress size={24} style={{ color: hueVib }} className={classes.fabProgress} />
+												: <Icon.PlayArrow />}</M.Button>
+							</div>
 							<div className={classes.grImage}>
 								<div
 									className={classes.grDImage}
@@ -828,10 +865,10 @@ class Show extends Component {
 											{data.Media.type} <br />
 											{data.Media.nextAiringEpisode
 												? timeFormatter(
-														data.Media.nextAiringEpisode.timeUntilAiring
-													) +
-													' till Episode ' +
-													data.Media.nextAiringEpisode.episode
+													data.Media.nextAiringEpisode.timeUntilAiring
+												) +
+												' till Episode ' +
+												data.Media.nextAiringEpisode.episode
 												: null}
 										</M.Typography>
 									</div>
@@ -852,19 +889,19 @@ class Show extends Component {
 													' min'}
 											</M.Typography>
 										) : (
-											<M.Typography
-												className={classes.smallTitle}
-												type="display2"
-											>
-												{data.Media.title.native}{' '}
-												{'• ' + data.Media.startDate.year}{' '}
-												{'• ' +
-													data.Media.chapters +
-													' chapters in ' +
-													data.Media.volumes +
-													' volumes'}
-											</M.Typography>
-										)}
+												<M.Typography
+													className={classes.smallTitle}
+													type="display2"
+												>
+													{data.Media.title.native}{' '}
+													{'• ' + data.Media.startDate.year}{' '}
+													{'• ' +
+														data.Media.chapters +
+														' chapters in ' +
+														data.Media.volumes +
+														' volumes'}
+												</M.Typography>
+											)}
 										<div style={{ flex: 1 }} />
 										<M.Typography
 											className={classes.smallTitle}
@@ -891,58 +928,58 @@ class Show extends Component {
 										{data.Media.staff.edges.filter(
 											s => s.role === 'Director'
 										)[0] ? (
-											<M.Typography className={classes.boldD} type="headline">
-												Directed by{' '}
-											</M.Typography>
-										) : null}
+												<M.Typography className={classes.boldD} type="headline">
+													Directed by{' '}
+												</M.Typography>
+											) : null}
 										{data.Media.staff.edges.filter(
 											s => s.role === 'Director'
 										)[0] ? (
-											<M.Typography className={classes.smallD} type="headline">
-												{
-													data.Media.staff.edges.filter(
-														s => s.role === 'Director'
-													)[0].node.name.first
-												}{' '}
-												{data.Media.staff.edges.filter(
-													s => s.role === 'Director'
-												)[0].node.name.last
-													? data.Media.staff.edges.filter(
-															s => s.role === 'Director'
-														)[0].node.name.last
-													: null}
-											</M.Typography>
-										) : null}
-										{data.Media.staff.edges.filter(
-											s => s.role === 'Original Creator'
-										)[0] ? (
-											<div className={classes.sepD}>
-												<M.Typography className={classes.boldD} type="headline">
-													{data.Media.staff.edges.filter(
-														s => s.role === 'Director'
-													)[0]
-														? 'and written by'
-														: 'Written by'}
-												</M.Typography>
-												<M.Typography
-													className={classes.smallD}
-													type="headline"
-												>
+												<M.Typography className={classes.smallD} type="headline">
 													{
 														data.Media.staff.edges.filter(
-															s => s.role === 'Original Creator'
+															s => s.role === 'Director'
 														)[0].node.name.first
 													}{' '}
 													{data.Media.staff.edges.filter(
-														s => s.role === 'Original Creator'
+														s => s.role === 'Director'
 													)[0].node.name.last
 														? data.Media.staff.edges.filter(
-																s => s.role === 'Original Creator'
-															)[0].node.name.last
+															s => s.role === 'Director'
+														)[0].node.name.last
 														: null}
 												</M.Typography>
-											</div>
-										) : null}
+											) : null}
+										{data.Media.staff.edges.filter(
+											s => s.role === 'Original Creator'
+										)[0] ? (
+												<div className={classes.sepD}>
+													<M.Typography className={classes.boldD} type="headline">
+														{data.Media.staff.edges.filter(
+															s => s.role === 'Director'
+														)[0]
+															? 'and written by'
+															: 'Written by'}
+													</M.Typography>
+													<M.Typography
+														className={classes.smallD}
+														type="headline"
+													>
+														{
+															data.Media.staff.edges.filter(
+																s => s.role === 'Original Creator'
+															)[0].node.name.first
+														}{' '}
+														{data.Media.staff.edges.filter(
+															s => s.role === 'Original Creator'
+														)[0].node.name.last
+															? data.Media.staff.edges.filter(
+																s => s.role === 'Original Creator'
+															)[0].node.name.last
+															: null}
+													</M.Typography>
+												</div>
+											) : null}
 									</div>
 									<M.Divider />
 									<M.Grid container>
@@ -953,15 +990,15 @@ class Show extends Component {
 											<div className={classes.genreRow}>
 												{data.Media.genres
 													? data.Media.genres.map((o, i) => (
-															<M.Chip
-																onClick={() =>
-																	this.props.history.push(`/tag?g=${o}`)
-																}
-																className={classes.tagChip}
-																key={i}
-																label={o}
-															/>
-														))
+														<M.Chip
+															onClick={() =>
+																this.props.history.push(`/tag?g=${o}`)
+															}
+															className={classes.tagChip}
+															key={i}
+															label={o}
+														/>
+													))
 													: null}
 											</div>
 										</M.Grid>
@@ -1042,92 +1079,86 @@ class Show extends Component {
 											</M.Typography>
 										</div>
 									) : null}
-									{data.Media.type.includes('MANGA') ? null : (
-										<div className={classes.commandoTextBox}>
+									{data.Media.type.includes('MANGA') || !data.Media.season ? null : (
+										<M.Button style={{ textTransform: 'initial', display: 'flex', flexDirection: 'column' }} onClick={() => window.open(`http://anichart.net/${data.Media.season.toLowerCase() + '-' + data.Media.startDate.year}`)} className={classes.commandoTextBox}>
 											<M.Typography
 												type="title"
 												className={classes.commandoText}
 											>
-												{data.Media.season + ' ' + data.Media.startDate.year}
+												{data.Media.season && (data.Media.season + ' ') + data.Media.startDate.year}
 											</M.Typography>
-											<M.Typography
-												type="body1"
-												className={classes.commandoTextLabel}
-											>
-												Season
-											</M.Typography>
-										</div>
+										</M.Button>
 									)}
 									{data.Media.type.includes('MANGA') ||
-									data.Media.format.includes('ONA') ||
-									data.Media.format.includes('OVA') ? null : !eps &&
-									!epError ? (
-										<M.CircularProgress
-											style={{ color: hueVib }}
-											className={classes.commandoTextBox}
-										/>
-									) : epError ? (
-										<FadeIn>
-											<div className={classes.commandoTextBox}>
-												<div
-													style={{ color: 'white', lineHeight: 0 }}
-													className={classes.commandoText}
-												>
-													<Icon.ErrorOutline />
-												</div>
-												<M.Typography
-													type="body1"
-													className={classes.commandoTextLabel}
-												>
-													Episodes
+										data.Media.format.includes('ONA') ||
+										data.Media.format.includes('OVA') ? null : !eps &&
+											!epError ? (
+												<M.CircularProgress
+													style={{ color: hueVib }}
+													className={classes.commandoTextBox}
+												/>
+											) : epError ? (
+												<FadeIn>
+													<div className={classes.commandoTextBox}>
+														<div
+															style={{ color: 'white', lineHeight: 0 }}
+															className={classes.commandoText}
+														>
+															<Icon.ErrorOutline />
+														</div>
+														<M.Typography
+															type="body1"
+															className={classes.commandoTextLabel}
+														>
+															Episodes
 												</M.Typography>
-											</div>
-										</FadeIn>
-									) : (
-										<FadeIn>
-											<div className={classes.commandoTextBox}>
-												<M.Typography
-													type="title"
-													className={classes.commandoText}
-												>
-													{eps ? eps.length : '...'}
+													</div>
+												</FadeIn>
+											) : (
+													<FadeIn>
+														<div className={classes.commandoTextBox}>
+															<M.Typography
+																type="title"
+																className={classes.commandoText}
+															>
+																{eps ? eps.length : '...'}
+															</M.Typography>
+															<M.Typography
+																type="body1"
+																className={classes.commandoTextLabel}
+															>
+																Episodes
 												</M.Typography>
-												<M.Typography
-													type="body1"
-													className={classes.commandoTextLabel}
-												>
-													Episodes
-												</M.Typography>
-											</div>
-										</FadeIn>
-									)}
+														</div>
+													</FadeIn>
+												)}
 									<div style={{ flex: 1 }} />
 									{user &&
-									user.episodeProgress &&
-									user.episodeProgress.hasOwnProperty(data.Media.id) ? (
-										<div className={classes.progressCon}>
-											<M.Typography
-												type="title"
-												className={classes.progressTitle}
-											>
-												Episode {user.episodeProgress[data.Media.id].ep}
+										user.episodeProgress &&
+										user.episodeProgress.hasOwnProperty(data.Media.id) ? (
+											<div className={classes.progressCon}>
+												<M.Typography
+													type="title"
+													className={classes.progressTitle}
+												>
+													Episode {user.episodeProgress[data.Media.id].ep}
+												</M.Typography>
+												<M.LinearProgress
+													mode="determinate"
+													value={user.episodeProgress[data.Media.id].played * 100}
+													classes={{
+														primaryColor: classes.progressBar,
+														primaryColorBar: classes.progressBarActive,
+													}}
+												/>
+												<M.Typography
+													type="body1"
+													className={classes.commandoTextLabel}
+												>
+													Your progress
 											</M.Typography>
-											<M.LinearProgress
-												mode="determinate"
-												value={user.episodeProgress[data.Media.id].played * 100}
-												classes={{
-													primaryColor: classes.progressBar,
-													primaryColorBar: classes.progressBarActive,
-												}}
-											/>
-											<M.Typography
-												type="body1"
-												className={classes.commandoTextLabel}
-											>
-												Your progress
-											</M.Typography>
-										</div>
-									) : null}
+											</div>
+										) : null}
 									<div style={{ flex: 1 }} />
 									{data.Media.hashtag ? (
 										<M.Button
@@ -1154,7 +1185,19 @@ class Show extends Component {
 										</M.Button>
 									) : null}
 									{user ? (
-										<M.IconButton
+										<M.Tooltip title={user.later && user.later[data.Media.id] ? 'Remove from laters' : 'Add for laters'}>
+											<M.IconButton
+												className={classes.commandoButton}
+												color="contrast"
+												onClick={
+													user.later && !user.later[data.Media.id] ? this.addToLater : this.removeFromLater
+												}
+											>
+												{user.later && user.later[data.Media.id] ? <Icon.AddCircle /> : <Icon.AddCircleOutline />}
+											</M.IconButton></M.Tooltip>
+									) : null}
+									{user ? (
+										<M.Tooltip title={fav ? 'Remove from favorites' : 'Add to favorites'}><M.IconButton
 											className={classes.commandoButton}
 											color="contrast"
 											onClick={
@@ -1172,7 +1215,7 @@ class Show extends Component {
 											}
 										>
 											{fav ? <Icon.Favorite /> : <Icon.FavoriteBorder />}
-										</M.IconButton>
+										</M.IconButton></M.Tooltip>
 									) : null}
 									<M.IconButton
 										aria-owns={openMenu ? 'more-menu' : null}
@@ -1202,7 +1245,7 @@ class Show extends Component {
 														onClick={() =>
 															this.openEntity(
 																`/show?${
-																	anime.node.type.includes('ANIME') ? 's' : 'm'
+																anime.node.type.includes('ANIME') ? 's' : 'm'
 																}=${anime.node.id}`
 															)
 														}
@@ -1248,7 +1291,7 @@ class Show extends Component {
 																onClick={() =>
 																	this.openEntity(
 																		`/show?${
-																			anime.type.includes('ANIME') ? 's' : 'm'
+																		anime.type.includes('ANIME') ? 's' : 'm'
 																		}=${anime.id}`
 																	)
 																}
@@ -1306,17 +1349,17 @@ class Show extends Component {
 																onClick={() =>
 																	this.props.history.push(
 																		`/fig?${
-																			cast.voiceActors &&
+																		cast.voiceActors &&
 																			cast.voiceActors.length > 0
-																				? 's'
-																				: 'c'
+																			? 's'
+																			: 'c'
 																		}=${
-																			cast.voiceActors &&
+																		cast.voiceActors &&
 																			cast.voiceActors.length > 0
-																				? cast.voiceActors.filter(
-																						j => j.language === 'JAPANESE'
-																					)[0].id
-																				: cast.node.id
+																			? cast.voiceActors.filter(
+																				j => j.language === 'JAPANESE'
+																			)[0].id
+																			: cast.node.id
 																		}`
 																	)
 																}
@@ -1329,62 +1372,62 @@ class Show extends Component {
 																classes={{ img: classes.fillImg }}
 																src={
 																	cast.voiceActors &&
-																	cast.voiceActors.length > 0
+																		cast.voiceActors.length > 0
 																		? cast.voiceActors.filter(
-																				j => j.language === 'JAPANESE'
-																			)[0]
+																			j => j.language === 'JAPANESE'
+																		)[0]
 																			? cast.voiceActors.filter(
-																					j => j.language === 'JAPANESE'
-																				)[0].image.large
+																				j => j.language === 'JAPANESE'
+																			)[0].image.large
 																			: null
 																		: cast.node.image.large
 																}
 															/>
 															{cast.voiceActors &&
-															cast.voiceActors.length > 0 ? (
-																<M.Avatar
-																	className={classes.peopleCharImage}
-																	classes={{ img: classes.fillImg }}
-																	src={cast.node.image.large}
-																	imgProps={{
-																		style: { opacity: 0 },
-																		onLoad: e =>
-																			(e.currentTarget.style.opacity = null),
-																	}}
-																	onClick={() =>
-																		this.openEntity(`/fig?c=${cast.node.id}`)
-																	}
-																/>
-															) : null}
+																cast.voiceActors.length > 0 ? (
+																	<M.Avatar
+																		className={classes.peopleCharImage}
+																		classes={{ img: classes.fillImg }}
+																		src={cast.node.image.large}
+																		imgProps={{
+																			style: { opacity: 0 },
+																			onLoad: e =>
+																				(e.currentTarget.style.opacity = null),
+																		}}
+																		onClick={() =>
+																			this.openEntity(`/fig?c=${cast.node.id}`)
+																		}
+																	/>
+																) : null}
 															<M.Typography
 																type="headline"
 																className={classes.peopleTitle}
 															>
 																{cast.voiceActors && cast.voiceActors.length > 0
 																	? cast.voiceActors.filter(
-																			j => j.language === 'JAPANESE'
-																		)[0] &&
+																		j => j.language === 'JAPANESE'
+																	)[0] &&
 																		cast.voiceActors.filter(
 																			j => j.language === 'JAPANESE'
 																		)[0].name.last
 																		? cast.voiceActors.filter(
-																				j => j.language === 'JAPANESE'
-																			)[0].name.first +
-																			' ' +
-																			cast.voiceActors.filter(
+																			j => j.language === 'JAPANESE'
+																		)[0].name.first +
+																		' ' +
+																		cast.voiceActors.filter(
+																			j => j.language === 'JAPANESE'
+																		)[0].name.last
+																		: cast.voiceActors.filter(
+																			j => j.language === 'JAPANESE'
+																		)[0]
+																			? cast.voiceActors.filter(
 																				j => j.language === 'JAPANESE'
 																			)[0].name.last
-																		: cast.voiceActors.filter(
-																				j => j.language === 'JAPANESE'
-																			)[0]
-																			? cast.voiceActors.filter(
-																					j => j.language === 'JAPANESE'
-																				)[0].name.last
 																			: 'Unknown'
 																	: cast.node.name.last
 																		? cast.node.name.first +
-																			' ' +
-																			cast.node.name.last
+																		' ' +
+																		cast.node.name.last
 																		: cast.node.name.first}
 															</M.Typography>
 															<M.Typography
@@ -1393,12 +1436,12 @@ class Show extends Component {
 															>
 																{cast.voiceActors && cast.voiceActors.length > 0
 																	? `as ${
-																			cast.node.name.last
-																				? cast.node.name.first +
-																					' ' +
-																					cast.node.name.last
-																				: cast.node.name.first
-																		}`
+																	cast.node.name.last
+																		? cast.node.name.first +
+																		' ' +
+																		cast.node.name.last
+																		: cast.node.name.first
+																	}`
 																	: cast.role}
 															</M.Typography>
 														</M.Card>
@@ -1443,8 +1486,8 @@ class Show extends Component {
 														>
 															{staff.node.name.last
 																? staff.node.name.first +
-																	' ' +
-																	staff.node.name.last
+																' ' +
+																staff.node.name.last
 																: staff.node.name.first}
 														</M.Typography>
 														<M.Typography

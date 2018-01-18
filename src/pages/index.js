@@ -90,8 +90,11 @@ class Index extends Component {
   };
 
   twistLoad = async () => {
+
     if (this.props.mir && this.props.mir.twist) return null;
-    else Twist.load().then(twist => this.props.twistInit(twist));
+    else Twist.load().then(async twist => {
+      this.props.twistInit(twist)
+    });
   };
 
   handleClick = () => {

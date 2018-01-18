@@ -77,10 +77,10 @@ const styles = theme => ({
 		height: 82,
 		position: 'fixed',
 		transition: theme.transitions.create(['all']),
-		background: 'linear-gradient(to top, transparent, rgba(0,0,0,.89))',
+		background: 'linear-gradient(to top, transparent, rgba(0,0,0,1))',
 	},
 	appBar: {
-		background: 'rgba(0,0,0,.87)',
+		background: 'rgba(0,0,0,.4)',
 		boxShadow: 'none',
 	},
 	appBarTop: {
@@ -282,13 +282,8 @@ class Superbar extends Component {
 		watchIsOn: false,
 		status: 0,
 		mirTitle: '',
+		scrolling: false
 	};
-
-	unlistenScroller = () =>
-		window.addEventListener('scroll', e => {
-			if (window.scrollY > 0) this.setState({ notAtTop: true });
-			else this.setState({ notAtTop: false });
-		});
 
 	componentWillMount = () => {
 		if (this.props.history.location.pathname === '/')
@@ -299,7 +294,10 @@ class Superbar extends Component {
 		this.pageChange();
 	};
 
-	componentDidMount = async () => this.vibrance();
+	componentDidMount = async () => {
+		window.addEventListener('scroll', this.handleScroll);
+		this.vibrance();
+	}
 
 	componentWillReceiveProps = nextProps => {
 		if (this.props.mir)
@@ -481,7 +479,22 @@ class Superbar extends Component {
 		setTimeout(() => this.setState({ loading: false }), 200);
 	};
 
-	componentWillUnmount = () => {};
+	componentWillUnmount = () => {
+		window.removeEventListener('scroll', this.handleScroll);
+	};
+
+	handleScroll = (event) => {
+		if (window.scrollY === 0 && this.state.scrolling === true)
+			this.setState({ scrolling: false }, () => {
+				if (document.getElementById('fabShowButton'))
+					document.getElementById('fabShowButton').style.opacity = 0;
+			})
+		else if (window.scrollY !== 0 && this.state.scrolling !== true)
+			this.setState({ scrolling: true }, () => {
+				if (document.getElementById('fabShowButton'))
+					document.getElementById('fabShowButton').style.opacity = 1;
+			})
+	}
 
 	render() {
 		const { classes } = this.props;
@@ -495,6 +508,7 @@ class Superbar extends Component {
 			watchIsOn,
 			hue,
 			mirTitle,
+			scrolling
 		} = this.state;
 
 		const user = this.props.profile;
@@ -640,13 +654,13 @@ class Superbar extends Component {
 				<Divider className={classes.listDivider} />
 				<Typography className={classes.footerCopy} type="headline">
 					{Object.keys(this.props.firebase).length - 1} online{this.props.mir &&
-					this.props.mir.twist ? (
-						<br />
-					) : null}
+						this.props.mir.twist ? (
+							<br />
+						) : null}
 					{this.props.mir && this.props.mir.twist
 						? Object.keys(this.props.mir.twist).length -
-							1 +
-							' animes in database'
+						1 +
+						' animes in database'
 						: null}
 					<br />2018 afroJ
 				</Typography>
@@ -658,10 +672,10 @@ class Superbar extends Component {
 				<AppBar
 					id="superBar"
 					classes={{ root: classes.root }}
-					className={!notAtTop ? classes.appBar : classes.appBarTop}
+					className={scrolling ? classes.appBar : classes.appBarTop}
 					style={watchIsOn ? { display: 'none' } : null}
 				>
-					<div className={classes.gd} />
+					<div className={classes.gd} style={scrolling ? null : { opacity: 0.2 }} />
 					<Toolbar>
 						<IconButton
 							className={classes.menuButton}
@@ -674,41 +688,13 @@ class Superbar extends Component {
 						<Typography
 							className={classes.barTitle}
 							type="title"
-							style={
-								currentPage === 'Mirai'
-									? { fontWeight: 500, letterSpacing: 1 }
-									: null
-							}
 						>
 							{this.props.history.location.pathname.includes('/show') ||
-							this.props.history.location.pathname.includes('/fig')
+								this.props.history.location.pathname.includes('/fig')
 								? mirTitle
 								: currentPage}
 						</Typography>
 						<div className={classes.flex} />
-						{/**<Autosuggest
-              theme={{
-                container: classes.searchContainer,
-                suggestionsContainerOpen: classes.suggestionsContainerOpen,
-                suggestionsList: classes.suggestionsList,
-                suggestion: classes.suggestion
-              }}
-              renderInputComponent={renderInput}
-              suggestions={twistBase}
-              onSuggestionsFetchRequested={this.handleSuggestionsFetchRequested}
-              onSuggestionsClearRequested={this.handleSuggestionsClearRequested}
-              renderSuggestionsContainer={renderSuggestionsContainer}
-              getSuggestionValue={getSuggestionValue}
-              renderSuggestion={renderSuggestion}
-              inputProps={{
-                autoFocus: true,
-                classes,
-                placeholder: "Search anime",
-                value: searchVal,
-                onChange: this.handleChange,
-                disableUnderline: true
-              }}
-            />**/}
 						<Tabs
 							className={classes.contextBar}
 							value={tabVal}
@@ -895,14 +881,14 @@ class Superbar extends Component {
 								</Menu>
 							</div>
 						) : (
-							<IconButton
-								onClick={() => {
-									this.props.history.push('/setup');
-								}}
-							>
-								<AccountCircle />
-							</IconButton>
-						)}
+								<IconButton
+									onClick={() => {
+										this.props.history.push('/setup');
+									}}
+								>
+									<AccountCircle />
+								</IconButton>
+							)}
 					</Toolbar>
 				</AppBar>
 				<Drawer
