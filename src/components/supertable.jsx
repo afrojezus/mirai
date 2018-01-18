@@ -177,7 +177,7 @@ export const timeFormatter = time => {
   );
 };
 
-const timeFormatToReadable = time => {
+export const timeFormatToReadable = time => {
   return new Date(time).toDateString();
 };
 

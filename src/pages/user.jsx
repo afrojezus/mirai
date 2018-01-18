@@ -6,6 +6,7 @@ import queryString from 'query-string';
 
 import { connect } from 'react-redux';
 import { firebaseConnect } from 'react-redux-firebase';
+import { timeFormatToReadable } from '../components/supertable';
 
 import * as Vibrant from 'node-vibrant';
 
@@ -453,6 +454,9 @@ const style = theme => ({
 		background: 'white',
 	},
 	tab: {},
+	feed: {
+		margin: theme.spacing.unit
+	}
 });
 
 class User extends Component {
@@ -577,7 +581,7 @@ class User extends Component {
 	render() {
 		const { classes, history } = this.props;
 		const user = this.props.profile;
-		const { loading, hue, data, tabVal } = this.state;
+		const { loading, hue, hueVibN, data, tabVal } = this.state;
 		if (!user) return null;
 		return (
 			<div>
@@ -754,13 +758,26 @@ class User extends Component {
 										<M.Typography type="title" className={classes.secTitle}>
 											Feed
 										</M.Typography>
-										<M.Grid container className={classes.itemcontainer}>
-											{data ? null : user && user.feed && Object.values(user.feed).sort((a, b) => a.date - b.date).map((feed, index) => <M.Card className={classes.feed} key={index}>
+										<M.Grid container className={classes.itemcontainer} style={{ flexDirection: 'column' }}>
+											{data ? null : user && user.feed && Object.values(user.feed).sort((a, b) => b.date - a.date).map((feed, index) => <M.Card style={{ background: hueVibN }} className={classes.feed} key={index}>
 												<M.CardHeader avatar={<M.Avatar
 													alt=""
 													src={feed.user.avatar}
 													className={classes.avatar}
-												/>} title={feed.user.username}></M.CardHeader>
+												/>} subheader={timeFormatToReadable(feed.date)} title={feed.user.username}></M.CardHeader>
+												<M.CardMedia style={{ minHeight: 300 }} image={feed.bgImg ? feed.bgImg : feed.coverImg}></M.CardMedia>
+												<M.CardContent>
+													<M.Typography type='body1'>{feed.activity}</M.Typography>
+												</M.CardContent>
+												<M.CardActions>
+													<div style={{ flex: 1 }} />
+													<M.IconButton>
+														<Icon.ThumbUp />
+													</M.IconButton>
+													<M.IconButton>
+														<Icon.Comment />
+													</M.IconButton>
+												</M.CardActions>
 											</M.Card>)}
 										</M.Grid>
 									</M.Grid>
