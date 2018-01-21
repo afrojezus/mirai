@@ -6,7 +6,10 @@ import queryString from 'query-string';
 
 import { connect } from 'react-redux';
 import { firebaseConnect } from 'react-redux-firebase';
-import { timeFormatToReadable } from '../components/supertable';
+import {
+	timeFormatToReadable,
+	timeFormatToReadableTime,
+} from '../components/supertable';
 
 import * as Vibrant from 'node-vibrant';
 
@@ -453,10 +456,12 @@ const style = theme => ({
 		height: 2,
 		background: 'white',
 	},
-	tab: {},
+	tab: {
+		height: 64,
+	},
 	feed: {
-		margin: theme.spacing.unit
-	}
+		margin: theme.spacing.unit,
+	},
 });
 
 class User extends Component {
@@ -568,7 +573,7 @@ class User extends Component {
 					hueVib: hues.vib,
 					hueVibN: hues.vibn,
 				},
-				() => { }
+				() => {}
 			);
 
 		setTimeout(() => this.setState({ loading: false }), 200);
@@ -641,45 +646,45 @@ class User extends Component {
 									<M.Grid container className={classes.itemcontainer}>
 										{(user && user.friends) || (data && data.friends)
 											? Object.values(data.friends || user.friends).map(
-												(friend, index) => (
-													<M.Grid
-														className={classes.peopleCard}
-														item
-														xs
-														key={index}
-													>
-														<M.Card
-															style={{
-																background: 'transparent',
-																boxShadow: 'none',
-															}}
+													(friend, index) => (
+														<M.Grid
+															className={classes.peopleCard}
+															item
+															xs
+															key={index}
 														>
-															<M.Avatar
-																onClick={() =>
-																	this.openEntity(`/user?u=${friend.id}`)
-																}
-																className={classes.peopleImage}
-																src={friend.image}
-																imgProps={{
-																	style: { opacity: 0 },
-																	onLoad: e =>
-																		(e.currentTarget.style.opacity = null),
+															<M.Card
+																style={{
+																	background: 'transparent',
+																	boxShadow: 'none',
 																}}
-															/>
-															<M.Typography
-																type="headline"
-																className={classes.peopleTitle}
 															>
-																{friend.name}
-															</M.Typography>
-															<M.Typography
-																type="headline"
-																className={classes.peopleSubTitle}
-															/>
-														</M.Card>
-													</M.Grid>
+																<M.Avatar
+																	onClick={() =>
+																		this.openEntity(`/user?u=${friend.id}`)
+																	}
+																	className={classes.peopleImage}
+																	src={friend.image}
+																	imgProps={{
+																		style: { opacity: 0 },
+																		onLoad: e =>
+																			(e.currentTarget.style.opacity = null),
+																	}}
+																/>
+																<M.Typography
+																	type="headline"
+																	className={classes.peopleTitle}
+																>
+																	{friend.name}
+																</M.Typography>
+																<M.Typography
+																	type="headline"
+																	className={classes.peopleSubTitle}
+																/>
+															</M.Card>
+														</M.Grid>
+													)
 												)
-											)
 											: null}
 									</M.Grid>
 								</M.Grid>
@@ -758,27 +763,60 @@ class User extends Component {
 										<M.Typography type="title" className={classes.secTitle}>
 											Feed
 										</M.Typography>
-										<M.Grid container className={classes.itemcontainer} style={{ flexDirection: 'column' }}>
-											{data ? null : user && user.feed && Object.values(user.feed).sort((a, b) => b.date - a.date).map((feed, index) => <M.Card style={{ background: hueVibN }} className={classes.feed} key={index}>
-												<M.CardHeader avatar={<M.Avatar
-													alt=""
-													src={feed.user.avatar}
-													className={classes.avatar}
-												/>} subheader={timeFormatToReadable(feed.date)} title={feed.user.username}></M.CardHeader>
-												<M.CardMedia style={{ minHeight: 300 }} image={feed.bgImg ? feed.bgImg : feed.coverImg}></M.CardMedia>
-												<M.CardContent>
-													<M.Typography type='body1'>{feed.activity}</M.Typography>
-												</M.CardContent>
-												<M.CardActions>
-													<div style={{ flex: 1 }} />
-													<M.IconButton>
-														<Icon.ThumbUp />
-													</M.IconButton>
-													<M.IconButton>
-														<Icon.Comment />
-													</M.IconButton>
-												</M.CardActions>
-											</M.Card>)}
+										<M.Grid
+											container
+											className={classes.itemcontainer}
+											style={{ flexDirection: 'column' }}
+										>
+											{data
+												? null
+												: user &&
+													user.feed &&
+													Object.values(user.feed)
+														.sort((a, b) => b.date - a.date)
+														.map((feed, index) => (
+															<M.Card
+																style={{ background: hueVibN }}
+																className={classes.feed}
+																key={index}
+															>
+																<M.CardHeader
+																	avatar={
+																		<M.Avatar
+																			alt=""
+																			src={feed.user.avatar}
+																			className={classes.avatar}
+																		/>
+																	}
+																	subheader={
+																		timeFormatToReadableTime(feed.date) +
+																		' ' +
+																		timeFormatToReadable(feed.date)
+																	}
+																	title={feed.user.username}
+																/>
+																<M.CardMedia
+																	style={{ minHeight: 300 }}
+																	image={
+																		feed.bgImg ? feed.bgImg : feed.coverImg
+																	}
+																/>
+																<M.CardContent>
+																	<M.Typography type="body1">
+																		{feed.activity}
+																	</M.Typography>
+																</M.CardContent>
+																<M.CardActions>
+																	<div style={{ flex: 1 }} />
+																	<M.IconButton>
+																		<Icon.ThumbUp />
+																	</M.IconButton>
+																	<M.IconButton>
+																		<Icon.Comment />
+																	</M.IconButton>
+																</M.CardActions>
+															</M.Card>
+														))}
 										</M.Grid>
 									</M.Grid>
 									<M.Grid item xs={5} style={{ zIndex: 10 }} id="favourites">
@@ -827,10 +865,10 @@ class User extends Component {
 														</M.Grid>
 													))
 												) : (
-														<M.Typography type="body1">
-															They don't appear to like anime...
+													<M.Typography type="body1">
+														They don't appear to like anime...
 													</M.Typography>
-													)
+												)
 											) : user && user.favs && user.favs.show ? (
 												Object.values(user.favs.show).map((show, index) => (
 													<M.Grid
@@ -865,11 +903,11 @@ class User extends Component {
 													</M.Grid>
 												))
 											) : (
-														<M.Typography type="body1">
-															Doesn't seem like you've found yourself a good one
+												<M.Typography type="body1">
+													Doesn't seem like you've found yourself a good one
 													yet...
 												</M.Typography>
-													)}
+											)}
 										</M.Grid>
 										<M.Divider />
 										<M.Typography
@@ -914,10 +952,10 @@ class User extends Component {
 														</M.Grid>
 													))
 												) : (
-														<M.Typography type="body1">
-															Appears {data.username} is not into reading...
+													<M.Typography type="body1">
+														Appears {data.username} is not into reading...
 													</M.Typography>
-													)
+												)
 											) : user && user.favs && user.favs.manga ? (
 												Object.values(user.favs.manga).map((show, index) => (
 													<M.Grid
@@ -952,10 +990,10 @@ class User extends Component {
 													</M.Grid>
 												))
 											) : (
-														<M.Typography type="body1">
-															Not into reading? Understandable.
+												<M.Typography type="body1">
+													Not into reading? Understandable.
 												</M.Typography>
-													)}
+											)}
 										</M.Grid>
 										<M.Divider />
 										<M.Typography
@@ -1006,10 +1044,10 @@ class User extends Component {
 														</M.Grid>
 													))
 												) : (
-														<M.Typography type="body1">
-															{data.username} has yet to find his waifu...
+													<M.Typography type="body1">
+														{data.username} has yet to find his waifu...
 													</M.Typography>
-													)
+												)
 											) : user && user.favs && user.favs.char ? (
 												Object.values(user.favs.char).map((cast, index) => (
 													<M.Grid
@@ -1050,10 +1088,10 @@ class User extends Component {
 													</M.Grid>
 												))
 											) : (
-														<M.Typography type="body1">
-															Do you like any characters at all?
+												<M.Typography type="body1">
+													Do you like any characters at all?
 												</M.Typography>
-													)}
+											)}
 										</M.Grid>
 										<M.Divider />
 										<M.Typography
@@ -1104,11 +1142,11 @@ class User extends Component {
 														</M.Grid>
 													))
 												) : (
-														<M.Typography type="body1">
-															Staff? Actors? Casting? {data.username} does not
+													<M.Typography type="body1">
+														Staff? Actors? Casting? {data.username} does not
 														know.
 													</M.Typography>
-													)
+												)
 											) : user && user.favs && user.favs.staff ? (
 												Object.values(user.favs.staff).map((cast, index) => (
 													<M.Grid
@@ -1149,11 +1187,11 @@ class User extends Component {
 													</M.Grid>
 												))
 											) : (
-														<M.Typography type="body1">
-															Hmm... I suppose you don't find anyone that
+												<M.Typography type="body1">
+													Hmm... I suppose you don't find anyone that
 													interesting to follow.
 												</M.Typography>
-													)}
+											)}
 										</M.Grid>
 										<M.Divider />
 										<M.Typography
@@ -1200,11 +1238,11 @@ class User extends Component {
 														</M.Grid>
 													))
 												) : (
-														<M.Typography type="body1">
-															Appears {data.username} isn't fond of any studios at
+													<M.Typography type="body1">
+														Appears {data.username} isn't fond of any studios at
 														all.
 													</M.Typography>
-													)
+												)
 											) : user && user.favs && user.favs.studio ? (
 												Object.values(user.favs.studio).map((show, index) => (
 													<M.Grid
@@ -1239,11 +1277,11 @@ class User extends Component {
 													</M.Grid>
 												))
 											) : (
-														<M.Typography type="body1">
-															Studios can be rather abstract.. perhaps you enjoy
+												<M.Typography type="body1">
+													Studios can be rather abstract.. perhaps you enjoy
 													works by Studio Ghibli or perhaps... Trigger?
 												</M.Typography>
-													)}
+											)}
 										</M.Grid>
 									</M.Grid>
 								</M.Grid>

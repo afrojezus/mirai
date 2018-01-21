@@ -688,7 +688,7 @@ class Home extends Component {
 								</div>
 							) : null}
 							{user && user.favs && user.favs.show && user.favs.show ? (
-								<div>
+								<div style={{ width: '100%' }}>
 									<Grid
 										item
 										xs
@@ -711,14 +711,38 @@ class Home extends Component {
 											{Object.values(user.favs.show).length} anime favourties
 										</Typography>
 									</Grid>
-									<SuperTable
-										data={Object.values(user.favs.show).sort(
-											(a, b) => a.name - b.name
-										)}
-										limit={24}
-										type="s"
-										typeof="favs"
-									/>
+									<Grid container className={classes.itemcontainer}>
+										{Object.values(user.favs.show)
+											.sort((a, b) => a.name - b.name)
+											.map((anime, index) => (
+												<Grid
+													className={classes.entityCard}
+													item
+													xs
+													key={index}
+												>
+													<Card
+														style={{ background: 'transparent' }}
+														onClick={() =>
+															this.props.history.push(`/show?s=${anime.id}`)
+														}
+													>
+														<div className={classes.gradientCard}>
+															<CardMedia
+																className={classes.entityImage}
+																image={anime.image}
+															/>
+														</div>
+														<Typography
+															type="headline"
+															className={classes.entityTitle}
+														>
+															{anime.name}
+														</Typography>
+													</Card>
+												</Grid>
+											))}
+									</Grid>
 								</div>
 							) : null}
 						</Grid>

@@ -265,6 +265,23 @@ const styles = theme => ({
 		bottom: 0,
 		zIndex: 9999,
 	},
+	sideNav: {
+		position: 'fixed',
+		height: '100%',
+		top: theme.spacing.unit * 8,
+		left: 0,
+		display: 'flex',
+		flexDirection: 'column',
+		margin: theme.spacing.unit,
+		zIndex: 1200,
+	},
+	sideButton: {
+		display: 'flex',
+		'& > span': {
+			flexDirection: 'column',
+			textTransform: 'initial',
+		},
+	},
 });
 
 class Superbar extends Component {
@@ -282,7 +299,7 @@ class Superbar extends Component {
 		watchIsOn: false,
 		status: 0,
 		mirTitle: '',
-		scrolling: false
+		scrolling: false,
 	};
 
 	componentWillMount = () => {
@@ -297,7 +314,7 @@ class Superbar extends Component {
 	componentDidMount = async () => {
 		window.addEventListener('scroll', this.handleScroll);
 		this.vibrance();
-	}
+	};
 
 	componentWillReceiveProps = nextProps => {
 		if (this.props.mir)
@@ -483,18 +500,18 @@ class Superbar extends Component {
 		window.removeEventListener('scroll', this.handleScroll);
 	};
 
-	handleScroll = (event) => {
+	handleScroll = event => {
 		if (window.scrollY === 0 && this.state.scrolling === true)
 			this.setState({ scrolling: false }, () => {
 				if (document.getElementById('fabShowButton'))
 					document.getElementById('fabShowButton').style.opacity = 0;
-			})
+			});
 		else if (window.scrollY !== 0 && this.state.scrolling !== true)
 			this.setState({ scrolling: true }, () => {
 				if (document.getElementById('fabShowButton'))
 					document.getElementById('fabShowButton').style.opacity = 1;
-			})
-	}
+			});
+	};
 
 	render() {
 		const { classes } = this.props;
@@ -508,7 +525,7 @@ class Superbar extends Component {
 			watchIsOn,
 			hue,
 			mirTitle,
-			scrolling
+			scrolling,
 		} = this.state;
 
 		const user = this.props.profile;
@@ -654,13 +671,13 @@ class Superbar extends Component {
 				<Divider className={classes.listDivider} />
 				<Typography className={classes.footerCopy} type="headline">
 					{Object.keys(this.props.firebase).length - 1} online{this.props.mir &&
-						this.props.mir.twist ? (
-							<br />
-						) : null}
+					this.props.mir.twist ? (
+						<br />
+					) : null}
 					{this.props.mir && this.props.mir.twist
 						? Object.keys(this.props.mir.twist).length -
-						1 +
-						' animes in database'
+							1 +
+							' animes in database'
 						: null}
 					<br />2018 afroJ
 				</Typography>
@@ -675,7 +692,10 @@ class Superbar extends Component {
 					className={scrolling ? classes.appBar : classes.appBarTop}
 					style={watchIsOn ? { display: 'none' } : null}
 				>
-					<div className={classes.gd} style={scrolling ? null : { opacity: 0.2 }} />
+					<div
+						className={classes.gd}
+						style={scrolling ? null : { opacity: 0.2 }}
+					/>
 					<Toolbar>
 						<IconButton
 							className={classes.menuButton}
@@ -685,17 +705,14 @@ class Superbar extends Component {
 						>
 							<MenuIcon />
 						</IconButton>
-						<Typography
-							className={classes.barTitle}
-							type="title"
-						>
+						<Typography className={classes.barTitle} type="title">
 							{this.props.history.location.pathname.includes('/show') ||
-								this.props.history.location.pathname.includes('/fig')
+							this.props.history.location.pathname.includes('/fig')
 								? mirTitle
 								: currentPage}
 						</Typography>
 						<div className={classes.flex} />
-						<Tabs
+						{/*<Tabs
 							className={classes.contextBar}
 							value={tabVal}
 							onChange={this.tabChange}
@@ -735,7 +752,7 @@ class Superbar extends Component {
 								}}
 							/>
 							<Tab style={{ display: 'none' }} />
-						</Tabs>
+						</Tabs>*/}
 						<div className={classes.flex} />
 						<IconButton
 							onClick={() => {
@@ -881,16 +898,52 @@ class Superbar extends Component {
 								</Menu>
 							</div>
 						) : (
-								<IconButton
-									onClick={() => {
-										this.props.history.push('/setup');
-									}}
-								>
-									<AccountCircle />
-								</IconButton>
-							)}
+							<IconButton
+								onClick={() => {
+									this.props.history.push('/setup');
+								}}
+							>
+								<AccountCircle />
+							</IconButton>
+						)}
 					</Toolbar>
 				</AppBar>
+				<Hidden lgDown>
+					<div
+						className={classes.sideNav}
+						id="sideNav"
+						style={watchIsOn ? { display: 'none' } : null}
+					>
+						<Button
+							className={classes.sideButton}
+							onClick={() => this.props.history.push('/')}
+						>
+							<HomeIcon />
+							Home
+						</Button>
+						<Button
+							className={classes.sideButton}
+							onClick={() => this.props.history.push('/feeds')}
+						>
+							<DashboardIcon />
+							Feeds
+						</Button>
+						<Button
+							className={classes.sideButton}
+							onClick={() => this.props.history.push('/rankings')}
+						>
+							<StarIcon />
+							Rankings
+						</Button>
+						<Button
+							className={classes.sideButton}
+							onClick={() => this.props.history.push('/live')}
+						>
+							<LiveTvIcon />
+							Live
+						</Button>
+					</div>
+				</Hidden>
 				<Drawer
 					classes={{ paper: classes.drawer }}
 					open={drawerOpen}
@@ -903,12 +956,13 @@ class Superbar extends Component {
 					{menuList}
 				</Drawer>
 				<div className={classes.content}>{this.props.children}</div>
-				<Hidden mdUp>
+				<Hidden xlUp>
 					<BottomNavigation
 						value={tabVal}
 						onChange={this.tabChange}
 						showLabels
 						className={classes.navBar}
+						style={watchIsOn ? { display: 'none' } : null}
 					>
 						<BottomNavigationAction label="Home" icon={<HomeIcon />} />
 						<BottomNavigationAction label="Feeds" icon={<DashboardIcon />} />
