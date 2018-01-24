@@ -18,6 +18,7 @@ import searchQuery, {
 	searchCharQuery,
 	searchStudiosQuery,
 } from '../utils/searchquery';
+import { LoadingIndicator } from '../components/layouts';
 
 const style = theme => ({
 	container: {
@@ -356,10 +357,10 @@ class Search extends Component {
 		const prevSearch = await localForage.getItem('prevSearch');
 		if (prevSearch)
 			this.setState(prevSearch, () =>
-				setTimeout(() => this.setState({ loading: false }, async () => {}), 300)
+				setTimeout(() => this.setState({ loading: false }, async () => { }), 300)
 			);
 		else
-			setTimeout(() => this.setState({ loading: false }, async () => {}), 300);
+			setTimeout(() => this.setState({ loading: false }, async () => { }), 300);
 	};
 
 	uwu = () =>
@@ -471,9 +472,8 @@ class Search extends Component {
 		} = this.state;
 		return (
 			<div>
-				<M.CircularProgress
-					className={classes.loading}
-					style={!loading ? { opacity: 0 } : null}
+				<LoadingIndicator
+					loading={loading}
 				/>
 				<div className={classes.root}>
 					<M.Toolbar className={classes.searchBar}>
@@ -494,16 +494,16 @@ class Search extends Component {
 					<div className={classes.cox} style={loading ? { opacity: 0 } : null}>
 						<M.Grid container spacing={0} className={classes.content}>
 							{anime &&
-							anime.length > 0 &&
-							this.props.mir &&
-							this.props.mir.twist ? (
-								<M.Grid container className={classes.container}>
-									<M.Typography type="title" className={classes.secTitle}>
-										Anime
+								anime.length > 0 &&
+								this.props.mir &&
+								this.props.mir.twist ? (
+									<M.Grid container className={classes.container}>
+										<M.Typography type="title" className={classes.secTitle}>
+											Anime
 									</M.Typography>
-									<M.Grid container className={classes.itemcontainer}>
-										{anime
-											? anime
+										<M.Grid container className={classes.itemcontainer}>
+											{anime
+												? anime
 													.filter(d =>
 														this.props.mir.twist.filter(s =>
 															s.name.match(d.title.romaji)
@@ -543,10 +543,10 @@ class Search extends Component {
 															</M.Card>
 														</M.Grid>
 													))
-											: null}
+												: null}
+										</M.Grid>
 									</M.Grid>
-								</M.Grid>
-							) : null}
+								) : null}
 							{manga && manga.length > 0 ? (
 								<M.Grid container className={classes.container}>
 									<M.Typography type="title" className={classes.secTitle}>
@@ -555,39 +555,39 @@ class Search extends Component {
 									<M.Grid container className={classes.itemcontainer}>
 										{manga
 											? manga.map((anime, index) => (
-													<M.Grid
-														className={classes.entityCard}
-														item
-														xs
-														key={index}
+												<M.Grid
+													className={classes.entityCard}
+													item
+													xs
+													key={index}
+												>
+													<M.Card
+														style={{ background: 'transparent' }}
+														onClick={() =>
+															this.openEntity(`/show?m=${anime.id}`)
+														}
 													>
-														<M.Card
-															style={{ background: 'transparent' }}
-															onClick={() =>
-																this.openEntity(`/show?m=${anime.id}`)
-															}
-														>
-															<div className={classes.gradientCard}>
-																<M.CardMedia
-																	className={classes.entityImage}
-																	image={anime.coverImage.large}
-																/>
-															</div>
-															<M.Typography
-																type="headline"
-																className={classes.entityTitle}
-															>
-																{anime.title.english
-																	? anime.title.english
-																	: anime.title.romaji}
-															</M.Typography>
-															<M.Typography
-																type="headline"
-																className={classes.entitySubTitle}
+														<div className={classes.gradientCard}>
+															<M.CardMedia
+																className={classes.entityImage}
+																image={anime.coverImage.large}
 															/>
-														</M.Card>
-													</M.Grid>
-												))
+														</div>
+														<M.Typography
+															type="headline"
+															className={classes.entityTitle}
+														>
+															{anime.title.english
+																? anime.title.english
+																: anime.title.romaji}
+														</M.Typography>
+														<M.Typography
+															type="headline"
+															className={classes.entitySubTitle}
+														/>
+													</M.Card>
+												</M.Grid>
+											))
 											: null}
 									</M.Grid>
 								</M.Grid>
@@ -600,37 +600,37 @@ class Search extends Component {
 									<M.Grid container className={classes.itemcontainer}>
 										{characters
 											? characters.data.Page.characters.map((anime, index) => (
-													<M.Grid
-														className={classes.peopleCard}
-														item
-														xs
-														key={index}
+												<M.Grid
+													className={classes.peopleCard}
+													item
+													xs
+													key={index}
+												>
+													<M.Card
+														style={{
+															background: 'transparent',
+															boxShadow: 'none',
+														}}
+														onClick={() =>
+															this.props.history.push(`/fig?c=${anime.id}`)
+														}
 													>
-														<M.Card
-															style={{
-																background: 'transparent',
-																boxShadow: 'none',
-															}}
-															onClick={() =>
-																this.props.history.push(`/fig?c=${anime.id}`)
-															}
+														<M.Avatar
+															className={classes.peopleImage}
+															classes={{ img: classes.fillImg }}
+															src={anime.image.large}
+														/>
+														<M.Typography
+															type="headline"
+															className={classes.peopleTitle}
 														>
-															<M.Avatar
-																className={classes.peopleImage}
-																classes={{ img: classes.fillImg }}
-																src={anime.image.large}
-															/>
-															<M.Typography
-																type="headline"
-																className={classes.peopleTitle}
-															>
-																{anime.name.last
-																	? anime.name.first + ' ' + anime.name.last
-																	: anime.name.first}
-															</M.Typography>
-														</M.Card>
-													</M.Grid>
-												))
+															{anime.name.last
+																? anime.name.first + ' ' + anime.name.last
+																: anime.name.first}
+														</M.Typography>
+													</M.Card>
+												</M.Grid>
+											))
 											: null}
 									</M.Grid>
 								</M.Grid>
@@ -643,37 +643,37 @@ class Search extends Component {
 									<M.Grid container className={classes.itemcontainer}>
 										{staff
 											? staff.data.Page.staff.map((anime, index) => (
-													<M.Grid
-														className={classes.peopleCard}
-														item
-														xs
-														key={index}
+												<M.Grid
+													className={classes.peopleCard}
+													item
+													xs
+													key={index}
+												>
+													<M.Card
+														style={{
+															background: 'transparent',
+															boxShadow: 'none',
+														}}
+														onClick={() =>
+															this.props.history.push(`/fig?s=${anime.id}`)
+														}
 													>
-														<M.Card
-															style={{
-																background: 'transparent',
-																boxShadow: 'none',
-															}}
-															onClick={() =>
-																this.props.history.push(`/fig?s=${anime.id}`)
-															}
+														<M.Avatar
+															className={classes.peopleImage}
+															classes={{ img: classes.fillImg }}
+															src={anime.image.large}
+														/>
+														<M.Typography
+															type="headline"
+															className={classes.peopleTitle}
 														>
-															<M.Avatar
-																className={classes.peopleImage}
-																classes={{ img: classes.fillImg }}
-																src={anime.image.large}
-															/>
-															<M.Typography
-																type="headline"
-																className={classes.peopleTitle}
-															>
-																{anime.name.last
-																	? anime.name.first + ' ' + anime.name.last
-																	: anime.name.first}
-															</M.Typography>
-														</M.Card>
-													</M.Grid>
-												))
+															{anime.name.last
+																? anime.name.first + ' ' + anime.name.last
+																: anime.name.first}
+														</M.Typography>
+													</M.Card>
+												</M.Grid>
+											))
 											: null}
 									</M.Grid>
 								</M.Grid>
@@ -686,28 +686,28 @@ class Search extends Component {
 									<M.Grid container className={classes.itemcontainer}>
 										{studios
 											? studios.data.Page.studios.map((anime, index) => (
-													<M.Grid
-														className={classes.entityCard}
-														item
-														xs
-														key={index}
+												<M.Grid
+													className={classes.entityCard}
+													item
+													xs
+													key={index}
+												>
+													<M.Card
+														style={{ background: 'transparent' }}
+														onClick={() =>
+															this.props.history.push(`/studio?s=${anime.id}`)
+														}
 													>
-														<M.Card
-															style={{ background: 'transparent' }}
-															onClick={() =>
-																this.props.history.push(`/studio?s=${anime.id}`)
-															}
+														<div className={classes.gradientCard} />
+														<M.Typography
+															type="headline"
+															className={classes.entityTitle}
 														>
-															<div className={classes.gradientCard} />
-															<M.Typography
-																type="headline"
-																className={classes.entityTitle}
-															>
-																{anime.name}
-															</M.Typography>
-														</M.Card>
-													</M.Grid>
-												))
+															{anime.name}
+														</M.Typography>
+													</M.Card>
+												</M.Grid>
+											))
 											: null}
 									</M.Grid>
 								</M.Grid>
@@ -720,44 +720,44 @@ class Search extends Component {
 									<M.Grid container className={classes.itemcontainer}>
 										{users
 											? users.map((user, index) => (
-													<M.Grid
-														className={classes.peopleCard}
-														item
-														xs
-														key={index}
+												<M.Grid
+													className={classes.peopleCard}
+													item
+													xs
+													key={index}
+												>
+													<M.Card
+														style={{
+															background: 'transparent',
+															boxShadow: 'none',
+														}}
+														onClick={() =>
+															this.props.history.push(
+																`/user${
+																this.props.profile
+																	? user.userID ===
+																		this.props.profile.userID
+																		? ``
+																		: `?u=${user.userID}`
+																	: `?u=${user.userID}`
+																}`
+															)
+														}
 													>
-														<M.Card
-															style={{
-																background: 'transparent',
-																boxShadow: 'none',
-															}}
-															onClick={() =>
-																this.props.history.push(
-																	`/user${
-																		this.props.profile
-																			? user.userID ===
-																				this.props.profile.userID
-																				? ``
-																				: `?u=${user.userID}`
-																			: `?u=${user.userID}`
-																	}`
-																)
-															}
+														<M.Avatar
+															className={classes.peopleImage}
+															classes={{ img: classes.fillImg }}
+															src={user.avatar}
+														/>
+														<M.Typography
+															type="headline"
+															className={classes.peopleTitle}
 														>
-															<M.Avatar
-																className={classes.peopleImage}
-																classes={{ img: classes.fillImg }}
-																src={user.avatar}
-															/>
-															<M.Typography
-																type="headline"
-																className={classes.peopleTitle}
-															>
-																{user.username}
-															</M.Typography>
-														</M.Card>
-													</M.Grid>
-												))
+															{user.username}
+														</M.Typography>
+													</M.Card>
+												</M.Grid>
+											))
 											: null}
 									</M.Grid>
 								</M.Grid>

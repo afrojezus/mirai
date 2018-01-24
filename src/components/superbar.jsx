@@ -210,9 +210,9 @@ const styles = theme => ({
 		'& > div': {
 			position: 'absolute',
 			width: '100%',
-		},
-		[theme.breakpoints.down('md')]: {
-			height: 'calc(100% - 56px)',
+			[theme.breakpoints.down('md')]: {
+				marginBottom: 56
+			},
 		},
 	},
 	footerCopy: {
@@ -505,11 +505,33 @@ class Superbar extends Component {
 			this.setState({ scrolling: false }, () => {
 				if (document.getElementById('fabShowButton'))
 					document.getElementById('fabShowButton').style.opacity = 0;
+				if (document.getElementById('header')) {
+					document.getElementById('header').style.opacity = null;
+					document.getElementById('header').style.transform = null;
+				}
+				let mainH = document.getElementById('mainHeader');
+				let mainC = document.getElementById('mainCard');
+				let commando = document.getElementById('commandoBar');
+				if (mainH && mainC && commando) {
+					mainH.classList.remove('compacMode');
+					commando.classList.remove('fixedcommando');
+				}
 			});
 		else if (window.scrollY !== 0 && this.state.scrolling !== true)
 			this.setState({ scrolling: true }, () => {
 				if (document.getElementById('fabShowButton'))
 					document.getElementById('fabShowButton').style.opacity = 1;
+				if (document.getElementById('header')) {
+					document.getElementById('header').style.opacity = 0;
+					document.getElementById('header').style.transform = 'scale(0.9)';
+				}
+				let mainH = document.getElementById('mainHeader');
+				let mainC = document.getElementById('mainCard');
+				let commando = document.getElementById('commandoBar');
+				if (mainH && mainC && commando) {
+					mainH.classList.add('compacMode');
+					commando.classList.add('fixedcommando');
+				}
 			});
 	};
 
@@ -671,13 +693,13 @@ class Superbar extends Component {
 				<Divider className={classes.listDivider} />
 				<Typography className={classes.footerCopy} type="headline">
 					{Object.keys(this.props.firebase).length - 1} online{this.props.mir &&
-					this.props.mir.twist ? (
-						<br />
-					) : null}
+						this.props.mir.twist ? (
+							<br />
+						) : null}
 					{this.props.mir && this.props.mir.twist
 						? Object.keys(this.props.mir.twist).length -
-							1 +
-							' animes in database'
+						1 +
+						' animes in database'
 						: null}
 					<br />2018 afroJ
 				</Typography>
@@ -689,7 +711,7 @@ class Superbar extends Component {
 				<AppBar
 					id="superBar"
 					classes={{ root: classes.root }}
-					className={scrolling ? classes.appBar : classes.appBarTop}
+					className={classes.appBarTop}
 					style={watchIsOn ? { display: 'none' } : null}
 				>
 					<div
@@ -707,7 +729,7 @@ class Superbar extends Component {
 						</IconButton>
 						<Typography className={classes.barTitle} type="title">
 							{this.props.history.location.pathname.includes('/show') ||
-							this.props.history.location.pathname.includes('/fig')
+								this.props.history.location.pathname.includes('/fig')
 								? mirTitle
 								: currentPage}
 						</Typography>
@@ -898,14 +920,14 @@ class Superbar extends Component {
 								</Menu>
 							</div>
 						) : (
-							<IconButton
-								onClick={() => {
-									this.props.history.push('/setup');
-								}}
-							>
-								<AccountCircle />
-							</IconButton>
-						)}
+								<IconButton
+									onClick={() => {
+										this.props.history.push('/setup');
+									}}
+								>
+									<AccountCircle />
+								</IconButton>
+							)}
 					</Toolbar>
 				</AppBar>
 				<Hidden lgDown>

@@ -4,6 +4,7 @@ import * as Icon from 'material-ui-icons';
 import Aqua2 from '../assets/aqua2.mp4';
 
 import { firebaseConnect } from 'react-redux-firebase';
+import { LoadingIndicator } from '../components/layouts';
 
 const specialColor = M.colors.blue.A700;
 
@@ -368,7 +369,7 @@ class Rankings extends Component {
 			.child('public_feed')
 			.on('value', feed => this.setState({ feeds: Object.values(feed.val()) }));
 
-	makeTitlebarColored = () => {};
+	makeTitlebarColored = () => { };
 
 	componentWillUnmount = () => {
 		let superbar = document.getElementById('superBar');
@@ -381,9 +382,8 @@ class Rankings extends Component {
 		const { publicfeed, loading } = this.state;
 		return (
 			<div>
-				<M.CircularProgress
-					className={classes.loading}
-					style={!loading ? { opacity: 0 } : null}
+				<LoadingIndicator
+					loading={loading}
 				/>
 				<div className={classes.frame} style={loading ? { opacity: 0 } : null}>
 					<video

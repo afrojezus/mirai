@@ -145,15 +145,6 @@ class Setup extends Component {
     const { mode, error } = this.state;
     return (
       <div className={classes.root}>
-        <div className={this.props.classes.ripplecon}>
-          <video
-            src={ripple}
-            className={this.props.classes.ripple}
-            autoPlay
-            muted
-            loop
-          />
-        </div>
         <Grid container spacing={0} className={classes.container}>
           <img src={miraiIcon} className="floatingIconMirai" alt="" />
           <Typography type="title" className={classes.title}>
@@ -201,10 +192,10 @@ class Setup extends Component {
                   Access
                 </Button>
               ) : (
-                <Button color="primary" onClick={this.signup}>
-                  Dive in
+                  <Button color="primary" onClick={this.signup}>
+                    Dive in
                 </Button>
-              )}
+                )}
             </CardActions>
           </Card>
         </Grid>

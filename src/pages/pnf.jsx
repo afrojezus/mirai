@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import * as M from "material-ui";
 import * as Icon from "material-ui-icons";
+import { LoadingIndicator } from "../components/layouts";
 
 const style = theme => ({
   root: {
@@ -437,9 +438,8 @@ class PageNotFound extends Component {
     const { loading } = this.state;
     return (
       <div>
-        <M.CircularProgress
-          className={classes.loading}
-          style={!loading ? { opacity: 0 } : null}
+        <LoadingIndicator
+          loading={loading}
         />
         <div className={classes.root} style={loading ? { opacity: 0 } : null}>
           <M.Typography type="display2" className={classes.bigTitle}>

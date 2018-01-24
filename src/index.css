@@ -1,7 +1,6 @@
 html::-webkit-scrollbar {
   display: none;
 }
-
 @font-face {
   font-family: "Aller";
   src: url("./assets/fonts/Aller_Rg.ttf");
@@ -358,6 +357,16 @@ html::-webkit-scrollbar {
   }
 }
 
+@keyframes fadeInSlowly {
+  from {
+    opacity: 0;
+    filter: grayscale(1);
+    transform: scale(1.2);
+  }
+  to {
+  }
+}
+
 .whiteshit {
   background: white !important;
   box-shadow: none !important;
@@ -367,4 +376,16 @@ html::-webkit-scrollbar {
 .whiteshit > * > *,
 .whiteshit > * > * > * {
   color: #111 !important;
+}
+
+.containerS {
+  padding: 64px;
+  box-sizing: border-box;
+  background: transparent !important;
+  transition: all .3s ease;
+}
+
+
+.compacMode {
+  background: initial !important;
 }

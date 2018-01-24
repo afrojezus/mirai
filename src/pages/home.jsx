@@ -19,6 +19,9 @@ import IconButton from 'material-ui/IconButton';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
+import CardButton from '../components/cardButton';
+import { Container, Root, Header, LoadingIndicator } from '../components/layouts'
+
 import Twist from '../twist-api';
 
 import Dotdotdot from 'react-dotdotdot';
@@ -449,31 +452,17 @@ class Home extends Component {
 
 		return (
 			<div>
-				<CircularProgress
-					className={classes.loading}
-					style={!loading ? { opacity: 0 } : null}
+				<LoadingIndicator
+					loading={loading}
 				/>
-				<div className={classes.frame} style={loading ? { opacity: 0 } : null}>
-					{user && user.headers ? (
-						<img
-							src={user.headers}
-							alt=""
-							className={classes.bgImage}
-							style={{ opacity: 0 }}
-							onLoad={e => (e.currentTarget.style.opacity = null)}
-						/>
-					) : (
-						<video
-							muted
-							loop
-							autoPlay
-							src={ripple}
-							alt=""
-							className={classes.bgImage}
-							style={{ opacity: 0 }}
-							onLoad={e => (e.currentTarget.style.opacity = null)}
-						/>
+				{user && user.headers ? (
+					<Header
+						img={user.headers}
+					/>
+				) : (
+						null
 					)}
+				<div className={classes.frame} style={loading ? { opacity: 0 } : null}>
 					{/*<div className={classes.topHeaderBig}>
             <Grid container spacing={16} className={classes.container}>
               <Grid item xs className={classes.itemContainer}>
@@ -485,176 +474,184 @@ class Home extends Component {
               </Grid>
             </Grid>
           </div>*/}
-					<div className={classes.root}>
-						<Grid container spacing={16} className={classes.container}>
-							<Grid
-								item
-								xs
-								className={classes.itemContainer}
-								style={{
-									marginBottom: 0,
-									flexDirection: 'row',
-									display: 'flex',
-								}}
-							>
-								<Typography type="title" className={classes.headline}>
-									Currently ongoing anime
+					<Root>
+						<Container spacing={16}>
+							<div style={{ width: '100%' }}>
+								<Grid
+									item
+									xs
+									className={classes.itemContainer}
+									style={{
+										marginBottom: 0,
+										flexDirection: 'row',
+										display: 'flex',
+									}}
+								>
+									<Typography type="title" className={classes.headline}>
+										Currently ongoing anime
 								</Typography>
-								<div style={{ flex: 1 }} />
-								<Typography type="title" className={classes.headline}>
-									{this.props.mir && this.props.mir.twist
-										? Object.values(this.props.mir.twist).filter(
+									<div style={{ flex: 1 }} />
+									<Typography type="title" className={classes.headline}>
+										{this.props.mir && this.props.mir.twist
+											? Object.values(this.props.mir.twist).filter(
 												s => s.ongoing === true
 											).length -
 											1 +
 											' ongoing animes in database'
-										: null}
+											: null}
+									</Typography>
+								</Grid>
+								<Grid container className={classes.itemcontainer}>
+									{ongoing &&
+										ongoing.data &&
+										this.props.mir &&
+										this.props.mir.twist ? (
+											<SuperTable
+												data={ongoing.data.Page.media
+													.filter(s => s.nextAiringEpisode)
+													.filter(d =>
+														this.props.mir.twist.filter(s =>
+															s.name.match(d.title.romaji)
+														)
+													)
+													.sort(
+													(a, b) =>
+														a.nextAiringEpisode.timeUntilAiring -
+														b.nextAiringEpisode.timeUntilAiring
+													)}
+												type="s"
+												typeof="ongoing"
+												limit={12}
+											/>
+										) : null}</Grid></div>
+							<div style={{ width: '100%' }}>
+								<Grid
+									item
+									xs
+									className={classes.itemContainer}
+									style={{ marginBottom: 0 }}
+								>
+									<Typography type="title" className={classes.headline}>
+										Currently ongoing manga
 								</Typography>
-							</Grid>
-							{ongoing &&
-							ongoing.data &&
-							this.props.mir &&
-							this.props.mir.twist ? (
-								<SuperTable
-									data={ongoing.data.Page.media
-										.filter(s => s.nextAiringEpisode)
-										.filter(d =>
-											this.props.mir.twist.filter(s =>
-												s.name.match(d.title.romaji)
-											)
-										)
-										.sort(
-											(a, b) =>
-												a.nextAiringEpisode.timeUntilAiring -
-												b.nextAiringEpisode.timeUntilAiring
-										)}
-									type="s"
-									typeof="ongoing"
-									limit={12}
-								/>
-							) : null}
-							<Grid
-								item
-								xs
-								className={classes.itemContainer}
-								style={{ marginBottom: 0 }}
-							>
-								<Typography type="title" className={classes.headline}>
-									Currently ongoing manga
+								</Grid>
+								<Grid container className={classes.itemcontainer}>
+									{ongoingM && ongoingM.data ? (
+										<SuperTable
+											data={ongoingM.data.Page.media}
+											type="m"
+											typeof="ongoing"
+											limit={12}
+										/>
+									) : null}</Grid></div>
+							<div style={{ width: '100%' }}>
+								<Grid
+									item
+									xs
+									className={classes.itemContainer}
+									style={{
+										marginBottom: 0,
+										flexDirection: 'row',
+										display: 'flex',
+									}}
+								>
+									<Typography type="title" className={classes.headline}>
+										Ranking
 								</Typography>
-							</Grid>
-							{ongoingM && ongoingM.data ? (
-								<SuperTable
-									data={ongoingM.data.Page.media}
-									type="m"
-									typeof="ongoing"
-									limit={12}
-								/>
-							) : null}
-							<Grid
-								item
-								xs
-								className={classes.itemContainer}
-								style={{
-									marginBottom: 0,
-									flexDirection: 'row',
-									display: 'flex',
-								}}
-							>
-								<Typography type="title" className={classes.headline}>
-									Ranking
+								</Grid>
+								<Grid container className={classes.itemcontainer}>
+									{rankingMentionable ? (
+										<SuperTable
+											data={Object.values(rankingMentionable[0])}
+											type="s"
+											typeof="ranking"
+											limit={12}
+										/>
+									) : null}</Grid></div>
+							<div style={{ width: '100%' }}>
+								<Grid item xs className={classes.itemContainer}>
+									<Typography type="title" className={classes.headline}>
+										Public feeds
 								</Typography>
-							</Grid>
-							{rankingMentionable ? (
-								<SuperTable
-									data={Object.values(rankingMentionable[0])}
-									type="s"
-									typeof="ranking"
-									limit={12}
-								/>
-							) : null}
-							<Grid item xs className={classes.itemContainer}>
-								<Typography type="title" className={classes.headline}>
-									Public feeds
-								</Typography>
-								<Grid container spacing={16}>
-									{feeds &&
-										feeds.map((feed, index) => (
-											<Grid item xs key={index}>
-												<Card classes={{ root: classes.cardColor }}>
-													<CardHeader
-														avatar={
-															<Avatar
-																alt=""
-																src={miraiIcon}
-																className={classes.avatar}
-															/>
+									<Grid container spacing={16}>
+										{feeds &&
+											feeds.map((feed, index) => (
+												<Grid item xs key={index}>
+													<Card classes={{ root: classes.cardColor }}>
+														<CardHeader
+															avatar={
+																<Avatar
+																	alt=""
+																	src={miraiIcon}
+																	className={classes.avatar}
+																/>
+															}
+															title={feed.name}
+															subheader={feed.user.name + ' - ' + feed.date}
+														/>
+														{feed.image ? <CardMedia image={feed.image} /> : null}
+														<CardContent>
+															<Typography type="body1">{feed.context}</Typography>
+														</CardContent>
+														<Divider />
+														<CardActions>
+															<Button
+																color="contrast"
+																className={classes.likeCount}
+															>
+																{feed.likes.length}{' '}
+																{feed.likes.length === 1 ? 'Like' : 'Likes'}
+															</Button>
+															<Button
+																color="contrast"
+																className={classes.likeCount}
+															>
+																{feed.comments.length}{' '}
+																{feed.comments.length === 1
+																	? 'Comment'
+																	: 'Comments'}
+															</Button>
+															<div className={classes.spacer} />
+															<IconButton>
+																<PlusOneIcon />
+															</IconButton>
+															<IconButton>
+																<ShareIcon />
+															</IconButton>
+														</CardActions>
+													</Card>
+													<Menu
+														id="feed-menu"
+														anchorEl={anchorEl}
+														open={openFeed}
+														onRequestClose={() =>
+															this.setState({ anchorEl: null })
 														}
-														title={feed.name}
-														subheader={feed.user.name + ' - ' + feed.date}
-													/>
-													{feed.image ? <CardMedia image={feed.image} /> : null}
-													<CardContent>
-														<Typography type="body1">{feed.context}</Typography>
-													</CardContent>
-													<Divider />
-													<CardActions>
-														<Button
-															color="contrast"
-															className={classes.likeCount}
-														>
-															{feed.likes.length}{' '}
-															{feed.likes.length === 1 ? 'Like' : 'Likes'}
-														</Button>
-														<Button
-															color="contrast"
-															className={classes.likeCount}
-														>
-															{feed.comments.length}{' '}
-															{feed.comments.length === 1
-																? 'Comment'
-																: 'Comments'}
-														</Button>
-														<div className={classes.spacer} />
-														<IconButton>
-															<PlusOneIcon />
-														</IconButton>
-														<IconButton>
-															<ShareIcon />
-														</IconButton>
-													</CardActions>
-												</Card>
-												<Menu
-													id="feed-menu"
-													anchorEl={anchorEl}
-													open={openFeed}
-													onRequestClose={() =>
-														this.setState({ anchorEl: null })
-													}
-													anchorOrigin={{
-														vertical: 'top',
-														horizontal: 'right',
-													}}
-													transformOrigin={{
-														vertical: 'top',
-														horizontal: 'right',
-													}}
-												>
-													<MenuItem
-														onClick={() => {
-															this.setState({ anchorEl: null });
-															this.easterEggOne();
+														anchorOrigin={{
+															vertical: 'top',
+															horizontal: 'right',
+														}}
+														transformOrigin={{
+															vertical: 'top',
+															horizontal: 'right',
 														}}
 													>
-														I have issues with different opinions
+														<MenuItem
+															onClick={() => {
+																this.setState({ anchorEl: null });
+																this.easterEggOne();
+															}}
+														>
+															I have issues with different opinions
 													</MenuItem>
-												</Menu>
-											</Grid>
-										))}
+													</Menu>
+												</Grid>
+											))}
+									</Grid>
 								</Grid>
-							</Grid>
+							</div>
 							{user && user.episodeProgress ? (
-								<div>
+								<div style={{ width: '100%' }}>
 									<Grid
 										item
 										xs
@@ -677,14 +674,16 @@ class Home extends Component {
 											{Object.values(user.episodeProgress).length} animes seen
 										</Typography>
 									</Grid>
-									<SuperTable
-										data={Object.values(user.episodeProgress)
-											.filter(s => s.recentlyWatched)
-											.sort((a, b) => b.recentlyWatched - a.recentlyWatched)}
-										limit={24}
-										type="s"
-										typeof="progress"
-									/>
+									<Grid container className={classes.itemcontainer}>
+										<SuperTable
+											data={Object.values(user.episodeProgress)
+												.filter(s => s.recentlyWatched)
+												.sort((a, b) => b.recentlyWatched - a.recentlyWatched)}
+											limit={24}
+											type="s"
+											typeof="progress"
+										/>
+									</Grid>
 								</div>
 							) : null}
 							{user && user.favs && user.favs.show && user.favs.show ? (
@@ -715,38 +714,20 @@ class Home extends Component {
 										{Object.values(user.favs.show)
 											.sort((a, b) => a.name - b.name)
 											.map((anime, index) => (
-												<Grid
-													className={classes.entityCard}
-													item
-													xs
+												<CardButton
 													key={index}
+													title={anime.name}
+													image={anime.image}
+													onClick={() =>
+														this.props.history.push(`/show?s=${anime.id}`)}
 												>
-													<Card
-														style={{ background: 'transparent' }}
-														onClick={() =>
-															this.props.history.push(`/show?s=${anime.id}`)
-														}
-													>
-														<div className={classes.gradientCard}>
-															<CardMedia
-																className={classes.entityImage}
-																image={anime.image}
-															/>
-														</div>
-														<Typography
-															type="headline"
-															className={classes.entityTitle}
-														>
-															{anime.name}
-														</Typography>
-													</Card>
-												</Grid>
+												</CardButton>
 											))}
 									</Grid>
 								</div>
 							) : null}
-						</Grid>
-					</div>
+						</Container>
+					</Root>
 				</div>
 			</div>
 		);

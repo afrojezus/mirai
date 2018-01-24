@@ -9,23 +9,27 @@ import FadeIn from 'react-fade-in';
 
 import Twist from '../twist-api';
 
+import CardButton, { PeopleButton } from '../components/cardButton'
+
 import { MIR_SET_TITLE } from '../constants';
 
 import { connect } from 'react-redux';
 import { firebaseConnect } from 'react-redux-firebase';
 import { timeFormatter } from '../components/supertable';
+import { Root, Container, CommandoBar, MainCard, Header, LoadingIndicator } from '../components/layouts';
 
 const styles = theme => ({
 	loading: {
 		height: '100%',
 		width: '100%',
-		zIndex: -5,
+		zIndex: 1200,
 		position: 'fixed',
 		top: '50%',
 		left: '50%',
 		transform: 'translate(-50%,-50%)',
 		padding: 0,
 		margin: 'auto',
+		color: 'white',
 		transition: theme.transitions.create(['all']),
 	},
 	root: {
@@ -417,7 +421,7 @@ const styles = theme => ({
 		display: 'inline-flex',
 		boxSizing: 'border-box',
 		background: '#222',
-		boxShadow: '0 3px 18px rgba(0,0,0,.1)',
+		borderBottom: `1px solid rgba(255,255,255,.1)`
 	},
 	commandoText: {
 		margin: 'auto',
@@ -482,6 +486,7 @@ const styles = theme => ({
 	fabContainer: {
 		transition: theme.transitions.create(['all']),
 		opacity: 0,
+		zIndex: 10000,
 	},
 });
 
@@ -583,16 +588,16 @@ class Show extends Component {
 			tag: data.tags.length > 0 ? data.tags[0].name : null,
 			sort: ['POPULARITY_DESC'],
 			page: 1,
+			isAdult: false
 		});
-
-		if (data && this.props.profile) {
+		if (data && this.props.profile && this.props.profile.username) {
 			this.props.firebase
 				.push(`users/${this.props.profile.userID}/feed`, {
 					date: Date.now(),
 					type: 'SHOW',
 					activity: `Checked out ${
 						data.title.english ? data.title.english : data.title.romaji
-					}`,
+						}`,
 					bgImg: data.bannerImage && data.bannerImage,
 					coverImg: data.coverImage.large,
 					user: {
@@ -611,17 +616,27 @@ class Show extends Component {
 					if (pal) {
 						this.setState(
 							{
-								hue: pal.DarkMuted.getHex(),
+								hue: pal.DarkMuted && pal.DarkMuted.getHex(),
 								hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
 								hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex(),
 								similars,
 							},
-							() => {}
+							() => { }
 						);
 					}
 				}
 			);
 		if (similars) this.setState({ similars });
+		if (data && data.tags.length > 1) {
+			const similars2 = await new Segoku().getSimilar({
+				tag: data.tags.length > 1 ? data.tags[1].name : null,
+				sort: ['POPULARITY_DESC'],
+				page: 1,
+				isAdult: false
+			});
+
+			if (similars2) this.setState({ similars2 })
+		}
 		if (this.state.data)
 			this.setState(
 				{
@@ -711,15 +726,15 @@ class Show extends Component {
 		if (this.props.profile)
 			this.props.firebase
 				.update(
-					`users/${this.props.profile.userID}/favs/${entity}/${data.id}`,
-					{
-						name,
-						image,
-						id: data.id,
-						link:
-							this.props.history.location.pathname +
-							this.props.history.location.search,
-					}
+				`users/${this.props.profile.userID}/favs/${entity}/${data.id}`,
+				{
+					name,
+					image,
+					id: data.id,
+					link:
+						this.props.history.location.pathname +
+						this.props.history.location.search,
+				}
 				)
 				.then(() => {
 					this.setState({ fav: true });
@@ -779,6 +794,7 @@ class Show extends Component {
 			eps,
 			epError,
 			menuEl,
+			similars2
 		} = this.state;
 
 		const openMenu = Boolean(menuEl);
@@ -805,18 +821,10 @@ class Show extends Component {
 
 		return (
 			<div className={classes.frame}>
-				{playerActive ? (
-					<M.Toolbar className={classes.backToolbar}>
-						<M.IconButton onClick={this.play}>
-							<Icon.ArrowBack />
-						</M.IconButton>
-					</M.Toolbar>
-				) : null}
-				<M.CircularProgress
-					className={classes.loading}
-					style={!loading ? { opacity: 0 } : null}
+				<LoadingIndicator
+					loading={loading}
 				/>
-				<div
+				<Root
 					id="previewFrame"
 					className={classes.root}
 					style={loading ? { opacity: 0 } : null}
@@ -849,29 +857,12 @@ class Show extends Component {
 											className={classes.fabProgress}
 										/>
 									) : (
-										<Icon.PlayArrow />
-									)}
+													<Icon.PlayArrow />
+												)}
 								</M.Button>
 							</div>
-							<div className={classes.grImage}>
-								<div
-									className={classes.grDImage}
-									style={{ background: hueVibN }}
-								>
-									<img
-										src={
-											data.Media.bannerImage
-												? data.Media.bannerImage
-												: data.Media.coverImage.large
-										}
-										alt=""
-										className={classes.bgImage}
-										style={{ opacity: 0 }}
-										onLoad={e => (e.currentTarget.style.opacity = null)}
-									/>
-								</div>
-							</div>
-							<M.Grid container spacing={16} className={classes.container}>
+							<Container spacing={16} id='mainHeader' special style={{ background: hue }}>
+								<Header image={data.Media.bannerImage ? data.Media.bannerImage : null} style={{ background: hue }} />
 								<M.Grid item xs={3} className={classes.leftSide}>
 									<div
 										className={
@@ -927,10 +918,10 @@ class Show extends Component {
 											{data.Media.type} <br />
 											{data.Media.nextAiringEpisode
 												? timeFormatter(
-														data.Media.nextAiringEpisode.timeUntilAiring
-													) +
-													' till Episode ' +
-													data.Media.nextAiringEpisode.episode
+													data.Media.nextAiringEpisode.timeUntilAiring
+												) +
+												' till Episode ' +
+												data.Media.nextAiringEpisode.episode
 												: null}
 										</M.Typography>
 									</div>
@@ -951,19 +942,19 @@ class Show extends Component {
 													' min'}
 											</M.Typography>
 										) : (
-											<M.Typography
-												className={classes.smallTitle}
-												type="display2"
-											>
-												{data.Media.title.native}{' '}
-												{'• ' + data.Media.startDate.year}{' '}
-												{'• ' +
-													data.Media.chapters +
-													' chapters in ' +
-													data.Media.volumes +
-													' volumes'}
-											</M.Typography>
-										)}
+												<M.Typography
+													className={classes.smallTitle}
+													type="display2"
+												>
+													{data.Media.title.native}{' '}
+													{'• ' + data.Media.startDate.year}{' '}
+													{'• ' +
+														data.Media.chapters +
+														' chapters in ' +
+														data.Media.volumes +
+														' volumes'}
+												</M.Typography>
+											)}
 										<div style={{ flex: 1 }} />
 										<M.Typography
 											className={classes.smallTitle}
@@ -990,58 +981,58 @@ class Show extends Component {
 										{data.Media.staff.edges.filter(
 											s => s.role === 'Director'
 										)[0] ? (
-											<M.Typography className={classes.boldD} type="headline">
-												Directed by{' '}
-											</M.Typography>
-										) : null}
+												<M.Typography className={classes.boldD} type="headline">
+													Directed by{' '}
+												</M.Typography>
+											) : null}
 										{data.Media.staff.edges.filter(
 											s => s.role === 'Director'
 										)[0] ? (
-											<M.Typography className={classes.smallD} type="headline">
-												{
-													data.Media.staff.edges.filter(
-														s => s.role === 'Director'
-													)[0].node.name.first
-												}{' '}
-												{data.Media.staff.edges.filter(
-													s => s.role === 'Director'
-												)[0].node.name.last
-													? data.Media.staff.edges.filter(
-															s => s.role === 'Director'
-														)[0].node.name.last
-													: null}
-											</M.Typography>
-										) : null}
-										{data.Media.staff.edges.filter(
-											s => s.role === 'Original Creator'
-										)[0] ? (
-											<div className={classes.sepD}>
-												<M.Typography className={classes.boldD} type="headline">
-													{data.Media.staff.edges.filter(
-														s => s.role === 'Director'
-													)[0]
-														? 'and written by'
-														: 'Written by'}
-												</M.Typography>
-												<M.Typography
-													className={classes.smallD}
-													type="headline"
-												>
+												<M.Typography className={classes.smallD} type="headline">
 													{
 														data.Media.staff.edges.filter(
-															s => s.role === 'Original Creator'
+															s => s.role === 'Director'
 														)[0].node.name.first
 													}{' '}
 													{data.Media.staff.edges.filter(
-														s => s.role === 'Original Creator'
+														s => s.role === 'Director'
 													)[0].node.name.last
 														? data.Media.staff.edges.filter(
-																s => s.role === 'Original Creator'
-															)[0].node.name.last
+															s => s.role === 'Director'
+														)[0].node.name.last
 														: null}
 												</M.Typography>
-											</div>
-										) : null}
+											) : null}
+										{data.Media.staff.edges.filter(
+											s => s.role === 'Original Creator'
+										)[0] ? (
+												<div className={classes.sepD}>
+													<M.Typography className={classes.boldD} type="headline">
+														{data.Media.staff.edges.filter(
+															s => s.role === 'Director'
+														)[0]
+															? 'and written by'
+															: 'Written by'}
+													</M.Typography>
+													<M.Typography
+														className={classes.smallD}
+														type="headline"
+													>
+														{
+															data.Media.staff.edges.filter(
+																s => s.role === 'Original Creator'
+															)[0].node.name.first
+														}{' '}
+														{data.Media.staff.edges.filter(
+															s => s.role === 'Original Creator'
+														)[0].node.name.last
+															? data.Media.staff.edges.filter(
+																s => s.role === 'Original Creator'
+															)[0].node.name.last
+															: null}
+													</M.Typography>
+												</div>
+											) : null}
 									</div>
 									<M.Divider />
 									<M.Grid container>
@@ -1052,15 +1043,15 @@ class Show extends Component {
 											<div className={classes.genreRow}>
 												{data.Media.genres
 													? data.Media.genres.map((o, i) => (
-															<M.Chip
-																onClick={() =>
-																	this.props.history.push(`/tag?g=${o}`)
-																}
-																className={classes.tagChip}
-																key={i}
-																label={o}
-															/>
-														))
+														<M.Chip
+															onClick={() =>
+																this.props.history.push(`/tag?g=${o}`)
+															}
+															className={classes.tagChip}
+															key={i}
+															label={o}
+														/>
+													))
 													: null}
 											</div>
 										</M.Grid>
@@ -1102,12 +1093,9 @@ class Show extends Component {
 										)}
 									</M.Grid>
 								</M.Grid>
-							</M.Grid>
-							<div className={classes.bigBar} style={{ background: hue }}>
-								<M.Toolbar
-									className={classes.commandoBar}
-									style={{ background: hue }}
-								>
+							</Container>
+							<MainCard style={{ background: hue }}>
+								<CommandoBar style={{ background: hue }}>
 									{data.Media.averageScore ? (
 										<div className={classes.commandoTextBox}>
 											<M.Typography
@@ -1142,101 +1130,101 @@ class Show extends Component {
 										</div>
 									) : null}
 									{data.Media.type.includes('MANGA') ||
-									!data.Media.season ? null : (
-										<M.Button
-											style={{
-												textTransform: 'initial',
-												display: 'flex',
-												flexDirection: 'column',
-											}}
-											onClick={() =>
-												window.open(
-													`http://anichart.net/${data.Media.season.toLowerCase() +
+										!data.Media.season ? null : (
+											<M.Button
+												style={{
+													textTransform: 'initial',
+													display: 'flex',
+													flexDirection: 'column',
+												}}
+												onClick={() =>
+													window.open(
+														`http://anichart.net/${data.Media.season.toLowerCase() +
 														'-' +
 														data.Media.startDate.year}`
-												)
-											}
-											className={classes.commandoTextBox}
-										>
-											<M.Typography
-												type="title"
-												className={classes.commandoText}
+													)
+												}
+												className={classes.commandoTextBox}
 											>
-												{data.Media.season &&
-													data.Media.season + ' ' + data.Media.startDate.year}
-											</M.Typography>
-										</M.Button>
-									)}
-									{data.Media.type.includes('MANGA') ||
-									data.Media.format.includes('ONA') ||
-									data.Media.format.includes('OVA') ? null : !eps &&
-									!epError ? (
-										<M.CircularProgress
-											style={{ color: hueVib }}
-											className={classes.commandoTextBox}
-										/>
-									) : epError ? (
-										<FadeIn>
-											<div className={classes.commandoTextBox}>
-												<div
-													style={{ color: 'white', lineHeight: 0 }}
-													className={classes.commandoText}
-												>
-													<Icon.ErrorOutline />
-												</div>
-												<M.Typography
-													type="body1"
-													className={classes.commandoTextLabel}
-												>
-													Episodes
-												</M.Typography>
-											</div>
-										</FadeIn>
-									) : (
-										<FadeIn>
-											<div className={classes.commandoTextBox}>
 												<M.Typography
 													type="title"
 													className={classes.commandoText}
 												>
-													{eps ? eps.length : '...'}
+													{data.Media.season &&
+														data.Media.season + ' ' + data.Media.startDate.year}
 												</M.Typography>
+											</M.Button>
+										)}
+									{data.Media.type.includes('MANGA') ||
+										data.Media.format.includes('ONA') ||
+										data.Media.format.includes('OVA') ? null : !eps &&
+											!epError ? (
+												<M.CircularProgress
+													style={{ color: hueVib }}
+													className={classes.commandoTextBox}
+												/>
+											) : epError ? (
+												<FadeIn>
+													<div className={classes.commandoTextBox}>
+														<div
+															style={{ color: 'white', lineHeight: 0 }}
+															className={classes.commandoText}
+														>
+															<Icon.ErrorOutline />
+														</div>
+														<M.Typography
+															type="body1"
+															className={classes.commandoTextLabel}
+														>
+															Episodes
+												</M.Typography>
+													</div>
+												</FadeIn>
+											) : (
+													<FadeIn>
+														<div className={classes.commandoTextBox}>
+															<M.Typography
+																type="title"
+																className={classes.commandoText}
+															>
+																{eps ? eps.length : '...'}
+															</M.Typography>
+															<M.Typography
+																type="body1"
+																className={classes.commandoTextLabel}
+															>
+																Episodes
+												</M.Typography>
+														</div>
+													</FadeIn>
+												)}
+									<div style={{ flex: 1 }} />
+									{user &&
+										user.episodeProgress &&
+										user.episodeProgress.hasOwnProperty(data.Media.id) ? (
+											<div className={classes.progressCon}>
+												<M.Typography
+													type="title"
+													className={classes.progressTitle}
+												>
+													Episode {user.episodeProgress[data.Media.id].ep}
+												</M.Typography>
+												<M.LinearProgress
+													mode="determinate"
+													value={user.episodeProgress[data.Media.id].played * 100}
+													classes={{
+														primaryColor: classes.progressBar,
+														primaryColorBar: classes.progressBarActive,
+													}}
+												/>
 												<M.Typography
 													type="body1"
 													className={classes.commandoTextLabel}
 												>
-													Episodes
-												</M.Typography>
+													Your progress
+											</M.Typography>
 											</div>
-										</FadeIn>
-									)}
-									<div style={{ flex: 1 }} />
-									{user &&
-									user.episodeProgress &&
-									user.episodeProgress.hasOwnProperty(data.Media.id) ? (
-										<div className={classes.progressCon}>
-											<M.Typography
-												type="title"
-												className={classes.progressTitle}
-											>
-												Episode {user.episodeProgress[data.Media.id].ep}
-											</M.Typography>
-											<M.LinearProgress
-												mode="determinate"
-												value={user.episodeProgress[data.Media.id].played * 100}
-												classes={{
-													primaryColor: classes.progressBar,
-													primaryColorBar: classes.progressBarActive,
-												}}
-											/>
-											<M.Typography
-												type="body1"
-												className={classes.commandoTextLabel}
-											>
-												Your progress
-											</M.Typography>
-										</div>
-									) : null}
+										) : null}
 									<div style={{ flex: 1 }} />
 									{data.Media.hashtag ? (
 										<M.Button
@@ -1297,19 +1285,19 @@ class Show extends Component {
 											>
 												{data.Media.type.includes('ANIME') ? (
 													user.later &&
-													user.later.show &&
-													user.later.show.hasOwnProperty(this.state.id) ? (
-														<Icon.AddCircle />
-													) : (
-														<Icon.AddCircleOutline />
-													)
+														user.later.show &&
+														user.later.show.hasOwnProperty(this.state.id) ? (
+															<Icon.AddCircle />
+														) : (
+															<Icon.AddCircleOutline />
+														)
 												) : user.later &&
-												user.later.manga &&
-												user.later.manga.hasOwnProperty(this.state.id) ? (
-													<Icon.AddCircle />
-												) : (
-													<Icon.AddCircleOutline />
-												)}
+													user.later.manga &&
+													user.later.manga.hasOwnProperty(this.state.id) ? (
+															<Icon.AddCircle />
+														) : (
+															<Icon.AddCircleOutline />
+														)}
 											</M.IconButton>
 										</M.Tooltip>
 									) : null}
@@ -1347,98 +1335,54 @@ class Show extends Component {
 										<Icon.MoreVert />
 									</M.IconButton>
 									{Menu}
-								</M.Toolbar>
-								<M.Grid container className={classes.container}>
+								</CommandoBar>
+								<Container>
 									<M.Grid item xs style={{ zIndex: 10 }}>
 										<M.Typography type="title" className={classes.secTitle}>
 											Similar to this one
 										</M.Typography>
 										<M.Grid container className={classes.itemcontainer}>
 											{data.Media.relations.edges.map((anime, index) => (
-												<M.Grid
-													className={classes.entityCard}
-													item
-													xs
-													key={index}
-												>
-													<M.Card
-														style={{ background: 'transparent' }}
-														onClick={() =>
+												<CardButton key={index} image={anime.node.coverImage.large} title={anime.node.title.english
+													? anime.node.title.english
+													: anime.node.title.romaji} subtitle={anime.node.type + ' ' +
+														anime.relationType.replace(/_/gi, ' ')} onClick={() =>
 															this.openEntity(
 																`/show?${
-																	anime.node.type.includes('ANIME') ? 's' : 'm'
+																anime.node.type.includes('ANIME') ? 's' : 'm'
 																}=${anime.node.id}`
-															)
-														}
-													>
-														<div className={classes.gradientCard}>
-															<M.CardMedia
-																className={classes.entityImage}
-																image={anime.node.coverImage.large}
-															/>
-														</div>
-														<M.Typography
-															type="headline"
-															className={classes.entityTitle}
-														>
-															{anime.node.title.english
-																? anime.node.title.english
-																: anime.node.title.romaji}
-														</M.Typography>
-														<M.Typography
-															type="headline"
-															className={classes.entitySubTitle}
-														>
-															{anime.node.type}{' '}
-															{anime.relationType.replace(/_/gi, ' ')}
-														</M.Typography>
-													</M.Card>
-												</M.Grid>
+															)} />
+
 											))}
 											{data.Media.tags.length > 0 &&
 												similars &&
 												similars.data &&
 												similars.data.Page.media
-													.slice(0, 8)
 													.map((anime, index) => (
-														<M.Grid
-															className={classes.entityCard}
-															item
-															xs
-															key={index}
-														>
-															<M.Card
-																style={{ background: 'transparent' }}
-																onClick={() =>
-																	this.openEntity(
-																		`/show?${
-																			anime.type.includes('ANIME') ? 's' : 'm'
-																		}=${anime.id}`
-																	)
-																}
-															>
-																<div className={classes.gradientCard}>
-																	<M.CardMedia
-																		className={classes.entityImage}
-																		image={anime.coverImage.large}
-																	/>
-																</div>
-																<M.Typography
-																	type="headline"
-																	className={classes.entityTitle}
-																>
-																	{anime.title.english
-																		? anime.title.english
-																		: anime.title.romaji}
-																</M.Typography>
-																<M.Typography
-																	type="headline"
-																	className={classes.entitySubTitle}
-																>
-																	COMMON TAGS
-																</M.Typography>
-															</M.Card>
-														</M.Grid>
+														<CardButton key={index} image={anime.coverImage.large} title={anime.title.english
+															? anime.title.english
+															: anime.title.romaji} subtitle='SIMILAR' onClick={() =>
+																this.openEntity(
+																	`/show?${
+																	anime.type.includes('ANIME') ? 's' : 'm'
+																	}=${anime.id}`
+																)} />
+
+													))}
+											{data.Media.tags.length > 1 &&
+												similars2 &&
+												similars2.data &&
+												similars2.data.Page.media
+													.map((anime, index) => (
+														<CardButton key={index} image={anime.coverImage.large} title={anime.title.english
+															? anime.title.english
+															: anime.title.romaji} subtitle='SIMILAR' onClick={() =>
+																this.openEntity(
+																	`/show?${
+																	anime.type.includes('ANIME') ? 's' : 'm'
+																	}=${anime.id}`
+																)} />
+
 													))}
 										</M.Grid>
 										{data.Media.characters.edges.length > 0 ? (
@@ -1454,119 +1398,53 @@ class Show extends Component {
 										{data.Media.characters.edges.length > 0 ? (
 											<M.Grid container className={classes.itemcontainer}>
 												{data.Media.characters.edges.map((cast, index) => (
-													<M.Grid
-														className={classes.peopleCard}
-														item
-														xs
-														key={index}
-													>
-														<M.Card
-															style={{
-																background: 'transparent',
-																boxShadow: 'none',
-															}}
-														>
-															<M.Avatar
-																onClick={() =>
-																	this.props.history.push(
-																		`/fig?${
-																			cast.voiceActors &&
-																			cast.voiceActors.length > 0
-																				? 's'
-																				: 'c'
-																		}=${
-																			cast.voiceActors &&
-																			cast.voiceActors.length > 0
-																				? cast.voiceActors.filter(
-																						j => j.language === 'JAPANESE'
-																					)[0].id
-																				: cast.node.id
-																		}`
-																	)
-																}
-																className={classes.peopleImage}
-																imgProps={{
-																	style: { opacity: 0 },
-																	onLoad: e =>
-																		(e.currentTarget.style.opacity = null),
-																}}
-																classes={{ img: classes.fillImg }}
-																src={
-																	cast.voiceActors &&
-																	cast.voiceActors.length > 0
-																		? cast.voiceActors.filter(
-																				j => j.language === 'JAPANESE'
-																			)[0]
-																			? cast.voiceActors.filter(
-																					j => j.language === 'JAPANESE'
-																				)[0].image.large
-																			: null
-																		: cast.node.image.large
-																}
-															/>
-															{cast.voiceActors &&
-															cast.voiceActors.length > 0 ? (
-																<M.Avatar
-																	className={classes.peopleCharImage}
-																	classes={{ img: classes.fillImg }}
-																	src={cast.node.image.large}
-																	imgProps={{
-																		style: { opacity: 0 },
-																		onLoad: e =>
-																			(e.currentTarget.style.opacity = null),
-																	}}
-																	onClick={() =>
-																		this.openEntity(`/fig?c=${cast.node.id}`)
-																	}
-																/>
-															) : null}
-															<M.Typography
-																type="headline"
-																className={classes.peopleTitle}
-															>
-																{cast.voiceActors && cast.voiceActors.length > 0
-																	? cast.voiceActors.filter(
-																			j => j.language === 'JAPANESE'
-																		)[0] &&
-																		cast.voiceActors.filter(
-																			j => j.language === 'JAPANESE'
-																		)[0].name.last
-																		? cast.voiceActors.filter(
-																				j => j.language === 'JAPANESE'
-																			)[0].name.first +
-																			' ' +
-																			cast.voiceActors.filter(
-																				j => j.language === 'JAPANESE'
-																			)[0].name.last
-																		: cast.voiceActors.filter(
-																				j => j.language === 'JAPANESE'
-																			)[0]
-																			? cast.voiceActors.filter(
-																					j => j.language === 'JAPANESE'
-																				)[0].name.last
-																			: 'Unknown'
-																	: cast.node.name.last
-																		? cast.node.name.first +
-																			' ' +
-																			cast.node.name.last
-																		: cast.node.name.first}
-															</M.Typography>
-															<M.Typography
-																type="headline"
-																className={classes.peopleSubTitle}
-															>
-																{cast.voiceActors && cast.voiceActors.length > 0
-																	? `as ${
-																			cast.node.name.last
-																				? cast.node.name.first +
-																					' ' +
-																					cast.node.name.last
-																				: cast.node.name.first
-																		}`
-																	: cast.role}
-															</M.Typography>
-														</M.Card>
-													</M.Grid>
+													<PeopleButton key={index} onClick={() =>
+														this.props.history.push(
+															`/fig?${
+															cast.voiceActors &&
+																cast.voiceActors.length > 0
+																? 's'
+																: 'c'
+															}=${
+															cast.voiceActors &&
+																cast.voiceActors.length > 0
+																? cast.voiceActors.filter(
+																	j => j.language === 'JAPANESE'
+																)[0].id
+																: cast.node.id
+															}`
+														)} image={cast.voiceActors &&
+															cast.voiceActors.length > 0
+															? cast.voiceActors.filter(
+																j => j.language === 'JAPANESE'
+															)[0]
+																? cast.voiceActors.filter(
+																	j => j.language === 'JAPANESE'
+																)[0].image.large
+																: null
+															: cast.node.image.large} actor={cast.voiceActors &&
+																cast.voiceActors.length > 0 ? true : false}
+														name={{
+															first: cast.voiceActors && cast.voiceActors.length > 0
+																? cast.voiceActors[0].name.first : cast.node.name.first
+															, last: cast.voiceActors && cast.voiceActors.length > 0
+																? cast.voiceActors[0].name.last : cast.node.name.last
+														}}
+														charImg={cast.node.image.large}
+														charOnClick={() => this.openEntity(`/fig?c=${cast.node.id}`)}
+														actor={cast.voiceActors && cast.voiceActors.length > 0
+															? true : false}
+														role={
+															cast.voiceActors && cast.voiceActors.length > 0
+																? `as ${
+																cast.node.name.last
+																	? cast.node.name.first +
+																	' ' +
+																	cast.node.name.last
+																	: cast.node.name.first
+																}`
+																: cast.role
+														} />
 												))}
 											</M.Grid>
 										) : null}
@@ -1607,8 +1485,8 @@ class Show extends Component {
 														>
 															{staff.node.name.last
 																? staff.node.name.first +
-																	' ' +
-																	staff.node.name.last
+																' ' +
+																staff.node.name.last
 																: staff.node.name.first}
 														</M.Typography>
 														<M.Typography
@@ -1622,11 +1500,11 @@ class Show extends Component {
 											))}
 										</M.Grid>
 									</M.Grid>
-								</M.Grid>
-							</div>
+								</Container>
+							</MainCard>
 						</div>
 					) : null}
-				</div>
+				</Root>
 			</div>
 		);
 	}

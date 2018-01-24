@@ -4,6 +4,7 @@ import * as Icon from 'material-ui-icons';
 import Aqua2 from '../assets/aqua2.mp4';
 
 import { firebaseConnect } from 'react-redux-firebase';
+import { LoadingIndicator } from '../components/layouts';
 
 const styles = theme => ({
 	root: {
@@ -374,16 +375,15 @@ class Live extends Component {
 		}
 	};
 
-	componentWillUnmount = () => {};
+	componentWillUnmount = () => { };
 
 	render() {
 		const { classes, user, history, meta } = this.props;
 		const { publicfeed, loading } = this.state;
 		return (
 			<div>
-				<M.CircularProgress
-					className={classes.loading}
-					style={!loading ? { opacity: 0 } : null}
+				<LoadingIndicator
+					loading={loading}
 				/>
 				<div className={classes.frame} style={loading ? { opacity: 0 } : null}>
 					<video
