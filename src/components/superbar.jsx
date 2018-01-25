@@ -80,12 +80,13 @@ const styles = theme => ({
 		background: 'linear-gradient(to top, transparent, rgba(0,0,0,1))',
 	},
 	appBar: {
-		background: 'rgba(0,0,0,.4)',
-		boxShadow: 'none',
+		background: theme.palette.background.appBar,
+		borderBottom: `1px solid rgba(255,255,255,0)`,
 	},
 	appBarTop: {
 		background: 'transparent',
 		boxShadow: 'none',
+		borderBottom: `1px solid rgba(255,255,255,.1)`,
 	},
 	appFrame: {
 		position: 'relative',
@@ -211,7 +212,7 @@ const styles = theme => ({
 			position: 'absolute',
 			width: '100%',
 			[theme.breakpoints.down('md')]: {
-				marginBottom: 56
+				marginBottom: 56,
 			},
 		},
 	},
@@ -693,13 +694,13 @@ class Superbar extends Component {
 				<Divider className={classes.listDivider} />
 				<Typography className={classes.footerCopy} type="headline">
 					{Object.keys(this.props.firebase).length - 1} online{this.props.mir &&
-						this.props.mir.twist ? (
-							<br />
-						) : null}
+					this.props.mir.twist ? (
+						<br />
+					) : null}
 					{this.props.mir && this.props.mir.twist
 						? Object.keys(this.props.mir.twist).length -
-						1 +
-						' animes in database'
+							1 +
+							' animes in database'
 						: null}
 					<br />2018 afroJ
 				</Typography>
@@ -711,12 +712,12 @@ class Superbar extends Component {
 				<AppBar
 					id="superBar"
 					classes={{ root: classes.root }}
-					className={classes.appBarTop}
+					className={scrolling ? classes.appBar : classes.appBarTop}
 					style={watchIsOn ? { display: 'none' } : null}
 				>
 					<div
 						className={classes.gd}
-						style={scrolling ? null : { opacity: 0.2 }}
+						style={scrolling ? { opacity: 0 } : { opacity: 0.2 }}
 					/>
 					<Toolbar>
 						<IconButton
@@ -729,7 +730,7 @@ class Superbar extends Component {
 						</IconButton>
 						<Typography className={classes.barTitle} type="title">
 							{this.props.history.location.pathname.includes('/show') ||
-								this.props.history.location.pathname.includes('/fig')
+							this.props.history.location.pathname.includes('/fig')
 								? mirTitle
 								: currentPage}
 						</Typography>
@@ -920,17 +921,17 @@ class Superbar extends Component {
 								</Menu>
 							</div>
 						) : (
-								<IconButton
-									onClick={() => {
-										this.props.history.push('/setup');
-									}}
-								>
-									<AccountCircle />
-								</IconButton>
-							)}
+							<IconButton
+								onClick={() => {
+									this.props.history.push('/setup');
+								}}
+							>
+								<AccountCircle />
+							</IconButton>
+						)}
 					</Toolbar>
 				</AppBar>
-				<Hidden lgDown>
+				{/*<Hidden lgDown>
 					<div
 						className={classes.sideNav}
 						id="sideNav"
@@ -965,7 +966,7 @@ class Superbar extends Component {
 							Live
 						</Button>
 					</div>
-				</Hidden>
+				</Hidden>*/}
 				<Drawer
 					classes={{ paper: classes.drawer }}
 					open={drawerOpen}
@@ -978,7 +979,7 @@ class Superbar extends Component {
 					{menuList}
 				</Drawer>
 				<div className={classes.content}>{this.props.children}</div>
-				<Hidden xlUp>
+				{/*<Hidden xlUp>
 					<BottomNavigation
 						value={tabVal}
 						onChange={this.tabChange}
@@ -991,7 +992,7 @@ class Superbar extends Component {
 						<BottomNavigationAction label="Rankings" icon={<StarIcon />} />
 						<BottomNavigationAction label="Live" icon={<LiveTvIcon />} />
 					</BottomNavigation>
-				</Hidden>
+				</Hidden>*/}
 			</div>
 		);
 	}
