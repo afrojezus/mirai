@@ -180,7 +180,6 @@ const styles = theme => ({
 		transition: theme.transitions.create(['all']),
 		position: 'relative',
 		'&:hover': {
-			transform: 'scale(1.05)',
 			overflow: 'initial',
 			boxShadow: `0 2px 14px rgba(0,0,0,.3)`,
 			background: M.colors.blue.A200,
@@ -862,7 +861,7 @@ class Show extends Component {
 								</M.Button>
 							</div>
 							<Container spacing={16} id='mainHeader' special style={{ background: hue }}>
-								<Header image={data.Media.bannerImage ? data.Media.bannerImage : null} style={{ background: hue }} />
+								<Header image={data.Media.bannerImage ? data.Media.bannerImage : null} color={hue} style={{ background: hue }} />
 								<M.Grid item xs={3} className={classes.leftSide}>
 									<div
 										className={
@@ -1338,167 +1337,123 @@ class Show extends Component {
 								</CommandoBar>
 								<Container>
 									<M.Grid item xs style={{ zIndex: 10 }}>
-										<M.Typography type="title" className={classes.secTitle}>
-											Similar to this one
-										</M.Typography>
-										<M.Grid container className={classes.itemcontainer}>
-											{data.Media.relations.edges.map((anime, index) => (
-												<CardButton key={index} image={anime.node.coverImage.large} title={anime.node.title.english
-													? anime.node.title.english
-													: anime.node.title.romaji} subtitle={anime.node.type + ' ' +
-														anime.relationType.replace(/_/gi, ' ')} onClick={() =>
-															this.openEntity(
-																`/show?${
-																anime.node.type.includes('ANIME') ? 's' : 'm'
-																}=${anime.node.id}`
-															)} />
-
-											))}
-											{data.Media.tags.length > 0 &&
-												similars &&
-												similars.data &&
-												similars.data.Page.media
-													.map((anime, index) => (
-														<CardButton key={index} image={anime.coverImage.large} title={anime.title.english
-															? anime.title.english
-															: anime.title.romaji} subtitle='SIMILAR' onClick={() =>
-																this.openEntity(
-																	`/show?${
-																	anime.type.includes('ANIME') ? 's' : 'm'
-																	}=${anime.id}`
-																)} />
-
-													))}
-											{data.Media.tags.length > 1 &&
-												similars2 &&
-												similars2.data &&
-												similars2.data.Page.media
-													.map((anime, index) => (
-														<CardButton key={index} image={anime.coverImage.large} title={anime.title.english
-															? anime.title.english
-															: anime.title.romaji} subtitle='SIMILAR' onClick={() =>
-																this.openEntity(
-																	`/show?${
-																	anime.type.includes('ANIME') ? 's' : 'm'
-																	}=${anime.id}`
-																)} />
-
-													))}
-										</M.Grid>
-										{data.Media.characters.edges.length > 0 ? (
-											<M.Divider />
-										) : null}
-										{data.Media.characters.edges.length > 0 ? (
-											<M.Typography type="title" className={classes.secTitle}>
-												{data.Media.type.includes('ANIME')
-													? 'Cast'
-													: 'Characters'}
-											</M.Typography>
-										) : null}
-										{data.Media.characters.edges.length > 0 ? (
-											<M.Grid container className={classes.itemcontainer}>
-												{data.Media.characters.edges.map((cast, index) => (
-													<PeopleButton key={index} onClick={() =>
-														this.props.history.push(
-															`/fig?${
-															cast.voiceActors &&
-																cast.voiceActors.length > 0
-																? 's'
-																: 'c'
-															}=${
-															cast.voiceActors &&
-																cast.voiceActors.length > 0
-																? cast.voiceActors.filter(
-																	j => j.language === 'JAPANESE'
-																)[0].id
-																: cast.node.id
-															}`
-														)} image={cast.voiceActors &&
-															cast.voiceActors.length > 0
-															? cast.voiceActors.filter(
-																j => j.language === 'JAPANESE'
-															)[0]
-																? cast.voiceActors.filter(
-																	j => j.language === 'JAPANESE'
-																)[0].image.large
-																: null
-															: cast.node.image.large} actor={cast.voiceActors &&
-																cast.voiceActors.length > 0 ? true : false}
-														name={{
-															first: cast.voiceActors && cast.voiceActors.length > 0
-																? cast.voiceActors[0].name.first : cast.node.name.first
-															, last: cast.voiceActors && cast.voiceActors.length > 0
-																? cast.voiceActors[0].name.last : cast.node.name.last
-														}}
-														charImg={cast.node.image.large}
-														charOnClick={() => this.openEntity(`/fig?c=${cast.node.id}`)}
-														actor={cast.voiceActors && cast.voiceActors.length > 0
-															? true : false}
-														role={
-															cast.voiceActors && cast.voiceActors.length > 0
-																? `as ${
-																cast.node.name.last
-																	? cast.node.name.first +
-																	' ' +
-																	cast.node.name.last
-																	: cast.node.name.first
-																}`
-																: cast.role
-														} />
-												))}
-											</M.Grid>
-										) : null}
-										<M.Divider />
+                                        {data.Media.characters.edges.length > 0 ? (
+                                            <M.Typography type="title" className={classes.secTitle}>
+                                                {data.Media.type.includes('ANIME')
+                                                    ? 'Cast'
+                                                    : 'Characters'}
+                                            </M.Typography>
+                                        ) : null}
+                                        {data.Media.characters.edges.length > 0 ? (
+                                            <M.Grid container className={classes.itemcontainer}>
+                                                {data.Media.characters.edges.map((cast, index) => (
+                                                    <PeopleButton key={index} onClick={() =>
+                                                        this.props.history.push(
+                                                            `/fig?${
+                                                                cast.voiceActors &&
+                                                                cast.voiceActors.length > 0
+                                                                    ? 's'
+                                                                    : 'c'
+                                                                }=${
+                                                                cast.voiceActors &&
+                                                                cast.voiceActors.length > 0
+                                                                    ? cast.voiceActors.filter(
+                                                                    j => j.language === 'JAPANESE'
+                                                                    )[0].id
+                                                                    : cast.node.id
+                                                                }`
+                                                        )} image={cast.voiceActors &&
+                                                    cast.voiceActors.length > 0
+                                                        ? cast.voiceActors.filter(
+                                                            j => j.language === 'JAPANESE'
+                                                        )[0]
+                                                            ? cast.voiceActors.filter(
+                                                                j => j.language === 'JAPANESE'
+                                                            )[0].image.large
+                                                            : null
+                                                        : cast.node.image.large} actor={cast.voiceActors &&
+                                                    cast.voiceActors.length > 0 ? true : false}
+                                                                  name={{
+                                                                      first: cast.voiceActors && cast.voiceActors.length > 0
+                                                                          ? cast.voiceActors[0].name.first : cast.node.name.first
+                                                                      , last: cast.voiceActors && cast.voiceActors.length > 0
+                                                                          ? cast.voiceActors[0].name.last : cast.node.name.last
+                                                                  }}
+                                                                  charImg={cast.node.image.large}
+                                                                  charOnClick={() => this.openEntity(`/fig?c=${cast.node.id}`)}
+                                                                  actor={cast.voiceActors && cast.voiceActors.length > 0
+                                                                      ? true : false}
+                                                                  role={
+                                                                      cast.voiceActors && cast.voiceActors.length > 0
+                                                                          ? `as ${
+                                                                              cast.node.name.last
+                                                                                  ? cast.node.name.first +
+                                                                                  ' ' +
+                                                                                  cast.node.name.last
+                                                                                  : cast.node.name.first
+                                                                              }`
+                                                                          : cast.role
+                                                                  } />
+                                                ))}
+                                            </M.Grid>
+                                        ) : null}
+										{data.Media.characters.edges.length > 0 ? <M.Divider /> : null}
 										<M.Typography type="title" className={classes.secTitle}>
 											Staff
 										</M.Typography>
 										<M.Grid container className={classes.itemcontainer}>
 											{data.Media.staff.edges.map((staff, index) => (
-												<M.Grid
-													className={classes.peopleCard}
-													item
-													xs
-													key={index}
-												>
-													<M.Card
-														style={{
-															background: 'transparent',
-															boxShadow: 'none',
-														}}
-														onClick={() =>
-															this.props.history.push(`/fig?s=${staff.node.id}`)
-														}
-													>
-														<M.Avatar
-															className={classes.peopleImage}
-															classes={{ img: classes.fillImg }}
-															src={staff.node.image.large}
-															imgProps={{
-																style: { opacity: 0 },
-																onLoad: e =>
-																	(e.currentTarget.style.opacity = null),
-															}}
-														/>
-														<M.Typography
-															type="headline"
-															className={classes.peopleTitle}
-														>
-															{staff.node.name.last
-																? staff.node.name.first +
-																' ' +
-																staff.node.name.last
-																: staff.node.name.first}
-														</M.Typography>
-														<M.Typography
-															type="headline"
-															className={classes.peopleSubTitle}
-														>
-															{staff.role}
-														</M.Typography>
-													</M.Card>
-												</M.Grid>
+												<PeopleButton key={index} image={staff.node.image.large} name={{first: staff.node.name.first, last: staff.node.name.last}} role={staff.role} onClick={() => this.props.history.push(`/fig?s=${staff.node.id}`)} />
 											))}
 										</M.Grid>
+                                        <M.Divider />
+                                        <M.Typography type="title" className={classes.secTitle}>
+                                            Similar to this one
+                                        </M.Typography>
+                                        <M.Grid container className={classes.itemcontainer}>
+                                            {data.Media.relations.edges.map((anime, index) => (
+                                                <CardButton key={index} image={anime.node.coverImage.large} title={anime.node.title.english
+                                                    ? anime.node.title.english
+                                                    : anime.node.title.romaji} subtitle={anime.node.type + ' ' +
+                                                anime.relationType.replace(/_/gi, ' ')} onClick={() =>
+                                                    this.openEntity(
+                                                        `/show?${
+                                                            anime.node.type.includes('ANIME') ? 's' : 'm'
+                                                            }=${anime.node.id}`
+                                                    )} />
+
+                                            ))}
+                                            {data.Media.tags.length > 0 &&
+                                            similars &&
+                                            similars.data &&
+                                            similars.data.Page.media
+                                                .map((anime, index) => (
+                                                    <CardButton key={index} image={anime.coverImage.large} title={anime.title.english
+                                                        ? anime.title.english
+                                                        : anime.title.romaji} subtitle='SIMILAR' onClick={() =>
+                                                        this.openEntity(
+                                                            `/show?${
+                                                                anime.type.includes('ANIME') ? 's' : 'm'
+                                                                }=${anime.id}`
+                                                        )} />
+
+                                                ))}
+                                            {data.Media.tags.length > 1 &&
+                                            similars2 &&
+                                            similars2.data &&
+                                            similars2.data.Page.media
+                                                .map((anime, index) => (
+                                                    <CardButton key={index} image={anime.coverImage.large} title={anime.title.english
+                                                        ? anime.title.english
+                                                        : anime.title.romaji} subtitle='SIMILAR' onClick={() =>
+                                                        this.openEntity(
+                                                            `/show?${
+                                                                anime.type.includes('ANIME') ? 's' : 'm'
+                                                                }=${anime.id}`
+                                                        )} />
+
+                                                ))}
+                                        </M.Grid>
 									</M.Grid>
 								</Container>
 							</MainCard>

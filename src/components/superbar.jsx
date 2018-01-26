@@ -131,8 +131,8 @@ const styles = theme => ({
 		height: '100%',
 		backgroundColor: '#111',
 		paddingLeft: 'env(safe-area-inset-left)',
-		[theme.breakpoints.down('md')]: {
-			height: 'calc(100% - 56px)',
+		[theme.breakpoints.up('md')]: {
+			height: 'auto',
 		},
 	},
 	drawerDocked: {
@@ -309,7 +309,12 @@ class Superbar extends Component {
 		else {
 			this.setState({ tabVal: 4 });
 		}
-		this.pageChange();
+
+		if (this.props.history.location.pathname === '/watch' && window.location.pathname === '/watch') {
+			this.setState({watchIsOn: true});
+		} else {
+			this.setState({watchIsOn: false});
+		}
 	};
 
 	componentDidMount = async () => {
@@ -365,8 +370,7 @@ class Superbar extends Component {
 		});
 	};
 
-	pageChange = () => {
-		this.props.history.listen((location, action) => {
+	listenToHistory = this.props.history.listen((location, action) => {
 			switch (location.pathname) {
 				case '/':
 					this.setState({ currentPage: 'Mirai', tabVal: 0, watchIsOn: false });
@@ -452,8 +456,7 @@ class Superbar extends Component {
 				default:
 					break;
 			}
-		});
-	};
+	});
 
 	revealBar = () => (document.getElementById('superBar').style.opacity = 1);
 
@@ -499,6 +502,7 @@ class Superbar extends Component {
 
 	componentWillUnmount = () => {
 		window.removeEventListener('scroll', this.handleScroll);
+		this.listenToHistory();
 	};
 
 	handleScroll = event => {

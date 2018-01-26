@@ -16,6 +16,7 @@ const styles = theme => ({
 			height: '100%',
 			overflowX: 'hidden',
 			boxSizing: 'border-box',
+			transition: theme.transitions.create(['all']),
 		},
 		body: {
 			margin: 0,

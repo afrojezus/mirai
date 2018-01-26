@@ -203,30 +203,36 @@ class Watch extends Component {
 		else return;
 	};
 
-	componentDidMount = async () => {
-		const id = queryString.parse(this.props.history.location.search);
-		try {
-			if (this.props.history.location.state) {
-				console.info('Location state found! No need for refetching.');
-				this.setState({ status: 'Setting up...' });
-				if (this.props.mir && this.props.mir.twist)
-					this.getSource(this.props.history.location.state);
-			} else {
-				console.info('Location state not found! Refetching...');
-				this.setState({ status: 'Fetching...' });
-				const { data } = await new Segoku().getSingle({ id: id.w });
-				if (data && this.props.mir && this.props.mir.twist)
-					this.getSource({ meta: data.Media });
-				else this.componentDidMount();
-			}
-		} catch (error) {
-			console.error(error);
-			this.setState({
-				error: true,
-				status: 'Error 1: Failed to fetch metadata',
-			});
-		}
-	};
+	getState = async () => {
+        const id = queryString.parse(this.props.history.location.search);
+        try {
+            if (this.props.history.location.state) {
+                console.info('Location state found! No need for refetching.');
+                this.setState({ status: 'Setting up...' });
+                if (this.props.mir && this.props.mir.twist)
+                    this.getSource(this.props.history.location.state);
+            } else {
+                console.info('Location state not found! Refetching...');
+                this.setState({ status: 'Fetching...' });
+                const { data } = await new Segoku().getSingle({ id: id.w });
+                if (data && this.props.mir && this.props.mir.twist)
+                    this.getSource({ meta: data.Media });
+                else this.componentDidMount();
+            }
+        } catch (error) {
+            console.error(error);
+            this.setState({
+                error: true,
+                status: 'Error 1: Failed to fetch metadata',
+            });
+        }
+    }
+
+	componentWillReceiveProps = async (nextProps) => {
+		if (this.props !== nextProps) {
+		    await this.getState();
+        }
+	}
 
 	getSource = async data => {
 		this.setState({
@@ -363,22 +369,37 @@ class Watch extends Component {
 	closeMenu = () => this.setState({ menuEl: null });
 
 	onProgress = state => {
-		const seekableEnd = this.player
-			.getInternalPlayer()
-			.seekable.end(this.player.getInternalPlayer().seekable.length - 1);
-
-		if (!seekableEnd) this.setState({ buffering: true });
-		else this.setState({ buffering: false });
 
 		if (!this.state.seeking)
 			this.setState(state, async () => {
 				this.setState({
 					videoQuality: this.player.getInternalPlayer().videoHeight,
 				});
+				switch (this.player.getInternalPlayer().networkState){
+					case 0:
+                        console.log('EMPTY');
+						this.setState({buffering: true})
+						break;
+					case 1:
+						console.log('IDLE');
+						this.setState({buffering: false})
+						break;
+					case 2:
+                        console.log('LOADING');
+						this.setState({buffering: false})
+					case 3:
+                        console.log('NO_SOURCE');
+                        this.setState(({buffering: true}))
+						break;
+				}
 
 				if (this.state.resume) {
 					let resume = this.state.resume;
-					this.setState({ resume: null }, () => this.player.seekTo(resume));
+					this.setState({ resume: null, buffering: true }, () => {
+                        this.player.seekTo(resume)
+						if (resume === this.state.played)
+							this.setState({buffering: false})
+                    });
 				}
 				if (!this.state.menuEl && !this.state.volEl)
 					await localForage.setItem('player-state', this.state);

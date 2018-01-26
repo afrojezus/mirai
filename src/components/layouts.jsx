@@ -134,29 +134,43 @@ export const MainCard = withStyles(style)(({ classes, children, ...props }) => (
     </Paper>
 ))
 
-export const Header = withStyles(style)(({ classes, image, ...props }) => {
-    if (image) {
-        return (
-            <img
-                id='header'
-                style={{ opacity: 0 }}
-                onLoad={e => e.currentTarget.style.opacity = null}
-                className={classes.header}
-                src={image}
-                alt=''
-                {...props}
-            />
-        )
-    } else {
-        return (
-            <div
-                id='headerD'
-                className={classes.headerD}
-                {...props}
-            />
-        )
+
+class HeaderRaw extends React.Component {
+
+
+    componentWillReceiveProps = (nextProps) => {
+        if (!this.props.image) {
+            document.documentElement.style.background = nextProps.color;
+        }
     }
-})
+
+    componentWillUnmount = () => {
+        if (this.props.color && !this.props.image) {
+            document.documentElement.style.background = null;
+        }
+    }
+
+    render () {
+        const {image, color, classes} = this.props;
+        if (image) {
+            return (
+                <img
+                    id='header'
+                    style={{opacity: 0}}
+                    onLoad={e => e.currentTarget.style.opacity = null}
+                    className={classes.header}
+                    src={image}
+                    alt=''
+                    {...this.props}
+                />
+            )
+        } else {
+            return <div />
+        }
+    }
+}
+
+export const Header = withStyles(style)(HeaderRaw);
 
 export const LoadingIndicator = withStyles(style)(({ classes, loading }) => (
     <CircularProgress

@@ -15,7 +15,7 @@ const styles = theme => ({
 		flexGrow: 'initial',
 		flexBasis: 'initial',
 		margin: theme.spacing.unit / 2,
-		transition: theme.transitions.create(['all']),
+		transition: 'all .2s ease',
 		'&:hover': {
 			overflow: 'initial',
 			boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
@@ -93,7 +93,7 @@ const styles = theme => ({
 		flexGrow: 'initial',
 		flexBasis: 'initial',
 		margin: theme.spacing.unit / 2,
-		transition: theme.transitions.create(['all']),
+        transition: 'all .2s ease',
 		'&:hover': {
 			overflow: 'initial',
 			boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
