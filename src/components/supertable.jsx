@@ -11,28 +11,32 @@ import GridList from "material-ui/GridList/GridList";
 import GridListTile from "material-ui/GridList/GridListTile";
 const style = theme => ({
   bigCard: {
-    padding: theme.spacing.unit * 2,
     display: "flex",
-    boxShadow: "0 2px 18px rgba(0,0,0,.4)",
-    background: "rgba(255,255,255,0)",
-    minHeight: "300px !important",
-    boxSizing: "border-box",
-    transition: theme.transitions.create(["all"]),
-    position: "relative",
-    "&:hover": {
-      background: `rgba(0,55,230,.3)`
-    },
-    "&:hover > div:nth-of-type(2) > img": {
-      zIndex: 200,
-      boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
-      borderColor: M.colors.blue.A200
-    }
+      '& > div': {
+          width: '100%',
+          boxShadow: "0 2px 18px rgba(0,0,0,.4)",
+          background: "rgba(255,255,255,0)",
+          boxSizing: "border-box",
+          transition: theme.transitions.create(["all"]),
+          position: "relative",
+          overflow: 'hidden',
+          "&:hover": {
+              background: `rgba(0,55,230,.3)`
+          },
+          "&:hover > div:nth-of-type(2) > img": {
+              zIndex: 200,
+              boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
+              borderColor: M.colors.blue.A200
+          },
+          margin: 'auto'
+      },
+      overflowX: 'hidden',
   },
   bigCardIcon: {
     background: "white",
     zIndex: 4,
     width: 156,
-    height: 228,
+    height: '100%',
     boxShadow: "0 3px 24px rgba(0,0,0,.6)",
     objectFit: "cover",
     marginRight: theme.spacing.unit * 2,
@@ -101,7 +105,13 @@ const style = theme => ({
   },
   dotdot: {
     overflow: "initial !important"
-  }
+  },
+    list: {
+    flexFlow: 'row nowrap',
+        width: '100%',
+        margin: 0,
+        transform: 'translateZ(0)',
+    }
 });
 
 export const timeFormatter = time => {
@@ -144,11 +154,19 @@ export const timeFormatToReadableTime = time => {
   return new Date(time).toTimeString();
 };
 
-const superTable = props => (
-  <GridList>
+const superTable = ({ classes, ...props}) => (
+  <GridList className={classes.list} cellHeight={300}>
     {props.data.splice(0, props.limit).map((anime, index) => (
-      <GridListTile className={props.classes.bigCard} key={index}>
-        <div className={props.classes.bigCardImage}>
+      <GridListTile className={classes.bigCard} key={index} onClick={() =>
+          props.changePage(
+              `/show?${props.type}=${
+                  props.typeof === "progress"
+                      ? anime.anime ? anime.anime.meta.i : anime.showId
+                      : anime.id
+                  }`
+          )
+      }>
+        <div className={classes.bigCardImage}>
           <img
             src={
               props.typeof === "ongoing"
@@ -164,10 +182,10 @@ const superTable = props => (
                     : props.typeof === "favs" ? anime.image : null
             }
             alt=""
-            className={props.classes.bigCardImageImg}
+            className={classes.bigCardImageImg}
           />
         </div>
-        <div className={props.classes.bigCardRow}>
+        <div className={classes.bigCardRow}>
           <img
             src={
               props.typeof === "ongoing"
@@ -179,21 +197,12 @@ const superTable = props => (
                     : props.typeof === "favs" ? anime.image : null
             }
             alt=""
-            className={props.classes.bigCardIcon}
-            onClick={() =>
-              props.changePage(
-                `/show?${props.type}=${
-                props.typeof === "progress"
-                  ? anime.anime ? anime.anime.meta.i : anime.showId
-                  : anime.id
-                }`
-              )
-            }
+            className={classes.bigCardIcon}
           />
-          <div className={props.classes.bigCardText}>
+          <div className={classes.bigCardText}>
             <M.Typography
               type="display2"
-              className={props.classes.bigCardVerySmallTitle}
+              className={classes.bigCardVerySmallTitle}
             >
               {props.typeof === "ranking" ? (
                 <span role="img" aria-label="emoji">
@@ -212,10 +221,10 @@ const superTable = props => (
                     ? anime.ep ? "EPISODE " + anime.ep : null
                     : null}
             </M.Typography>
-            <Dotdotdot clamp={2} className={props.classes.dotdot}>
+            <Dotdotdot clamp={2} className={classes.dotdot}>
               <M.Typography
                 type="display2"
-                className={props.classes.bigCardTitle}
+                className={classes.bigCardTitle}
               >
                 {props.typeof === "ongoing"
                   ? anime.title.english
@@ -232,10 +241,10 @@ const superTable = props => (
                       : props.typeof === "favs" ? anime.name : null}
               </M.Typography>
             </Dotdotdot>
-            <Dotdotdot clamp={3}>
+            <Dotdotdot clamp={1}>
               <M.Typography
                 type="display2"
-                className={props.classes.bigCardSmallTitle}
+                className={classes.bigCardSmallTitle}
                 dangerouslySetInnerHTML={
                   props.typeof === "ongoing"
                     ? {

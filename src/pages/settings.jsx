@@ -123,8 +123,7 @@ class Settings extends Component {
     motto: "",
     avaLoading: false,
     bgLoading: false,
-    loading: true,
-    contriCheck: false
+    loading: true
   };
 
   componentDidMount = () =>
@@ -214,27 +213,10 @@ class Settings extends Component {
   changePass = () => {};
 
   changeContriSetting = async (e, check) => {
-    const contriSetting = await localForage.getItem("contri-setting");
-    if (contriSetting) {
-      if (contriSetting === true)
-        await localForage.setItem("contri-setting", false).then(() =>
-          this.setState({ contriCheck: false }, () => {
-            if (window.miner) {
-              window.miner.stop();
-              console.info("Module off.");
-            }
-          })
-        );
-      if (contriSetting === false)
-        await localForage.setItem("contri-setting", true).then(() =>
-          this.setState({ contriCheck: true }, () => {
-            if (window.miner) {
-              window.miner.start();
-              console.info("Module on.");
-            }
-          })
-        );
-    }
+    let set = this.props.profile.noMine;
+    if (set) this.props.firebase.updateProfile({noMine: false})
+      else
+        this.props.firebase.updateProfile({noMine: true})
   };
 
   render() {
@@ -507,11 +489,11 @@ class Settings extends Component {
                 <M.FormControlLabel
                   control={
                     <M.Switch
-                      checked={this.state.contriCheck}
+                      checked={this.props.profile.noMine ? false : true}
                       onChange={this.changeContriSetting}
                     />
                   }
-                  label={this.state.contriCheck ? "ON" : "OFF"}
+                  label={this.props.profile.noMine ? "OFF" : "ON"}
                 />
               </M.FormGroup>
             </M.ExpansionPanelActions>

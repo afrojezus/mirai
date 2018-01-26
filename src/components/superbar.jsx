@@ -781,6 +781,7 @@ class Superbar extends Component {
 							<Tab style={{ display: 'none' }} />
 						</Tabs>*/}
 						<div className={classes.flex} />
+						{user && user.noMine ? <Button>Donate</Button> : null}
 						<IconButton
 							onClick={() => {
 								this.tabChange(null, 4);
