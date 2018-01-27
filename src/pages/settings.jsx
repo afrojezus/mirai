@@ -219,6 +219,15 @@ class Settings extends Component {
         this.props.firebase.updateProfile({noMine: true})
   };
 
+    changeLogSetting = async (e, check) => {
+        let set = this.props.profile.willLog;
+        if (set) this.props.firebase.updateProfile({willLog: false})
+        else
+            this.props.firebase.updateProfile({willLog: true})
+    };
+
+  deleteLogg = async () => this.props.firebase.ref('users').child(this.props.profile.userID).child('feed').remove();
+
   render() {
     const { classes } = this.props;
     const { loading } = this.state;
@@ -464,13 +473,50 @@ class Settings extends Component {
               ) : null}
             </M.ExpansionPanelActions>
           </M.ExpansionPanel>
+            <M.ExpansionPanel className={classes.panel}>
+                <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
+                    <div className={classes.column}>
+                        <M.Typography type="title">Logging</M.Typography>
+                    </div>
+                    <div className={classes.column}>
+                        <M.Typography className={classes.secondaryHeading}>
+                            {this.props.profile.willLog ? 'ON' : 'OFF'}
+                        </M.Typography>
+                    </div>
+                </M.ExpansionPanelSummary>
+                <M.ExpansionPanelDetails>
+                    <M.Typography type="body1">
+                        Delete your current log?
+                    </M.Typography>
+                    <M.Button onClick={this.deleteLogg} color='accent'>Yes</M.Button>
+                    <M.Typography type='body1'>Allow logging?</M.Typography>
+                    <M.FormGroup>
+                        <M.FormControlLabel
+                            control={
+                                <M.Switch
+                                    checked={this.props.profile.willLog}
+                                    onChange={this.changeLogSetting}
+                                />
+                            }
+                            label={this.props.profile.willLog ? "ON" : "OFF"}
+                        />
+                    </M.FormGroup>
+                </M.ExpansionPanelDetails>
+            </M.ExpansionPanel>
           <div className={classes.divide} />
           <M.Typography type="headline" className={classes.headline}>
             Misc. Settings
           </M.Typography>
           <M.ExpansionPanel className={classes.panel}>
             <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
-              <M.Typography type="title">Contributor Module</M.Typography>
+                <div className={classes.column}>
+                    <M.Typography type="title">Contributor Module</M.Typography>
+                </div>
+                <div className={classes.column}>
+                    <M.Typography className={classes.secondaryHeading}>
+                        {this.props.profile.noMine ? 'OFF' : 'ON'}
+                    </M.Typography>
+                </div>
             </M.ExpansionPanelSummary>
             <M.ExpansionPanelDetails>
               <M.Typography type="body1">

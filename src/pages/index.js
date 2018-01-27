@@ -83,6 +83,16 @@ class Index extends Component {
     }
   };
 
+  handleTwist = async () => {
+    let database = this.props.firebase.ref('twist');
+    if (this.props.mir && this.props.mir.twist) {
+      let twist = this.props.mir.twist.filter((s) => !s.ongoing);
+      if (twist) {
+        database.update(twist);
+      } else return null;
+    }
+  }
+
   handleRequestClose = () => {
     this.setState({
       open: false

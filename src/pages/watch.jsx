@@ -167,6 +167,9 @@ const style = theme => ({
 		fontSize: 14,
 		fontWeight: 500,
 	},
+	menuPaper: {
+		outline: 'none'
+	}
 });
 
 class Watch extends Component {
@@ -369,7 +372,7 @@ class Watch extends Component {
 	closeMenu = () => this.setState({ menuEl: null });
 
 	onProgress = state => {
-
+		let play = this.state.played
 		if (!this.state.seeking)
 			this.setState(state, async () => {
 				this.setState({
@@ -389,7 +392,8 @@ class Watch extends Component {
 						this.setState({buffering: false})
 					case 3:
                         console.log('NO_SOURCE');
-                        this.setState(({buffering: true}))
+                        if (play !== state.played)
+                        	this.setState(({buffering: true}))
 						break;
 				}
 
@@ -836,6 +840,9 @@ class Watch extends Component {
 									horizontal: 'right',
 								}}
 								open={menu}
+								classes={{
+									paper: classes.menuPaper
+								}}
 								onClose={this.closeMenu}
 								PaperProps={{
 									style: {

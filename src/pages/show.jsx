@@ -524,7 +524,14 @@ class Show extends Component {
 		this.init();
 	};
 
-	init = () =>
+
+    componentWillReceiveProps = async (nextProps) => {
+		if (this.props.mir !== nextProps.mir && this.state.data.Media)
+			await this.executeTwist();
+    }
+
+
+    init = () =>
 		this.setState(
 			{
 				data: null,
@@ -589,7 +596,7 @@ class Show extends Component {
 			page: 1,
 			isAdult: false
 		});
-		if (data && this.props.profile && this.props.profile.username) {
+		if (data && this.props.profile && this.props.profile.username && this.props.profile.willLog) {
 			this.props.firebase
 				.push(`users/${this.props.profile.userID}/feed`, {
 					date: Date.now(),
@@ -651,14 +658,22 @@ class Show extends Component {
 					) {
 						this.setState({ eps: null, epError: true });
 					} else {
-						await this.executeTwist();
+						return null
 					}
 				}
 			);
 	};
 
 	executeTwist = async () => {
-		if (this.props.mir && this.props.mir.twist) {
+		let db = this.props.firebase.ref('twist');
+		let dbval = await db.once('value');
+		if (dbval && Object(dbval.val()).hasOwnProperty(this.state.id)) {
+			let eps = await db.child(this.state.id).once('value')
+			if (eps) this.setState({eps: Object.values(eps.val())}, () => console.info('loaded from database'))
+			else
+				throw new Error('owo')
+		}
+		else if (this.props.mir && this.props.mir.twist) {
 			let correctedtitle = this.state.data.Media.title.romaji
 				.toLowerCase()
 				.replace('(tv)', '');
@@ -669,7 +684,12 @@ class Show extends Component {
 			if (meta.length > 0) {
 				const eps = await Twist.get(meta[0].link);
 				try {
-					if (eps) return this.setState({ eps });
+					if (eps) return this.setState({ eps }, async () => {
+						if (meta[0].ongoing === false) {
+                            let db = this.props.firebase.ref('twist');
+                            await db.child(this.state.id).update(eps);
+                        }
+					});
 				} catch (error) {
 					return this.setState({ epError: true });
 				}
