@@ -5,13 +5,14 @@ import localForage from 'localforage';
 import queryString from 'query-string';
 
 import { connect } from 'react-redux';
-import { firebaseConnect } from 'react-redux-firebase';
+import { firebaseConnect, isEmpty } from 'react-redux-firebase';
 import {
 	timeFormatToReadable,
 	timeFormatToReadableTime,
 } from '../components/supertable';
 
 import * as Vibrant from 'node-vibrant';
+import CardButton, { PeopleButton } from "../components/cardButton";
 import {
 	CommandoBar,
 	Header,
@@ -489,7 +490,7 @@ class User extends Component {
 	});
 
 	componentWillMount = async () => {
-		this.init();
+		if (!isEmpty(this.props.profile)) this.init(); else return false;
 	};
 
 	init = () =>
@@ -590,7 +591,7 @@ class User extends Component {
 		const { classes, history } = this.props;
 		const user = this.props.profile;
 		const { loading, hue, hueVibN, data, tabVal } = this.state;
-		if (!user) return null;
+		if (isEmpty(user)) return null;
 		if (loading) return <LoadingIndicator loading={loading} />;
 		return (
 			<div>
@@ -864,36 +865,10 @@ class User extends Component {
 												)
 											) : user && user.favs && user.favs.show ? (
 												Object.values(user.favs.show).map((show, index) => (
-													<M.Grid
-														className={classes.entityCard}
-														item
-														xs
-														key={index}
-													>
-														<M.Card
-															style={{ background: 'transparent' }}
-															onClick={() =>
-																this.props.history.push(`/show?s=${show.id}`)
-															}
-														>
-															<div className={classes.gradientCard}>
-																<M.CardMedia
-																	className={classes.entityImage}
-																	image={show.image}
-																/>
-															</div>
-															<M.Typography
-																type="headline"
-																className={classes.entityTitle}
-															>
-																{show.name}
-															</M.Typography>
-															<M.Typography
-																type="headline"
-																className={classes.entitySubTitle}
-															/>
-														</M.Card>
-													</M.Grid>
+													<CardButton key={index} onClick={() =>
+                                                        this.props.history.push(`/show?s=${show.id}`)
+                                                    } title={show.name} image={show.image}/>
+
 												))
 											) : (
 												<M.Typography type="body1">
@@ -913,36 +888,9 @@ class User extends Component {
 											{data ? (
 												data.favs && data.favs.manga ? (
 													Object.values(data.favs.manga).map((show, index) => (
-														<M.Grid
-															className={classes.entityCard}
-															item
-															xs
-															key={index}
-														>
-															<M.Card
-																style={{ background: 'transparent' }}
-																onClick={() =>
-																	this.props.history.push(`/show?m=${show.id}`)
-																}
-															>
-																<div className={classes.gradientCard}>
-																	<M.CardMedia
-																		className={classes.entityImage}
-																		image={show.image}
-																	/>
-																</div>
-																<M.Typography
-																	type="headline"
-																	className={classes.entityTitle}
-																>
-																	{show.name}
-																</M.Typography>
-																<M.Typography
-																	type="headline"
-																	className={classes.entitySubTitle}
-																/>
-															</M.Card>
-														</M.Grid>
+                                                        <CardButton key={index} onClick={() =>
+                                                            this.props.history.push(`/show?m=${show.id}`)
+                                                        } title={show.name} image={show.image}/>
 													))
 												) : (
 													<M.Typography type="body1">
@@ -951,36 +899,9 @@ class User extends Component {
 												)
 											) : user && user.favs && user.favs.manga ? (
 												Object.values(user.favs.manga).map((show, index) => (
-													<M.Grid
-														className={classes.entityCard}
-														item
-														xs
-														key={index}
-													>
-														<M.Card
-															style={{ background: 'transparent' }}
-															onClick={() =>
-																this.props.history.push(`/show?m=${show.id}`)
-															}
-														>
-															<div className={classes.gradientCard}>
-																<M.CardMedia
-																	className={classes.entityImage}
-																	image={show.image}
-																/>
-															</div>
-															<M.Typography
-																type="headline"
-																className={classes.entityTitle}
-															>
-																{show.name}
-															</M.Typography>
-															<M.Typography
-																type="headline"
-																className={classes.entitySubTitle}
-															/>
-														</M.Card>
-													</M.Grid>
+                                                    <CardButton key={index} onClick={() =>
+                                                        this.props.history.push(`/show?m=${show.id}`)
+                                                    } title={show.name} image={show.image}/>
 												))
 											) : (
 												<M.Typography type="body1">
@@ -999,42 +920,10 @@ class User extends Component {
 											{data ? (
 												data.favs && data.favs.char ? (
 													Object.values(data.favs.char).map((cast, index) => (
-														<M.Grid
-															className={classes.peopleCard}
-															item
-															xs
-															key={index}
-														>
-															<M.Card
-																style={{
-																	background: 'transparent',
-																	boxShadow: 'none',
-																}}
-															>
-																<M.Avatar
-																	onClick={() =>
-																		this.props.history.push(`/fig?c=${cast.id}`)
-																	}
-																	className={classes.peopleImage}
-																	src={cast.image}
-																	imgProps={{
-																		style: { opacity: 0 },
-																		onLoad: e =>
-																			(e.currentTarget.style.opacity = null),
-																	}}
-																/>
-																<M.Typography
-																	type="headline"
-																	className={classes.peopleTitle}
-																>
-																	{cast.name}
-																</M.Typography>
-																<M.Typography
-																	type="headline"
-																	className={classes.peopleSubTitle}
-																/>
-															</M.Card>
-														</M.Grid>
+														<PeopleButton key={index} name={{first: cast.name}} image={cast.image} onClick={() =>
+                                                            this.props.history.push(`/fig?c=${cast.id}`)
+                                                        }/>
+
 													))
 												) : (
 													<M.Typography type="body1">
@@ -1043,42 +932,9 @@ class User extends Component {
 												)
 											) : user && user.favs && user.favs.char ? (
 												Object.values(user.favs.char).map((cast, index) => (
-													<M.Grid
-														className={classes.peopleCard}
-														item
-														xs
-														key={index}
-													>
-														<M.Card
-															style={{
-																background: 'transparent',
-																boxShadow: 'none',
-															}}
-														>
-															<M.Avatar
-																onClick={() =>
-																	this.props.history.push(`/fig?c=${cast.id}`)
-																}
-																className={classes.peopleImage}
-																src={cast.image}
-																imgProps={{
-																	style: { opacity: 0 },
-																	onLoad: e =>
-																		(e.currentTarget.style.opacity = null),
-																}}
-															/>
-															<M.Typography
-																type="headline"
-																className={classes.peopleTitle}
-															>
-																{cast.name}
-															</M.Typography>
-															<M.Typography
-																type="headline"
-																className={classes.peopleSubTitle}
-															/>
-														</M.Card>
-													</M.Grid>
+                                                    <PeopleButton key={index} name={{first: cast.name}} image={cast.image} onClick={() =>
+                                                        this.props.history.push(`/fig?c=${cast.id}`)
+                                                    }/>
 												))
 											) : (
 												<M.Typography type="body1">
@@ -1097,42 +953,9 @@ class User extends Component {
 											{data ? (
 												data.favs && data.favs.staff ? (
 													Object.values(user.favs.staff).map((cast, index) => (
-														<M.Grid
-															className={classes.peopleCard}
-															item
-															xs
-															key={index}
-														>
-															<M.Card
-																style={{
-																	background: 'transparent',
-																	boxShadow: 'none',
-																}}
-															>
-																<M.Avatar
-																	onClick={() =>
-																		this.props.history.push(`/fig?s=${cast.id}`)
-																	}
-																	className={classes.peopleImage}
-																	src={cast.image}
-																	imgProps={{
-																		style: { opacity: 0 },
-																		onLoad: e =>
-																			(e.currentTarget.style.opacity = null),
-																	}}
-																/>
-																<M.Typography
-																	type="headline"
-																	className={classes.peopleTitle}
-																>
-																	{cast.name}
-																</M.Typography>
-																<M.Typography
-																	type="headline"
-																	className={classes.peopleSubTitle}
-																/>
-															</M.Card>
-														</M.Grid>
+                                                        <PeopleButton key={index} name={{first: cast.name}} image={cast.image} onClick={() =>
+                                                            this.props.history.push(`/fig?s=${cast.id}`)
+                                                        }/>
 													))
 												) : (
 													<M.Typography type="body1">
@@ -1142,42 +965,9 @@ class User extends Component {
 												)
 											) : user && user.favs && user.favs.staff ? (
 												Object.values(user.favs.staff).map((cast, index) => (
-													<M.Grid
-														className={classes.peopleCard}
-														item
-														xs
-														key={index}
-													>
-														<M.Card
-															style={{
-																background: 'transparent',
-																boxShadow: 'none',
-															}}
-														>
-															<M.Avatar
-																onClick={() =>
-																	this.props.history.push(`/fig?s=${cast.id}`)
-																}
-																className={classes.peopleImage}
-																src={cast.image}
-																imgProps={{
-																	style: { opacity: 0 },
-																	onLoad: e =>
-																		(e.currentTarget.style.opacity = null),
-																}}
-															/>
-															<M.Typography
-																type="headline"
-																className={classes.peopleTitle}
-															>
-																{cast.name}
-															</M.Typography>
-															<M.Typography
-																type="headline"
-																className={classes.peopleSubTitle}
-															/>
-														</M.Card>
-													</M.Grid>
+                                                    <PeopleButton key={index} name={{first: cast.name}} image={cast.image} onClick={() =>
+                                                        this.props.history.push(`/fig?s=${cast.id}`)
+                                                    }/>
 												))
 											) : (
 												<M.Typography type="body1">

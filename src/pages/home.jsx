@@ -35,7 +35,7 @@ import miraiIcon from '../assets/mirai-icon.png';
 import ArrowForward from 'material-ui-icons/ArrowForward';
 import ArrowBack from 'material-ui-icons/ArrowBack';
 
-import { firebaseConnect } from 'react-redux-firebase';
+import { firebaseConnect, isEmpty } from 'react-redux-firebase';
 
 import { blue } from 'material-ui/colors';
 
@@ -455,7 +455,7 @@ class Home extends Component {
 				<LoadingIndicator
 					loading={loading}
 				/>
-				{user && user.headers ? (
+				{!isEmpty(user) && user.headers ? (
 					<Header
 						img={user.headers}
 					/>
@@ -650,7 +650,7 @@ class Home extends Component {
 									</Grid>
 								</Grid>
 							</div>
-							{user && user.episodeProgress ? (
+							{!isEmpty(user) && user.episodeProgress ? (
 								<div style={{ width: '100%' }}>
 									<Grid
 										item
@@ -686,7 +686,7 @@ class Home extends Component {
 									</Grid>
 								</div>
 							) : null}
-							{user && user.favs && user.favs.show && user.favs.show ? (
+							{!isEmpty(user) && user.favs && user.favs.show && user.favs.show ? (
 								<div style={{ width: '100%' }}>
 									<Grid
 										item

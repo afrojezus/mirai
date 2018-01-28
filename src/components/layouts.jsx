@@ -25,7 +25,7 @@ const style = theme => ({
         animation: 'load .3s ease',
         marginLeft: 'auto',
         marginRight: 'auto',
-        maxWidth: 1600,
+        maxWidth: 1970,
     },
     commandoBar: {
         width: '100%',

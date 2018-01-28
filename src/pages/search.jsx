@@ -19,6 +19,7 @@ import searchQuery, {
 	searchStudiosQuery,
 } from '../utils/searchquery';
 import { LoadingIndicator } from '../components/layouts';
+import CardButton from "../components/cardButton";
 
 const style = theme => ({
 	container: {
@@ -510,38 +511,12 @@ class Search extends Component {
 														)
 													)
 													.map((anime, index) => (
-														<M.Grid
-															className={classes.entityCard}
-															item
-															xs
-															key={index}
-														>
-															<M.Card
-																style={{ background: 'transparent' }}
-																onClick={() =>
-																	this.openEntity(`/show?s=${anime.id}`)
-																}
-															>
-																<div className={classes.gradientCard}>
-																	<M.CardMedia
-																		className={classes.entityImage}
-																		image={anime.coverImage.large}
-																	/>
-																</div>
-																<M.Typography
-																	type="headline"
-																	className={classes.entityTitle}
-																>
-																	{anime.title.english
-																		? anime.title.english
-																		: anime.title.romaji}
-																</M.Typography>
-																<M.Typography
-																	type="headline"
-																	className={classes.entitySubTitle}
-																/>
-															</M.Card>
-														</M.Grid>
+													    <CardButton key={index} title={anime.title.english
+                                                            ? anime.title.english
+                                                            : anime.title.romaji} image={anime.coverImage.large} onClick={() =>
+                                                            this.openEntity(`/show?s=${anime.id}`)
+                                                        }/>
+
 													))
 												: null}
 										</M.Grid>

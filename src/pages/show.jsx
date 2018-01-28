@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import localForage from 'localforage';
 import * as M from 'material-ui';
 import * as Icon from 'material-ui-icons';
@@ -14,9 +15,10 @@ import CardButton, { PeopleButton } from '../components/cardButton'
 import { MIR_SET_TITLE } from '../constants';
 
 import { connect } from 'react-redux';
-import { firebaseConnect } from 'react-redux-firebase';
+import { firebaseConnect, isEmpty } from 'react-redux-firebase';
 import { timeFormatter } from '../components/supertable';
 import { Root, Container, CommandoBar, MainCard, Header, LoadingIndicator } from '../components/layouts';
+import hsfetcher from '../torrent';
 
 const styles = theme => ({
 	loading: {
@@ -38,7 +40,7 @@ const styles = theme => ({
 		animation: 'load .3s ease',
 		marginLeft: 'auto',
 		marginRight: 'auto',
-		maxWidth: 1600,
+		maxWidth: 1970,
 	},
 	backToolbar: {
 		marginTop: theme.spacing.unit * 8,
@@ -492,6 +494,61 @@ const styles = theme => ({
 const nameSwapper = (first, last) => (last ? first + ' ' + last : first);
 
 class Show extends Component {
+    static propTypes = {
+        data: PropTypes.objectOf({
+            Media: PropTypes.objectOf({
+                id: PropTypes.number,
+                title: PropTypes.objectOf({
+                    romaji: PropTypes.string,
+                    english: PropTypes.string,
+                    native: PropTypes.string,
+                }),
+                startDate: PropTypes.objectOf({
+                    year: PropTypes.number,
+                    month: PropTypes.number,
+                    day: PropTypes.number,
+                }),
+                endDate: PropTypes.objectOf({
+                    year: PropTypes.number,
+                    month: PropTypes.number,
+                    day: PropTypes.number,
+                }),
+                coverImage: PropTypes.objectOf({
+                    large: PropTypes.string,
+                    medium: PropTypes.string,
+                }),
+                bannerImage: PropTypes.string,
+                duration: PropTypes.number,
+                synonyms: PropTypes.object,
+                format: PropTypes.string,
+                type: PropTypes.string,
+                status: PropTypes.string,
+                hashtag: PropTypes.string,
+                episodes: PropTypes.number,
+                chapters: PropTypes.number,
+                volumes: PropTypes.number,
+                description: PropTypes.string,
+                averageScore: PropTypes.string,
+                meanScore: PropTypes.string,
+                genres: PropTypes.object,
+                season: PropTypes.string,
+                isAdult: PropTypes.bool,
+                popularity: PropTypes.number,
+                siteUrl: PropTypes.string,
+                idMal: PropTypes.number,
+                relations: PropTypes.object,
+                source: PropTypes.string,
+                tags: PropTypes.object,
+                externalLinks: PropTypes.object,
+                rankings: PropTypes.object,
+                airingSchedule: PropTypes.object,
+                studios: PropTypes.object,
+                staff: PropTypes.object,
+                characters: PropTypes.object,
+            }),
+        }),
+    }
+
 	state = {
 		data: {},
 		tabVal: 0,
@@ -530,6 +587,18 @@ class Show extends Component {
 			await this.executeTwist();
     }
 
+    torrentTest = async () => {
+    	if (this.state.data && this.state.data.Media) {
+            const data = await hsfetcher.getList(this.state.data.Media.title.romaji)
+			try {
+				if (data) {
+					console.log(data);
+				} else return new Error('fuck');
+            } catch (error) {
+            	console.error(error)
+			}
+        }
+	}
 
     init = () =>
 		this.setState(
@@ -558,16 +627,12 @@ class Show extends Component {
 										data,
 										id: data.Media.id,
 										fav: this.props.history.location.search.includes('?s=')
-											? this.props.profile.favs &&
-												this.props.profile.favs.show &&
-												this.props.profile.favs.show.hasOwnProperty(id.s)
-												? true
-												: false
-											: this.props.profile.favs &&
-												this.props.profile.favs.manga &&
-												this.props.profile.favs.manga.hasOwnProperty(id.m)
-												? true
-												: false,
+											? !!(this.props.profile.favs &&
+                                                this.props.profile.favs.show &&
+                                                this.props.profile.favs.show.hasOwnProperty(id.s))
+											: !!(this.props.profile.favs &&
+                                                this.props.profile.favs.manga &&
+                                                this.props.profile.favs.manga.hasOwnProperty(id.m)),
 									},
 									() => this.pasta()
 								);
@@ -596,7 +661,7 @@ class Show extends Component {
 			page: 1,
 			isAdult: false
 		});
-		if (data && this.props.profile && this.props.profile.username && this.props.profile.willLog) {
+		if (data && !isEmpty(this.props.profile) && this.props.profile.username && this.props.profile.willLog) {
 			this.props.firebase
 				.push(`users/${this.props.profile.userID}/feed`, {
 					date: Date.now(),
@@ -742,7 +807,7 @@ class Show extends Component {
 		let name = data.title.english ? data.title.english : data.title.romaji;
 		let image = data.coverImage.large;
 		let entity = data.type.includes('ANIME') ? 'show' : 'manga';
-		if (this.props.profile)
+		if (!isEmpty(this.props.profile))
 			this.props.firebase
 				.update(
 				`users/${this.props.profile.userID}/favs/${entity}/${data.id}`,
@@ -763,7 +828,7 @@ class Show extends Component {
 	unlike = async () => {
 		let data = this.state.data.Media;
 		let entity = data.type.includes('ANIME') ? 'show' : 'manga';
-		if (this.props.profile)
+		if (!isEmpty(this.props.profile))
 			this.props.firebase
 				.remove(`users/${this.props.profile.userID}/favs/${entity}/${data.id}`)
 				.then(() => this.setState({ fav: false }));
@@ -774,7 +839,7 @@ class Show extends Component {
 		let name = data.title.english ? data.title.english : data.title.romaji;
 		let image = data.coverImage.large;
 		let entity = data.type.includes('ANIME') ? 'show' : 'manga';
-		if (this.props.profile)
+		if (!isEmpty(this.props.profile))
 			this.props.firebase.update(
 				`users/${this.props.profile.userID}/later/${entity}/${data.id}`,
 				{
@@ -793,7 +858,7 @@ class Show extends Component {
 	removeFromLater = async () => {
 		let data = this.state.data.Media;
 		let entity = data.type.includes('ANIME') ? 'show' : 'manga';
-		if (this.props.profile)
+		if (!isEmpty(this.props.profile))
 			this.props.firebase.remove(
 				`users/${this.props.profile.userID}/later/${entity}/${data.id}`
 			);
@@ -856,9 +921,7 @@ class Show extends Component {
 									disabled={
 										data.Media.type.includes('MANGA')
 											? false
-											: data.Media.status.includes('NOT_YET_RELEASED') || !eps
-												? true
-												: false
+											: !!(data.Media.status.includes('NOT_YET_RELEASED') || !eps)
 									}
 									className={classes.fabPlayButton}
 									fab
@@ -880,7 +943,7 @@ class Show extends Component {
 												)}
 								</M.Button>
 							</div>
-							<Container spacing={16} id='mainHeader' special style={{ background: hue }}>
+							<Container spacing={16} id='mainHeader' style={{ background: hue }}>
 								<Header image={data.Media.bannerImage ? data.Media.bannerImage : null} color={hue} style={{ background: hue }} />
 								<M.Grid item xs={3} className={classes.leftSide}>
 									<div
@@ -1218,7 +1281,7 @@ class Show extends Component {
 													</FadeIn>
 												)}
 									<div style={{ flex: 1 }} />
-									{user &&
+									{!isEmpty(user) &&
 										user.episodeProgress &&
 										user.episodeProgress.hasOwnProperty(data.Media.id) ? (
 											<div className={classes.progressCon}>
@@ -1269,7 +1332,7 @@ class Show extends Component {
 											{data.Media.hashtag}
 										</M.Button>
 									) : null}
-									{user ? (
+									{!isEmpty(user) ? (
 										<M.Tooltip
 											title={
 												data.Media.type.includes('ANIME')
@@ -1320,7 +1383,7 @@ class Show extends Component {
 											</M.IconButton>
 										</M.Tooltip>
 									) : null}
-									{user ? (
+									{!isEmpty(user) ? (
 										<M.Tooltip
 											title={fav ? 'Remove from favorites' : 'Add to favorites'}
 										>
@@ -1391,8 +1454,8 @@ class Show extends Component {
                                                                 j => j.language === 'JAPANESE'
                                                             )[0].image.large
                                                             : null
-                                                        : cast.node.image.large} actor={cast.voiceActors &&
-                                                    cast.voiceActors.length > 0 ? true : false}
+                                                        : cast.node.image.large} actor={!!(cast.voiceActors &&
+                                                        cast.voiceActors.length > 0)}
                                                                   name={{
                                                                       first: cast.voiceActors && cast.voiceActors.length > 0
                                                                           ? cast.voiceActors[0].name.first : cast.node.name.first
@@ -1401,8 +1464,7 @@ class Show extends Component {
                                                                   }}
                                                                   charImg={cast.node.image.large}
                                                                   charOnClick={() => this.openEntity(`/fig?c=${cast.node.id}`)}
-                                                                  actor={cast.voiceActors && cast.voiceActors.length > 0
-                                                                      ? true : false}
+                                                                  actor={!!(cast.voiceActors && cast.voiceActors.length > 0)}
                                                                   role={
                                                                       cast.voiceActors && cast.voiceActors.length > 0
                                                                           ? `as ${

@@ -57,7 +57,7 @@ import parse from 'autosuggest-highlight/parse';
 
 import Tabs, { Tab } from 'material-ui/Tabs';
 
-import { firebaseConnect } from 'react-redux-firebase';
+import { firebaseConnect, isEmpty } from 'react-redux-firebase';
 
 import NotificationForm from './notificationForm';
 import BottomNavigation from 'material-ui/BottomNavigation/BottomNavigation';
@@ -301,6 +301,7 @@ class Superbar extends Component {
 		status: 0,
 		mirTitle: '',
 		scrolling: false,
+        commit: 'd9'
 	};
 
 	componentWillMount = () => {
@@ -553,9 +554,10 @@ class Superbar extends Component {
 			hue,
 			mirTitle,
 			scrolling,
+            commit,
 		} = this.state;
 
-		const user = this.props.profile;
+		const user = !isEmpty(this.props.profile) ? this.props.profile : null;
 
 		const open = Boolean(anchorEl);
 		const infoOpen = Boolean(infoEl);
@@ -610,6 +612,7 @@ class Superbar extends Component {
 						<ListItemText primary="Live" />
 					</ListItem>
 				</List>
+				{user ? <div>
 				<Divider className={classes.listDivider} />
 				<List subheader={<ListSubheader>YOU</ListSubheader>}>
 					<ListItem
@@ -643,6 +646,7 @@ class Superbar extends Component {
 						<ListItemText primary="Favorites" />
 					</ListItem>
 				</List>
+				</div> : null}
 				<Divider className={classes.listDivider} />
 				<List>
 					<ListItem
@@ -697,10 +701,8 @@ class Superbar extends Component {
 				</List>
 				<Divider className={classes.listDivider} />
 				<Typography className={classes.footerCopy} type="headline">
-					{Object.keys(this.props.firebase).length - 1} online{this.props.mir &&
-					this.props.mir.twist ? (
+					Mirai commit-{commit}
 						<br />
-					) : null}
 					{this.props.mir && this.props.mir.twist
 						? Object.keys(this.props.mir.twist).length -
 							1 +
@@ -814,7 +816,7 @@ class Superbar extends Component {
 								<NotificationForm />
 							</Menu>
 						</div>
-						{!user.isEmpty ? (
+						{user ? (
 							<div>
 								<IconButton
 									aria-owns={open ? 'profile-menu' : null}

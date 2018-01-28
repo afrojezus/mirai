@@ -12,7 +12,8 @@ import queryString from 'query-string';
 import corrector from '../utils/bigfuck';
 import FadeIn from 'react-fade-in';
 import { connect } from 'react-redux';
-import { firebaseConnect } from 'react-redux-firebase';
+import { firebaseConnect, isEmpty } from 'react-redux-firebase';
+import hsfetcher from '../torrent';
 
 const style = theme => ({
 	root: {
@@ -195,32 +196,56 @@ class Watch extends Component {
 		recentlyWatched: Date.now(),
 		volEl: null,
 		counter: 5,
+        torrent: false,
+        quality: 480,
+        torrentFile: null,
+        quaEl: null
 	};
 
 	player = HTMLMediaElement;
 
 	componentWillMount = async () => {
 		const playerVolume = await localForage.getItem('player-settings-volume');
+        const playerUseTorrent = await localForage.getItem('player-setting-torrent');
 
 		if (playerVolume) this.setState({ volume: playerVolume });
 		else return;
+
+        /*if (playerUseTorrent) this.setState({ torrent: playerUseTorrent });
+        else return;*/
 	};
 
 	getState = async () => {
         const id = queryString.parse(this.props.history.location.search);
         try {
-            if (this.props.history.location.state) {
-                console.info('Location state found! No need for refetching.');
-                this.setState({ status: 'Setting up...' });
-                if (this.props.mir && this.props.mir.twist)
-                    this.getSource(this.props.history.location.state);
-            } else {
-                console.info('Location state not found! Refetching...');
-                this.setState({ status: 'Fetching...' });
-                const { data } = await new Segoku().getSingle({ id: id.w });
-                if (data && this.props.mir && this.props.mir.twist)
-                    this.getSource({ meta: data.Media });
-                else this.componentDidMount();
+            if (this.state.torrent) {
+                if (this.props.history.location.state) {
+                    console.info('Nyaa mode, found location state.');
+                    this.setState({status: 'Setting up...'});
+                    this.getTorrent(this.props.history.location.state)
+                } else {
+                    console.info('Nyaa mode, location state not found. Requesting metadata...');
+                    this.setState({status: 'Fetching...'});
+                    const {data} = await new Segoku().getSingle({id: id.w});
+                    if (data)
+                        this.getTorrent({meta: data.Media});
+                    else this.componentDidMount();
+                }
+            }
+             else {
+                if (this.props.history.location.state) {
+                    console.info('Location state found! No need for refetching.');
+                    this.setState({status: 'Setting up...'});
+                    if (this.props.mir && this.props.mir.twist)
+                        this.getSource(this.props.history.location.state);
+                } else {
+                    console.info('Location state not found! Refetching...');
+                    this.setState({status: 'Fetching...'});
+                    const {data} = await new Segoku().getSingle({id: id.w});
+                    if (data && this.props.mir && this.props.mir.twist)
+                        this.getSource({meta: data.Media});
+                    else this.componentDidMount();
+                }
             }
         } catch (error) {
             console.error(error);
@@ -230,6 +255,36 @@ class Watch extends Component {
             });
         }
     }
+
+    getTorrent = (data) => this.setState({
+            title: data.meta.title.english
+                ? data.meta.title.english
+                : data.meta.title.romaji,
+            showId: data.meta.id,
+            showArtwork: data.meta.coverImage.large,
+            showDesc: data.meta.description,
+            showHeaders: data.meta.bannerImage
+                ? data.meta.bannerImage
+                : data.meta.coverImage.large,
+        }, async () => {
+        const list = await hsfetcher.getList(data.meta.title.romaji);
+        try {
+            if (list) {
+                let eps = [];
+                list.filter(e => e.quality === this.state.quality).reverse().forEach((s, i) => {
+                    return eps.push({
+                        name: s.title,
+                        link: s.torrent,
+                        ep: i + 1,
+                        provider: 'Nyaa'
+                    })
+                })
+                this.setState({eps, status: 'Initiating client...'}, async () => this.loadEp(this.state.eps[0], null))
+            } else return new Error('fuck');
+        } catch (error) {
+            console.error(error)
+        }
+        });
 
 	componentWillReceiveProps = async (nextProps) => {
 		if (this.props !== nextProps) {
@@ -268,7 +323,7 @@ class Watch extends Component {
 						})
 						.catch(async a => {
 							if (
-								this.props.profile &&
+                                !isEmpty(this.props.profile)  &&
 								this.props.profile.episodeProgress[this.state.showId]
 							) {
 								console.info('No metadata found locally, attempting remote.');
@@ -303,7 +358,7 @@ class Watch extends Component {
 							})
 							.catch(async a => {
 								if (
-									this.props.profile &&
+									!isEmpty(this.props.profile) &&
 									this.props.profile.episodeProgress[this.state.showId]
 								) {
 									console.info('No metadata found locally, attempting remote.');
@@ -352,20 +407,31 @@ class Watch extends Component {
 				if (this.state.menuEl) {
 					this.closeMenu();
 				}
-				const source = await Twist.getSource(ep.link);
-				try {
-					if (source) {
-						this.setState(
-							{ source, ep: ep.ep, resume: resume ? resume : null },
-							() => {
-								this.playPause();
-							}
-						);
-					}
-				} catch (error) {
-					console.error(error);
-					this.setState({ error: true, status: 'Error' });
-				}
+				if (this.state.torrent) {
+				    hsfetcher.getSource(ep.link, (torrent, file) => {
+                        file.getBlobURL(function (err, url) {
+                            if (err) throw err
+                            if (url)
+                            this.setState({torrentFile: torrent, source: url, ep: ep.ep, resume: resume ? resume : null}, () => this.playPause())
+                        })
+                    })
+                }
+				else {
+                    const source = await Twist.getSource(ep.link);
+                    try {
+                        if (source) {
+                            this.setState(
+                                {source, ep: ep.ep, resume: resume ? resume : null},
+                                () => {
+                                    this.playPause();
+                                }
+                            );
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        this.setState({error: true, status: 'Error'});
+                    }
+                }
 			}
 		);
 
@@ -530,7 +596,7 @@ class Watch extends Component {
 		});
 
 	componentWillUnmount = async () => {
-		if (this.props.profile && this.state.loaded > 0) {
+		if (!isEmpty(this.props.profile) && this.state.loaded > 0) {
 			const episodePro = this.props.firebase
 				.database()
 				.ref('users')
@@ -543,11 +609,13 @@ class Watch extends Component {
 				}
 			});
 		}
+
+		if (this.state.torrent && this.state.torrentFile) hsfetcher.destroyClient(this.state.torrentFile);
 	};
 
 	handleEnded = () => {
 		this.reveal();
-		if (this.props.profile && this.state.loaded > 0) {
+		if (!isEmpty(this.props.profile) && this.state.loaded > 0) {
 			const episodePro = this.props.firebase
 				.database()
 				.ref('users')
@@ -577,6 +645,65 @@ class Watch extends Component {
 
 	timer = undefined;
 
+	changeQuality = (int) => {
+	    switch (int) {
+            case 1080:
+                if (this.state.torrentFile)
+                    hsfetcher.destroyClient(this.state.torrentFile);
+                this.setState({source: null, playing: false, quality: 1080, quaEl: null,
+                    buffering: true,
+                    status: 'Downloading...',
+                    loaded: 0,
+                    played: 0,
+                    videoQuality: null,}, () => this.getState())
+            case 720:
+                if (this.state.torrentFile)
+                    hsfetcher.destroyClient(this.state.torrentFile);
+                this.setState({source: null, playing: false, quality: 720, quaEl: null,
+                    buffering: true,
+                    status: 'Downloading...',
+                    loaded: 0,
+                    played: 0,
+                    videoQuality: null,}, () => this.getState())
+            case 480:
+                if (this.state.torrentFile)
+                    hsfetcher.destroyClient(this.state.torrentFile);
+                this.setState({source: null, playing: false, quality: 480, quaEl: null,
+                    buffering: true,
+                    status: 'Downloading...',
+                    loaded: 0,
+                    played: 0,
+                    videoQuality: null,}, () => this.getState())
+        }
+    }
+
+
+	switchMode = () => this.setState({torrent: !this.state.torrent}, async () => {
+	    let torrent = this.state.torrent;
+	    if (torrent) {
+	        await localForage.setItem('player-setting-torrent', true);
+            if (this.state.torrentFile)
+                hsfetcher.destroyClient(this.state.torrentFile);
+            this.setState({source: null, playing: false,
+                buffering: true,
+                status: 'Downloading...',
+                loaded: 0,
+                played: 0,
+                videoQuality: null,}, () => this.getState())
+        } else {
+            await localForage.setItem('player-setting-torrent', false);
+            if (this.state.torrentFile)
+            hsfetcher.destroyClient(this.state.torrentFile);
+            this.setState({playing: false,
+                source: null,
+                buffering: true,
+                status: 'Loading...',
+                loaded: 0,
+                played: 0,
+                videoQuality: null,}, () => this.getState())
+        }
+    })
+
 	render() {
 		const { classes } = this.props;
 		const {
@@ -602,9 +729,13 @@ class Watch extends Component {
 			willLoadNextEp,
 			counter,
 			videoQuality,
+            torrent,
+            quaEl,
+            quality
 		} = this.state;
 		const menu = Boolean(menuEl);
 		const volumeMenu = Boolean(volEl);
+		const qualityMenu = Boolean(quaEl)
 		return (
 			<div
 				id="frame"
@@ -687,7 +818,7 @@ class Watch extends Component {
 								primaryColor: classes.progressBgOver,
 								primaryColorBar: classes.progressBar,
 							}}
-							mode={buffering ? 'buffer' : 'determinate'}
+							mode={'determinate'}
 							value={played * 100}
 							valueBuffer={loaded * 100}
 						/>
@@ -713,32 +844,25 @@ class Watch extends Component {
 						/>
 					</M.CardContent>
 					<M.CardActions>
-						{source ? (
-							<M.IconButton onClick={this.playPause}>
+
+							<M.IconButton disabled={loaded === 0 || !source ? (
+                                true
+                            ) : false} onClick={this.playPause}>
 								{playing ? (
-									loaded === 0 || buffering ? (
-										<M.CircularProgress />
-									) : (
 											<Icon.Pause />
-										)
+
 								) : played === 1 ? (
 									<Icon.Replay />
 								) : (
 											<Icon.PlayArrow />
 										)}
 							</M.IconButton>
-						) : null}
 						<M.Typography
 							type="title"
 							className={!source ? classes.left : null}
 						>
 							{status}
 						</M.Typography>
-						{videoQuality ? (
-							<M.Typography type="title" className={classes.qualityTitle}>
-								{videoQuality}p
-							</M.Typography>
-						) : null}
 						<div style={{ flex: 1 }} />
 						{willLoadNextEp ? (
 							<div className={classes.nextWrapper}>
@@ -750,9 +874,90 @@ class Watch extends Component {
 								</M.Button>
 							</div>
 						) : null}
+                        <M.IconButton
+                            disabled={torrent ? false : true}
+                            aria-owns={qualityMenu ? 'quality-menu' : null}
+                            aria-haspopup="true"
+                            onClick={e => this.setState({ quaEl: e.currentTarget })}
+                            color="contrast"
+                        >
+                            {torrent ? quality === 480 ? <M.Typography type="title" className={classes.qualityTitle}>480p</M.Typography> :
+                                quality === 720 ? <M.Typography type="title" className={classes.qualityTitle}>720p</M.Typography> :
+                                    quality === 1080 ? <M.Typography type="title" className={classes.qualityTitle}>1080p</M.Typography> : null : <M.Typography type="title" style={torrent ? null : {opacity: '.2'}} className={classes.qualityTitle}>
+                                {videoQuality ? videoQuality + 'p' : 'HD'}
+                            </M.Typography>}
+                        </M.IconButton>
 						<M.Typography type="body1" className={classes.duration}>
 							<Duration seconds={duration * played} />
 						</M.Typography>
+                        <M.Menu
+                            id="quality-menu"
+                            anchorEl={quaEl}
+                            anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            transformOrigin={{
+                                vertical: 'center',
+                                horizontal: 'right',
+                            }}
+                            open={qualityMenu}
+                            classes={{
+                                paper: classes.menuPaper
+                            }}
+                            onClose={() => this.setState({ quaEl: null })}
+                            PaperProps={{
+                                style: {
+                                    width: 300,
+                                    padding: 0,
+                                    outline: 'none',
+                                    background: M.colors.grey[800],
+                                },
+                            }}
+                            MenuListProps={{
+                                style: {
+                                    padding: 0,
+                                    outline: 'none',
+                                },
+                            }}
+                        >
+                            <M.Card style={{ background: M.colors.grey[800] }}>
+                                <M.CardHeader
+                                    style={{ background: M.colors.grey[900] }}
+                                    title="Quality"
+                                />
+                                <M.Divider />
+                                <M.CardContent className={classes.epListCont}>
+                                        <M.MenuItem
+                                            onClick={() => this.changeQuality(1080)}
+                                            selected={quality === 1080}
+                                            className={classes.epListItem}
+                                        >
+                                            1080p
+                                            <div style={{ flex: 1 }} />
+                                            {quality === 1080 ? <Icon.PlayArrow /> : null}
+                                        </M.MenuItem>
+                                    <M.MenuItem
+                                        onClick={() => this.changeQuality(720)}
+                                        selected={quality === 720}
+                                        className={classes.epListItem}
+                                    >
+                                        720p
+                                        <div style={{ flex: 1 }} />
+                                        {quality === 720 ? <Icon.PlayArrow /> : null}
+                                    </M.MenuItem>
+                                    <M.MenuItem
+                                        onClick={() => this.changeQuality(480)}
+                                        selected={quality === 480}
+                                        className={classes.epListItem}
+                                    >
+                                        480p
+                                        <div style={{ flex: 1 }} />
+                                        {quality === 480 ? <Icon.PlayArrow /> : null}
+                                    </M.MenuItem>
+                                </M.CardContent>
+                            </M.Card>
+                        </M.Menu>
 						<M.IconButton
 							aria-owns={volumeMenu ? 'volume-menu' : null}
 							aria-haspopup="true"
@@ -887,6 +1092,20 @@ class Watch extends Component {
 								</M.Card>
 							</M.Menu>
 						</div>
+                        <M.Tooltip PopperProps={{PaperProps: { style: {fontSize: 16}}}} title='Switch between Twist mode (recommended) or Nyaa mode (highly experimental)'>
+                        <M.FormGroup>
+                            <M.FormControlLabel
+                                disabled
+                                control={
+                                    <M.Switch
+                                        checked={torrent}
+                                        onChange={this.switchMode}
+                                    />
+                                }
+                                label={torrent ? "Nyaa" : "Twist"}
+                            />
+                        </M.FormGroup>
+                        </M.Tooltip>
 					</M.CardActions>
 				</M.Card>
 			</div>

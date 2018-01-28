@@ -12,6 +12,7 @@
     "classnames": "^2.2.5",
     "fetch-cheerio-object": "^1.2.0",
     "firebase": "^4.7.0",
+    "git-rev": "^0.2.1",
     "graphql": "^0.11.7",
     "graphql-tag": "^2.5.0",
     "history": "^4.7.2",
@@ -53,6 +54,7 @@
     "rxjs": "^5.5.3",
     "screenfull": "^3.3.2",
     "typed.js": "^2.0.6",
+    "webtorrent": "^0.98.21",
     "zen-observable": "^0.6.0"
   },
   "scripts": {

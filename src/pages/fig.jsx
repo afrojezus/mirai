@@ -8,8 +8,9 @@ import * as Vibrant from 'node-vibrant';
 import { MIR_SET_TITLE } from '../constants';
 
 import { connect } from 'react-redux';
-import { firebaseConnect } from 'react-redux-firebase';
-import { LoadingIndicator, Header, Root, Container } from '../components/layouts';
+import { firebaseConnect, isEmpty } from 'react-redux-firebase';
+import { LoadingIndicator, Header, Root, Container, CommandoBar } from '../components/layouts';
+import CardButton, { PeopleButton } from '../components/cardButton';
 import Grid from 'material-ui/Grid/Grid';
 
 const style = theme => ({
@@ -585,16 +586,12 @@ class Fig extends Component {
 													fav: this.props.history.location.search.includes(
 														'?c='
 													)
-														? this.props.profile.favs &&
-															this.props.profile.favs.char &&
-															this.props.profile.favs.char.hasOwnProperty(id.c)
-															? true
-															: false
-														: this.props.profile.favs &&
-															this.props.profile.favs.staff &&
-															this.props.profile.favs.staff.hasOwnProperty(id.s)
-															? true
-															: false,
+														? !!(this.props.profile.favs &&
+                                                            this.props.profile.favs.char &&
+                                                            this.props.profile.favs.char.hasOwnProperty(id.c))
+														: !!(this.props.profile.favs &&
+                                                            this.props.profile.favs.staff &&
+                                                            this.props.profile.favs.staff.hasOwnProperty(id.s)),
 												},
 												() => this.vibrance()
 											),
@@ -659,7 +656,7 @@ class Fig extends Component {
 			? this.state.data.Character.image.large
 			: this.state.data.Staff.image.large;
 		let entity = this.state.type.includes('CHARACTER') ? 'char' : 'staff';
-		if (this.props.profile)
+		if (!isEmpty(this.props.profile))
 			this.props.firebase
 				.update(
 				`users/${this.props.profile.userID}/favs/${entity}/${this.state.id}`,
@@ -679,7 +676,7 @@ class Fig extends Component {
 
 	unlike = async () => {
 		let entity = this.state.type.includes('CHARACTER') ? 'char' : 'staff';
-		if (this.props.profile)
+		if (!isEmpty(this.props.profile))
 			this.props.firebase
 				.remove(
 				`users/${this.props.profile.userID}/favs/${entity}/${this.state.id}`
@@ -694,7 +691,7 @@ class Fig extends Component {
 
 	render() {
 		const { classes } = this.props;
-		const user = this.props.profile;
+		const user = !isEmpty(this.props.profile) ? this.props.profile : null;
 		const { data, loading, hue, fav } = this.state;
 		return (
 			<div>
@@ -761,8 +758,7 @@ class Fig extends Component {
 								</M.Grid>
 							</M.Grid>
 							<div className={classes.bigBar} style={{ background: hue }}>
-								<M.Toolbar
-									className={classes.commandoBar}
+								<CommandoBar
 									style={{ background: hue }}
 								>
 									<div style={{ flex: 1 }} />
@@ -799,7 +795,7 @@ class Fig extends Component {
 									<M.IconButton color="contrast">
 										<Icon.MoreVert />
 									</M.IconButton>
-								</M.Toolbar>
+								</CommandoBar>
 								<M.Grid container className={classes.container}>
 									{data.Staff &&
 										data.Staff.characters &&
@@ -808,54 +804,15 @@ class Fig extends Component {
 											<M.Grid item xs style={{ zIndex: 10 }}>
 												<M.Typography type="title" className={classes.secTitle}>
 													Voice actor for
-											</M.Typography>
+											    </M.Typography>
 												<M.Grid container className={classes.itemcontainer}>
-													{data.Staff.characters.edges.map((cast, index) => (
-														<M.Grid
-															className={classes.peopleCard}
-															item
-															xs
-															key={index}
-														>
-															<M.Card
-																style={{
-																	background: 'transparent',
-																	boxShadow: 'none',
-																}}
-															>
-																<M.Avatar
-																	onClick={() =>
-																		this.openEntity(`/fig?c=${cast.node.id}`)
-																	}
-																	className={classes.peopleImage}
-																	src={cast.node.image.large}
-																	imgProps={{
-																		style: { opacity: 0 },
-																		onLoad: e =>
-																			(e.currentTarget.style.opacity = null),
-																	}}
-																/>
-																<M.Typography
-																	type="headline"
-																	className={classes.peopleTitle}
-																>
-																	{nameSwapper(
-																		cast.node.name.first,
-																		cast.node.name.last
-																	)}
-																</M.Typography>
-																<M.Typography
-																	type="headline"
-																	className={classes.peopleSubTitle}
-																>
-																	{cast.role}
-																</M.Typography>
-															</M.Card>
-														</M.Grid>
-													))}
+													{data.Staff.characters.edges.map((cast, index) =>
+														<PeopleButton name={{first: cast.node.name.first,
+                                                            last: cast.node.name.last
+                                                            }} key={index} image={cast.node.image.large} onClick={() =>
+                                                            this.openEntity(`/fig?c=${cast.node.id}`)} role={cast.role} />)}
 												</M.Grid>
-											</M.Grid>
-										) : null}
+											</M.Grid> ) : null}
 									{data.Staff &&
 										data.Staff.staffMedia &&
 										data.Staff.staffMedia.edges &&
@@ -866,46 +823,18 @@ class Fig extends Component {
 											</M.Typography>
 												<M.Grid container className={classes.itemcontainer}>
 													{data.Staff.staffMedia.edges.map((anime, index) => (
-														<M.Grid
-															className={classes.entityCard}
-															item
-															xs
-															key={index}
-														>
-															<M.Card
-																style={{ background: 'transparent' }}
-																onClick={() =>
-																	this.props.history.push(
-																		`/show?${
-																		anime.node.type.includes('ANIME')
-																			? 's'
-																			: 'm'
-																		}=${anime.node.id}`
-																	)
-																}
-															>
-																<div className={classes.gradientCard}>
-																	<M.CardMedia
-																		className={classes.entityImage}
-																		image={anime.node.coverImage.large}
-																	/>
-																</div>
-																<M.Typography
-																	type="headline"
-																	className={classes.entityTitle}
-																>
-																	{anime.node.title.english
-																		? anime.node.title.english
-																		: anime.node.title.romaji}
-																</M.Typography>
-																<M.Typography
-																	type="headline"
-																	className={classes.entitySubTitle}
-																>
-																	{anime.staffRole}
-																</M.Typography>
-															</M.Card>
-														</M.Grid>
+														<CardButton onClick={() =>
+                                                            this.props.history.push(
+                                                                `/show?${
+                                                                    anime.node.type.includes('ANIME')
+                                                                        ? 's'
+                                                                        : 'm'
+                                                                    }=${anime.node.id}`
+                                                            )
+                                                        } key={index} title={anime.node.title.english
+                                                            ? anime.node.title.english
+                                                            : anime.node.title.romaji} subtitle={anime.staffRole} image={anime.node.coverImage.large} />
+
 													))}
 												</M.Grid>
 											</M.Grid>
@@ -917,46 +846,18 @@ class Fig extends Component {
 											</M.Typography>
 											<M.Grid container className={classes.itemcontainer}>
 												{data.Character.media.edges.map((anime, index) => (
-													<M.Grid
-														className={classes.entityCard}
-														item
-														xs
-														key={index}
-													>
-														<M.Card
-															style={{ background: 'transparent' }}
-															onClick={() =>
-																this.openEntity(
-																	`/show?${
-																	anime.node.type.includes('ANIME')
-																		? 's'
-																		: 'm'
-																	}=${anime.node.id}`
-																)
-															}
-														>
-															<div className={classes.gradientCard}>
-																<M.CardMedia
-																	className={classes.entityImage}
-																	image={anime.node.coverImage.large}
-																/>
-															</div>
-															<M.Typography
-																type="headline"
-																className={classes.entityTitle}
-															>
-																{anime.node.title.english
-																	? anime.node.title.english
-																	: anime.node.title.romaji}
-															</M.Typography>
-															<M.Typography
-																type="headline"
-																className={classes.entitySubTitle}
-															>
-																{anime.characterRole}
-															</M.Typography>
-														</M.Card>
-													</M.Grid>
+                                                    <CardButton title={anime.node.title.english
+                                                        ? anime.node.title.english
+                                                        : anime.node.title.romaji} key={index} image={anime.node.coverImage.large}
+                                                                onClick={() =>
+                                                        this.openEntity(
+                                                            `/show?${
+                                                                anime.node.type.includes('ANIME')
+                                                                    ? 's'
+                                                                    : 'm'
+                                                                }=${anime.node.id}`
+                                                        )
+                                                    } role={anime.characterRole} />
 												))}
 											</M.Grid>
 										</M.Grid>

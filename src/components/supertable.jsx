@@ -241,7 +241,7 @@ const superTable = ({ classes, ...props}) => (
                       : props.typeof === "favs" ? anime.name : null}
               </M.Typography>
             </Dotdotdot>
-            <Dotdotdot clamp={1}>
+            <Dotdotdot clamp={3}>
               <M.Typography
                 type="display2"
                 className={classes.bigCardSmallTitle}
