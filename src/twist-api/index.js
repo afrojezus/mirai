@@ -1,4 +1,5 @@
 import fetchCheerioObject from "fetch-cheerio-object";
+import wiki from 'wikijs';
 
 let Proxy2 = "https://cors-anywhere.herokuapp.com/";
 let Proxy1 = "https://cors.now.sh/";

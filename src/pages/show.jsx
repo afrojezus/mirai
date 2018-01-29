@@ -19,6 +19,8 @@ import { firebaseConnect, isEmpty } from 'react-redux-firebase';
 import { timeFormatter } from '../components/supertable';
 import { Root, Container, CommandoBar, MainCard, Header, LoadingIndicator } from '../components/layouts';
 import hsfetcher from '../torrent';
+import wiki from 'wikijs';
+import * as jquery from 'jquery'
 
 const styles = theme => ({
 	loading: {
@@ -123,7 +125,7 @@ const styles = theme => ({
 		},
 	},
 	bigTitle: {
-		fontWeight: 700,
+		fontWeight: 800,
 		color: 'white',
 		textShadow: '0 2px 12px rgba(0,0,0,.2)',
 	},
@@ -187,7 +189,7 @@ const styles = theme => ({
 			background: M.colors.blue.A200,
 		},
 		'&:hover > .artworktitle': {
-			transform: 'scale(1.2)',
+			transform: 'translate(-50%,-50%) scale(1.2)',
 		},
 		'&:hover > img': {
 			transform: 'scale(0.9)',
@@ -489,6 +491,15 @@ const styles = theme => ({
 		opacity: 0,
 		zIndex: 10000,
 	},
+	playArtworkButton: {
+		background: M.colors.grey[50],
+		color: '#111',
+		padding: theme.spacing.unit * 2,
+		borderRadius: '50%',
+		boxShadow: '0 2px 16px rgba(0,0,0,.1)',
+		width: 32,
+		height: 32
+	}
 });
 
 const nameSwapper = (first, last) => (last ? first + ' ' + last : first);
@@ -561,6 +572,7 @@ class Show extends Component {
 		eps: null,
 		epError: false,
 		menuEl: null,
+		reportModal: false
 	};
 
 	frame = document.getElementById('previewFrame');
@@ -661,6 +673,20 @@ class Show extends Component {
 			page: 1,
 			isAdult: false
 		});
+		/*if (data) {
+			let epArray = []
+            const epwiki = await wiki().page(data.title.english);
+            const epwikiMedia = await epwiki.html()
+			if (epwikiMedia) {
+                const s = jquery(epwikiMedia).find('table.wikitable').eq(1).children('tbody').children('tr.vevent').each((e, i) => {
+                    return {
+                        title: jquery(i).text()
+                    }
+                })
+				if (s) console.log(s)
+            }
+        }*/
+
 		if (data && !isEmpty(this.props.profile) && this.props.profile.username && this.props.profile.willLog) {
 			this.props.firebase
 				.push(`users/${this.props.profile.userID}/feed`, {
@@ -864,6 +890,8 @@ class Show extends Component {
 			);
 	};
 
+	reportError = () => this.setState({reportModal: !this.state.reportModal});
+
 	render() {
 		const { classes } = this.props;
 		const {
@@ -898,7 +926,11 @@ class Show extends Component {
 				open={openMenu}
 				onClose={() => this.setState({ menuEl: null })}
 			>
-				<M.MenuItem onClick={this.reportError}>Report error</M.MenuItem>
+				<M.MenuItem onClick={() => {
+					this.setState({menuEl: null})
+					this.reportError()
+				}
+                }>Report error</M.MenuItem>
 				<M.MenuItem onClick={this.editEntry}>Edit entry</M.MenuItem>
 			</M.Menu>
 		);
@@ -984,11 +1016,12 @@ class Show extends Component {
 											{data.Media.status.includes('NOT_YET_RELEASED')
 												? 'TBA'
 												: data.Media.type.includes('MANGA')
-													? 'Read'
+													? <Icon.PlayArrow style={{color: hue}} className={classes.playArtworkButton} />
 													: eps
-														? 'Play'
-														: epError ? 'Not avaliable' : 'Loading'}
+														? <Icon.PlayArrow style={{color: hue}} className={classes.playArtworkButton} />
+														: epError ? 'Not avaliable' : null}
 										</M.Typography>
+
 										<M.Typography
 											className={classes.artworktype}
 											style={{ background: hue }}
@@ -1417,6 +1450,14 @@ class Show extends Component {
 										<Icon.MoreVert />
 									</M.IconButton>
 									{Menu}
+                                    <M.Modal
+                                        aria-labelledby="report-modal"
+                                        aria-describedby="reports"
+                                        open={this.state.reportModal}
+                                        onClose={() => this.setState({reportModal: false})}
+                                    >
+										<ReportDialog/>
+                                    </M.Modal>
 								</CommandoBar>
 								<Container>
 									<M.Grid item xs style={{ zIndex: 10 }}>
@@ -1544,6 +1585,17 @@ class Show extends Component {
 				</Root>
 			</div>
 		);
+	}
+}
+
+class ReportDialog extends Component {
+
+	render () {
+		return (
+			<M.Paper style={{top: '50%', left: '50%', transform: 'translate(-50%, -50%', minHeight: 300, minWidth: 300, position: 'fixed', padding: 24}}>
+				<M.Typography type={'title'}>Report this entry</M.Typography>
+			</M.Paper>
+		)
 	}
 }
 

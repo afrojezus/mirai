@@ -26,6 +26,13 @@ const style = theme => ({
         marginLeft: 'auto',
         marginRight: 'auto',
         maxWidth: 1970,
+        paddingLeft: theme.spacing.unit * 2,
+        paddingRight: theme.spacing.unit * 2,
+        [theme.breakpoints.down('sm')]: {
+            paddingLeft: 0,
+            paddingRight: 0
+        },
+        boxSizing: 'border-box'
     },
     commandoBar: {
         width: '100%',
