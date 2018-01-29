@@ -1456,7 +1456,11 @@ class Show extends Component {
                                         open={this.state.reportModal}
                                         onClose={() => this.setState({reportModal: false})}
                                     >
-										<ReportDialog/>
+                                        <FadeIn>
+                                            <M.Paper style={{top: '50%', left: '50%', transform: 'translate(-50%, -50%', minHeight: 600, minWidth: 900, position: 'fixed', padding: 24}}>
+                                                <M.Typography style={{fontWeight: 800}} type={'title'}>Report {data.Media.title.english ? data.Media.title.english : data.Media.title.romaji} for errors</M.Typography>
+                                            </M.Paper>
+                                        </FadeIn>
                                     </M.Modal>
 								</CommandoBar>
 								<Container>
@@ -1585,17 +1589,6 @@ class Show extends Component {
 				</Root>
 			</div>
 		);
-	}
-}
-
-class ReportDialog extends Component {
-
-	render () {
-		return (
-			<M.Paper style={{top: '50%', left: '50%', transform: 'translate(-50%, -50%', minHeight: 300, minWidth: 300, position: 'fixed', padding: 24}}>
-				<M.Typography type={'title'}>Report this entry</M.Typography>
-			</M.Paper>
-		)
 	}
 }
 
