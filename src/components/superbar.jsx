@@ -88,6 +88,12 @@ const styles = theme => ({
 		boxShadow: 'none',
 		borderBottom: `1px solid rgba(255,255,255,.1)`,
 	},
+    appBarTopSafari: {
+        background: 'rgba(0,0,0,.1)',
+        boxShadow: 'none',
+        borderBottom: `1px solid rgba(255,255,255,.1)`,
+        backdropFilter: 'blur(10px)'
+    },
 	appFrame: {
 		position: 'relative',
 		display: 'flex',
@@ -511,7 +517,7 @@ class Superbar extends Component {
 			this.setState({ scrolling: false }, () => {
 				if (document.getElementById('fabShowButton'))
 					document.getElementById('fabShowButton').style.opacity = 0;
-				if (document.getElementById('header')) {
+				if (document.getElementById('header') && !window.safari) {
 					document.getElementById('header').style.opacity = null;
 					document.getElementById('header').style.transform = null;
 				}
@@ -527,7 +533,7 @@ class Superbar extends Component {
 			this.setState({ scrolling: true }, () => {
 				if (document.getElementById('fabShowButton'))
 					document.getElementById('fabShowButton').style.opacity = 1;
-				if (document.getElementById('header')) {
+				if (document.getElementById('header') && !window.safari) {
 					document.getElementById('header').style.opacity = 0;
 					document.getElementById('header').style.transform = 'scale(0.9)';
 				}
@@ -718,12 +724,12 @@ class Superbar extends Component {
 				<AppBar
 					id="superBar"
 					classes={{ root: classes.root }}
-					className={scrolling ? classes.appBar : classes.appBarTop}
-					style={watchIsOn ? { display: 'none' } : null}
+					className={window.safari ? classes.appBarTopSafari : scrolling ? classes.appBar : classes.appBarTop}
+					style={watchIsOn ? { display: 'none' } : {transform: 'translate3d(0,0,0)'}}
 				>
 					<div
 						className={classes.gd}
-						style={scrolling ? { opacity: 0 } : { opacity: 0.2 }}
+						style={window.safari ? { opacity: 0.2 } : scrolling ? { opacity: 0 } : { opacity: 0.2 }}
 					/>
 					<Toolbar>
 						<IconButton

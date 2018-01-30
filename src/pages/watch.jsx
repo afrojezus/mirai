@@ -39,9 +39,10 @@ const style = theme => ({
 		width: 'calc(100% - 128px)',
 		marginLeft: 64,
 		marginRight: 64,
-		background: M.colors.grey[800],
+		background: window.safari ? 'rgba(0,0,0,.2)' : M.colors.grey[800],
 		boxShadow: '0 2px 32px rgba(0,0,0,.3)',
 		transition: theme.transitions.create(['all']),
+		backdropFilter: 'blur(10px)'
 	},
 	backToolbar: {
 		zIndex: 10,

@@ -476,6 +476,7 @@ const styles = theme => ({
 		bottom: theme.spacing.unit * 4,
 		right: theme.spacing.unit * 4,
 		zIndex: 10000,
+        transform: 'translateZ(0)'
 	},
 	fabProgress: {
 		color: 'white',
@@ -490,6 +491,7 @@ const styles = theme => ({
 		transition: theme.transitions.create(['all']),
 		opacity: 0,
 		zIndex: 10000,
+		transform: 'translateZ(0)'
 	},
 	playArtworkButton: {
 		background: M.colors.grey[50],

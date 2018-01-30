@@ -249,6 +249,7 @@ html::-moz-scrollbars {
 	z-index: 90000000;
 	position: absolute;
 	top: 50%;
+	text-align: center;
 	transform: translate(-50%,-50%);
 	left: 50%;
 	font-weight: 700 !important;

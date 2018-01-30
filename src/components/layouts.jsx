@@ -5,6 +5,8 @@ import Grid from 'material-ui/Grid/Grid';
 import Toolbar from 'material-ui/Toolbar/Toolbar';
 import Paper from 'material-ui/Paper/Paper';
 import CircularProgress from 'material-ui/Progress/CircularProgress';
+import Typography from 'material-ui/Typography/Typography';
+import { blue } from 'material-ui/colors';
 
 const style = theme => ({
     compacMode: {
@@ -108,6 +110,23 @@ const style = theme => ({
         color: 'white',
         transition: theme.transitions.create(['all']),
     },
+    titleheader: {
+        width: '100%',
+        minHeight: 300,
+        background:  `linear-gradient(to top, transparent, ${blue.A200})`,
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        display: 'flex',
+    },
+    titleheadertitle: {
+        color: 'white',
+        margin: 'auto',
+        flex: 1,
+        fontSize: 64,
+        fontWeight: 800,
+        marginLeft: theme.spacing.unit * 16
+    }
 });
 
 export const Container = withStyles(style)(({ classes, theme, children, spacing, special, ...props }) => (
@@ -139,6 +158,13 @@ export const MainCard = withStyles(style)(({ classes, children, ...props }) => (
     >
         {children}
     </Paper>
+))
+
+export const TitleHeader = withStyles(style)(({classes, children, title, ...props}) => (
+    <div className={classes.titleheader} {...props}>
+        <Typography className={classes.titleheadertitle} type={'display2'}>{title}</Typography>
+        {children}
+    </div>
 ))
 
 

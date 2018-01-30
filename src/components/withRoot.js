@@ -17,6 +17,7 @@ const styles = theme => ({
 			overflowX: 'hidden',
 			boxSizing: 'border-box',
 			transition: theme.transitions.create(['all']),
+        WebkitOverflowScrolling: 'touch'
 		},
 		body: {
 			margin: 0,
