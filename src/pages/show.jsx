@@ -19,7 +19,6 @@ import { firebaseConnect, isEmpty } from 'react-redux-firebase';
 import { timeFormatter } from '../components/supertable';
 import { Root, Container, CommandoBar, MainCard, Header, LoadingIndicator } from '../components/layouts';
 import hsfetcher from '../torrent';
-import wiki from 'wikijs';
 import * as jquery from 'jquery'
 
 const styles = theme => ({
@@ -476,7 +475,7 @@ const styles = theme => ({
 		bottom: theme.spacing.unit * 4,
 		right: theme.spacing.unit * 4,
 		zIndex: 10000,
-        transform: 'translateZ(0)'
+		transform: 'translateZ(0)'
 	},
 	fabProgress: {
 		color: 'white',
@@ -491,7 +490,6 @@ const styles = theme => ({
 		transition: theme.transitions.create(['all']),
 		opacity: 0,
 		zIndex: 10000,
-		transform: 'translateZ(0)'
 	},
 	playArtworkButton: {
 		background: M.colors.grey[50],
@@ -507,60 +505,60 @@ const styles = theme => ({
 const nameSwapper = (first, last) => (last ? first + ' ' + last : first);
 
 class Show extends Component {
-    static propTypes = {
-        data: PropTypes.objectOf({
-            Media: PropTypes.objectOf({
-                id: PropTypes.number,
-                title: PropTypes.objectOf({
-                    romaji: PropTypes.string,
-                    english: PropTypes.string,
-                    native: PropTypes.string,
-                }),
-                startDate: PropTypes.objectOf({
-                    year: PropTypes.number,
-                    month: PropTypes.number,
-                    day: PropTypes.number,
-                }),
-                endDate: PropTypes.objectOf({
-                    year: PropTypes.number,
-                    month: PropTypes.number,
-                    day: PropTypes.number,
-                }),
-                coverImage: PropTypes.objectOf({
-                    large: PropTypes.string,
-                    medium: PropTypes.string,
-                }),
-                bannerImage: PropTypes.string,
-                duration: PropTypes.number,
-                synonyms: PropTypes.object,
-                format: PropTypes.string,
-                type: PropTypes.string,
-                status: PropTypes.string,
-                hashtag: PropTypes.string,
-                episodes: PropTypes.number,
-                chapters: PropTypes.number,
-                volumes: PropTypes.number,
-                description: PropTypes.string,
-                averageScore: PropTypes.string,
-                meanScore: PropTypes.string,
-                genres: PropTypes.object,
-                season: PropTypes.string,
-                isAdult: PropTypes.bool,
-                popularity: PropTypes.number,
-                siteUrl: PropTypes.string,
-                idMal: PropTypes.number,
-                relations: PropTypes.object,
-                source: PropTypes.string,
-                tags: PropTypes.object,
-                externalLinks: PropTypes.object,
-                rankings: PropTypes.object,
-                airingSchedule: PropTypes.object,
-                studios: PropTypes.object,
-                staff: PropTypes.object,
-                characters: PropTypes.object,
-            }),
-        }),
-    }
+	static propTypes = {
+		data: PropTypes.objectOf({
+			Media: PropTypes.objectOf({
+				id: PropTypes.number,
+				title: PropTypes.objectOf({
+					romaji: PropTypes.string,
+					english: PropTypes.string,
+					native: PropTypes.string,
+				}),
+				startDate: PropTypes.objectOf({
+					year: PropTypes.number,
+					month: PropTypes.number,
+					day: PropTypes.number,
+				}),
+				endDate: PropTypes.objectOf({
+					year: PropTypes.number,
+					month: PropTypes.number,
+					day: PropTypes.number,
+				}),
+				coverImage: PropTypes.objectOf({
+					large: PropTypes.string,
+					medium: PropTypes.string,
+				}),
+				bannerImage: PropTypes.string,
+				duration: PropTypes.number,
+				synonyms: PropTypes.object,
+				format: PropTypes.string,
+				type: PropTypes.string,
+				status: PropTypes.string,
+				hashtag: PropTypes.string,
+				episodes: PropTypes.number,
+				chapters: PropTypes.number,
+				volumes: PropTypes.number,
+				description: PropTypes.string,
+				averageScore: PropTypes.string,
+				meanScore: PropTypes.string,
+				genres: PropTypes.object,
+				season: PropTypes.string,
+				isAdult: PropTypes.bool,
+				popularity: PropTypes.number,
+				siteUrl: PropTypes.string,
+				idMal: PropTypes.number,
+				relations: PropTypes.object,
+				source: PropTypes.string,
+				tags: PropTypes.object,
+				externalLinks: PropTypes.object,
+				rankings: PropTypes.object,
+				airingSchedule: PropTypes.object,
+				studios: PropTypes.object,
+				staff: PropTypes.object,
+				characters: PropTypes.object,
+			}),
+		}),
+	}
 
 	state = {
 		data: {},
@@ -596,25 +594,25 @@ class Show extends Component {
 	};
 
 
-    componentWillReceiveProps = async (nextProps) => {
+	componentWillReceiveProps = async (nextProps) => {
 		if (this.props.mir !== nextProps.mir && this.state.data.Media)
 			await this.executeTwist();
-    }
+	}
 
-    torrentTest = async () => {
-    	if (this.state.data && this.state.data.Media) {
-            const data = await hsfetcher.getList(this.state.data.Media.title.romaji)
+	torrentTest = async () => {
+		if (this.state.data && this.state.data.Media) {
+			const data = await hsfetcher.getList(this.state.data.Media.title.romaji)
 			try {
 				if (data) {
 					console.log(data);
 				} else return new Error('fuck');
-            } catch (error) {
-            	console.error(error)
+			} catch (error) {
+				console.error(error)
 			}
-        }
+		}
 	}
 
-    init = () =>
+	init = () =>
 		this.setState(
 			{
 				data: null,
@@ -642,11 +640,11 @@ class Show extends Component {
 										id: data.Media.id,
 										fav: this.props.history.location.search.includes('?s=')
 											? !!(this.props.profile.favs &&
-                                                this.props.profile.favs.show &&
-                                                this.props.profile.favs.show.hasOwnProperty(id.s))
+												this.props.profile.favs.show &&
+												this.props.profile.favs.show.hasOwnProperty(id.s))
 											: !!(this.props.profile.favs &&
-                                                this.props.profile.favs.manga &&
-                                                this.props.profile.favs.manga.hasOwnProperty(id.m)),
+												this.props.profile.favs.manga &&
+												this.props.profile.favs.manga.hasOwnProperty(id.m)),
 									},
 									() => this.pasta()
 								);
@@ -762,7 +760,7 @@ class Show extends Component {
 		let dbval = await db.once('value');
 		if (dbval && Object(dbval.val()).hasOwnProperty(this.state.id)) {
 			let eps = await db.child(this.state.id).once('value')
-			if (eps) this.setState({eps: Object.values(eps.val())}, () => console.info('loaded from database'))
+			if (eps) this.setState({ eps: Object.values(eps.val()) }, () => console.info('loaded from database'))
 			else
 				throw new Error('owo')
 		}
@@ -770,7 +768,7 @@ class Show extends Component {
 			let correctedtitle = this.state.data.Media.title.romaji
 				.toLowerCase()
 				.replace('(tv)', '');
-			const meta = this.props.mir.twist.filter(s =>
+			const meta = Object.values(this.props.mir.twist).filter(s =>
 				s.name.toLowerCase().match(`${correctedtitle}`)
 			);
 			console.log(meta);
@@ -779,9 +777,9 @@ class Show extends Component {
 				try {
 					if (eps) return this.setState({ eps }, async () => {
 						if (meta[0].ongoing === false) {
-                            let db = this.props.firebase.ref('twist');
-                            await db.child(this.state.id).update(eps);
-                        }
+							let db = this.props.firebase.ref('twist');
+							await db.child(this.state.id).update(eps);
+						}
 					});
 				} catch (error) {
 					return this.setState({ epError: true });
@@ -846,6 +844,10 @@ class Show extends Component {
 					link:
 						this.props.history.location.pathname +
 						this.props.history.location.search,
+					bg: data.bannerImage ? data.bannerImage : this.state.hue ? this.state.hue : null,
+					avgScore: data.averageScore,
+					meanScore: data.meanScore,
+					rank: data.rankings.length > 0 ? data.rankings[0] : null
 				}
 				)
 				.then(() => {
@@ -878,7 +880,10 @@ class Show extends Component {
 						this.props.history.location.pathname +
 						this.props.history.location.search,
 					date: Date.now(),
-					bg: data.bannerImage ? data.bannerImage : null,
+					bg: data.bannerImage ? data.bannerImage : this.state.hue ? this.state.hue : null,
+					avgScore: data.averageScore,
+					meanScore: data.meanScore,
+					rank: data.rankings.length > 0 ? data.rankings[0] : null
 				}
 			);
 	};
@@ -892,7 +897,7 @@ class Show extends Component {
 			);
 	};
 
-	reportError = () => this.setState({reportModal: !this.state.reportModal});
+	reportError = () => this.setState({ reportModal: !this.state.reportModal });
 
 	render() {
 		const { classes } = this.props;
@@ -929,10 +934,10 @@ class Show extends Component {
 				onClose={() => this.setState({ menuEl: null })}
 			>
 				<M.MenuItem onClick={() => {
-					this.setState({menuEl: null})
+					this.setState({ menuEl: null })
 					this.reportError()
 				}
-                }>Report error</M.MenuItem>
+				}>Report error</M.MenuItem>
 				<M.MenuItem onClick={this.editEntry}>Edit entry</M.MenuItem>
 			</M.Menu>
 		);
@@ -949,7 +954,7 @@ class Show extends Component {
 				>
 					{data && data.Media ? (
 						<div>
-							<div id="fabShowButton" className={classes.fabContainer}>
+							<div id="fabShowButton" style={window.safari ? { opacity: 1 } : null} className={classes.fabContainer}>
 								<M.Button
 									color="primary"
 									disabled={
@@ -963,7 +968,7 @@ class Show extends Component {
 									onClick={this.play}
 								>
 									{data.Media.type.includes('MANGA') ? (
-										<Icon.PlayArrow />
+										<Icon.Book />
 									) : epError ? (
 										<Icon.ErrorOutline />
 									) : data.Media.status.includes('NOT_YET_RELEASED') || !eps ? (
@@ -1018,9 +1023,9 @@ class Show extends Component {
 											{data.Media.status.includes('NOT_YET_RELEASED')
 												? 'TBA'
 												: data.Media.type.includes('MANGA')
-													? <Icon.PlayArrow style={{color: hue}} className={classes.playArtworkButton} />
+													? <Icon.Book style={{ color: hue }} className={classes.playArtworkButton} />
 													: eps
-														? <Icon.PlayArrow style={{color: hue}} className={classes.playArtworkButton} />
+														? <Icon.PlayArrow style={{ color: hue }} className={classes.playArtworkButton} />
 														: epError ? 'Not avaliable' : null}
 										</M.Typography>
 
@@ -1452,137 +1457,135 @@ class Show extends Component {
 										<Icon.MoreVert />
 									</M.IconButton>
 									{Menu}
-                                    <M.Modal
-                                        aria-labelledby="report-modal"
-                                        aria-describedby="reports"
-                                        open={this.state.reportModal}
-                                        onClose={() => this.setState({reportModal: false})}
-                                    >
-                                        <FadeIn>
-                                            <M.Paper style={{top: '50%', left: '50%', transform: 'translate(-50%, -50%', minHeight: 600, minWidth: 900, position: 'fixed', padding: 24}}>
-                                                <M.Typography style={{fontWeight: 800}} type={'title'}>Report {data.Media.title.english ? data.Media.title.english : data.Media.title.romaji} for errors</M.Typography>
-                                            </M.Paper>
-                                        </FadeIn>
-                                    </M.Modal>
+									<M.Modal
+										aria-labelledby="report-modal"
+										aria-describedby="reports"
+										open={this.state.reportModal}
+										onClose={() => this.setState({ reportModal: false })}
+									>
+										<M.Paper style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%', minHeight: 600, minWidth: 900, position: 'fixed', padding: 24 }}>
+											<M.Typography style={{ fontWeight: 800 }} type={'title'}>Report {data.Media.title.english ? data.Media.title.english : data.Media.title.romaji} for errors</M.Typography>
+										</M.Paper>
+									</M.Modal>
 								</CommandoBar>
 								<Container>
 									<M.Grid item xs style={{ zIndex: 10 }}>
-                                        {data.Media.characters.edges.length > 0 ? (
-                                            <M.Typography type="title" className={classes.secTitle}>
-                                                {data.Media.type.includes('ANIME')
-                                                    ? 'Cast'
-                                                    : 'Characters'}
-                                            </M.Typography>
-                                        ) : null}
-                                        {data.Media.characters.edges.length > 0 ? (
-                                            <M.Grid container className={classes.itemcontainer}>
-                                                {data.Media.characters.edges.map((cast, index) => (
-                                                    <PeopleButton key={index} onClick={() =>
-                                                        this.props.history.push(
-                                                            `/fig?${
-                                                                cast.voiceActors &&
-                                                                cast.voiceActors.length > 0
-                                                                    ? 's'
-                                                                    : 'c'
-                                                                }=${
-                                                                cast.voiceActors &&
-                                                                cast.voiceActors.length > 0
-                                                                    ? cast.voiceActors.filter(
-                                                                    j => j.language === 'JAPANESE'
-                                                                    )[0].id
-                                                                    : cast.node.id
-                                                                }`
-                                                        )} image={cast.voiceActors &&
-                                                    cast.voiceActors.length > 0
-                                                        ? cast.voiceActors.filter(
-                                                            j => j.language === 'JAPANESE'
-                                                        )[0]
-                                                            ? cast.voiceActors.filter(
-                                                                j => j.language === 'JAPANESE'
-                                                            )[0].image.large
-                                                            : null
-                                                        : cast.node.image.large} actor={!!(cast.voiceActors &&
-                                                        cast.voiceActors.length > 0)}
-                                                                  name={{
-                                                                      first: cast.voiceActors && cast.voiceActors.length > 0
-                                                                          ? cast.voiceActors[0].name.first : cast.node.name.first
-                                                                      , last: cast.voiceActors && cast.voiceActors.length > 0
-                                                                          ? cast.voiceActors[0].name.last : cast.node.name.last
-                                                                  }}
-                                                                  charImg={cast.node.image.large}
-                                                                  charOnClick={() => this.openEntity(`/fig?c=${cast.node.id}`)}
-                                                                  actor={!!(cast.voiceActors && cast.voiceActors.length > 0)}
-                                                                  role={
-                                                                      cast.voiceActors && cast.voiceActors.length > 0
-                                                                          ? `as ${
-                                                                              cast.node.name.last
-                                                                                  ? cast.node.name.first +
-                                                                                  ' ' +
-                                                                                  cast.node.name.last
-                                                                                  : cast.node.name.first
-                                                                              }`
-                                                                          : cast.role
-                                                                  } />
-                                                ))}
-                                            </M.Grid>
-                                        ) : null}
+										{data.Media.characters.edges.length > 0 ? (
+											<M.Typography type="title" className={classes.secTitle}>
+												{data.Media.type.includes('ANIME')
+													? 'Cast'
+													: 'Characters'}
+											</M.Typography>
+										) : null}
+										{data.Media.characters.edges.length > 0 ? (
+											<M.Grid container className={classes.itemcontainer}>
+												{data.Media.characters.edges.map((cast, index) => (
+													<PeopleButton key={index} onClick={() =>
+														this.props.history.push(
+															`/fig?${
+															cast.voiceActors &&
+																cast.voiceActors.length > 0
+																? 's'
+																: 'c'
+															}=${
+															cast.voiceActors &&
+																cast.voiceActors.length > 0
+																? cast.voiceActors.filter(
+																	j => j.language === 'JAPANESE'
+																)[0].id
+																: cast.node.id
+															}`
+														)} image={cast.voiceActors &&
+															cast.voiceActors.length > 0
+															? cast.voiceActors.filter(
+																j => j.language === 'JAPANESE'
+															)[0]
+																? cast.voiceActors.filter(
+																	j => j.language === 'JAPANESE'
+																)[0].image.large
+																: null
+															: cast.node.image.large} actor={!!(cast.voiceActors &&
+																cast.voiceActors.length > 0)}
+														name={{
+															first: cast.voiceActors && cast.voiceActors.length > 0
+																? cast.voiceActors[0].name.first : cast.node.name.first
+															, last: cast.voiceActors && cast.voiceActors.length > 0
+																? cast.voiceActors[0].name.last : cast.node.name.last
+														}}
+														charImg={cast.node.image.large}
+														charOnClick={() => this.openEntity(`/fig?c=${cast.node.id}`)}
+														actor={!!(cast.voiceActors && cast.voiceActors.length > 0)}
+														role={
+															cast.voiceActors && cast.voiceActors.length > 0
+																? `as ${
+																cast.node.name.last
+																	? cast.node.name.first +
+																	' ' +
+																	cast.node.name.last
+																	: cast.node.name.first
+																}`
+																: cast.role
+														} />
+												))}
+											</M.Grid>
+										) : null}
 										{data.Media.characters.edges.length > 0 ? <M.Divider /> : null}
 										<M.Typography type="title" className={classes.secTitle}>
 											Staff
 										</M.Typography>
 										<M.Grid container className={classes.itemcontainer}>
 											{data.Media.staff.edges.map((staff, index) => (
-												<PeopleButton key={index} image={staff.node.image.large} name={{first: staff.node.name.first, last: staff.node.name.last}} role={staff.role} onClick={() => this.props.history.push(`/fig?s=${staff.node.id}`)} />
+												<PeopleButton key={index} image={staff.node.image.large} name={{ first: staff.node.name.first, last: staff.node.name.last }} role={staff.role} onClick={() => this.props.history.push(`/fig?s=${staff.node.id}`)} />
 											))}
 										</M.Grid>
-                                        <M.Divider />
-                                        <M.Typography type="title" className={classes.secTitle}>
-                                            Similar to this one
+										<M.Divider />
+										<M.Typography type="title" className={classes.secTitle}>
+											Similar to this one
                                         </M.Typography>
-                                        <M.Grid container className={classes.itemcontainer}>
-                                            {data.Media.relations.edges.map((anime, index) => (
-                                                <CardButton key={index} image={anime.node.coverImage.large} title={anime.node.title.english
-                                                    ? anime.node.title.english
-                                                    : anime.node.title.romaji} subtitle={anime.node.type + ' ' +
-                                                anime.relationType.replace(/_/gi, ' ')} onClick={() =>
-                                                    this.openEntity(
-                                                        `/show?${
-                                                            anime.node.type.includes('ANIME') ? 's' : 'm'
-                                                            }=${anime.node.id}`
-                                                    )} />
+										<M.Grid container className={classes.itemcontainer}>
+											{data.Media.relations.edges.map((anime, index) => (
+												<CardButton key={index} image={anime.node.coverImage.large} title={anime.node.title.english
+													? anime.node.title.english
+													: anime.node.title.romaji} subtitle={anime.node.type + ' ' +
+														anime.relationType.replace(/_/gi, ' ')} onClick={() =>
+															this.openEntity(
+																`/show?${
+																anime.node.type.includes('ANIME') ? 's' : 'm'
+																}=${anime.node.id}`
+															)} />
 
-                                            ))}
-                                            {data.Media.tags.length > 0 &&
-                                            similars &&
-                                            similars.data &&
-                                            similars.data.Page.media
-                                                .map((anime, index) => (
-                                                    <CardButton key={index} image={anime.coverImage.large} title={anime.title.english
-                                                        ? anime.title.english
-                                                        : anime.title.romaji} subtitle='SIMILAR' onClick={() =>
-                                                        this.openEntity(
-                                                            `/show?${
-                                                                anime.type.includes('ANIME') ? 's' : 'm'
-                                                                }=${anime.id}`
-                                                        )} />
+											))}
+											{data.Media.tags.length > 0 &&
+												similars &&
+												similars.data &&
+												similars.data.Page.media
+													.map((anime, index) => (
+														<CardButton key={index} image={anime.coverImage.large} title={anime.title.english
+															? anime.title.english
+															: anime.title.romaji} subtitle='SIMILAR' onClick={() =>
+																this.openEntity(
+																	`/show?${
+																	anime.type.includes('ANIME') ? 's' : 'm'
+																	}=${anime.id}`
+																)} />
 
-                                                ))}
-                                            {data.Media.tags.length > 1 &&
-                                            similars2 &&
-                                            similars2.data &&
-                                            similars2.data.Page.media
-                                                .map((anime, index) => (
-                                                    <CardButton key={index} image={anime.coverImage.large} title={anime.title.english
-                                                        ? anime.title.english
-                                                        : anime.title.romaji} subtitle='SIMILAR' onClick={() =>
-                                                        this.openEntity(
-                                                            `/show?${
-                                                                anime.type.includes('ANIME') ? 's' : 'm'
-                                                                }=${anime.id}`
-                                                        )} />
+													))}
+											{data.Media.tags.length > 1 &&
+												similars2 &&
+												similars2.data &&
+												similars2.data.Page.media
+													.map((anime, index) => (
+														<CardButton key={index} image={anime.coverImage.large} title={anime.title.english
+															? anime.title.english
+															: anime.title.romaji} subtitle='SIMILAR' onClick={() =>
+																this.openEntity(
+																	`/show?${
+																	anime.type.includes('ANIME') ? 's' : 'm'
+																	}=${anime.id}`
+																)} />
 
-                                                ))}
-                                        </M.Grid>
+													))}
+										</M.Grid>
 									</M.Grid>
 								</Container>
 							</MainCard>

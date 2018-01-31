@@ -1,6 +1,6 @@
+import Cheerio from 'cheerio';
+import Request from 'request-promise';
 import fetchCheerioObject from "fetch-cheerio-object";
-import wiki from 'wikijs';
-
 let Proxy2 = "https://cors-anywhere.herokuapp.com/";
 let Proxy1 = "https://cors.now.sh/";
 
@@ -10,32 +10,39 @@ let URL = "https://twist.moe";
  */
 const load = async () => {
   let output = [];
-  const source = await fetchCheerioObject(Proxy2 + URL);
+  const data = {
+    uri: Proxy2 + URL,
+    transform: body => {
+      return Cheerio.load(body);
+    }
+  };
   try {
-    const data = source(".series ul")
-      .children("li")
-      .each((key, index) => {
-        output.push({
-          name: source(index).children("a")[1]
-            ? source(index)
+    const source = await Request(data);
+    const que =
+      source(".series ul")
+        .children("li")
+        .each((key, index) => {
+          output.push({
+            name: source(index).children("a")[1]
+              ? source(index)
                 .children("a")
                 .text()
                 .replace("ONGOING", "")
                 .trim()
-            : source(index)
+              : source(index)
                 .children("a")
                 .text()
                 .trim(),
-          ongoing: source(index).children("a")[1] ? true : false,
-          link:
-            Proxy2 +
-            URL +
-            source(index)
-              .children("a")
-              .attr("href")
+            ongoing: source(index).children("a")[1] ? true : false,
+            link:
+              Proxy2 +
+              URL +
+              source(index)
+                .children("a")
+                .attr("href")
+          })
         });
-      });
-    if (data) return output;
+    if (que) return output;
   } catch (error) {
     return error;
   }
@@ -46,53 +53,68 @@ const load = async () => {
  */
 const get = async query => {
   const output = [];
+  const data = {
+    uri: Proxy2 + query,
+    transform: body => {
+      return Cheerio.load(body);
+    }
+  };
   try {
-    const source = await fetchCheerioObject(query);
-    const data = source("div.episode-list ul")
-      .children("li:not(:has(button))")
-      .each(async (index, e) => {
-        const ep =
-          parseInt(
-            source(e)
-              .find("a")
-              .attr("data-episode"),
-            10
-          ) + 1;
-        const name = "Episode " + ep;
-        const link = `https://twist.moe${source(e)
-          .find("a")
-          .attr("href")}`;
-        const provider = "Twist";
-        output.push({
-          name,
-          link,
-          ep,
-          provider
+    const source = await Request(data);
+    const que =
+      source("div.episode-list ul")
+        .children("li:not(:has(button))")
+        .each(async (index, e) => {
+          const ep =
+            parseInt(
+              source(e)
+                .find("a")
+                .attr("data-episode"),
+              10
+            ) + 1;
+          const name = "Episode " + ep;
+          const link = `https://twist.moe${source(e)
+            .find("a")
+            .attr("href")}`;
+          const provider = "Twist";
+          output.push({
+            name,
+            link,
+            ep,
+            provider
+          })
         });
-      });
-    if (data) return output;
+    if (que) return output;
   } catch (error) {
     return error;
   }
 };
 
 const getSource = async ep => {
+  const data = {
+    uri: Proxy2 + ep,
+    transform: body => {
+      return Cheerio.load(body);
+    }
+  }
   try {
-    const source = await fetchCheerioObject(Proxy2 + ep);
-    let video = source("body")
-      .children("section")
-      .children("main")
-      .children("vi-player")
-      .children("noscript")
-      .children("video")
-      .attr("src");
-    console.log(video);
-    const url = decodeURI(`https://twist.moe${video}`);
-    console.log(url);
-    let urlX = url.includes("https://twist.moe ")
-      ? url.replace("https://twist.moe ", "https://twist.moe")
-      : url;
-    if (url) return decodeURI(urlX);
+    const source = await Request(data);
+    if (source) {
+      let video = source("body")
+        .children("section")
+        .children("main")
+        .children("vi-player")
+        .children("noscript")
+        .children("video")
+        .attr("src");
+      console.log(video);
+      const url = decodeURI(`https://twist.moe${video}`);
+      console.log(url);
+      let urlX = url.includes("https://twist.moe ")
+        ? url.replace("https://twist.moe ", "https://twist.moe")
+        : url;
+      if (url) return decodeURI(urlX);
+    }
   } catch (error) {
     return error;
   }

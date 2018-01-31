@@ -123,7 +123,7 @@ const styles = theme => ({
 		flex: 1,
 	},
 	headline: {
-		marginBottom: 24,
+		margin: 'auto'
 	},
 	headlineTitle: {
 		marginBottom: 24,
@@ -369,6 +369,11 @@ class Home extends Component {
 		rankingMentionable: null,
 	};
 
+	componentWillMount = () => {
+		console.log(this);
+	}
+
+
 	componentDidMount = async () => {
 		this.feedsObserve();
 		this.rankingsObserve();
@@ -449,7 +454,7 @@ class Home extends Component {
 		const user = this.props.profile;
 
 		const openFeed = Boolean(anchorEl);
-
+		console.log(this);
 		return (
 			<div>
 				<LoadingIndicator
@@ -482,7 +487,6 @@ class Home extends Component {
 									xs
 									className={classes.itemContainer}
 									style={{
-										marginBottom: 0,
 										flexDirection: 'row',
 										display: 'flex',
 									}}
@@ -510,7 +514,7 @@ class Home extends Component {
 												data={ongoing.data.Page.media
 													.filter(s => s.nextAiringEpisode)
 													.filter(d =>
-														this.props.mir.twist.filter(s =>
+														Object.values(this.props.mir.twist).filter(s =>
 															s.name.match(d.title.romaji)
 														)
 													)
@@ -529,7 +533,6 @@ class Home extends Component {
 									item
 									xs
 									className={classes.itemContainer}
-									style={{ marginBottom: 0 }}
 								>
 									<Typography type="title" className={classes.headline}>
 										Currently ongoing manga
@@ -550,7 +553,6 @@ class Home extends Component {
 									xs
 									className={classes.itemContainer}
 									style={{
-										marginBottom: 0,
 										flexDirection: 'row',
 										display: 'flex',
 									}}
@@ -657,7 +659,6 @@ class Home extends Component {
 										xs
 										className={classes.itemContainer}
 										style={{
-											marginBottom: 0,
 											flexDirection: 'row',
 											display: 'flex',
 										}}
@@ -669,10 +670,10 @@ class Home extends Component {
 										<Typography
 											type="title"
 											className={classes.headline}
-											style={{ marginBottom: 0 }}
 										>
 											{Object.values(user.episodeProgress).length} animes seen
 										</Typography>
+										<Button onClick={() => this.props.history.push('/history')}>History</Button>
 									</Grid>
 									<Grid container className={classes.itemcontainer}>
 										<SuperTable
@@ -705,12 +706,11 @@ class Home extends Component {
 										<Typography
 											type="title"
 											className={classes.headline}
-											style={{ marginBottom: 0 }}
 										>
 											{Object.values(user.favs.show).length} anime favourties
 										</Typography>
 									</Grid>
-									<Grid container className={classes.itemcontainer}>
+									<Grid container className={classes.itemcontainer} style={{ marginTop: 24 }}>
 										{Object.values(user.favs.show)
 											.sort((a, b) => a.name - b.name)
 											.map((anime, index) => (

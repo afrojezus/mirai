@@ -88,12 +88,12 @@ const styles = theme => ({
 		boxShadow: 'none',
 		borderBottom: `1px solid rgba(255,255,255,.1)`,
 	},
-    appBarTopSafari: {
-        background: 'rgba(0,0,0,.1)',
-        boxShadow: 'none',
-        borderBottom: `1px solid rgba(255,255,255,.1)`,
-        backdropFilter: 'blur(10px)'
-    },
+	appBarTopSafari: {
+		background: 'rgba(0,0,0,.1)',
+		boxShadow: 'none',
+		borderBottom: `1px solid rgba(255,255,255,.1)`,
+		backdropFilter: 'blur(10px)'
+	},
 	appFrame: {
 		position: 'relative',
 		display: 'flex',
@@ -307,7 +307,7 @@ class Superbar extends Component {
 		status: 0,
 		mirTitle: '',
 		scrolling: false,
-        commit: 'd9'
+		commit: 'd9'
 	};
 
 	componentWillMount = () => {
@@ -318,9 +318,9 @@ class Superbar extends Component {
 		}
 
 		if (this.props.history.location.pathname === '/watch' && window.location.pathname === '/watch') {
-			this.setState({watchIsOn: true});
+			this.setState({ watchIsOn: true });
 		} else {
-			this.setState({watchIsOn: false});
+			this.setState({ watchIsOn: false });
 		}
 	};
 
@@ -378,91 +378,91 @@ class Superbar extends Component {
 	};
 
 	listenToHistory = this.props.history.listen((location, action) => {
-			switch (location.pathname) {
-				case '/':
-					this.setState({ currentPage: 'Mirai', tabVal: 0, watchIsOn: false });
-					break;
-				case '/feeds':
-					this.setState({ currentPage: 'Mirai', tabVal: 1, watchIsOn: false });
-					break;
-				case '/rankings':
-					this.setState({ currentPage: 'Mirai', tabVal: 2, watchIsOn: false });
-					break;
-				case '/live':
-					this.setState({ currentPage: 'Mirai', tabVal: 3, watchIsOn: false });
-					break;
-				case '/user':
-					this.setState({ currentPage: 'You', tabVal: 4, watchIsOn: false });
-					break;
-				case '/history':
-					this.setState({
-						currentPage: 'History',
-						tabVal: 4,
-						watchIsOn: false,
-					});
-					break;
-				case '/later':
-					this.setState({ currentPage: 'Later', tabVal: 4, watchIsOn: false });
-					break;
-				case '/help':
-					this.setState({ currentPage: 'Help', tabVal: 4, watchIsOn: false });
-					break;
-				case '/studio':
-					this.setState({
-						currentPage: '',
-						tabVal: 4,
-						watchIsOn: false,
-					});
-					break;
-				case '/fig':
-					this.setState({
-						currentPage: '',
-						tabVal: 4,
-						watchIsOn: false,
-					});
-					break;
-				case '/show':
-					this.setState({
-						currentPage: '',
-						tabVal: 4,
-						watchIsOn: false,
-					});
-					break;
-				case '/settings':
-					this.setState({
-						currentPage: 'Settings',
-						tabVal: 4,
-						watchIsOn: false,
-					});
-					break;
-				case '/setup':
-					this.setState({ currentPage: 'Setup', tabVal: 4, watchIsOn: false });
-					break;
-				case '/wizard':
-					this.setState({ currentPage: 'Wizard', tabVal: 4, watchIsOn: false });
-					break;
-				case '/watch':
-					this.setState({ currentPage: '', tabVaL: 4, watchIsOn: true });
-					break;
-				case '/tag':
-					this.setState({ currentPage: '', tabVal: 4, watchIsOn: false });
-					break;
-				case '/tou':
-					this.setState({
-						currentPage: 'Terms of Usage',
-						tabVal: 4,
-						watchIsOn: false,
-					});
-					break;
-				case '/monika':
-					this.setState({ currentPage: 'Monika', tabVal: 4, watchIsOn: false });
-					break;
-				case '/search':
-					this.setState({ currentPage: 'Search', tabVal: 4, watchIsOn: false });
-					break;
-				default:
-					break;
-			}
+		switch (location.pathname) {
+			case '/':
+				this.setState({ currentPage: 'Mirai', tabVal: 0, watchIsOn: false });
+				break;
+			case '/feeds':
+				this.setState({ currentPage: 'Mirai', tabVal: 1, watchIsOn: false });
+				break;
+			case '/rankings':
+				this.setState({ currentPage: 'Mirai', tabVal: 2, watchIsOn: false });
+				break;
+			case '/live':
+				this.setState({ currentPage: 'Mirai', tabVal: 3, watchIsOn: false });
+				break;
+			case '/user':
+				this.setState({ currentPage: 'You', tabVal: 4, watchIsOn: false });
+				break;
+			case '/history':
+				this.setState({
+					currentPage: 'History',
+					tabVal: 4,
+					watchIsOn: false,
+				});
+				break;
+			case '/later':
+				this.setState({ currentPage: 'Later', tabVal: 4, watchIsOn: false });
+				break;
+			case '/help':
+				this.setState({ currentPage: 'Help', tabVal: 4, watchIsOn: false });
+				break;
+			case '/studio':
+				this.setState({
+					currentPage: '',
+					tabVal: 4,
+					watchIsOn: false,
+				});
+				break;
+			case '/fig':
+				this.setState({
+					currentPage: '',
+					tabVal: 4,
+					watchIsOn: false,
+				});
+				break;
+			case '/show':
+				this.setState({
+					currentPage: '',
+					tabVal: 4,
+					watchIsOn: false,
+				});
+				break;
+			case '/settings':
+				this.setState({
+					currentPage: 'Settings',
+					tabVal: 4,
+					watchIsOn: false,
+				});
+				break;
+			case '/setup':
+				this.setState({ currentPage: 'Setup', tabVal: 4, watchIsOn: false });
+				break;
+			case '/wizard':
+				this.setState({ currentPage: 'Wizard', tabVal: 4, watchIsOn: false });
+				break;
+			case '/watch':
+				this.setState({ currentPage: '', tabVaL: 4, watchIsOn: true });
+				break;
+			case '/tag':
+				this.setState({ currentPage: '', tabVal: 4, watchIsOn: false });
+				break;
+			case '/tou':
+				this.setState({
+					currentPage: 'Terms of Usage',
+					tabVal: 4,
+					watchIsOn: false,
+				});
+				break;
+			case '/monika':
+				this.setState({ currentPage: 'Monika', tabVal: 4, watchIsOn: false });
+				break;
+			case '/search':
+				this.setState({ currentPage: 'Search', tabVal: 4, watchIsOn: false });
+				break;
+			default:
+				break;
+		}
 	});
 
 	revealBar = () => (document.getElementById('superBar').style.opacity = 1);
@@ -515,7 +515,7 @@ class Superbar extends Component {
 	handleScroll = event => {
 		if (window.scrollY === 0 && this.state.scrolling === true)
 			this.setState({ scrolling: false }, () => {
-				if (document.getElementById('fabShowButton'))
+				if (document.getElementById('fabShowButton') && !window.safari)
 					document.getElementById('fabShowButton').style.opacity = 0;
 				if (document.getElementById('header') && !window.safari) {
 					document.getElementById('header').style.opacity = null;
@@ -560,7 +560,7 @@ class Superbar extends Component {
 			hue,
 			mirTitle,
 			scrolling,
-            commit,
+			commit,
 		} = this.state;
 
 		const user = !isEmpty(this.props.profile) ? this.props.profile : null;
@@ -619,39 +619,39 @@ class Superbar extends Component {
 					</ListItem>
 				</List>
 				{user ? <div>
-				<Divider className={classes.listDivider} />
-				<List subheader={<ListSubheader>YOU</ListSubheader>}>
-					<ListItem
-						button
-						onClick={() => {
-							this.toggleDrawer();
-							this.tabChange(null, 4);
-							this.props.history.push('/history');
-						}}
-					>
-						<ListItemText primary="History" />
-					</ListItem>
-					<ListItem
-						button
-						onClick={() => {
-							this.toggleDrawer();
-							this.tabChange(null, 4);
-							this.props.history.push('/later');
-						}}
-					>
-						<ListItemText primary="Later" />
-					</ListItem>
-					<ListItem
-						button
-						onClick={() => {
-							this.toggleDrawer();
-							this.tabChange(null, 4);
-							this.props.history.push('/user#favorites');
-						}}
-					>
-						<ListItemText primary="Favorites" />
-					</ListItem>
-				</List>
+					<Divider className={classes.listDivider} />
+					<List subheader={<ListSubheader>YOU</ListSubheader>}>
+						<ListItem
+							button
+							onClick={() => {
+								this.toggleDrawer();
+								this.tabChange(null, 4);
+								this.props.history.push('/history');
+							}}
+						>
+							<ListItemText primary="History" />
+						</ListItem>
+						<ListItem
+							button
+							onClick={() => {
+								this.toggleDrawer();
+								this.tabChange(null, 4);
+								this.props.history.push('/later');
+							}}
+						>
+							<ListItemText primary="Later" />
+						</ListItem>
+						<ListItem
+							button
+							onClick={() => {
+								this.toggleDrawer();
+								this.tabChange(null, 4);
+								this.props.history.push('/user#favorites');
+							}}
+						>
+							<ListItemText primary="Favorites" />
+						</ListItem>
+					</List>
 				</div> : null}
 				<Divider className={classes.listDivider} />
 				<List>
@@ -708,11 +708,11 @@ class Superbar extends Component {
 				<Divider className={classes.listDivider} />
 				<Typography className={classes.footerCopy} type="headline">
 					Mirai commit-{commit}
-						<br />
+					<br />
 					{this.props.mir && this.props.mir.twist
 						? Object.keys(this.props.mir.twist).length -
-							1 +
-							' animes in database'
+						1 +
+						' animes in database'
 						: null}
 					<br />2018 afroJ
 				</Typography>
@@ -725,7 +725,7 @@ class Superbar extends Component {
 					id="superBar"
 					classes={{ root: classes.root }}
 					className={window.safari ? classes.appBarTopSafari : scrolling ? classes.appBar : classes.appBarTop}
-					style={watchIsOn ? { display: 'none' } : {transform: 'translate3d(0,0,0)'}}
+					style={watchIsOn ? { display: 'none' } : { transform: 'translate3d(0,0,0)' }}
 				>
 					<div
 						className={classes.gd}
@@ -742,7 +742,7 @@ class Superbar extends Component {
 						</IconButton>
 						<Typography className={classes.barTitle} type="title">
 							{this.props.history.location.pathname.includes('/show') ||
-							this.props.history.location.pathname.includes('/fig')
+								this.props.history.location.pathname.includes('/fig')
 								? mirTitle
 								: currentPage}
 						</Typography>
@@ -934,14 +934,14 @@ class Superbar extends Component {
 								</Menu>
 							</div>
 						) : (
-							<IconButton
-								onClick={() => {
-									this.props.history.push('/setup');
-								}}
-							>
-								<AccountCircle />
-							</IconButton>
-						)}
+								<IconButton
+									onClick={() => {
+										this.props.history.push('/setup');
+									}}
+								>
+									<AccountCircle />
+								</IconButton>
+							)}
 					</Toolbar>
 				</AppBar>
 				{/*<Hidden lgDown>

@@ -66,7 +66,7 @@ const twistInit = twist => {
   };
 };
 
-const twistLoad = async () => {
+export const twistLoad = async () => {
   let state = store.getState();
   if (state.mir && state.mir.twist) return null;
   else Twist.load().then(twist => store.dispatch(twistInit(twist)));

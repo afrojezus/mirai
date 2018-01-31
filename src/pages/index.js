@@ -1,6 +1,7 @@
 /* eslint-disable flowtype/require-valid-file-annotation */
 
 import React, { Component } from "react";
+import { twistLoad } from '../store';
 import PropTypes from "prop-types";
 import localForage from "localforage";
 import { Route } from "react-router-dom";
@@ -69,14 +70,14 @@ class Index extends Component {
     loading: true
   };
 
-  componentWillMount = async () => localForage.ready();
-
-  componentDidMount = async () => {
+  componentWillMount = async () => {
+    localForage.ready();
+  }
+  componentWillReceiveProps = async (nextProps) => {
     const { auth } = this.props.firebase;
-    if (isLoaded(auth)) {
+    if (isLoaded(auth) && nextProps.mir && nextProps.mir.twist) {
       if (isEmpty(auth)) {
         console.log("Logged off");
-
         this.setState({ loading: false });
       } else {
         console.log("Logged in");
@@ -98,14 +99,6 @@ class Index extends Component {
   handleRequestClose = () => {
     this.setState({
       open: false
-    });
-  };
-
-  twistLoad = async () => {
-
-    if (this.props.mir && this.props.mir.twist) return null;
-    else Twist.load().then(async twist => {
-      this.props.twistInit(twist)
     });
   };
 
@@ -152,8 +145,8 @@ class Index extends Component {
           <Route path="/read" exact component={Read} />
           <Route path="/fig" exact component={Fig} />
           <Route path="/tag" exact component={Tag} />
-            <Route path="/later" exact component={Later} />
-            <Route path="/history" exact component={History} />
+          <Route path="/later" exact component={Later} />
+          <Route path="/history" exact component={History} />
         </Superbar>
       </div>
     );
@@ -164,19 +157,11 @@ Index.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-const mapDispatchToProps = dispatch =>
-  bindActionCreators(
-    {
-      twistInit: twist => twistLoad(twist)
-    },
-    dispatch
-  );
+export default firebaseConnect()(
+  connect(({ firebase: { auth, profile }, mir }) => ({
+    auth,
+    profile,
+    mir,
+  }))(withRoot(withStyles(styles)(Index)))
+);
 
-const twistLoad = twist => {
-  return {
-    type: MIR_TWIST_LOAD,
-    twist
-  };
-};
-
-export default firebaseConnect()(withRoot(withStyles(styles)(Index)));

@@ -9,39 +9,39 @@ import { connect } from "react-redux";
 import { push } from "react-router-redux";
 import GridList from "material-ui/GridList/GridList";
 import GridListTile from "material-ui/GridList/GridListTile";
+import moment from 'moment';
+
 const style = theme => ({
   bigCard: {
     display: "flex",
-      '& > div': {
-          width: '100%',
-          boxShadow: "0 2px 18px rgba(0,0,0,.4)",
-          background: "rgba(255,255,255,0)",
-          boxSizing: "border-box",
-          transition: theme.transitions.create(["all"]),
-          position: "relative",
-          overflow: 'hidden',
-          "&:hover": {
-              background: `rgba(0,55,230,.3)`
-          },
-          "&:hover > div:nth-of-type(2) > img": {
-              zIndex: 200,
-              boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
-              borderColor: M.colors.blue.A200
-          },
-          margin: 'auto'
+    '& > div': {
+      width: '100%',
+      boxShadow: "0 2px 18px rgba(0,0,0,.4)",
+      background: "rgba(255,255,255,0)",
+      boxSizing: "border-box",
+      transition: theme.transitions.create(["all"]),
+      position: "relative",
+      overflow: 'hidden',
+      cursor: 'default',
+      "&:hover": {
+        background: `rgba(0,55,230,.3)`
       },
-      overflowX: 'hidden',
+      "&:hover > div:nth-of-type(2) > img": {
+        zIndex: 200,
+        margin: theme.spacing.unit * 2
+      },
+      margin: 'auto'
+    },
+    overflowX: 'hidden',
   },
   bigCardIcon: {
     background: "white",
     zIndex: 4,
-    width: 156,
-    height: '100%',
+    width: 182,
     boxShadow: "0 3px 24px rgba(0,0,0,.6)",
     objectFit: "cover",
     marginRight: theme.spacing.unit * 2,
     transition: theme.transitions.create(["all"]),
-    border: "8px solid transparent",
     "&:hover": {
       filter: "brightness(0.8)"
     }
@@ -54,7 +54,7 @@ const style = theme => ({
     top: 0,
     left: 0,
     display: "inline-block",
-    background: "linear-gradient(to top, rgba(0,0,0,.7), transparent)"
+    background: "rgba(0,0,0,.7)"
   },
   bigCardImageImg: {
     position: "relative",
@@ -71,19 +71,24 @@ const style = theme => ({
     zIndex: 3,
     position: "absolute",
     width: "100%",
-    margin: 'auto'
+    margin: 'auto',
+    height: '100%'
   },
   bigCardTitle: {
     zIndex: 3,
     color: "white",
     fontWeight: 700,
     fontSize: 32,
-    textShadow: "0 3px 20px rgba(0,0,0,.87)"
+    textShadow: "0 3px 20px rgba(0,0,0,.87)",
+    userSelect: 'none',
+    cursor: 'default'
   },
   bigCardText: {
     display: "flex",
     flexDirection: "column",
-    margin: "auto 0"
+    margin: "auto 0",
+    userSelect: 'none',
+    cursor: 'default'
   },
   bigCardSmallTitle: {
     zIndex: 3,
@@ -92,7 +97,9 @@ const style = theme => ({
     marginTop: theme.spacing.unit,
     lineHeight: 1,
     fontSize: 18,
-    textShadow: "0 3px 20px rgba(0,0,0,.7)"
+    textShadow: "0 3px 20px rgba(0,0,0,.7)",
+    userSelect: 'none',
+    cursor: 'default'
   },
   bigCardVerySmallTitle: {
     zIndex: 3,
@@ -101,17 +108,21 @@ const style = theme => ({
     fontSize: 14,
     textShadow: "0 3px 20px rgba(0,0,0,.7)",
     marginBottom: theme.spacing.unit,
-    textTransform: "uppercase"
+    textTransform: "uppercase",
+    userSelect: 'none',
+    cursor: 'default'
   },
   dotdot: {
     overflow: "initial !important"
   },
-    list: {
+  list: {
     flexFlow: 'row nowrap',
-        width: '100%',
-        margin: 0,
-        transform: 'translateZ(0)',
-    }
+    width: '100%',
+    margin: 0,
+    paddingTop: theme.spacing.unit * 2,
+    paddingBottom: theme.spacing.unit * 2,
+    transform: 'translateZ(0)',
+  }
 });
 
 export const timeFormatter = time => {
@@ -151,130 +162,412 @@ export const timeFormatToReadable = time => {
 };
 
 export const timeFormatToReadableTime = time => {
-  return new Date(time).toTimeString();
+  return new Date(time).toLocaleTimeString();
 };
 
-const superTable = ({ classes, ...props}) => (
-  <GridList className={classes.list} cellHeight={300}>
-    {props.data.splice(0, props.limit).map((anime, index) => (
-      <GridListTile className={classes.bigCard} key={index} onClick={() =>
+const SuperTable = ({ classes, ...props }) => {
+  if (props.typeof === 'later') {
+    return (<GridList className={classes.list} cellHeight={300}>
+      {props.data.splice(0, props.limit).map((anime, index) => (
+        <GridListTile className={classes.bigCard} key={index} onClick={() =>
           props.changePage(
-              `/show?${props.type}=${
-                  props.typeof === "progress"
-                      ? anime.anime ? anime.anime.meta.i : anime.showId
-                      : anime.id
-                  }`
+            `/show?${props.type}=${anime.id
+            }`
           )
-      }>
-        <div className={classes.bigCardImage}>
-          <img
-            src={
-              props.typeof === "ongoing"
-                ? anime.bannerImage ? anime.bannerImage : anime.coverImage.large
-                : props.typeof === "ranking"
-                  ? anime.bg
-                  : props.typeof === "progress"
-                    ? anime.anime
-                      ? anime.anime.meta.a
-                      : anime.showHeaders
-                        ? anime.showHeaders
-                        : anime.showArtwork
-                    : props.typeof === "favs" ? anime.image : null
-            }
-            alt=""
-            className={classes.bigCardImageImg}
-          />
-        </div>
-        <div className={classes.bigCardRow}>
-          <img
-            src={
-              props.typeof === "ongoing"
-                ? anime.coverImage.large
-                : props.typeof === "ranking"
-                  ? anime.bg
-                  : props.typeof === "progress"
-                    ? anime.anime ? anime.anime.meta.a : anime.showArtwork
-                    : props.typeof === "favs" ? anime.image : null
-            }
-            alt=""
-            className={classes.bigCardIcon}
-          />
-          <div className={classes.bigCardText}>
-            <M.Typography
-              type="display2"
-              className={classes.bigCardVerySmallTitle}
-            >
-              {props.typeof === "ranking" ? (
-                <span role="img" aria-label="emoji">
-                  {anime.emoji}
-                </span>
-              ) : null}
-              {props.typeof === "ongoing"
-                ? props.type.includes("m")
-                  ? null
-                  : timeFormatter(anime.nextAiringEpisode.timeUntilAiring) +
-                  " till Episode " +
-                  anime.nextAiringEpisode.episode
-                : props.typeof === "ranking"
-                  ? anime.category
-                  : props.typeof === "progress"
-                    ? anime.ep ? "EPISODE " + anime.ep : null
-                    : null}
-            </M.Typography>
-            <Dotdotdot clamp={2} className={classes.dotdot}>
+        }>
+          <div className={classes.bigCardImage} style={anime.bg ? anime.bg.startsWith('#') ? { background: anime.bg } : null : null}>
+            {anime.bg && !anime.bg.startsWith('#') ? <img
+              src={
+                anime.bg ? anime.bg.startsWith('#') ? '' : anime.bg : ''
+              }
+              alt=""
+              className={classes.bigCardImageImg}
+            /> : null}
+          </div>
+          <div className={classes.bigCardRow}>
+            <img
+              src={
+                anime.image
+              }
+              alt=""
+              className={classes.bigCardIcon}
+            />
+            <div className={classes.bigCardText}>
               <M.Typography
                 type="display2"
-                className={classes.bigCardTitle}
+                className={classes.bigCardVerySmallTitle}
               >
-                {props.typeof === "ongoing"
-                  ? anime.title.english
-                    ? anime.title.english
-                    : anime.title.romaji
+                {anime.avgScore ? `Score ${anime.avgScore}%` : null} {anime.rank ? `• #${anime.rank.rank + ' ' + anime.rank.context + ' ' + anime.rank.format}` : null}
+              </M.Typography>
+              <Dotdotdot clamp={2} className={classes.dotdot}>
+                <M.Typography
+                  type="display2"
+                  className={classes.bigCardTitle}
+                >
+                  {anime.name}
+                </M.Typography>
+                <M.Typography
+                  type="display2"
+                  className={classes.bigCardSmallTitle}
+                >
+                  Added {moment(anime.date).from(Date.now())}
+                </M.Typography>
+              </Dotdotdot>
+            </div>
+          </div>
+        </GridListTile>
+      ))}
+    </GridList>)
+  } else if (props.typeof === 'ranking') {
+    return (<GridList className={classes.list} cellHeight={300}>
+      {props.data.splice(0, props.limit).map((anime, index) => (
+        <GridListTile className={classes.bigCard} key={index} onClick={() =>
+          props.changePage(
+            `/show?${props.type}=${
+            props.typeof === "progress"
+              ? anime.anime ? anime.anime.meta.i : anime.showId
+              : anime.id
+            }`
+          )
+        }>
+          <div className={classes.bigCardImage}>
+            <img
+              src={
+                props.typeof === "ongoing"
+                  ? anime.bannerImage ? anime.bannerImage : anime.coverImage.large
                   : props.typeof === "ranking"
-                    ? anime.name
+                    ? anime.bg
                     : props.typeof === "progress"
                       ? anime.anime
-                        ? anime.anime.meta.t
-                          ? anime.anime.meta.t
-                          : anime.anime.meta.r
-                        : anime.title
-                      : props.typeof === "favs" ? anime.name : null}
-              </M.Typography>
-            </Dotdotdot>
-            <Dotdotdot clamp={3}>
+                        ? anime.anime.meta.a
+                        : anime.showHeaders
+                          ? anime.showHeaders
+                          : anime.showArtwork
+                      : props.typeof === "favs" ? anime.image : null
+              }
+              alt=""
+              className={classes.bigCardImageImg}
+            />
+          </div>
+          <div className={classes.bigCardRow}>
+            <img
+              src={
+                props.typeof === "ongoing"
+                  ? anime.coverImage.large
+                  : props.typeof === "ranking"
+                    ? anime.bg
+                    : props.typeof === "progress"
+                      ? anime.anime ? anime.anime.meta.a : anime.showArtwork
+                      : props.typeof === "favs" ? anime.image : null
+              }
+              alt=""
+              className={classes.bigCardIcon}
+            />
+            <div className={classes.bigCardText}>
               <M.Typography
                 type="display2"
-                className={classes.bigCardSmallTitle}
-                dangerouslySetInnerHTML={
-                  props.typeof === "ongoing"
-                    ? {
-                      __html: anime.description
-                    }
-                    : props.typeof === "ranking"
-                      ? {
-                        __html: anime.desc
-                      }
-                      : null
-                }
+                className={classes.bigCardVerySmallTitle}
               >
-                {props.typeof === "progress"
-                  ? "Last watched " +
-                  timeFormatToReadable(anime.recentlyWatched)
-                  : null}
+                {props.typeof === "ranking" ? (
+                  <span role="img" aria-label="emoji">
+                    {anime.emoji}
+                  </span>
+                ) : null}
+                {props.typeof === "ongoing"
+                  ? props.type.includes("m")
+                    ? null
+                    : timeFormatter(anime.nextAiringEpisode.timeUntilAiring) +
+                    " till Episode " +
+                    anime.nextAiringEpisode.episode
+                  : props.typeof === "ranking"
+                    ? anime.category
+                    : props.typeof === "progress"
+                      ? anime.ep ? "EPISODE " + anime.ep : null
+                      : null}
               </M.Typography>
-            </Dotdotdot>
+              <Dotdotdot clamp={2} className={classes.dotdot}>
+                <M.Typography
+                  type="display2"
+                  className={classes.bigCardTitle}
+                >
+                  {props.typeof === "ongoing"
+                    ? anime.title.english
+                      ? anime.title.english
+                      : anime.title.romaji
+                    : props.typeof === "ranking"
+                      ? anime.name
+                      : props.typeof === "progress"
+                        ? anime.anime
+                          ? anime.anime.meta.t
+                            ? anime.anime.meta.t
+                            : anime.anime.meta.r
+                          : anime.title
+                        : props.typeof === "favs" ? anime.name : null}
+                </M.Typography>
+              </Dotdotdot>
+              <Dotdotdot clamp={3}>
+                <M.Typography
+                  type="display2"
+                  className={classes.bigCardSmallTitle}
+                  dangerouslySetInnerHTML={
+                    props.typeof === "ongoing"
+                      ? {
+                        __html: anime.description
+                      }
+                      : props.typeof === "ranking"
+                        ? {
+                          __html: anime.desc
+                        }
+                        : null
+                  }
+                >
+                  {props.typeof === "progress"
+                    ? "Last watched " +
+                    moment(anime.recentlyWatched).from(Date.now())
+                    : null}
+                </M.Typography>
+              </Dotdotdot>
+            </div>
           </div>
-        </div>
-      </GridListTile>
-    ))}
-  </GridList>
-);
+        </GridListTile>
+      ))}
+    </GridList>)
+  } else if (props.typeof === 'progress') {
+    return (<GridList className={classes.list} cellHeight={300}>
+      {props.data.splice(0, props.limit).map((anime, index) => (
+        <GridListTile className={classes.bigCard} key={index} onClick={() =>
+          props.changePage(
+            `/show?${props.type}=${
+            props.typeof === "progress"
+              ? anime.anime ? anime.anime.meta.i : anime.showId
+              : anime.id
+            }`
+          )
+        }>
+          <div className={classes.bigCardImage}>
+            <img
+              src={
+                props.typeof === "ongoing"
+                  ? anime.bannerImage ? anime.bannerImage : anime.coverImage.large
+                  : props.typeof === "ranking"
+                    ? anime.bg
+                    : props.typeof === "progress"
+                      ? anime.anime
+                        ? anime.anime.meta.a
+                        : anime.showHeaders
+                          ? anime.showHeaders
+                          : anime.showArtwork
+                      : props.typeof === "favs" ? anime.image : null
+              }
+              alt=""
+              className={classes.bigCardImageImg}
+            />
+          </div>
+          <div className={classes.bigCardRow}>
+            <img
+              src={
+                props.typeof === "ongoing"
+                  ? anime.coverImage.large
+                  : props.typeof === "ranking"
+                    ? anime.bg
+                    : props.typeof === "progress"
+                      ? anime.anime ? anime.anime.meta.a : anime.showArtwork
+                      : props.typeof === "favs" ? anime.image : null
+              }
+              alt=""
+              className={classes.bigCardIcon}
+            />
+            <div className={classes.bigCardText}>
+              <M.Typography
+                type="display2"
+                className={classes.bigCardVerySmallTitle}
+              >
+                {props.typeof === "ranking" ? (
+                  <span role="img" aria-label="emoji">
+                    {anime.emoji}
+                  </span>
+                ) : null}
+                {props.typeof === "ongoing"
+                  ? props.type.includes("m")
+                    ? null
+                    : timeFormatter(anime.nextAiringEpisode.timeUntilAiring) +
+                    " till Episode " +
+                    anime.nextAiringEpisode.episode
+                  : props.typeof === "ranking"
+                    ? anime.category
+                    : props.typeof === "progress"
+                      ? anime.ep ? "EPISODE " + anime.ep : null
+                      : null}
+              </M.Typography>
+              <Dotdotdot clamp={2} className={classes.dotdot}>
+                <M.Typography
+                  type="display2"
+                  className={classes.bigCardTitle}
+                >
+                  {props.typeof === "ongoing"
+                    ? anime.title.english
+                      ? anime.title.english
+                      : anime.title.romaji
+                    : props.typeof === "ranking"
+                      ? anime.name
+                      : props.typeof === "progress"
+                        ? anime.anime
+                          ? anime.anime.meta.t
+                            ? anime.anime.meta.t
+                            : anime.anime.meta.r
+                          : anime.title
+                        : props.typeof === "favs" ? anime.name : null}
+                </M.Typography>
+              </Dotdotdot>
+              <Dotdotdot clamp={3}>
+                <M.Typography
+                  type="display2"
+                  className={classes.bigCardSmallTitle}
+                  dangerouslySetInnerHTML={
+                    props.typeof === "ongoing"
+                      ? {
+                        __html: anime.description
+                      }
+                      : props.typeof === "ranking"
+                        ? {
+                          __html: anime.desc
+                        }
+                        : null
+                  }
+                >
+                  {props.typeof === "progress"
+                    ? "Last watched " +
+                    moment(anime.recentlyWatched).from(Date.now())
+                    : null}
+                </M.Typography>
+              </Dotdotdot>
+            </div>
+          </div>
+        </GridListTile>
+      ))}
+    </GridList>)
+  } else if (props.typeof === 'ongoing') {
+    return (<GridList className={classes.list} cellHeight={300}>
+      {props.data.splice(0, props.limit).map((anime, index) => (
+        <GridListTile className={classes.bigCard} key={index} onClick={() =>
+          props.changePage(
+            `/show?${props.type}=${
+            props.typeof === "progress"
+              ? anime.anime ? anime.anime.meta.i : anime.showId
+              : anime.id
+            }`
+          )
+        }>
+          <div className={classes.bigCardImage}>
+            <img
+              src={
+                props.typeof === "ongoing"
+                  ? anime.bannerImage ? anime.bannerImage : anime.coverImage.large
+                  : props.typeof === "ranking"
+                    ? anime.bg
+                    : props.typeof === "progress"
+                      ? anime.anime
+                        ? anime.anime.meta.a
+                        : anime.showHeaders
+                          ? anime.showHeaders
+                          : anime.showArtwork
+                      : props.typeof === "favs" ? anime.image : null
+              }
+              alt=""
+              className={classes.bigCardImageImg}
+            />
+          </div>
+          <div className={classes.bigCardRow}>
+            <img
+              src={
+                props.typeof === "ongoing"
+                  ? anime.coverImage.large
+                  : props.typeof === "ranking"
+                    ? anime.bg
+                    : props.typeof === "progress"
+                      ? anime.anime ? anime.anime.meta.a : anime.showArtwork
+                      : props.typeof === "favs" ? anime.image : null
+              }
+              alt=""
+              className={classes.bigCardIcon}
+            />
+            <div className={classes.bigCardText}>
+              <M.Typography
+                type="display2"
+                className={classes.bigCardVerySmallTitle}
+              >
+                {props.typeof === "ranking" ? (
+                  <span role="img" aria-label="emoji">
+                    {anime.emoji}
+                  </span>
+                ) : null}
+                {props.typeof === "ongoing"
+                  ? props.type.includes("m")
+                    ? null
+                    : timeFormatter(anime.nextAiringEpisode.timeUntilAiring) +
+                    " till Episode " +
+                    anime.nextAiringEpisode.episode
+                  : props.typeof === "ranking"
+                    ? anime.category
+                    : props.typeof === "progress"
+                      ? anime.ep ? "EPISODE " + anime.ep : null
+                      : null}
+              </M.Typography>
+              <Dotdotdot clamp={2} className={classes.dotdot}>
+                <M.Typography
+                  type="display2"
+                  className={classes.bigCardTitle}
+                >
+                  {props.typeof === "ongoing"
+                    ? anime.title.english
+                      ? anime.title.english
+                      : anime.title.romaji
+                    : props.typeof === "ranking"
+                      ? anime.name
+                      : props.typeof === "progress"
+                        ? anime.anime
+                          ? anime.anime.meta.t
+                            ? anime.anime.meta.t
+                            : anime.anime.meta.r
+                          : anime.title
+                        : props.typeof === "favs" ? anime.name : null}
+                </M.Typography>
+              </Dotdotdot>
+              <Dotdotdot clamp={3}>
+                <M.Typography
+                  type="display2"
+                  className={classes.bigCardSmallTitle}
+                  dangerouslySetInnerHTML={
+                    props.typeof === "ongoing"
+                      ? {
+                        __html: anime.description
+                      }
+                      : props.typeof === "ranking"
+                        ? {
+                          __html: anime.desc
+                        }
+                        : null
+                  }
+                >
+                  {props.typeof === "progress"
+                    ? "Last watched " +
+                    timeFormatToReadable(anime.recentlyWatched)
+                    : null}
+                </M.Typography>
+              </Dotdotdot>
+            </div>
+          </div>
+        </GridListTile>
+      ))}
+    </GridList>)
+  } else return null;
+};
 
 const mapDispatchToProps = dispatch => ({
   changePage: page => dispatch(push(page))
 });
 
-superTable.propTypes = {
+SuperTable.propTypes = {
   type: PropTypes.string.isRequired,
   data: PropTypes.array.isRequired,
   classes: PropTypes.object.isRequired,
@@ -283,6 +576,10 @@ superTable.propTypes = {
   limit: PropTypes.number.isRequired
 };
 
+SuperTable.defaultProps = {
+  limit: 300
+}
+
 export default connect(({ routing }) => ({ routing }), mapDispatchToProps)(
-  M.withStyles(style)(superTable)
+  M.withStyles(style)(SuperTable)
 );

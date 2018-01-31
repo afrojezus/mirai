@@ -32,6 +32,7 @@ const styles = theme => ({
 		position: 'relative',
 		overflow: 'hidden',
 		willChange: 'auto',
+		cursor: 'pointer'
 	},
 	entityCardDisabled: {
 		height: 200,
@@ -68,6 +69,8 @@ const styles = theme => ({
 		left: 0,
 		textShadow: '0 1px 12px rgba(0,0,0,.2)',
 		willChange: 'auto',
+		cursor: 'default',
+		userSelect: 'none'
 	},
 	entitySubTitle: {
 		fontSize: 14,
@@ -80,6 +83,8 @@ const styles = theme => ({
 		zIndex: 5,
 		textShadow: '0 1px 12px rgba(0,0,0,.2)',
 		willChange: 'auto',
+		cursor: 'default',
+		userSelect: 'none'
 	},
 	gradientCard: {
 		position: 'relative',
@@ -93,7 +98,7 @@ const styles = theme => ({
 		flexGrow: 'initial',
 		flexBasis: 'initial',
 		margin: theme.spacing.unit / 2,
-        transition: 'all .2s ease',
+		transition: 'all .2s ease',
 		'&:hover': {
 			overflow: 'initial',
 			boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
@@ -105,6 +110,7 @@ const styles = theme => ({
 		position: 'relative',
 		overflow: 'hidden',
 		willChange: 'auto',
+		cursor: 'pointer'
 	},
 	peopleImage: {
 		height: 156,
@@ -148,6 +154,8 @@ const styles = theme => ({
 		textAlign: 'center',
 		textShadow: '0 1px 12px rgba(0,0,0,.2)',
 		willChange: 'auto',
+		cursor: 'default',
+		userSelect: 'none'
 	},
 	peopleSubTitle: {
 		fontSize: 14,
@@ -160,6 +168,8 @@ const styles = theme => ({
 		textAlign: 'center',
 		whiteSpace: 'nowrap',
 		willChange: 'auto',
+		cursor: 'default',
+		userSelect: 'none'
 	},
 	artworktype: {
 		fontSize: 12,

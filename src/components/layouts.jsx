@@ -7,6 +7,7 @@ import Paper from 'material-ui/Paper/Paper';
 import CircularProgress from 'material-ui/Progress/CircularProgress';
 import Typography from 'material-ui/Typography/Typography';
 import { blue } from 'material-ui/colors';
+import withTheme from 'material-ui/styles/withTheme';
 
 const style = theme => ({
     compacMode: {
@@ -113,11 +114,12 @@ const style = theme => ({
     titleheader: {
         width: '100%',
         minHeight: 300,
-        background:  `linear-gradient(to top, transparent, ${blue.A200})`,
+        background: `linear-gradient(to top, transparent, ${blue.A200})`,
         position: 'absolute',
         top: 0,
         left: 0,
         display: 'flex',
+        zIndex: -1
     },
     titleheadertitle: {
         color: 'white',
@@ -125,12 +127,12 @@ const style = theme => ({
         flex: 1,
         fontSize: 64,
         fontWeight: 800,
-        marginLeft: theme.spacing.unit * 16
+        textAlign: 'center'
     }
 });
 
-export const Container = withStyles(style)(({ classes, theme, children, spacing, special, ...props }) => (
-    <Grid container spacing={spacing} {...props} className={special ? 'containerS' : classes.container}>
+export const Container = withStyles(style, { withTheme: true })(({ classes, theme, children, spacing, special, hasHeader, ...props }) => (
+    <Grid container style={hasHeader ? { marginTop: theme.spacing.unit * 16 }  :  null} spacing={spacing} {...props} className={special ? 'containerS' : classes.container}>
         {children}
     </Grid>
 ))
@@ -160,9 +162,11 @@ export const MainCard = withStyles(style)(({ classes, children, ...props }) => (
     </Paper>
 ))
 
-export const TitleHeader = withStyles(style)(({classes, children, title, ...props}) => (
+export const TitleHeader = withStyles(style)(({ classes, children, title, ...props }) => (
     <div className={classes.titleheader} {...props}>
+        <div style={{ flex: 1 }} />
         <Typography className={classes.titleheadertitle} type={'display2'}>{title}</Typography>
+        <div style={{ flex: 1 }} />
         {children}
     </div>
 ))
@@ -183,13 +187,13 @@ class HeaderRaw extends React.Component {
         }
     }
 
-    render () {
-        const {image, color, classes} = this.props;
+    render() {
+        const { image, color, classes } = this.props;
         if (image) {
             return (
                 <img
                     id='header'
-                    style={{opacity: 0}}
+                    style={{ opacity: 0 }}
                     onLoad={e => e.currentTarget.style.opacity = null}
                     className={classes.header}
                     src={image}
