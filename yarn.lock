@@ -1774,7 +1774,7 @@ chardet@^0.4.0:
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.4.2.tgz#b5473b33dc97c424e5d98dc87d55d4d8a29c8bf2"
 
-cheerio@0.22.0, cheerio@^0.22.0:
+cheerio@0.22.0:
   version "0.22.0"
   resolved "https://registry.yarnpkg.com/cheerio/-/cheerio-0.22.0.tgz#a9baa860a3f9b595a6b81b1a86873121ed3a269e"
   dependencies:
@@ -3199,13 +3199,6 @@ fbjs@^0.8.1, fbjs@^0.8.16, fbjs@^0.8.9:
     promise "^7.1.1"
     setimmediate "^1.0.5"
     ua-parser-js "^0.7.9"
-
-fetch-cheerio-object@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/fetch-cheerio-object/-/fetch-cheerio-object-1.2.0.tgz#9601a8109c8ed6f548030ddef22514658afad9ef"
-  dependencies:
-    cheerio "^0.22.0"
-    node-fetch "^1.6.3"
 
 figures@^2.0.0:
   version "2.0.0"
@@ -5629,7 +5622,7 @@ node-abi@^2.1.1:
   dependencies:
     semver "^5.4.1"
 
-node-fetch@^1.0.1, node-fetch@^1.6.3:
+node-fetch@^1.0.1:
   version "1.7.3"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-1.7.3.tgz#980f6f72d85211a5347c6b2bc18c5b84c3eb47ef"
   dependencies:

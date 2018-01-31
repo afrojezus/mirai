@@ -434,11 +434,31 @@ const styles = theme => ({
 		paddingRight: theme.spacing.unit,
 		margin: 'auto',
 	},
+    commandoTextBoxRow: {
+        padding: theme.spacing.unit,
+        margin: theme.spacing.unit,
+		display: 'flex',
+		boxShadow: 'none',
+		border: '1px solid rgba(255,255,255,.1)',
+		background: 'transparent'
+    },
 	commandoTextLabel: {
 		fontSize: 12,
 		textAlign: 'center',
 		color: 'rgba(255,255,255,.8)',
 	},
+    commandoTextLabelRow: {
+        fontSize: 14,
+        color: 'white',
+		margin: 'auto',
+		paddingLeft: theme.spacing.unit
+    },
+    commandoTextNumberRow: {
+        color: 'rgba(0,0,0,1)',
+        margin: 'auto',
+		fontSize: 32,
+		fontWeight: 700,
+    },
 	smallTitlebar: {
 		display: 'flex',
 	},
@@ -830,7 +850,7 @@ class Show extends Component {
 
 	like = async () => {
 		let data = this.state.data.Media;
-		let name = data.title.english ? data.title.english : data.title.romaji;
+		let name = data.title.romaji;
 		let image = data.coverImage.large;
 		let entity = data.type.includes('ANIME') ? 'show' : 'manga';
 		if (!isEmpty(this.props.profile))
@@ -866,7 +886,7 @@ class Show extends Component {
 
 	addToLater = async () => {
 		let data = this.state.data.Media;
-		let name = data.title.english ? data.title.english : data.title.romaji;
+		let name = data.title.romaji;
 		let image = data.coverImage.large;
 		let entity = data.type.includes('ANIME') ? 'show' : 'manga';
 		if (!isEmpty(this.props.profile))
@@ -1049,6 +1069,7 @@ class Show extends Component {
 									</div>
 								</M.Grid>
 								<M.Grid item xs className={classes.mainFrame}>
+
 									<div className={classes.smallTitlebar}>
 										{data.Media.type.includes('ANIME') ? (
 											<M.Typography
@@ -1077,22 +1098,22 @@ class Show extends Component {
 														' volumes'}
 												</M.Typography>
 											)}
-										<div style={{ flex: 1 }} />
-										<M.Typography
+											<div style={{ flex: 1 }} />
+											<M.Typography
 											className={classes.smallTitle}
 											style={{ cursor: 'pointer' }}
 											onClick={() => window.open(data.Media.siteUrl)}
 											type="display2"
 										>
 											Data provided by AniList
-										</M.Typography>
+											</M.Typography>
 									</div>
-									<M.Typography className={classes.bigTitle} type="display3">
-										{data.Media.title.english
-											? data.Media.title.english
-											: data.Media.title.romaji}
+									<M.Typography style={data.Media.synonyms.length > 0 ? {marginBottom: 0} : null} className={classes.bigTitle} type="display3">
+										{data.Media.title.romaji}
 									</M.Typography>
-
+									{data.Media.synonyms.length > 0 ?<M.Typography style={{marginBottom: 12}} className={classes.smallTitle} type='display1'>
+										Also known as: {data.Media.synonyms.map((s) => s).join(', ')}
+									</M.Typography> : null}
 									<M.Divider />
 									<M.Typography
 										className={classes.desc}
@@ -1197,7 +1218,7 @@ class Show extends Component {
 										{data.Media.type.includes('MANGA') ? null : (
 											<M.Grid item xs className={classes.tagBox}>
 												<M.Typography className={classes.tagTitle} type="title">
-													Studios
+													Producers
 												</M.Typography>
 												<div className={classes.genreRow}>
 													{data.Media.studios.edges.map((o, i) => (
@@ -1216,7 +1237,7 @@ class Show extends Component {
 									</M.Grid>
 								</M.Grid>
 							</Container>
-							<MainCard style={{ background: hue }}>
+							<MainCard style={!data.Media.bannerImage ?  { background: hue, border: '1px solid rgba(255,255,255,.1)', boxShadow: 'none' } : { background: hue }}>
 								<CommandoBar style={{ background: hue }}>
 									{data.Media.averageScore ? (
 										<div className={classes.commandoTextBox}>
@@ -1468,6 +1489,26 @@ class Show extends Component {
 										</M.Paper>
 									</M.Modal>
 								</CommandoBar>
+								<CommandoBar disableGutters style={{background: hue}}>
+									<div style={{flex: 1}} />
+									{data.Media.rankings.map((ran, index) =>
+                                    <M.Paper className={classes.commandoTextBoxRow}>
+                                        <M.Typography
+                                            type="title"
+                                            className={classes.commandoTextNumberRow}
+											style={{color: hueVib}}
+                                        >
+                                            #{ran.rank}
+                                        </M.Typography>
+                                        <M.Typography
+                                            type="body1"
+                                            className={classes.commandoTextLabelRow}
+                                        >
+											{ran.context} {ran.format.replace(/_/gi, ' ')}<br />
+											{ran.season} {ran.year}
+                                        </M.Typography>
+                                    </M.Paper>)}
+								</CommandoBar>
 								<Container>
 									<M.Grid item xs style={{ zIndex: 10 }}>
 										{data.Media.characters.edges.length > 0 ? (
@@ -1560,9 +1601,7 @@ class Show extends Component {
 												similars.data &&
 												similars.data.Page.media
 													.map((anime, index) => (
-														<CardButton key={index} image={anime.coverImage.large} title={anime.title.english
-															? anime.title.english
-															: anime.title.romaji} subtitle='SIMILAR' onClick={() =>
+														<CardButton key={index} image={anime.coverImage.large} title={anime.title.romaji} subtitle='SIMILAR' onClick={() =>
 																this.openEntity(
 																	`/show?${
 																	anime.type.includes('ANIME') ? 's' : 'm'
@@ -1575,9 +1614,7 @@ class Show extends Component {
 												similars2.data &&
 												similars2.data.Page.media
 													.map((anime, index) => (
-														<CardButton key={index} image={anime.coverImage.large} title={anime.title.english
-															? anime.title.english
-															: anime.title.romaji} subtitle='SIMILAR' onClick={() =>
+														<CardButton key={index} image={anime.coverImage.large} title={anime.title.romaji} subtitle='SIMILAR' onClick={() =>
 																this.openEntity(
 																	`/show?${
 																	anime.type.includes('ANIME') ? 's' : 'm'

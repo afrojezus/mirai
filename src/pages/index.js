@@ -4,7 +4,7 @@ import React, { Component } from "react";
 import { twistLoad } from '../store';
 import PropTypes from "prop-types";
 import localForage from "localforage";
-import { Route } from "react-router-dom";
+import { Route, withRouter } from "react-router-dom";
 import { CircularProgress } from "material-ui/Progress";
 import { withStyles } from "material-ui/styles";
 import withRoot from "../components/withRoot";
@@ -52,7 +52,8 @@ const styles = theme => ({
     transition: theme.transitions.create(["all"])
   },
   loadingCircle: {
-    margin: "auto"
+    margin: "auto",
+      color: 'white'
   },
   welcomeMessage: {
     margin: "auto",
@@ -70,23 +71,29 @@ class Index extends Component {
     loading: true
   };
 
-  componentWillMount = async () => {
-    localForage.ready();
-  }
-  componentWillReceiveProps = async (nextProps) => {
+  componentDidMount = async () => {
     const { auth } = this.props.firebase;
-    if (isLoaded(auth) && nextProps.mir && nextProps.mir.twist) {
+    if (isLoaded(auth)) {
       if (isEmpty(auth)) {
         console.log("Logged off");
-        this.setState({ loading: false });
+          this.setState({loading: false})
       } else {
         console.log("Logged in");
-        this.setState({ loading: false });
+          this.setState({loading: false})
       }
     }
   };
 
-  handleTwist = async () => {
+
+    componentWillReceiveProps = (nextProps) => {
+        if (typeof nextProps.mir !== undefined || null && nextProps.mir.twist !== undefined) {
+          this.setState({loading: false});
+        }
+
+    }
+
+
+    handleTwist = async () => {
     let database = this.props.firebase.ref('twist');
     if (this.props.mir && this.props.mir.twist) {
       let twist = this.props.mir.twist.filter((s) => !s.ongoing);
@@ -157,11 +164,5 @@ Index.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default firebaseConnect()(
-  connect(({ firebase: { auth, profile }, mir }) => ({
-    auth,
-    profile,
-    mir,
-  }))(withRoot(withStyles(styles)(Index)))
-);
+export default withRouter(firebaseConnect()(connect(state => state)((withRoot(withStyles(styles)(Index))))));
 

@@ -237,15 +237,13 @@ class Watch extends Component {
 				if (this.props.history.location.state) {
 					console.info('Location state found! No need for refetching.');
 					this.setState({ status: 'Setting up...' });
-					if (this.props.mir && this.props.mir.twist)
 						this.getSource(this.props.history.location.state);
 				} else {
 					console.info('Location state not found! Refetching...');
 					this.setState({ status: 'Fetching...' });
 					const { data } = await new Segoku().getSingle({ id: id.w });
-					if (data && this.props.mir && this.props.mir.twist)
+					if (data)
 						this.getSource({ meta: data.Media });
-					else this.componentDidMount();
 				}
 			}
 		} catch (error) {
@@ -289,7 +287,7 @@ class Watch extends Component {
 
 	componentWillReceiveProps = async (nextProps) => {
 		if (this.props !== nextProps) {
-			await this.getState();
+			this.getState();
 		}
 	}
 

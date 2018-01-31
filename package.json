@@ -12,7 +12,6 @@
     "axios": "^0.17.1",
     "cheerio": "^1.0.0-rc.2",
     "classnames": "^2.2.5",
-    "fetch-cheerio-object": "^1.2.0",
     "firebase": "^4.7.0",
     "git-rev": "^0.2.1",
     "graphql": "^0.11.7",

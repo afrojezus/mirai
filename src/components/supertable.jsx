@@ -291,16 +291,12 @@ const SuperTable = ({ classes, ...props }) => {
                   className={classes.bigCardTitle}
                 >
                   {props.typeof === "ongoing"
-                    ? anime.title.english
-                      ? anime.title.english
-                      : anime.title.romaji
+                    ? anime.title.romaji
                     : props.typeof === "ranking"
                       ? anime.name
                       : props.typeof === "progress"
                         ? anime.anime
-                          ? anime.anime.meta.t
-                            ? anime.anime.meta.t
-                            : anime.anime.meta.r
+                          ? anime.anime.meta.r
                           : anime.title
                         : props.typeof === "favs" ? anime.name : null}
                 </M.Typography>
@@ -405,16 +401,12 @@ const SuperTable = ({ classes, ...props }) => {
                   className={classes.bigCardTitle}
                 >
                   {props.typeof === "ongoing"
-                    ? anime.title.english
-                      ? anime.title.english
-                      : anime.title.romaji
+                    ? anime.title.romaji
                     : props.typeof === "ranking"
                       ? anime.name
                       : props.typeof === "progress"
                         ? anime.anime
-                          ? anime.anime.meta.t
-                            ? anime.anime.meta.t
-                            : anime.anime.meta.r
+                          ? anime.anime.meta.r
                           : anime.title
                         : props.typeof === "favs" ? anime.name : null}
                 </M.Typography>
@@ -519,16 +511,12 @@ const SuperTable = ({ classes, ...props }) => {
                   className={classes.bigCardTitle}
                 >
                   {props.typeof === "ongoing"
-                    ? anime.title.english
-                      ? anime.title.english
-                      : anime.title.romaji
+                    ? anime.title.romaji
                     : props.typeof === "ranking"
                       ? anime.name
                       : props.typeof === "progress"
                         ? anime.anime
-                          ? anime.anime.meta.t
-                            ? anime.anime.meta.t
-                            : anime.anime.meta.r
+                          ? anime.anime.meta.r
                           : anime.title
                         : props.typeof === "favs" ? anime.name : null}
                 </M.Typography>

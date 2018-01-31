@@ -9,13 +9,13 @@ const style = theme => ({
 })
 
 class History extends Component {
-    render = () => (
-        <Root>
+    render = () => (<div>
             <TitleHeader title={'History'}/>
+        <Root>
             <Container>
 
             </Container>
-        </Root>
+        </Root></div>
     )
 }
 

@@ -113,7 +113,7 @@ const style = theme => ({
     },
     titleheader: {
         width: '100%',
-        minHeight: 300,
+        minHeight: 900,
         background: `linear-gradient(to top, transparent, ${blue.A200})`,
         position: 'absolute',
         top: 0,
@@ -126,8 +126,11 @@ const style = theme => ({
         margin: 'auto',
         flex: 1,
         fontSize: 64,
+        position: 'relative',
+        marginTop: theme.spacing.unit * 14,
         fontWeight: 800,
-        textAlign: 'center'
+        textAlign: 'center',
+        textShadow: '0 2px 24px rgba(0,0,0,.07)'
     }
 });
 
@@ -162,10 +165,10 @@ export const MainCard = withStyles(style)(({ classes, children, ...props }) => (
     </Paper>
 ))
 
-export const TitleHeader = withStyles(style)(({ classes, children, title, ...props }) => (
-    <div className={classes.titleheader} {...props}>
+export const TitleHeader = withStyles(style)(({ classes, children, title, color, colortext, ...props }) => (
+    <div className={classes.titleheader} style={color ? {background: `linear-gradient(to top, transparent, ${color})`} : null} {...props}>
         <div style={{ flex: 1 }} />
-        <Typography className={classes.titleheadertitle} type={'display2'}>{title}</Typography>
+        <Typography className={classes.titleheadertitle} style={colortext ? {color: colortext} : null} type={'display2'}>{title}</Typography>
         <div style={{ flex: 1 }} />
         {children}
     </div>
@@ -176,13 +179,13 @@ class HeaderRaw extends React.Component {
 
 
     componentWillReceiveProps = (nextProps) => {
-        if (!this.props.image) {
+        if (this.props.color) {
             document.documentElement.style.background = nextProps.color;
         }
     }
 
     componentWillUnmount = () => {
-        if (this.props.color && !this.props.image) {
+        if (this.props.color) {
             document.documentElement.style.background = null;
         }
     }

@@ -1,6 +1,5 @@
 import Cheerio from 'cheerio';
 import Request from 'request-promise';
-import fetchCheerioObject from "fetch-cheerio-object";
 let Proxy2 = "https://cors-anywhere.herokuapp.com/";
 let Proxy1 = "https://cors.now.sh/";
 
@@ -100,16 +99,15 @@ const getSource = async ep => {
   try {
     const source = await Request(data);
     if (source) {
+      const parser = new DOMParser();
       let video = source("body")
         .children("section")
         .children("main")
         .children("vi-player")
-        .children("noscript")
-        .children("video")
-        .attr("src");
-      console.log(video);
-      const url = decodeURI(`https://twist.moe${video}`);
-      console.log(url);
+        .children("noscript").text()
+        let srcParsed = source.parseHTML(video);
+      let src = source(srcParsed).eq(1).attr('src');
+      const url = decodeURI(`https://twist.moe${src}`);
       let urlX = url.includes("https://twist.moe ")
         ? url.replace("https://twist.moe ", "https://twist.moe")
         : url;

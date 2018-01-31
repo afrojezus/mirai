@@ -4,7 +4,7 @@ import React from "react";
 import { render } from "react-dom";
 import { Provider } from "react-redux";
 import { ConnectedRouter } from "react-router-redux";
-import store, { history } from "./store";
+import store, { history, twistLoad } from "./store";
 import { ApolloProvider } from "react-apollo";
 import { ApolloClient } from "apollo-client-preset";
 import { HttpLink } from "apollo-link-http";

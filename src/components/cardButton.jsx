@@ -52,11 +52,16 @@ const styles = theme => ({
 		position: 'absolute',
 		zIndex: -1,
 		transition: theme.transitions.create(['filter']),
+        filter: 'brightness(0.7)',
 		'&:hover': {
-			filter: 'brightness(0.8)',
+			filter: 'brightness(0.4)',
 		},
 		top: 0,
 		left: 0,
+		background: 'white',
+        backgroundSize: 'cover',
+		backgroundRepeat: 'no-repeat',
+		backgroundPosition: 'center'
 	},
 	entityTitle: {
 		fontSize: 14,
@@ -89,6 +94,7 @@ const styles = theme => ({
 	gradientCard: {
 		position: 'relative',
 		height: 183,
+		zIndex: 2,
 		width: '100%',
 		background: 'linear-gradient(to top, rgba(0,0,0,.6), transparent)',
 	},
@@ -152,7 +158,7 @@ const styles = theme => ({
 		zIndex: 5,
 		margin: 'auto',
 		textAlign: 'center',
-		textShadow: '0 1px 12px rgba(0,0,0,.2)',
+		textShadow: '0 1px 12px rgba(0,0,0,.5)',
 		willChange: 'auto',
 		cursor: 'default',
 		userSelect: 'none'
@@ -164,7 +170,7 @@ const styles = theme => ({
 		margin: 'auto',
 		transition: theme.transitions.create(['transform']),
 		zIndex: 5,
-		textShadow: '0 1px 12px rgba(0,0,0,.2)',
+		textShadow: '0 1px 12px rgba(0,0,0,.5)',
 		textAlign: 'center',
 		whiteSpace: 'nowrap',
 		willChange: 'auto',

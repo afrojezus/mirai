@@ -307,7 +307,7 @@ class Superbar extends Component {
 		status: 0,
 		mirTitle: '',
 		scrolling: false,
-		commit: 'd9'
+		commit: 'd10'
 	};
 
 	componentWillMount = () => {
