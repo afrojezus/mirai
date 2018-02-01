@@ -566,7 +566,7 @@ SuperTable.propTypes = {
 
 SuperTable.defaultProps = {
   limit: 300
-}
+};
 
 export default connect(({ routing }) => ({ routing }), mapDispatchToProps)(
   M.withStyles(style)(SuperTable)

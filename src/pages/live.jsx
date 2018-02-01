@@ -7,7 +7,7 @@ import Typography from 'material-ui/Typography/Typography';
 
 const style = theme => ({
 
-})
+});
 
 class Live extends Component {
 	render = () => (

@@ -375,7 +375,7 @@ class Home extends Component {
 
 	componentWillMount = () => {
 		console.log(this);
-	}
+	};
 
 
 	componentDidMount = async () => {
@@ -420,7 +420,7 @@ class Home extends Component {
 			this.setState({hue: hues.hue,
                 hueVib: hues.vib,
                 hueVibN: hues.vibn });
-	}
+	};
 
 	fetchOngoing = async () => {
 		const ongoing = await new Segoku().get({

@@ -6,7 +6,7 @@ import {firebaseConnect} from "react-redux-firebase";
 
 const style = theme => ({
 
-})
+});
 
 class History extends Component {
     render = () => (<div>

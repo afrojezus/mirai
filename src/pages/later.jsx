@@ -21,26 +21,26 @@ const style = theme => ({
     categoryTitle: {
         fontWeight: 700
     }
-})
+});
 
 class Later extends Component {
     state = {
         loading: true,
         userShows: null,
         userManga: null,
-    }
+    };
 
     userprops = {
         userShows: !isEmpty(this.props.profile) && this.props.profile.later && this.props.profile.later.show ? Object.values(this.props.profile.later.show) : null,
         userManga: !isEmpty(this.props.profile) && this.props.profile.later && this.props.profile.later.manga ? Object.values(this.props.profile.later.manga) : null
-    }
+    };
 
-    componentDidMount = () => this.setState({ loading: false, ...this.userprops })
+    componentDidMount = () => this.setState({ loading: false, ...this.userprops });
 
     componentWillReceiveProps = (nextProps) => {
         if (this.props.profile !== nextProps.profile)
             this.setState({ ...this.userprops }, () => this.setState({ loading: false }))
-    }
+    };
 
     render = () => (<div>
         <LoadingIndicator

@@ -214,14 +214,14 @@ class Settings extends Component {
 
   changeContriSetting = async (e, check) => {
     let set = this.props.profile.noMine;
-    if (set) this.props.firebase.updateProfile({noMine: false})
+    if (set) this.props.firebase.updateProfile({noMine: false});
       else
         this.props.firebase.updateProfile({noMine: true})
   };
 
     changeLogSetting = async (e, check) => {
         let set = this.props.profile.willLog;
-        if (set) this.props.firebase.updateProfile({willLog: false})
+        if (set) this.props.firebase.updateProfile({willLog: false});
         else
             this.props.firebase.updateProfile({willLog: true})
     };

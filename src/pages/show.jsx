@@ -17,7 +17,7 @@ import { MIR_SET_TITLE } from '../constants';
 import { connect } from 'react-redux';
 import { firebaseConnect, isEmpty } from 'react-redux-firebase';
 import { timeFormatter } from '../components/supertable';
-import { Root, Container, CommandoBar, MainCard, Header, LoadingIndicator } from '../components/layouts';
+import { Root, Container, CommandoBar, MainCard, Header, LoadingIndicator, TitleHeader } from '../components/layouts';
 import hsfetcher from '../torrent';
 import * as jquery from 'jquery'
 
@@ -578,7 +578,7 @@ class Show extends Component {
 				characters: PropTypes.object,
 			}),
 		}),
-	}
+	};
 
 	state = {
 		data: {},
@@ -617,11 +617,11 @@ class Show extends Component {
 	componentWillReceiveProps = async (nextProps) => {
 		if (this.props.mir !== nextProps.mir && this.state.data.Media)
 			await this.executeTwist();
-	}
+	};
 
 	torrentTest = async () => {
 		if (this.state.data && this.state.data.Media) {
-			const data = await hsfetcher.getList(this.state.data.Media.title.romaji)
+			const data = await hsfetcher.getList(this.state.data.Media.title.romaji);
 			try {
 				if (data) {
 					console.log(data);
@@ -630,7 +630,7 @@ class Show extends Component {
 				console.error(error)
 			}
 		}
-	}
+	};
 
 	init = () =>
 		this.setState(
@@ -779,8 +779,8 @@ class Show extends Component {
 		let db = this.props.firebase.ref('twist');
 		let dbval = await db.once('value');
 		if (dbval && Object(dbval.val()).hasOwnProperty(this.state.id)) {
-			let eps = await db.child(this.state.id).once('value')
-			if (eps) this.setState({ eps: Object.values(eps.val()) }, () => console.info('loaded from database'))
+			let eps = await db.child(this.state.id).once('value');
+			if (eps) this.setState({ eps: Object.values(eps.val()) }, () => console.info('loaded from database'));
 			else
 				throw new Error('owo')
 		}
@@ -954,7 +954,7 @@ class Show extends Component {
 				onClose={() => this.setState({ menuEl: null })}
 			>
 				<M.MenuItem onClick={() => {
-					this.setState({ menuEl: null })
+					this.setState({ menuEl: null });
 					this.reportError()
 				}
 				}>Report error</M.MenuItem>
@@ -967,6 +967,7 @@ class Show extends Component {
 				<LoadingIndicator
 					loading={loading}
 				/>
+				<div style={loading ? { opacity: 0 } : null}><TitleHeader color={hue} colortext={hueVib}  /></div>
 				<Root
 					id="previewFrame"
 					className={classes.root}
@@ -1003,7 +1004,7 @@ class Show extends Component {
 								</M.Button>
 							</div>
 							<Container spacing={16} id='mainHeader' style={{ background: hue }}>
-								<Header image={data.Media.bannerImage ? data.Media.bannerImage : null} color={hue} style={{ background: hue }} />
+								<Header image={data.Media.bannerImage ? data.Media.bannerImage : null} color={hueVibN} style={{ background: hue }} />
 								<M.Grid item xs={3} className={classes.leftSide}>
 									<div
 										className={

@@ -214,7 +214,7 @@ class Watch extends Component {
 
         /*if (playerUseTorrent) this.setState({ torrent: playerUseTorrent });
         else return;*/
-	};
+	}
 
 	getState = async () => {
 		const id = queryString.parse(this.props.history.location.search);
@@ -253,7 +253,7 @@ class Watch extends Component {
 				status: 'Error 1: Failed to fetch metadata',
 			});
 		}
-	}
+	};
 
 	getTorrent = (data) => this.setState({
 		title: data.meta.title.english
@@ -277,7 +277,7 @@ class Watch extends Component {
 						ep: i + 1,
 						provider: 'Nyaa'
 					})
-				})
+				});
 				this.setState({ eps, status: 'Initiating client...' }, async () => this.loadEp(this.state.eps[0], null))
 			} else return new Error('fuck');
 		} catch (error) {
@@ -289,7 +289,7 @@ class Watch extends Component {
 		if (this.props !== nextProps) {
 			this.getState();
 		}
-	}
+	};
 
 	getSource = async data => {
 		this.setState({
@@ -409,7 +409,7 @@ class Watch extends Component {
 				if (this.state.torrent) {
 					hsfetcher.getSource(ep.link, (torrent, file) => {
 						file.getBlobURL(function (err, url) {
-							if (err) throw err
+							if (err) throw err;
 							if (url)
 								this.setState({ torrentFile: torrent, source: url, ep: ep.ep, resume: resume ? resume : null }, () => this.playPause())
 						})
@@ -437,7 +437,7 @@ class Watch extends Component {
 	closeMenu = () => this.setState({ menuEl: null });
 
 	onProgress = state => {
-		let play = this.state.played
+		let play = this.state.played;
 		if (!this.state.seeking)
 			this.setState(state, async () => {
 				this.setState({
@@ -446,26 +446,26 @@ class Watch extends Component {
 				switch (this.player.getInternalPlayer().networkState) {
 					case 0:
 						console.log('EMPTY');
-						this.setState({ buffering: true })
+						this.setState({ buffering: true });
 						break;
 					case 1:
 						console.log('IDLE');
-						this.setState({ buffering: false })
+						this.setState({ buffering: false });
 						break;
 					case 2:
 						console.log('LOADING');
-						this.setState({ buffering: false })
+						this.setState({ buffering: false });
 					case 3:
 						console.log('NO_SOURCE');
 						if (play !== state.played)
-							this.setState(({ buffering: true }))
+							this.setState(({ buffering: true }));
 						break;
 				}
 
 				if (this.state.resume) {
 					let resume = this.state.resume;
 					this.setState({ resume: null, buffering: true }, () => {
-						this.player.seekTo(resume)
+						this.player.seekTo(resume);
 						if (resume === this.state.played)
 							this.setState({ buffering: false })
 					});
@@ -656,7 +656,7 @@ class Watch extends Component {
 					loaded: 0,
 					played: 0,
 					videoQuality: null,
-				}, () => this.getState())
+				}, () => this.getState());
 			case 720:
 				if (this.state.torrentFile)
 					hsfetcher.destroyClient(this.state.torrentFile);
@@ -667,7 +667,7 @@ class Watch extends Component {
 					loaded: 0,
 					played: 0,
 					videoQuality: null,
-				}, () => this.getState())
+				}, () => this.getState());
 			case 480:
 				if (this.state.torrentFile)
 					hsfetcher.destroyClient(this.state.torrentFile);
@@ -680,7 +680,7 @@ class Watch extends Component {
 					videoQuality: null,
 				}, () => this.getState())
 		}
-	}
+	};
 
 
 	switchMode = () => this.setState({ torrent: !this.state.torrent }, async () => {
@@ -711,7 +711,7 @@ class Watch extends Component {
 				videoQuality: null,
 			}, () => this.getState())
 		}
-	})
+	});
 
 	render() {
 		const { classes } = this.props;
@@ -744,7 +744,7 @@ class Watch extends Component {
 		} = this.state;
 		const menu = Boolean(menuEl);
 		const volumeMenu = Boolean(volEl);
-		const qualityMenu = Boolean(quaEl)
+		const qualityMenu = Boolean(quaEl);
 		return (
 			<div
 				id="frame"

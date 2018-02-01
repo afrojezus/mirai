@@ -95,7 +95,7 @@ const getSource = async ep => {
     transform: body => {
       return Cheerio.load(body);
     }
-  }
+  };
   try {
     const source = await Request(data);
     if (source) {
@@ -104,7 +104,7 @@ const getSource = async ep => {
         .children("section")
         .children("main")
         .children("vi-player")
-        .children("noscript").text()
+        .children("noscript").text();
         let srcParsed = source.parseHTML(video);
       let src = source(srcParsed).eq(1).attr('src');
       const url = decodeURI(`https://twist.moe${src}`);

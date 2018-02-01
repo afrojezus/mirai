@@ -8,16 +8,16 @@ import Supertable from '../components/supertable';
 
 const style = theme => ({
 
-})
+});
 
 class Rankings extends Component {
 	state = {
 		loading: true
-	}
+	};
 
 	componentDidMount = () => {
 
-	}
+	};
 
 
 	render = () => (

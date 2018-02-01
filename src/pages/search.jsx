@@ -8,6 +8,8 @@ import Twist from '../twist-api';
 
 import corrector from '../utils/bigfuck';
 
+import queryString from 'querystring'
+
 import localForage from 'localforage';
 
 import { connect } from 'react-redux';
@@ -358,10 +360,13 @@ class Search extends Component {
 		const prevSearch = await localForage.getItem('prevSearch');
 		if (prevSearch)
 			this.setState(prevSearch, () =>
-				setTimeout(() => this.setState({ loading: false }, async () => { }), 300)
+				this.setState({ loading: false })
 			);
-		else
-			setTimeout(() => this.setState({ loading: false }, async () => { }), 300);
+		else if (this.props.history.location.search) {
+			let parsed = queryString.parse(this.props.history.location.search)
+            this.setState({searchVal: parsed.q}, () => this.uwu())
+        } else
+			this.setState({ loading: false });
 	};
 
 	uwu = () =>
@@ -455,7 +460,7 @@ class Search extends Component {
 	};
 
 	componentWillUnmount = async () =>
-		this.state.searchVal.length > 3 && this.state.searchVal !== ''
+		 typeof this.state.searchVal !== undefined && this.state.searchVal.length > 3 && this.state.searchVal !== ''
 			? await localForage.setItem('prevSearch', this.state)
 			: null;
 
@@ -477,21 +482,7 @@ class Search extends Component {
 					loading={loading}
 				/>
 				<div className={classes.root}>
-					<M.Toolbar className={classes.searchBar}>
-						<form
-							onSubmit={this.handleSubmit}
-							style={{ width: '100%', margin: 'auto', textAlign: 'center' }}
-						>
-							<M.TextField
-								placeholder="Search (Min. 4 character)"
-								className={classes.input}
-								value={searchVal}
-								inputClassName={classes.textInput}
-								onChange={this.handleChange}
-								type="search"
-							/>
-						</form>
-					</M.Toolbar>
+
 					<div className={classes.cox} style={loading ? { opacity: 0 } : null}>
 						<M.Grid container spacing={0} className={classes.content}>
 							{anime &&
@@ -511,9 +502,7 @@ class Search extends Component {
 														)
 													)
 													.map((anime, index) => (
-													    <CardButton key={index} title={anime.title.english
-                                                            ? anime.title.english
-                                                            : anime.title.romaji} image={anime.coverImage.large} onClick={() =>
+													    <CardButton key={index} title={anime.title.romaji} image={anime.coverImage.large} onClick={() =>
                                                             this.openEntity(`/show?s=${anime.id}`)
                                                         }/>
 
@@ -552,9 +541,7 @@ class Search extends Component {
 															type="headline"
 															className={classes.entityTitle}
 														>
-															{anime.title.english
-																? anime.title.english
-																: anime.title.romaji}
+															{anime.title.romaji}
 														</M.Typography>
 														<M.Typography
 															type="headline"

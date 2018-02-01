@@ -19,7 +19,7 @@ const getList = async (anime) => {
     let data = {
         uri: prx + 'https://nyaa.si/user/HorribleSubs?f=2&c=1_2&q=' + anime,
         transform: body => Cheerio.load(body)
-    }
+    };
     const l = await Request(data);
     try {
         if (l) {
@@ -33,13 +33,13 @@ const getList = async (anime) => {
                         torrent: prx + 'https://nyaa.si' + l(i).children('td:nth-child(3)').children('a').attr('href'),
                         quality,
                     })
-                })
+                });
             if (list) return array;
         }
     } catch (error) {
         return error;
     }
-}
+};
 
 /**
  * getSource

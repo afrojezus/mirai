@@ -90,7 +90,7 @@ class Index extends Component {
           this.setState({loading: false});
         }
 
-    }
+    };
 
 
     handleTwist = async () => {
@@ -101,7 +101,7 @@ class Index extends Component {
         database.update(twist);
       } else return null;
     }
-  }
+  };
 
   handleRequestClose = () => {
     this.setState({

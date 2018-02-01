@@ -62,6 +62,7 @@ import { firebaseConnect, isEmpty } from 'react-redux-firebase';
 import NotificationForm from './notificationForm';
 import BottomNavigation from 'material-ui/BottomNavigation/BottomNavigation';
 import BottomNavigationAction from 'material-ui/BottomNavigation/BottomNavigationAction';
+import {history} from "../store";
 
 const drawerWidth = 240;
 
@@ -289,6 +290,34 @@ const styles = theme => ({
 			textTransform: 'initial',
 		},
 	},
+	searchBar: {
+		background: 'rgba(255,255,255,.05)',
+		border: '1px solid rgba(255,255,255,.1)',
+		boxShadow: 'none',
+		maxWidth: 1970,
+		minWidth: 700,
+		display: 'flex',
+		transition: theme.transitions.create(['all']),
+		'&:hover': {
+            background: 'rgba(255,255,255,.08)',
+            border: '1px solid rgba(255,255,255,.15)'
+        },
+        '&:focus': {
+            background: 'rgba(255,255,255,.08)',
+            border: '1px solid rgba(255,255,255,.15)'
+        }
+	},
+	searchInput: {
+		padding: theme.spacing.unit,
+        maxWidth: 1970,
+        minWidth: 700,
+		boxSizing: 'border-box'
+	},
+	searchIcon: {
+		paddingLeft: theme.spacing.unit * 2,
+		paddingRight: theme.spacing.unit * 2,
+		margin: 'auto 0'
+	}
 });
 
 class Superbar extends Component {
@@ -747,6 +776,7 @@ class Superbar extends Component {
 								: currentPage}
 						</Typography>
 						<div className={classes.flex} />
+						<Hidden smDown><SearchBox mir={this.props.mir} history={history} classes={{searchBar: classes.searchBar, searchInput: classes.searchInput, searchIcon: classes.searchIcon}} /></Hidden>
 						{/*<Tabs
 							className={classes.contextBar}
 							value={tabVal}
@@ -790,7 +820,7 @@ class Superbar extends Component {
 						</Tabs>*/}
 						<div className={classes.flex} />
 						{user && user.noMine ? <Button>Donate</Button> : null}
-						<IconButton
+						<Hidden smUp><IconButton
 							onClick={() => {
 								this.tabChange(null, 4);
 								this.props.history.push('/search');
@@ -798,7 +828,7 @@ class Superbar extends Component {
 							color="contrast"
 						>
 							<SearchIcon />
-						</IconButton>
+						</IconButton></Hidden>
 						<div>
 							<IconButton
 								aria-owns={open ? 'info-menu' : null}
@@ -1009,6 +1039,45 @@ class Superbar extends Component {
 			</div>
 		);
 	}
+}
+
+class SearchBox extends Component {
+	state = {
+		value: '',
+		suggestionList: null
+	}
+
+	onChange = (e) => this.setState({value: e.currentTarget.value}, () => {
+		if (this.props.mir !== null && this.props.mir.twist !== null) {
+			this.setState({suggestionList: this.props.mir.twist.filter(s => s.name.toLowerCase().match(this.state.value.toLowerCase()))})
+		}
+	})
+
+	onSubmit = (e) => {
+		e.preventDefault();
+		this.props.history.push('/search?q=' + this.state.value);
+	}
+
+	render() {
+		const {
+			value,
+			suggestionList
+		} = this.state;
+		const { classes } = this.props;
+		return (
+			<div>
+				<Paper className={classes.searchBar}>
+					<SearchIcon className={classes.searchIcon} />
+					<form onSubmit={this.onSubmit}>
+					<TextField onChange={this.onChange} fullWidth value={value} placeholder={'Search anime, manga, social etc.'} InputProps={{className: classes.searchInput, disableUnderline: true, fullWidth: true}} type={'search'}/>
+					</form>
+				</Paper>
+				{suggestionList ? <Paper square>
+
+				</Paper> : null}
+			</div>
+		)
+    }
 }
 
 export default firebaseConnect()(

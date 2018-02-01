@@ -119,7 +119,8 @@ const style = theme => ({
         top: 0,
         left: 0,
         display: 'flex',
-        zIndex: -1
+        zIndex: -1,
+        transition: theme.transitions.create(['all'])
     },
     titleheadertitle: {
         color: 'white',
@@ -130,7 +131,8 @@ const style = theme => ({
         marginTop: theme.spacing.unit * 14,
         fontWeight: 800,
         textAlign: 'center',
-        textShadow: '0 2px 24px rgba(0,0,0,.07)'
+        textShadow: '0 2px 24px rgba(0,0,0,.07)',
+        whiteSpace: 'nowrap'
     }
 });
 
@@ -138,13 +140,13 @@ export const Container = withStyles(style, { withTheme: true })(({ classes, them
     <Grid container style={hasHeader ? { marginTop: theme.spacing.unit * 16 }  :  null} spacing={spacing} {...props} className={special ? 'containerS' : classes.container}>
         {children}
     </Grid>
-))
+));
 
 export const Root = withStyles(style)(({ classes, theme, children, ...props }) => (
     <div className={classes.root} {...props}>
         {children}
     </div>
-))
+));
 
 export const CommandoBar = withStyles(style)(({ classes, children, ...props }) => (
     <Toolbar
@@ -154,7 +156,7 @@ export const CommandoBar = withStyles(style)(({ classes, children, ...props }) =
     >
         {children}
     </Toolbar>
-))
+));
 
 export const MainCard = withStyles(style)(({ classes, children, ...props }) => (
     <Paper id='mainCard'
@@ -163,7 +165,7 @@ export const MainCard = withStyles(style)(({ classes, children, ...props }) => (
     >
         {children}
     </Paper>
-))
+));
 
 export const TitleHeader = withStyles(style)(({ classes, children, title, color, colortext, ...props }) => (
     <div className={classes.titleheader} style={color ? {background: `linear-gradient(to top, transparent, ${color})`} : null} {...props}>
@@ -172,7 +174,7 @@ export const TitleHeader = withStyles(style)(({ classes, children, title, color,
         <div style={{ flex: 1 }} />
         {children}
     </div>
-))
+));
 
 
 class HeaderRaw extends React.Component {
@@ -182,13 +184,13 @@ class HeaderRaw extends React.Component {
         if (this.props.color) {
             document.documentElement.style.background = nextProps.color;
         }
-    }
+    };
 
     componentWillUnmount = () => {
         if (this.props.color) {
             document.documentElement.style.background = null;
         }
-    }
+    };
 
     render() {
         const { image, color, classes } = this.props;
@@ -217,18 +219,18 @@ export const LoadingIndicator = withStyles(style)(({ classes, loading }) => (
         className={classes.loading}
         style={!loading ? { opacity: 0 } : null}
     />
-))
+));
 
 // Proptypes
 Container.propTypes = {
     classes: PropTypes.object.isRequired,
     children: PropTypes.any,
     spacing: PropTypes.number
-}
+};
 Container.defaultProps = {
     spacing: 0
-}
+};
 Root.propTypes = {
     classes: PropTypes.object.isRequired,
     children: PropTypes.any
-}
+};

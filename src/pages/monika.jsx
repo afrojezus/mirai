@@ -60,7 +60,7 @@ const style = theme => ({
         bottom: 0,
         width: '100%'
     }
-})
+});
 
 class Monika extends Component {
 
@@ -69,16 +69,16 @@ class Monika extends Component {
         wait: false,
         img: true,
         scare: false
-    }
+    };
 
     componentWillMount = () => {
       this.setState({dialog: moni[0][0], text: 0, topic: 0})
-    }
+    };
     
 
     next = () => {
         if (this.state.text + 1 > moni[this.state.topic].length) {
-        this.setState({dialog: '', wait: true})
+        this.setState({dialog: '', wait: true});
         setTimeout(() => {
             if (this.state.topic + 1 > Object.values(moni).length - 1) {
                 this.setState({scare: true, img: false}, () => setTimeout(() => this.setState({scare: false}, () => this.props.history.goBack()), 200))
@@ -89,7 +89,7 @@ class Monika extends Component {
         }
         else
         this.setState({dialog: moni[this.state.topic][this.state.text + 1], text: this.state.text + 1, topic: this.state.topic, wait: false})
-    }
+    };
     
 
     render () {
