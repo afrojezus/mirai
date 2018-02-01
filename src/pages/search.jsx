@@ -8,7 +8,7 @@ import Twist from '../twist-api';
 
 import corrector from '../utils/bigfuck';
 
-import queryString from 'querystring'
+import queryString from 'query-string'
 
 import localForage from 'localforage';
 
@@ -20,8 +20,9 @@ import searchQuery, {
 	searchCharQuery,
 	searchStudiosQuery,
 } from '../utils/searchquery';
-import { LoadingIndicator } from '../components/layouts';
+import { LoadingIndicator, TitleHeader, Header } from '../components/layouts';
 import CardButton from "../components/cardButton";
+import * as Vibrant from "node-vibrant/";
 
 const style = theme => ({
 	container: {
@@ -55,7 +56,9 @@ const style = theme => ({
 		width: '100%',
 		zIndex: -1,
 	},
-	content: {},
+	content: {
+		marginTop: theme.spacing.unit * 8
+	},
 	header: {
 		position: 'relative',
 		margin: 'auto',
@@ -354,22 +357,35 @@ class Search extends Component {
 		loading: true,
 		data: [],
 		users: null,
+		hue: '#111',
+		hueVib: '#0066ff',
+		hueVibN: '#111'
 	};
 
 	componentDidMount = async () => {
-		const prevSearch = await localForage.getItem('prevSearch');
+		/*const prevSearch = await localForage.getItem('prevSearch');
 		if (prevSearch)
 			this.setState(prevSearch, () =>
 				this.setState({ loading: false })
-			);
-		else if (this.props.history.location.search) {
-			let parsed = queryString.parse(this.props.history.location.search)
+			);*/
+
+		if (this.props.history.location.search) {
+            let parsed = queryString.parse(this.props.history.location.search)
             this.setState({searchVal: parsed.q}, () => this.uwu())
         } else
 			this.setState({ loading: false });
 	};
 
-	uwu = () =>
+
+    componentWillReceiveProps = (nextProps) => {
+		if (nextProps.history.location.search) {
+            let parsed = queryString.parse(nextProps.history.location.search)
+            this.setState({searchVal: parsed.q}, () => this.uwu())
+		}
+    }
+
+
+    uwu = () =>
 		this.setState(
 			{
 				data: null,
@@ -439,10 +455,28 @@ class Search extends Component {
 									.match(`${this.state.searchVal.toLowerCase()}`)
 							),
 						loading: false,
-					});
+					}, () => this.getColor());
 				}
 			}
 		);
+
+
+	getColor = () => {
+		if (this.state.anime.length > 0)
+		Vibrant.from('https://cors-anywhere.herokuapp.com/' + this.state.anime[0].coverImage.medium).getPalette(
+            (err, pal) => {
+                if (pal) {
+                    this.setState(
+                        {
+                            hue: pal.DarkMuted.getHex(),
+                            hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
+                            hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex(),
+                        }
+                    );
+                }
+            }
+        );
+    }
 
 	openEntity = link => {
 		this.props.history.push(link);
@@ -475,15 +509,20 @@ class Search extends Component {
 			staff,
 			studios,
 			users,
+			hue,
+			hueVibN,
+			hueVib
 		} = this.state;
 		return (
 			<div>
 				<LoadingIndicator
 					loading={loading}
 				/>
+				<TitleHeader color={hue} colortext={hueVib} />
 				<div className={classes.root}>
 
 					<div className={classes.cox} style={loading ? { opacity: 0 } : null}>
+						<Header color={hueVibN} />
 						<M.Grid container spacing={0} className={classes.content}>
 							{anime &&
 								anime.length > 0 &&

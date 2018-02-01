@@ -19,6 +19,7 @@ import {
 	Root,
 	Container,
 	LoadingIndicator,
+	TitleHeader
 } from '../components/layouts';
 
 const style = theme => ({
@@ -595,10 +596,11 @@ class User extends Component {
 		if (loading) return <LoadingIndicator loading={loading} />;
 		return (
 			<div>
+                <TitleHeader color={hue}></TitleHeader>
 				<Root style={loading ? { opacity: 0 } : null}>
 					<Container spacing={0}>
 						<M.Grid container spacing={0} className={classes.container}>
-							<Header image={data ? data.headers : user.headers} />
+							<Header image={data ? data.headers : user.headers} color={hueVibN} />
 							<M.Grid
 								item
 								style={{ width: 400, flexGrow: 0, marginRight: 24 }}
@@ -747,7 +749,11 @@ class User extends Component {
 									/>
 								</M.Tabs>
 								<div style={{ flex: 1 }} />
-								<M.IconButton color="contrast">
+                                <M.Button color='contrast' onClick={this.toggleFriend}>
+                                    {isEmpty(user) && user.friends && user.friends.hasOwnProperty(data.userID) ? <Icon.Remove style={{marginRight: 12}} /> : <Icon.PersonAdd style={{marginRight: 12}} />}
+                                    {isEmpty(user) && user.friends && user.friends.hasOwnProperty(data.userID) ? 'Remove friend' : 'Add friend'}
+                                </M.Button>
+                                <M.IconButton color="contrast">
 									<Icon.MoreVert />
 								</M.IconButton>
 							</CommandoBar>

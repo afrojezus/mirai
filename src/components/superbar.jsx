@@ -226,7 +226,7 @@ const styles = theme => ({
 	footerCopy: {
 		fontWeight: 700,
 		padding: theme.spacing.unit * 3,
-		fontSize: 12,
+		fontSize:  theme.typography.pxToRem(12),
 		color: grey[800],
 	},
 	contextBar: {
@@ -236,12 +236,12 @@ const styles = theme => ({
 	},
 	tabLabel: {
 		opacity: 0.5,
-		fontSize: 14,
+		fontSize:  theme.typography.pxToRem(14),
 		textTransform: 'initial',
 	},
 	tabLabelActive: {
 		fontWeight: 700,
-		fontSize: 14,
+		fontSize:  theme.typography.pxToRem(14),
 		textTransform: 'initial',
 	},
 	tabLine: {
@@ -317,6 +317,9 @@ const styles = theme => ({
 		paddingLeft: theme.spacing.unit * 2,
 		paddingRight: theme.spacing.unit * 2,
 		margin: 'auto 0'
+	},
+	barTitle: {
+		fontFamily: "'Fugaz One', cursive",
 	}
 });
 
@@ -548,7 +551,6 @@ class Superbar extends Component {
 					document.getElementById('fabShowButton').style.opacity = 0;
 				if (document.getElementById('header') && !window.safari) {
 					document.getElementById('header').style.opacity = null;
-					document.getElementById('header').style.transform = null;
 				}
 				let mainH = document.getElementById('mainHeader');
 				let mainC = document.getElementById('mainCard');
@@ -564,7 +566,6 @@ class Superbar extends Component {
 					document.getElementById('fabShowButton').style.opacity = 1;
 				if (document.getElementById('header') && !window.safari) {
 					document.getElementById('header').style.opacity = 0;
-					document.getElementById('header').style.transform = 'scale(0.9)';
 				}
 				let mainH = document.getElementById('mainHeader');
 				let mainC = document.getElementById('mainCard');
@@ -761,21 +762,22 @@ class Superbar extends Component {
 						style={window.safari ? { opacity: 0.2 } : scrolling ? { opacity: 0 } : { opacity: 0.2 }}
 					/>
 					<Toolbar>
-						<IconButton
+						<Hidden smUp><IconButton
 							className={classes.menuButton}
 							color="contrast"
 							aria-label="Menu"
 							onClick={this.toggleDrawer}
 						>
 							<MenuIcon />
-						</IconButton>
-						<Typography className={classes.barTitle} type="title">
-							{this.props.history.location.pathname.includes('/show') ||
+                        </IconButton></Hidden>
+						<IconButton onClick={() => this.props.history.push('/')}><Typography className={classes.barTitle} type="title">
+							{/*this.props.history.location.pathname.includes('/show') ||
 								this.props.history.location.pathname.includes('/fig')
 								? mirTitle
-								: currentPage}
-						</Typography>
-						<div className={classes.flex} />
+								: currentPage*/}
+                            未来
+						</Typography></IconButton>
+                        <div className={classes.flex} />
 						<Hidden smDown><SearchBox mir={this.props.mir} history={history} classes={{searchBar: classes.searchBar, searchInput: classes.searchInput, searchIcon: classes.searchIcon}} /></Hidden>
 						{/*<Tabs
 							className={classes.contextBar}
@@ -1055,6 +1057,7 @@ class SearchBox extends Component {
 
 	onSubmit = (e) => {
 		e.preventDefault();
+		if (this.state.value.length > 2 && this.state.value !== '')
 		this.props.history.push('/search?q=' + this.state.value);
 	}
 
@@ -1069,7 +1072,7 @@ class SearchBox extends Component {
 				<Paper className={classes.searchBar}>
 					<SearchIcon className={classes.searchIcon} />
 					<form onSubmit={this.onSubmit}>
-					<TextField onChange={this.onChange} fullWidth value={value} placeholder={'Search anime, manga, social etc.'} InputProps={{className: classes.searchInput, disableUnderline: true, fullWidth: true}} type={'search'}/>
+					<TextField autoFocus={true} onChange={this.onChange} fullWidth value={value} placeholder={'Search anime, manga, social etc. (Min. 3 characters)'} InputProps={{className: classes.searchInput, disableUnderline: true, fullWidth: true}} type={'search'}/>
 					</form>
 				</Paper>
 				{suggestionList ? <Paper square>

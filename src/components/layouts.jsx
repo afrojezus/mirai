@@ -54,7 +54,7 @@ const style = theme => ({
         margin: 'auto',
     },
     commandoTextLabel: {
-        fontSize: 12,
+        fontSize:  theme.typography.pxToRem(12),
         textAlign: 'center',
         color: 'rgba(255,255,255,.8)',
     },
@@ -126,7 +126,7 @@ const style = theme => ({
         color: 'white',
         margin: 'auto',
         flex: 1,
-        fontSize: 64,
+        fontSize:  theme.typography.pxToRem(64),
         position: 'relative',
         marginTop: theme.spacing.unit * 14,
         fontWeight: 800,

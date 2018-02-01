@@ -131,14 +131,14 @@ const styles = theme => ({
 	smallTitle: {
 		fontWeight: 600,
 		color: 'white',
-		fontSize: 16,
+		fontSize: theme.typography.pxToRem(16),
 		textShadow: '0 2px 12px rgba(0,0,0,.17)',
 	},
 	tagBox: {
 		marginTop: theme.spacing.unit,
 	},
 	tagTitle: {
-		fontSize: 16,
+		fontSize:  theme.typography.pxToRem(16),
 		fontWeight: 600,
 		color: 'white',
 		textShadow: '0 2px 12px rgba(0,0,0,.17)',
@@ -407,7 +407,7 @@ const styles = theme => ({
 	},
 	progressTitle: {
 		display: 'flex',
-		fontSize: 12,
+		fontSize:  theme.typography.pxToRem(12),
 		margin: 'auto',
 		textAlign: 'center',
 	},
@@ -443,12 +443,12 @@ const styles = theme => ({
 		background: 'transparent'
     },
 	commandoTextLabel: {
-		fontSize: 12,
+		fontSize:  theme.typography.pxToRem(12),
 		textAlign: 'center',
 		color: 'rgba(255,255,255,.8)',
 	},
     commandoTextLabelRow: {
-        fontSize: 14,
+        fontSize:  theme.typography.pxToRem(14),
         color: 'white',
 		margin: 'auto',
 		paddingLeft: theme.spacing.unit
@@ -456,14 +456,14 @@ const styles = theme => ({
     commandoTextNumberRow: {
         color: 'rgba(0,0,0,1)',
         margin: 'auto',
-		fontSize: 32,
+		fontSize:  theme.typography.pxToRem(32),
 		fontWeight: 700,
     },
 	smallTitlebar: {
 		display: 'flex',
 	},
 	artworktype: {
-		fontSize: 12,
+		fontSize:  theme.typography.pxToRem(12),
 		boxSizing: 'border-box',
 		padding: theme.spacing.unit * 2,
 		width: '100%',
@@ -787,7 +787,8 @@ class Show extends Component {
 		else if (this.props.mir && this.props.mir.twist) {
 			let correctedtitle = this.state.data.Media.title.romaji
 				.toLowerCase()
-				.replace('(tv)', '');
+				.replace('(tv)', '')
+				.replace('.', '');
 			const meta = Object.values(this.props.mir.twist).filter(s =>
 				s.name.toLowerCase().match(`${correctedtitle}`)
 			);
@@ -1238,7 +1239,7 @@ class Show extends Component {
 									</M.Grid>
 								</M.Grid>
 							</Container>
-							<MainCard style={!data.Media.bannerImage ?  { background: hue, border: '1px solid rgba(255,255,255,.1)', boxShadow: 'none' } : { background: hue }}>
+							<MainCard style={!data.Media.bannerImage ?  { background: hue, boxShadow: '0 5px 32px rgba(0,0,0,.2)' } : { background: hue }}>
 								<CommandoBar style={{ background: hue }}>
 									{data.Media.averageScore ? (
 										<div className={classes.commandoTextBox}>

@@ -197,7 +197,7 @@ const SuperTable = ({ classes, ...props }) => {
                 type="display2"
                 className={classes.bigCardVerySmallTitle}
               >
-                {anime.avgScore ? `Score ${anime.avgScore}%` : null} {anime.rank ? `• #${anime.rank.rank + ' ' + anime.rank.context + ' ' + anime.rank.format}` : null}
+                {anime.avgScore ? `Score ${anime.avgScore}%` : `Score ${anime.meanScore}%`} {anime.rank ? `• #${anime.rank.rank + ' ' + anime.rank.context + ' ' + anime.rank.format}` : null}
               </M.Typography>
               <Dotdotdot clamp={2} className={classes.dotdot}>
                 <M.Typography
@@ -488,22 +488,7 @@ const SuperTable = ({ classes, ...props }) => {
                 type="display2"
                 className={classes.bigCardVerySmallTitle}
               >
-                {props.typeof === "ranking" ? (
-                  <span role="img" aria-label="emoji">
-                    {anime.emoji}
-                  </span>
-                ) : null}
-                {props.typeof === "ongoing"
-                  ? props.type.includes("m")
-                    ? null
-                    : timeFormatter(anime.nextAiringEpisode.timeUntilAiring) +
-                    " till Episode " +
-                    anime.nextAiringEpisode.episode
-                  : props.typeof === "ranking"
-                    ? anime.category
-                    : props.typeof === "progress"
-                      ? anime.ep ? "EPISODE " + anime.ep : null
-                      : null}
+                  {anime.averageScore ? `Score ${anime.averageScore}%` : null} { anime.rankings  ? `• #${anime.rankings[0].rank + ' ' + anime.rankings[0].context + ' ' + anime.rankings[0].format + ' ' + (anime.rankings[0].allTime ? '' : `${anime.rankings[0].season ? anime.rankings[0].season : ''} ${anime.rankings[0].year}`)}` : null}
               </M.Typography>
               <Dotdotdot clamp={2} className={classes.dotdot}>
                 <M.Typography
@@ -525,22 +510,19 @@ const SuperTable = ({ classes, ...props }) => {
                 <M.Typography
                   type="display2"
                   className={classes.bigCardSmallTitle}
-                  dangerouslySetInnerHTML={
-                    props.typeof === "ongoing"
-                      ? {
-                        __html: anime.description
-                      }
-                      : props.typeof === "ranking"
-                        ? {
-                          __html: anime.desc
-                        }
-                        : null
-                  }
+
                 >
-                  {props.typeof === "progress"
-                    ? "Last watched " +
-                    timeFormatToReadable(anime.recentlyWatched)
-                    : null}
+                    {props.typeof === "ongoing"
+                        ? props.type.includes("m")
+                            ? null
+                            : timeFormatter(anime.nextAiringEpisode.timeUntilAiring) +
+                            " till Episode " +
+                            anime.nextAiringEpisode.episode
+                        : props.typeof === "ranking"
+                            ? anime.category
+                            : props.typeof === "progress"
+                                ? anime.ep ? "EPISODE " + anime.ep : null
+                                : null}
                 </M.Typography>
               </Dotdotdot>
             </div>

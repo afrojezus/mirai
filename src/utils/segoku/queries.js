@@ -409,6 +409,17 @@ query ($id: Int, $page: Int, $season: MediaSeason, $seasonYear: Int, $search: St
       description
 
       averageScore
+      
+      rankings {
+        id
+        rank
+        type
+        format
+        year
+        season
+        allTime
+        context
+      }
 
       meanScore
 

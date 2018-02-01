@@ -634,7 +634,7 @@ class Home extends Component {
 												data={ongoing.data.Page.media
 													.filter(s => s.nextAiringEpisode)
 													.filter(d =>
-														Object.values(this.props.mir.twist).filter(s =>
+														this.props.mir.twist.filter(s =>
 															s.name.match(d.title.romaji)
 														)
 													)

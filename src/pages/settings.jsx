@@ -123,7 +123,8 @@ class Settings extends Component {
     motto: "",
     avaLoading: false,
     bgLoading: false,
-    loading: true
+    loading: true,
+      theme: 'Mirai'
   };
 
   componentDidMount = () =>
@@ -230,7 +231,7 @@ class Settings extends Component {
 
   render() {
     const { classes } = this.props;
-    const { loading } = this.state;
+    const { loading, theme } = this.state;
     const user = this.props.profile;
     if (!user) return null;
     return (
@@ -239,6 +240,26 @@ class Settings extends Component {
           <M.Typography type="headline" className={classes.headline}>
             Aesthetics
           </M.Typography>
+            <M.ExpansionPanel className={classes.panel}>
+                <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
+                    <div className={classes.column}>
+                        <M.Typography type="title">Theme</M.Typography>
+                    </div>
+                    <div className={classes.column}>
+                        <M.Typography className={classes.secondaryHeading}>{theme}</M.Typography>
+                    </div>
+                </M.ExpansionPanelSummary>
+                <M.ExpansionPanelDetails>
+
+                </M.ExpansionPanelDetails>
+                <M.ExpansionPanelActions>
+                    {this.state.theme !== 'Mirai' ? (
+                        <M.Button dense onClick={this.changeTheme} color="primary">
+                            Apply
+                        </M.Button>
+                    ) : null}
+                </M.ExpansionPanelActions>
+            </M.ExpansionPanel>
           <M.ExpansionPanel className={classes.panel}>
             <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
               <div className={classes.column}>
@@ -292,7 +313,8 @@ class Settings extends Component {
                 />
               </div>
             </M.ExpansionPanelSummary>
-            <M.ExpansionPanelDetails>
+            <M.ExpansionPanelDetails style={{display: 'block'}}>
+                <M.Typography type={'body1'}>The background also changes the accent color of your personalized home.</M.Typography>
               <Dropzone
                 className={classes.dropzoneBg}
                 multiple={false}
