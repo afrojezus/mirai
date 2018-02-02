@@ -54,7 +54,7 @@ const style = theme => ({
         margin: 'auto',
     },
     commandoTextLabel: {
-        fontSize:  theme.typography.pxToRem(12),
+        fontSize: theme.typography.pxToRem(12),
         textAlign: 'center',
         color: 'rgba(255,255,255,.8)',
     },
@@ -82,7 +82,8 @@ const style = theme => ({
         animation: 'fadeInSlowly 1.1s ease',
         textIndent: -999,
         border: 'none',
-        height: '100vh'
+        height: '100vh',
+        maskImage: 'linear-gradient(rgba(0, 0, 0, 1.0), transparent)'
     },
     headerD: {
         position: 'fixed',
@@ -126,7 +127,7 @@ const style = theme => ({
         color: 'white',
         margin: 'auto',
         flex: 1,
-        fontSize:  theme.typography.pxToRem(64),
+        fontSize: theme.typography.pxToRem(64),
         position: 'relative',
         marginTop: theme.spacing.unit * 14,
         fontWeight: 800,
@@ -137,7 +138,7 @@ const style = theme => ({
 });
 
 export const Container = withStyles(style, { withTheme: true })(({ classes, theme, children, spacing, special, hasHeader, ...props }) => (
-    <Grid container style={hasHeader ? { marginTop: theme.spacing.unit * 16 }  :  null} spacing={spacing} {...props} className={special ? 'containerS' : classes.container}>
+    <Grid container style={hasHeader ? { marginTop: theme.spacing.unit * 16 } : null} spacing={spacing} {...props} className={special ? 'containerS' : classes.container}>
         {children}
     </Grid>
 ));
@@ -168,9 +169,9 @@ export const MainCard = withStyles(style)(({ classes, children, ...props }) => (
 ));
 
 export const TitleHeader = withStyles(style)(({ classes, children, title, color, colortext, ...props }) => (
-    <div className={classes.titleheader} style={color ? {background: `linear-gradient(to top, transparent, ${color})`} : null} {...props}>
+    <div className={classes.titleheader} style={color ? { background: `linear-gradient(to top, transparent, ${color})` } : null} {...props}>
         <div style={{ flex: 1 }} />
-        <Typography className={classes.titleheadertitle} style={colortext ? {color: colortext} : null} type={'display2'}>{title}</Typography>
+        <Typography className={classes.titleheadertitle} style={colortext ? { color: colortext } : null} type={'display2'}>{title}</Typography>
         <div style={{ flex: 1 }} />
         {children}
     </div>

@@ -20,17 +20,18 @@ class Rankings extends Component {
 	};
 
 
-	render = () => (
+	render = () => (<div>
+		<TitleHeader title={'Rankings'} />
 		<Root>
 			<LoadingIndicator
 				loading={this.state.loading}
 			/>
-			<TitleHeader title={'Rankings'} />
 			<Container hasHeader style={this.state.loading ? { opacity: 0 } : null}>
 				<Typography type='title'>Top 10 animes</Typography>
 				<Supertable data={[]} type='s' typeof='rankings' limit={8}></Supertable>
 			</Container>
 		</Root>
+	</div>
 	)
 }
 

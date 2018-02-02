@@ -394,32 +394,34 @@ class Home extends Component {
 	};
 
 	getColors = async () => {
-        let hues = await localForage.getItem('user-hue');
+		let hues = await localForage.getItem('user-hue');
 		if (!isEmpty(this.props.profile) && this.props.profile.headers && !hues)
-        Vibrant.from('https://cors-anywhere.herokuapp.com/' + this.props.profile.headers).getPalette(
-            (err, pal) => {
-                if (pal) {
-                    this.setState(
-                        {
-                            hue: pal.DarkMuted.getHex(),
-                            hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
-                            hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex(),
-                        },
-                        async () => {
-                            await localForage.setItem('user-hue', {
-                                hue: this.state.hue,
-                                vib: this.state.hueVib,
-                                vibn: this.state.hueVibN
-                            });
-                        }
-                    );
-                }
-            }
-        );
+			Vibrant.from('https://cors-anywhere.herokuapp.com/' + this.props.profile.headers).getPalette(
+				(err, pal) => {
+					if (pal) {
+						this.setState(
+							{
+								hue: pal.DarkMuted.getHex(),
+								hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
+								hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex(),
+							},
+							async () => {
+								await localForage.setItem('user-hue', {
+									hue: this.state.hue,
+									vib: this.state.hueVib,
+									vibn: this.state.hueVibN
+								});
+							}
+						);
+					}
+				}
+			);
 		else
-			this.setState({hue: hues.hue,
-                hueVib: hues.vib,
-                hueVibN: hues.vibn });
+			this.setState({
+				hue: hues.hue,
+				hueVib: hues.vib,
+				hueVibN: hues.vibn
+			});
 	};
 
 	fetchOngoing = async () => {
@@ -519,88 +521,88 @@ class Home extends Component {
 					<TitleHeader color={hue} colortext={hueVib} title={!isEmpty(this.props.profile) ? `Welcome back, ${this.props.profile.username}.` : 'Mirai. Gateway to the future.'}></TitleHeader>
 					<Root>
 						<Container hasHeader spacing={16}>
-                            <div style={{ width: '100%' }}>
-                                <Grid item xs className={classes.itemContainer}>
-                                    <Typography type="title" className={classes.headline}>
-                                        News
+							<div style={{ width: '100%' }}>
+								<Grid item xs className={classes.itemContainer}>
+									<Typography type="title" className={classes.headline}>
+										News
                                     </Typography>
-                                    <Grid container spacing={16}>
-                                        {feeds &&
-                                        feeds.map((feed, index) => (
-                                            <Grid item xs key={index}>
-                                                <Card classes={{ root: classes.cardColor }}>
-                                                    <CardHeader
-                                                        avatar={
-                                                            <Avatar
-                                                                alt=""
-                                                                src={miraiIcon}
-                                                                className={classes.avatar}
-                                                            />
-                                                        }
-                                                        title={feed.name}
-                                                        subheader={feed.user.name + ' - ' + feed.date}
-                                                    />
-                                                    {feed.image ? <CardMedia image={feed.image} /> : null}
-                                                    <CardContent>
-                                                        <Typography type="body1">{feed.context}</Typography>
-                                                    </CardContent>
-                                                    <Divider />
-                                                    <CardActions>
-                                                        <Button
-                                                            color="contrast"
-                                                            className={classes.likeCount}
-                                                        >
-                                                            {feed.likes.length}{' '}
-                                                            {feed.likes.length === 1 ? 'Like' : 'Likes'}
-                                                        </Button>
-                                                        <Button
-                                                            color="contrast"
-                                                            className={classes.likeCount}
-                                                        >
-                                                            {feed.comments.length}{' '}
-                                                            {feed.comments.length === 1
-                                                                ? 'Comment'
-                                                                : 'Comments'}
-                                                        </Button>
-                                                        <div className={classes.spacer} />
-                                                        <IconButton>
-                                                            <PlusOneIcon />
-                                                        </IconButton>
-                                                        <IconButton>
-                                                            <ShareIcon />
-                                                        </IconButton>
-                                                    </CardActions>
-                                                </Card>
-                                                <Menu
-                                                    id="feed-menu"
-                                                    anchorEl={anchorEl}
-                                                    open={openFeed}
-                                                    onRequestClose={() =>
-                                                        this.setState({ anchorEl: null })
-                                                    }
-                                                    anchorOrigin={{
-                                                        vertical: 'top',
-                                                        horizontal: 'right',
-                                                    }}
-                                                    transformOrigin={{
-                                                        vertical: 'top',
-                                                        horizontal: 'right',
-                                                    }}
-                                                >
-                                                    <MenuItem
-                                                        onClick={() => {
-                                                            this.setState({ anchorEl: null });
-                                                            this.easterEggOne();
-                                                        }}
-                                                    >
-                                                        I have issues with different opinions
+									<Grid container spacing={16}>
+										{feeds &&
+											feeds.map((feed, index) => (
+												<Grid item xs key={index}>
+													<Card classes={{ root: classes.cardColor }}>
+														<CardHeader
+															avatar={
+																<Avatar
+																	alt=""
+																	src={miraiIcon}
+																	className={classes.avatar}
+																/>
+															}
+															title={feed.name}
+															subheader={feed.user.name + ' - ' + feed.date}
+														/>
+														{feed.image ? <CardMedia image={feed.image} /> : null}
+														<CardContent>
+															<Typography type="body1">{feed.context}</Typography>
+														</CardContent>
+														<Divider />
+														<CardActions>
+															<Button
+																color="contrast"
+																className={classes.likeCount}
+															>
+																{feed.likes.length}{' '}
+																{feed.likes.length === 1 ? 'Like' : 'Likes'}
+															</Button>
+															<Button
+																color="contrast"
+																className={classes.likeCount}
+															>
+																{feed.comments.length}{' '}
+																{feed.comments.length === 1
+																	? 'Comment'
+																	: 'Comments'}
+															</Button>
+															<div className={classes.spacer} />
+															<IconButton>
+																<PlusOneIcon />
+															</IconButton>
+															<IconButton>
+																<ShareIcon />
+															</IconButton>
+														</CardActions>
+													</Card>
+													<Menu
+														id="feed-menu"
+														anchorEl={anchorEl}
+														open={openFeed}
+														onRequestClose={() =>
+															this.setState({ anchorEl: null })
+														}
+														anchorOrigin={{
+															vertical: 'top',
+															horizontal: 'right',
+														}}
+														transformOrigin={{
+															vertical: 'top',
+															horizontal: 'right',
+														}}
+													>
+														<MenuItem
+															onClick={() => {
+																this.setState({ anchorEl: null });
+																this.easterEggOne();
+															}}
+														>
+															I have issues with different opinions
                                                     </MenuItem>
-                                                </Menu>
-                                            </Grid>
-                                        ))}
-                                    </Grid>
-                                </Grid>
-                            </div>
+													</Menu>
+												</Grid>
+											))}
+									</Grid>
+								</Grid>
+							</div>
 							<div style={{ width: '100%' }}>
 								<Grid
 									item
@@ -625,7 +627,7 @@ class Home extends Component {
 											: null}
 									</Typography>
 								</Grid>
-								<Grid container className={classes.itemcontainer}>
+								<Grid container className={classes.itemcontainer} spacing={0}>
 									{ongoing &&
 										ongoing.data &&
 										this.props.mir &&
@@ -658,7 +660,7 @@ class Home extends Component {
 										Currently ongoing manga
 								</Typography>
 								</Grid>
-								<Grid container className={classes.itemcontainer}>
+								<Grid container className={classes.itemcontainer} spacing={0}>
 									{ongoingM && ongoingM.data ? (
 										<SuperTable
 											data={ongoingM.data.Page.media}
@@ -681,7 +683,7 @@ class Home extends Component {
 										Ranking
 								</Typography>
 								</Grid>
-								<Grid container className={classes.itemcontainer}>
+								<Grid container className={classes.itemcontainer} spacing={0}>
 									{rankingMentionable ? (
 										<SuperTable
 											data={Object.values(rankingMentionable[0])}
@@ -713,7 +715,7 @@ class Home extends Component {
 										</Typography>
 										<Button onClick={() => this.props.history.push('/history')}>History</Button>
 									</Grid>
-									<Grid container className={classes.itemcontainer}>
+									<Grid container className={classes.itemcontainer} spacing={0}>
 										<SuperTable
 											data={Object.values(user.episodeProgress)
 												.filter(s => s.recentlyWatched)

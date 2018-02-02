@@ -62,7 +62,7 @@ import { firebaseConnect, isEmpty } from 'react-redux-firebase';
 import NotificationForm from './notificationForm';
 import BottomNavigation from 'material-ui/BottomNavigation/BottomNavigation';
 import BottomNavigationAction from 'material-ui/BottomNavigation/BottomNavigationAction';
-import {history} from "../store";
+import { history } from "../store";
 
 const drawerWidth = 240;
 
@@ -226,7 +226,7 @@ const styles = theme => ({
 	footerCopy: {
 		fontWeight: 700,
 		padding: theme.spacing.unit * 3,
-		fontSize:  theme.typography.pxToRem(12),
+		fontSize: theme.typography.pxToRem(12),
 		color: grey[800],
 	},
 	contextBar: {
@@ -236,12 +236,12 @@ const styles = theme => ({
 	},
 	tabLabel: {
 		opacity: 0.5,
-		fontSize:  theme.typography.pxToRem(14),
+		fontSize: theme.typography.pxToRem(14),
 		textTransform: 'initial',
 	},
 	tabLabelActive: {
 		fontWeight: 700,
-		fontSize:  theme.typography.pxToRem(14),
+		fontSize: theme.typography.pxToRem(14),
 		textTransform: 'initial',
 	},
 	tabLine: {
@@ -299,18 +299,18 @@ const styles = theme => ({
 		display: 'flex',
 		transition: theme.transitions.create(['all']),
 		'&:hover': {
-            background: 'rgba(255,255,255,.08)',
-            border: '1px solid rgba(255,255,255,.15)'
-        },
-        '&:focus': {
-            background: 'rgba(255,255,255,.08)',
-            border: '1px solid rgba(255,255,255,.15)'
-        }
+			background: 'rgba(255,255,255,.08)',
+			border: '1px solid rgba(255,255,255,.15)'
+		},
+		'&:focus': {
+			background: 'rgba(255,255,255,.08)',
+			border: '1px solid rgba(255,255,255,.15)'
+		}
 	},
 	searchInput: {
 		padding: theme.spacing.unit,
-        maxWidth: 1970,
-        minWidth: 700,
+		maxWidth: 1970,
+		minWidth: 700,
 		boxSizing: 'border-box'
 	},
 	searchIcon: {
@@ -762,23 +762,23 @@ class Superbar extends Component {
 						style={window.safari ? { opacity: 0.2 } : scrolling ? { opacity: 0 } : { opacity: 0.2 }}
 					/>
 					<Toolbar>
-						<Hidden smUp><IconButton
+						<IconButton
 							className={classes.menuButton}
 							color="contrast"
 							aria-label="Menu"
 							onClick={this.toggleDrawer}
 						>
 							<MenuIcon />
-                        </IconButton></Hidden>
+						</IconButton>
 						<IconButton onClick={() => this.props.history.push('/')}><Typography className={classes.barTitle} type="title">
 							{/*this.props.history.location.pathname.includes('/show') ||
 								this.props.history.location.pathname.includes('/fig')
 								? mirTitle
 								: currentPage*/}
-                            未来
+							未来
 						</Typography></IconButton>
-                        <div className={classes.flex} />
-						<Hidden smDown><SearchBox mir={this.props.mir} history={history} classes={{searchBar: classes.searchBar, searchInput: classes.searchInput, searchIcon: classes.searchIcon}} /></Hidden>
+						<div className={classes.flex} />
+						<Hidden smDown><SearchBox mir={this.props.mir} history={history} classes={{ searchBar: classes.searchBar, searchInput: classes.searchInput, searchIcon: classes.searchIcon }} /></Hidden>
 						{/*<Tabs
 							className={classes.contextBar}
 							value={tabVal}
@@ -1049,16 +1049,16 @@ class SearchBox extends Component {
 		suggestionList: null
 	}
 
-	onChange = (e) => this.setState({value: e.currentTarget.value}, () => {
+	onChange = (e) => this.setState({ value: e.currentTarget.value }, () => {
 		if (this.props.mir !== null && this.props.mir.twist !== null) {
-			this.setState({suggestionList: this.props.mir.twist.filter(s => s.name.toLowerCase().match(this.state.value.toLowerCase()))})
+			this.setState({ suggestionList: this.props.mir.twist.filter(s => s.name.toLowerCase().match(this.state.value.toLowerCase())) })
 		}
 	})
 
 	onSubmit = (e) => {
 		e.preventDefault();
 		if (this.state.value.length > 2 && this.state.value !== '')
-		this.props.history.push('/search?q=' + this.state.value);
+			this.props.history.push('/search?q=' + this.state.value);
 	}
 
 	render() {
@@ -1072,7 +1072,7 @@ class SearchBox extends Component {
 				<Paper className={classes.searchBar}>
 					<SearchIcon className={classes.searchIcon} />
 					<form onSubmit={this.onSubmit}>
-					<TextField autoFocus={true} onChange={this.onChange} fullWidth value={value} placeholder={'Search anime, manga, social etc. (Min. 3 characters)'} InputProps={{className: classes.searchInput, disableUnderline: true, fullWidth: true}} type={'search'}/>
+						<TextField autoFocus={true} onChange={this.onChange} fullWidth value={value} placeholder={'Search anime, manga, social etc. (Min. 3 characters)'} InputProps={{ className: classes.searchInput, disableUnderline: true, fullWidth: true }} type={'search'} />
 					</form>
 				</Paper>
 				{suggestionList ? <Paper square>
@@ -1080,7 +1080,7 @@ class SearchBox extends Component {
 				</Paper> : null}
 			</div>
 		)
-    }
+	}
 }
 
 export default firebaseConnect()(
