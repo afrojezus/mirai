@@ -15,7 +15,7 @@ const styles = theme => ({
 		flexGrow: 'initial',
 		flexBasis: 'initial',
 		margin: theme.spacing.unit / 2,
-		transition: 'all .2s ease',
+		transition: 'all 1s cubic-bezier(.07,.95,0,1)',
 		'&:hover': {
 			overflow: 'initial',
 			boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
@@ -25,6 +25,9 @@ const styles = theme => ({
 			boxShadow: 'none',
 			zIndex: 200,
 		},
+		'&:hover > div > div': {
+			filter: 'brightness(0.4)',
+		},
 		'&:hover > * > h1': {
 			fontWeight: 700,
 			textShadow: '0 2px 12px rgba(0,0,0,.7)',
@@ -32,7 +35,7 @@ const styles = theme => ({
 		position: 'relative',
 		overflow: 'hidden',
 		willChange: 'auto',
-		cursor: 'pointer'
+		cursor: 'pointer',
 	},
 	entityCardDisabled: {
 		height: 200,
@@ -52,16 +55,13 @@ const styles = theme => ({
 		position: 'absolute',
 		zIndex: -1,
 		transition: theme.transitions.create(['filter']),
-        filter: 'brightness(0.7)',
-		'&:hover': {
-			filter: 'brightness(0.4)',
-		},
+		filter: 'brightness(0.7)',
 		top: 0,
 		left: 0,
 		background: 'white',
-        backgroundSize: 'cover',
+		backgroundSize: 'cover',
 		backgroundRepeat: 'no-repeat',
-		backgroundPosition: 'center'
+		backgroundPosition: 'center',
 	},
 	entityTitle: {
 		fontSize: 14,
@@ -75,7 +75,7 @@ const styles = theme => ({
 		textShadow: '0 1px 12px rgba(0,0,0,.2)',
 		willChange: 'auto',
 		cursor: 'default',
-		userSelect: 'none'
+		userSelect: 'none',
 	},
 	entitySubTitle: {
 		fontSize: 14,
@@ -89,7 +89,7 @@ const styles = theme => ({
 		textShadow: '0 1px 12px rgba(0,0,0,.2)',
 		willChange: 'auto',
 		cursor: 'default',
-		userSelect: 'none'
+		userSelect: 'none',
 	},
 	gradientCard: {
 		position: 'relative',
@@ -104,7 +104,7 @@ const styles = theme => ({
 		flexGrow: 'initial',
 		flexBasis: 'initial',
 		margin: theme.spacing.unit / 2,
-		transition: 'all .2s ease',
+		transition: 'all .2s cubic-bezier(.07,.95,0,1)',
 		'&:hover': {
 			overflow: 'initial',
 			boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
@@ -116,7 +116,7 @@ const styles = theme => ({
 		position: 'relative',
 		overflow: 'hidden',
 		willChange: 'auto',
-		cursor: 'pointer'
+		cursor: 'pointer',
 	},
 	peopleImage: {
 		height: 156,
@@ -161,7 +161,7 @@ const styles = theme => ({
 		textShadow: '0 1px 12px rgba(0,0,0,.5)',
 		willChange: 'auto',
 		cursor: 'default',
-		userSelect: 'none'
+		userSelect: 'none',
 	},
 	peopleSubTitle: {
 		fontSize: 14,
@@ -175,7 +175,7 @@ const styles = theme => ({
 		whiteSpace: 'nowrap',
 		willChange: 'auto',
 		cursor: 'default',
-		userSelect: 'none'
+		userSelect: 'none',
 	},
 	artworktype: {
 		fontSize: 12,

@@ -1,38 +1,41 @@
 import React, { Component } from 'react';
-import { Root, CommandoBar, Container, LoadingIndicator, TitleHeader } from "../components/layouts";
-import { withStyles } from 'material-ui/styles'
-import { connect } from "react-redux";
-import { firebaseConnect } from "react-redux-firebase";
+import {
+	Root,
+	CommandoBar,
+	Container,
+	LoadingIndicator,
+	TitleHeader,
+	Header,
+} from '../components/layouts';
+import { withStyles } from 'material-ui/styles';
+import { connect } from 'react-redux';
+import { firebaseConnect } from 'react-redux-firebase';
 import Typography from 'material-ui/Typography/Typography';
 import Supertable from '../components/supertable';
+import orange from 'material-ui/colors/orange';
 
-const style = theme => ({
-
-});
+const style = theme => ({});
 
 class Rankings extends Component {
 	state = {
-		loading: true
+		loading: true,
 	};
 
-	componentDidMount = () => {
+	componentDidMount = () => {};
 
-	};
-
-
-	render = () => (<div>
-		<TitleHeader title={'Rankings'} />
-		<Root>
-			<LoadingIndicator
-				loading={this.state.loading}
-			/>
-			<Container hasHeader style={this.state.loading ? { opacity: 0 } : null}>
-				<Typography type='title'>Top 10 animes</Typography>
-				<Supertable data={[]} type='s' typeof='rankings' limit={8}></Supertable>
-			</Container>
-		</Root>
-	</div>
-	)
+	render = () => (
+		<div>
+			<TitleHeader title={'Rankings'} color={orange.A400} />
+			<Header color={orange[800]} />
+			<Root>
+				<LoadingIndicator loading={this.state.loading} />
+				<Container hasHeader style={this.state.loading ? { opacity: 0 } : null}>
+					<Typography type="title">Top 10 animes</Typography>
+					<Supertable data={[]} type="s" typeof="rankings" limit={8} />
+				</Container>
+			</Root>
+		</div>
+	);
 }
 
 export default firebaseConnect()(

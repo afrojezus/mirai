@@ -10,7 +10,7 @@ import Menu, { MenuItem } from 'material-ui/Menu';
 import MenuIcon from 'material-ui-icons/Menu';
 import AccountCircle from 'material-ui-icons/AccountCircle';
 import Info from 'material-ui-icons/Info';
-import miraiLogo from '../assets/mirai-icon.png';
+import miraiLogo from '../assets/mirai-logo5.png';
 import { grey } from 'material-ui/colors';
 import Drawer from 'material-ui/Drawer';
 import List, {
@@ -62,7 +62,7 @@ import { firebaseConnect, isEmpty } from 'react-redux-firebase';
 import NotificationForm from './notificationForm';
 import BottomNavigation from 'material-ui/BottomNavigation/BottomNavigation';
 import BottomNavigationAction from 'material-ui/BottomNavigation/BottomNavigationAction';
-import { history } from "../store";
+import { history } from '../store';
 
 const drawerWidth = 240;
 
@@ -85,15 +85,10 @@ const styles = theme => ({
 		borderBottom: `1px solid rgba(255,255,255,0)`,
 	},
 	appBarTop: {
-		background: 'transparent',
-		boxShadow: 'none',
-		borderBottom: `1px solid rgba(255,255,255,.1)`,
-	},
-	appBarTopSafari: {
 		background: 'rgba(0,0,0,.1)',
 		boxShadow: 'none',
 		borderBottom: `1px solid rgba(255,255,255,.1)`,
-		backdropFilter: 'blur(10px)'
+		backdropFilter: 'blur(10px)',
 	},
 	appFrame: {
 		position: 'relative',
@@ -109,8 +104,20 @@ const styles = theme => ({
 		marginRight: 20,
 	},
 	logoButton: {
-		width: 32,
-		borderRadius: '50%',
+		position: 'absolute',
+		left: '50%',
+		right: '50%',
+		transform: 'translate(-50%, -50%)',
+		margin: 'auto',
+		top: theme.spacing.unit * 4,
+		[theme.breakpoints.down('sm')]: {
+			position: 'initial',
+			left: 'initial',
+			right: 'initial',
+			transform: 'initial',
+			margin: 'auto',
+			top: 'initial',
+		},
 	},
 	userButton: {
 		width: 32,
@@ -136,12 +143,21 @@ const styles = theme => ({
 	drawer: {
 		width: drawerWidth,
 		height: '100%',
-		backgroundColor: '#111',
 		paddingLeft: 'env(safe-area-inset-left)',
 		[theme.breakpoints.up('md')]: {
 			height: 'auto',
 		},
+		background:
+			window.safari && window.navigator.userAgent.indexOf('Edge') > -1
+				? 'rgba(0,0,0,.1)'
+				: '#111',
+		backdropFilter: 'blur(10px)',
+		boxShadow:
+			window.safari && window.navigator.userAgent.indexOf('Edge') > -1
+				? 'none'
+				: null,
 	},
+	drawerBg: {},
 	drawerDocked: {
 		height: '100%',
 		position: 'fixed',
@@ -295,32 +311,39 @@ const styles = theme => ({
 		border: '1px solid rgba(255,255,255,.1)',
 		boxShadow: 'none',
 		maxWidth: 1970,
-		minWidth: 700,
+		minWidth: 300,
 		display: 'flex',
 		transition: theme.transitions.create(['all']),
 		'&:hover': {
 			background: 'rgba(255,255,255,.08)',
-			border: '1px solid rgba(255,255,255,.15)'
+			border: '1px solid rgba(255,255,255,.15)',
 		},
 		'&:focus': {
 			background: 'rgba(255,255,255,.08)',
-			border: '1px solid rgba(255,255,255,.15)'
-		}
+			border: '1px solid rgba(255,255,255,.15)',
+		},
+		margin: 'auto',
+		marginRight: theme.spacing.unit,
 	},
 	searchInput: {
-		padding: theme.spacing.unit,
 		maxWidth: 1970,
-		minWidth: 700,
-		boxSizing: 'border-box'
+		minWidth: 300,
+		boxSizing: 'border-box',
 	},
 	searchIcon: {
 		paddingLeft: theme.spacing.unit * 2,
 		paddingRight: theme.spacing.unit * 2,
-		margin: 'auto 0'
+		margin: 'auto 0',
 	},
 	barTitle: {
 		fontFamily: "'Fugaz One', cursive",
-	}
+	},
+	logoImg: {
+		height: 52,
+		margin: 'auto',
+		position: 'relative',
+		top: '-2px',
+	},
 });
 
 class Superbar extends Component {
@@ -339,7 +362,7 @@ class Superbar extends Component {
 		status: 0,
 		mirTitle: '',
 		scrolling: false,
-		commit: 'd10'
+		commit: 'd10',
 	};
 
 	componentWillMount = () => {
@@ -349,7 +372,10 @@ class Superbar extends Component {
 			this.setState({ tabVal: 4 });
 		}
 
-		if (this.props.history.location.pathname === '/watch' && window.location.pathname === '/watch') {
+		if (
+			this.props.history.location.pathname === '/watch' &&
+			window.location.pathname === '/watch'
+		) {
 			this.setState({ watchIsOn: true });
 		} else {
 			this.setState({ watchIsOn: false });
@@ -549,9 +575,6 @@ class Superbar extends Component {
 			this.setState({ scrolling: false }, () => {
 				if (document.getElementById('fabShowButton') && !window.safari)
 					document.getElementById('fabShowButton').style.opacity = 0;
-				if (document.getElementById('header') && !window.safari) {
-					document.getElementById('header').style.opacity = null;
-				}
 				let mainH = document.getElementById('mainHeader');
 				let mainC = document.getElementById('mainCard');
 				let commando = document.getElementById('commandoBar');
@@ -564,9 +587,6 @@ class Superbar extends Component {
 			this.setState({ scrolling: true }, () => {
 				if (document.getElementById('fabShowButton'))
 					document.getElementById('fabShowButton').style.opacity = 1;
-				if (document.getElementById('header') && !window.safari) {
-					document.getElementById('header').style.opacity = 0;
-				}
 				let mainH = document.getElementById('mainHeader');
 				let mainC = document.getElementById('mainCard');
 				let commando = document.getElementById('commandoBar');
@@ -648,41 +668,43 @@ class Superbar extends Component {
 						<ListItemText primary="Live" />
 					</ListItem>
 				</List>
-				{user ? <div>
-					<Divider className={classes.listDivider} />
-					<List subheader={<ListSubheader>YOU</ListSubheader>}>
-						<ListItem
-							button
-							onClick={() => {
-								this.toggleDrawer();
-								this.tabChange(null, 4);
-								this.props.history.push('/history');
-							}}
-						>
-							<ListItemText primary="History" />
-						</ListItem>
-						<ListItem
-							button
-							onClick={() => {
-								this.toggleDrawer();
-								this.tabChange(null, 4);
-								this.props.history.push('/later');
-							}}
-						>
-							<ListItemText primary="Later" />
-						</ListItem>
-						<ListItem
-							button
-							onClick={() => {
-								this.toggleDrawer();
-								this.tabChange(null, 4);
-								this.props.history.push('/user#favorites');
-							}}
-						>
-							<ListItemText primary="Favorites" />
-						</ListItem>
-					</List>
-				</div> : null}
+				{user ? (
+					<div>
+						<Divider className={classes.listDivider} />
+						<List subheader={<ListSubheader>YOU</ListSubheader>}>
+							<ListItem
+								button
+								onClick={() => {
+									this.toggleDrawer();
+									this.tabChange(null, 4);
+									this.props.history.push('/history');
+								}}
+							>
+								<ListItemText primary="History" />
+							</ListItem>
+							<ListItem
+								button
+								onClick={() => {
+									this.toggleDrawer();
+									this.tabChange(null, 4);
+									this.props.history.push('/later');
+								}}
+							>
+								<ListItemText primary="Later" />
+							</ListItem>
+							<ListItem
+								button
+								onClick={() => {
+									this.toggleDrawer();
+									this.tabChange(null, 4);
+									this.props.history.push('/user#favorites');
+								}}
+							>
+								<ListItemText primary="Favorites" />
+							</ListItem>
+						</List>
+					</div>
+				) : null}
 				<Divider className={classes.listDivider} />
 				<List>
 					<ListItem
@@ -741,8 +763,8 @@ class Superbar extends Component {
 					<br />
 					{this.props.mir && this.props.mir.twist
 						? Object.keys(this.props.mir.twist).length -
-						1 +
-						' animes in database'
+							1 +
+							' animes in database'
 						: null}
 					<br />2018 afroJ
 				</Typography>
@@ -754,12 +776,26 @@ class Superbar extends Component {
 				<AppBar
 					id="superBar"
 					classes={{ root: classes.root }}
-					className={window.safari ? classes.appBarTopSafari : scrolling ? classes.appBar : classes.appBarTop}
-					style={watchIsOn ? { display: 'none' } : { transform: 'translate3d(0,0,0)' }}
+					className={
+						scrolling &&
+						!(window.navigator.userAgent.indexOf('Edge') > -1) &&
+						!window.safari
+							? classes.appBar
+							: classes.appBarTop
+					}
+					style={
+						watchIsOn
+							? { display: 'none' }
+							: { transform: 'translate3d(0,0,0)' }
+					}
 				>
 					<div
 						className={classes.gd}
-						style={window.safari ? { opacity: 0.2 } : scrolling ? { opacity: 0 } : { opacity: 0.2 }}
+						style={
+							window.safari && window.navigator.userAgent.indexOf('Edge') > -1
+								? { opacity: 0.2 }
+								: scrolling ? { opacity: 0 } : { opacity: 0.2 }
+						}
 					/>
 					<Toolbar>
 						<IconButton
@@ -770,16 +806,7 @@ class Superbar extends Component {
 						>
 							<MenuIcon />
 						</IconButton>
-						<IconButton onClick={() => this.props.history.push('/')}><Typography className={classes.barTitle} type="title">
-							{/*this.props.history.location.pathname.includes('/show') ||
-								this.props.history.location.pathname.includes('/fig')
-								? mirTitle
-								: currentPage*/}
-							未来
-						</Typography></IconButton>
-						<div className={classes.flex} />
-						<Hidden smDown><SearchBox mir={this.props.mir} history={history} classes={{ searchBar: classes.searchBar, searchInput: classes.searchInput, searchIcon: classes.searchIcon }} /></Hidden>
-						{/*<Tabs
+						<Tabs
 							className={classes.contextBar}
 							value={tabVal}
 							onChange={this.tabChange}
@@ -819,18 +846,40 @@ class Superbar extends Component {
 								}}
 							/>
 							<Tab style={{ display: 'none' }} />
-						</Tabs>*/}
-						<div className={classes.flex} />
-						{user && user.noMine ? <Button>Donate</Button> : null}
-						<Hidden smUp><IconButton
-							onClick={() => {
-								this.tabChange(null, 4);
-								this.props.history.push('/search');
-							}}
-							color="contrast"
+						</Tabs>
+						<Hidden smDown>
+							<div className={classes.flex} />
+						</Hidden>
+						<IconButton
+							className={classes.logoButton}
+							onClick={() => this.props.history.push('/')}
 						>
-							<SearchIcon />
-						</IconButton></Hidden>
+							<img src={miraiLogo} alt="" className={classes.logoImg} />
+						</IconButton>
+						<div className={classes.flex} />
+						<Hidden smDown>
+							<SearchBox
+								mir={this.props.mir}
+								history={history}
+								classes={{
+									searchBar: classes.searchBar,
+									searchInput: classes.searchInput,
+									searchIcon: classes.searchIcon,
+								}}
+							/>
+						</Hidden>
+						{user && user.noMine ? <Button>Donate</Button> : null}
+						<Hidden smUp>
+							<IconButton
+								onClick={() => {
+									this.tabChange(null, 4);
+									this.props.history.push('/search');
+								}}
+								color="contrast"
+							>
+								<SearchIcon />
+							</IconButton>
+						</Hidden>
 						<div>
 							<IconButton
 								aria-owns={open ? 'info-menu' : null}
@@ -966,14 +1015,14 @@ class Superbar extends Component {
 								</Menu>
 							</div>
 						) : (
-								<IconButton
-									onClick={() => {
-										this.props.history.push('/setup');
-									}}
-								>
-									<AccountCircle />
-								</IconButton>
-							)}
+							<IconButton
+								onClick={() => {
+									this.props.history.push('/setup');
+								}}
+							>
+								<AccountCircle />
+							</IconButton>
+						)}
 					</Toolbar>
 				</AppBar>
 				{/*<Hidden lgDown>
@@ -1013,7 +1062,7 @@ class Superbar extends Component {
 					</div>
 				</Hidden>*/}
 				<Drawer
-					classes={{ paper: classes.drawer }}
+					classes={{ root: classes.drawerBg, paper: classes.drawer }}
 					open={drawerOpen}
 					onClose={this.toggleDrawer}
 					type="temporary"
@@ -1046,40 +1095,52 @@ class Superbar extends Component {
 class SearchBox extends Component {
 	state = {
 		value: '',
-		suggestionList: null
-	}
+		suggestionList: null,
+	};
 
-	onChange = (e) => this.setState({ value: e.currentTarget.value }, () => {
-		if (this.props.mir !== null && this.props.mir.twist !== null) {
-			this.setState({ suggestionList: this.props.mir.twist.filter(s => s.name.toLowerCase().match(this.state.value.toLowerCase())) })
-		}
-	})
+	onChange = e =>
+		this.setState({ value: e.currentTarget.value }, () => {
+			if (this.props.mir !== null && this.props.mir.twist !== null) {
+				this.setState({
+					suggestionList: this.props.mir.twist.filter(s =>
+						s.name.toLowerCase().match(this.state.value.toLowerCase())
+					),
+				});
+			}
+		});
 
-	onSubmit = (e) => {
+	onSubmit = e => {
 		e.preventDefault();
 		if (this.state.value.length > 2 && this.state.value !== '')
 			this.props.history.push('/search?q=' + this.state.value);
-	}
+	};
 
 	render() {
-		const {
-			value,
-			suggestionList
-		} = this.state;
+		const { value, suggestionList } = this.state;
 		const { classes } = this.props;
 		return (
 			<div>
 				<Paper className={classes.searchBar}>
 					<SearchIcon className={classes.searchIcon} />
 					<form onSubmit={this.onSubmit}>
-						<TextField autoFocus={true} onChange={this.onChange} fullWidth value={value} placeholder={'Search anime, manga, social etc. (Min. 3 characters)'} InputProps={{ className: classes.searchInput, disableUnderline: true, fullWidth: true }} type={'search'} />
+						<TextField
+							autoFocus={true}
+							onChange={this.onChange}
+							fullWidth
+							value={value}
+							placeholder={'Min. 3 characters'}
+							InputProps={{
+								className: classes.searchInput,
+								disableUnderline: true,
+								fullWidth: true,
+							}}
+							type={'search'}
+						/>
 					</form>
 				</Paper>
-				{suggestionList ? <Paper square>
-
-				</Paper> : null}
+				{suggestionList ? <Paper square /> : null}
 			</div>
-		)
+		);
 	}
 }
 

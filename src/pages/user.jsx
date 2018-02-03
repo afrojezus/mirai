@@ -12,14 +12,14 @@ import {
 } from '../components/supertable';
 
 import * as Vibrant from 'node-vibrant';
-import CardButton, { PeopleButton } from "../components/cardButton";
+import CardButton, { PeopleButton } from '../components/cardButton';
 import {
 	CommandoBar,
 	Header,
 	Root,
 	Container,
 	LoadingIndicator,
-	TitleHeader
+	TitleHeader,
 } from '../components/layouts';
 
 const style = theme => ({
@@ -491,7 +491,8 @@ class User extends Component {
 	});
 
 	componentWillMount = async () => {
-		if (!isEmpty(this.props.profile)) this.init(); else return false;
+		if (!isEmpty(this.props.profile)) this.init();
+		else return false;
 	};
 
 	init = () =>
@@ -559,7 +560,7 @@ class User extends Component {
 								hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex(),
 							},
 							async () => {
-								let superBar = document.getElementById('superBar');
+								//let superBar = document.getElementById('superBar');
 								//if (superBar) superBar.style.background = this.state.hue;
 
 								await localForage.setItem('user-hue', {
@@ -589,18 +590,21 @@ class User extends Component {
 	};
 
 	render() {
-		const { classes, history } = this.props;
+		const { classes } = this.props;
 		const user = this.props.profile;
 		const { loading, hue, hueVibN, data, tabVal } = this.state;
 		if (isEmpty(user)) return null;
 		if (loading) return <LoadingIndicator loading={loading} />;
 		return (
 			<div>
-                <TitleHeader color={hue}></TitleHeader>
+				<TitleHeader color={hue} />
 				<Root style={loading ? { opacity: 0 } : null}>
 					<Container spacing={0}>
 						<M.Grid container spacing={0} className={classes.container}>
-							<Header image={data ? data.headers : user.headers} color={hueVibN} />
+							<Header
+								image={data ? data.headers : user.headers}
+								color={hueVibN}
+							/>
 							<M.Grid
 								item
 								style={{ width: 400, flexGrow: 0, marginRight: 24 }}
@@ -749,11 +753,21 @@ class User extends Component {
 									/>
 								</M.Tabs>
 								<div style={{ flex: 1 }} />
-                                <M.Button color='contrast' onClick={this.toggleFriend}>
-                                    {isEmpty(user) && user.friends && user.friends.hasOwnProperty(data.userID) ? <Icon.Remove style={{marginRight: 12}} /> : <Icon.PersonAdd style={{marginRight: 12}} />}
-                                    {isEmpty(user) && user.friends && user.friends.hasOwnProperty(data.userID) ? 'Remove friend' : 'Add friend'}
-                                </M.Button>
-                                <M.IconButton color="contrast">
+								<M.Button color="contrast" onClick={this.toggleFriend}>
+									{isEmpty(user) &&
+									user.friends &&
+									user.friends.hasOwnProperty(data.userID) ? (
+										<Icon.Remove style={{ marginRight: 12 }} />
+									) : (
+										<Icon.PersonAdd style={{ marginRight: 12 }} />
+									)}
+									{isEmpty(user) &&
+									user.friends &&
+									user.friends.hasOwnProperty(data.userID)
+										? 'Remove friend'
+										: 'Add friend'}
+								</M.Button>
+								<M.IconButton color="contrast">
 									<Icon.MoreVert />
 								</M.IconButton>
 							</CommandoBar>
@@ -871,10 +885,14 @@ class User extends Component {
 												)
 											) : user && user.favs && user.favs.show ? (
 												Object.values(user.favs.show).map((show, index) => (
-													<CardButton key={index} onClick={() =>
-                                                        this.props.history.push(`/show?s=${show.id}`)
-                                                    } title={show.name} image={show.image}/>
-
+													<CardButton
+														key={index}
+														onClick={() =>
+															this.props.history.push(`/show?s=${show.id}`)
+														}
+														title={show.name}
+														image={show.image}
+													/>
 												))
 											) : (
 												<M.Typography type="body1">
@@ -894,9 +912,14 @@ class User extends Component {
 											{data ? (
 												data.favs && data.favs.manga ? (
 													Object.values(data.favs.manga).map((show, index) => (
-                                                        <CardButton key={index} onClick={() =>
-                                                            this.props.history.push(`/show?m=${show.id}`)
-                                                        } title={show.name} image={show.image}/>
+														<CardButton
+															key={index}
+															onClick={() =>
+																this.props.history.push(`/show?m=${show.id}`)
+															}
+															title={show.name}
+															image={show.image}
+														/>
 													))
 												) : (
 													<M.Typography type="body1">
@@ -905,9 +928,14 @@ class User extends Component {
 												)
 											) : user && user.favs && user.favs.manga ? (
 												Object.values(user.favs.manga).map((show, index) => (
-                                                    <CardButton key={index} onClick={() =>
-                                                        this.props.history.push(`/show?m=${show.id}`)
-                                                    } title={show.name} image={show.image}/>
+													<CardButton
+														key={index}
+														onClick={() =>
+															this.props.history.push(`/show?m=${show.id}`)
+														}
+														title={show.name}
+														image={show.image}
+													/>
 												))
 											) : (
 												<M.Typography type="body1">
@@ -926,10 +954,14 @@ class User extends Component {
 											{data ? (
 												data.favs && data.favs.char ? (
 													Object.values(data.favs.char).map((cast, index) => (
-														<PeopleButton key={index} name={{first: cast.name}} image={cast.image} onClick={() =>
-                                                            this.props.history.push(`/fig?c=${cast.id}`)
-                                                        }/>
-
+														<PeopleButton
+															key={index}
+															name={{ first: cast.name }}
+															image={cast.image}
+															onClick={() =>
+																this.props.history.push(`/fig?c=${cast.id}`)
+															}
+														/>
 													))
 												) : (
 													<M.Typography type="body1">
@@ -938,9 +970,14 @@ class User extends Component {
 												)
 											) : user && user.favs && user.favs.char ? (
 												Object.values(user.favs.char).map((cast, index) => (
-                                                    <PeopleButton key={index} name={{first: cast.name}} image={cast.image} onClick={() =>
-                                                        this.props.history.push(`/fig?c=${cast.id}`)
-                                                    }/>
+													<PeopleButton
+														key={index}
+														name={{ first: cast.name }}
+														image={cast.image}
+														onClick={() =>
+															this.props.history.push(`/fig?c=${cast.id}`)
+														}
+													/>
 												))
 											) : (
 												<M.Typography type="body1">
@@ -959,9 +996,14 @@ class User extends Component {
 											{data ? (
 												data.favs && data.favs.staff ? (
 													Object.values(user.favs.staff).map((cast, index) => (
-                                                        <PeopleButton key={index} name={{first: cast.name}} image={cast.image} onClick={() =>
-                                                            this.props.history.push(`/fig?s=${cast.id}`)
-                                                        }/>
+														<PeopleButton
+															key={index}
+															name={{ first: cast.name }}
+															image={cast.image}
+															onClick={() =>
+																this.props.history.push(`/fig?s=${cast.id}`)
+															}
+														/>
 													))
 												) : (
 													<M.Typography type="body1">
@@ -971,9 +1013,14 @@ class User extends Component {
 												)
 											) : user && user.favs && user.favs.staff ? (
 												Object.values(user.favs.staff).map((cast, index) => (
-                                                    <PeopleButton key={index} name={{first: cast.name}} image={cast.image} onClick={() =>
-                                                        this.props.history.push(`/fig?s=${cast.id}`)
-                                                    }/>
+													<PeopleButton
+														key={index}
+														name={{ first: cast.name }}
+														image={cast.image}
+														onClick={() =>
+															this.props.history.push(`/fig?s=${cast.id}`)
+														}
+													/>
 												))
 											) : (
 												<M.Typography type="body1">

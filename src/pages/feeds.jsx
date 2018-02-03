@@ -1,23 +1,30 @@
 import React, { Component } from 'react';
-import { Root, CommandoBar, Container, LoadingIndicator, TitleHeader } from "../components/layouts";
-import { withStyles } from 'material-ui/styles'
-import { connect } from "react-redux";
-import { firebaseConnect } from "react-redux-firebase";
+import {
+	Root,
+	CommandoBar,
+	Container,
+	LoadingIndicator,
+	TitleHeader,
+	Header,
+} from '../components/layouts';
+import { withStyles } from 'material-ui/styles';
+import { connect } from 'react-redux';
+import { firebaseConnect } from 'react-redux-firebase';
 import Typography from 'material-ui/Typography/Typography';
+import blue from 'material-ui/colors/blue';
 
-const style = theme => ({
-
-});
+const style = theme => ({});
 
 class Feeds extends Component {
 	render = () => (
-		<Root>
-			<TitleHeader title={'Feeds'} />
-			<Container>
-
-			</Container>
-		</Root>
-	)
+		<div>
+			<TitleHeader title={'Feeds'} color={blue.A700} />
+			<Header color={blue[800]} />
+			<Root>
+				<Container />
+			</Root>
+		</div>
+	);
 }
 
 export default firebaseConnect()(
