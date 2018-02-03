@@ -41,6 +41,9 @@ import History from './history';
 import PageNotFound from './pnf';
 import Help from './help';
 import Tos from './tos';
+
+import DevPlayer from './dev/player'
+import DevDB from './dev/db'
 import Typography from 'material-ui/Typography/Typography';
 
 const styles = theme => ({
@@ -158,6 +161,8 @@ class Index extends Component {
 					<Route path="/history" exact component={History} />
 					<Route path="/help" exact component={Help} />
 					<Route path="/tou" exact component={Tos} />
+                    {!isEmpty(this.props.firebase.profile) && this.props.firebase.profile.isDeveloper === true ? <Route path='/dev/db' exact component={DevDB} /> : null}
+                    {!isEmpty(this.props.firebase.profile) && this.props.firebase.profile.isDeveloper === true ? <Route path='/dev/player' exact component={DevPlayer} /> : null}
 				</Superbar>
 			</div>
 		);

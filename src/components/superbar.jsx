@@ -269,10 +269,8 @@ const styles = theme => ({
 		height: 64,
 	},
 	avatar: {
-		marginLeft: -theme.spacing.unit * 4,
 		height: 64,
 		width: 64,
-		boxShadow: '0 3px 16px rgba(0,0,0,.5)',
 	},
 	avatarImg: {
 		height: '100%',
@@ -518,6 +516,9 @@ class Superbar extends Component {
 			case '/search':
 				this.setState({ currentPage: 'Search', tabVal: 4, watchIsOn: false });
 				break;
+            case '/dev':
+                this.setState({currentPage: 'Developer', tabVaL: 4});
+                break;
 			default:
 				break;
 		}
@@ -961,6 +962,7 @@ class Superbar extends Component {
 											}
 											title={user.username}
 											subheader={user.nick}
+                                            actionRight={<Typography>{this.props.profile.role}</Typography>}
 										/>
 										<img
 											src={user.headers}
@@ -982,6 +984,22 @@ class Superbar extends Component {
                       </FormControl>
                     </form>
                     <Divider />*/}
+                                        {!isEmpty(this.props.profile) && this.props.profile.isDeveloper === true ?
+                                            <List subheader={<ListSubheader>DEV</ListSubheader>}>
+                                                <ListItem button onClick={() => {
+                                                    this.handleRequestClose();
+                                                    this.props.history.push('/dev/db')
+                                                }}>
+                                                    <ListItemText primary='Developer Dashboard'/>
+                                                </ListItem>
+                                                <ListItem button onClick={() => {
+                                                    this.handleRequestClose();
+                                                    this.props.history.push('/dev/player')
+                                                }}>
+                                                    <ListItemText primary='Media Player'/>
+                                                </ListItem>
+                                                <Divider />
+                                            </List> : null}
 										<List>
 											<ListItem
 												button
@@ -1062,7 +1080,7 @@ class Superbar extends Component {
 					</div>
 				</Hidden>*/}
 				<Drawer
-					classes={{ root: classes.drawerBg, paper: classes.drawer }}
+					classes={{ paper: classes.drawer }}
 					open={drawerOpen}
 					onClose={this.toggleDrawer}
 					type="temporary"
