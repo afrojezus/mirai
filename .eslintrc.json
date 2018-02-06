@@ -1,7 +1,16 @@
 {
+  "env": {
+    "node": true,
+    "es6": true,
+    "browser": true
+  },
   "parser": "babel-eslint",
-  "extends": [
-    "airbnb",
-    "prettier"
-  ]
+  "extends": ["airbnb", "prettier"],
+  "rules": {
+    "no-nested-ternary": "off",
+    "no-unused-vars": "warn",
+    "react/no-unused-prop-types": "warn",
+    "react/no-unused-state": "warn",
+    "react/no-multi-comp": "off"
+  }
 }
