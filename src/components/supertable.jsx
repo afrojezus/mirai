@@ -165,10 +165,10 @@ export const timeFormatToReadableTime = time => {
 	return new Date(time).toLocaleTimeString();
 };
 
-const SuperTable = ({ classes, ...props }) => {
+const SuperTable = ({ classes, theme, ...props }) => {
 	if (props.typeof === 'later') {
 		return (
-			<GridList className={classes.list} cellHeight={300}>
+			<GridList className={classes.list} cols={[theme.breakpoint.up('md')] ? 3 : 2} cellHeight={300}>
 				{props.data.splice(0, props.limit).map((anime, index) => (
 					<GridListTile
 						className={classes.bigCard}
@@ -205,10 +205,10 @@ const SuperTable = ({ classes, ...props }) => {
 										: `Score ${anime.meanScore}%`}{' '}
 									{anime.rank
 										? `• #${anime.rank.rank +
-												' ' +
-												anime.rank.context +
-												' ' +
-												anime.rank.format}`
+										' ' +
+										anime.rank.context +
+										' ' +
+										anime.rank.format}`
 										: null}
 								</Typography>
 								<Dotdotdot clamp={2} className={classes.dotdot}>
@@ -230,7 +230,7 @@ const SuperTable = ({ classes, ...props }) => {
 		);
 	} else if (props.typeof === 'ranking') {
 		return (
-			<GridList className={classes.list} cellHeight={300}>
+			<GridList className={classes.list} cols={[theme.breakpoint.up('md')] ? 3 : 2} cellHeight={300}>
 				{props.data.splice(0, props.limit).map((anime, index) => (
 					<GridListTile
 						className={classes.bigCard}
@@ -238,9 +238,9 @@ const SuperTable = ({ classes, ...props }) => {
 						onClick={() =>
 							props.changePage(
 								`/show?${props.type}=${
-									props.typeof === 'progress'
-										? anime.anime ? anime.anime.meta.i : anime.showId
-										: anime.id
+								props.typeof === 'progress'
+									? anime.anime ? anime.anime.meta.i : anime.showId
+									: anime.id
 								}`
 							)
 						}
@@ -294,8 +294,8 @@ const SuperTable = ({ classes, ...props }) => {
 										? props.type.includes('m')
 											? null
 											: timeFormatter(anime.nextAiringEpisode.timeUntilAiring) +
-												' till Episode ' +
-												anime.nextAiringEpisode.episode
+											' till Episode ' +
+											anime.nextAiringEpisode.episode
 										: props.typeof === 'ranking'
 											? anime.category
 											: props.typeof === 'progress'
@@ -320,18 +320,18 @@ const SuperTable = ({ classes, ...props }) => {
 										dangerouslySetInnerHTML={
 											props.typeof === 'ongoing'
 												? {
-														__html: anime.description,
-													}
+													__html: anime.description,
+												}
 												: props.typeof === 'ranking'
 													? {
-															__html: anime.desc,
-														}
+														__html: anime.desc,
+													}
 													: null
 										}
 									>
 										{props.typeof === 'progress'
 											? 'Last watched ' +
-												moment(anime.recentlyWatched).from(Date.now())
+											moment(anime.recentlyWatched).from(Date.now())
 											: null}
 									</Typography>
 								</Dotdotdot>
@@ -343,7 +343,7 @@ const SuperTable = ({ classes, ...props }) => {
 		);
 	} else if (props.typeof === 'progress') {
 		return (
-			<GridList className={classes.list} cellHeight={300}>
+			<GridList className={classes.list} cols={[theme.breakpoint.up('md')] ? 3 : 2} cellHeight={300}>
 				{props.data.splice(0, props.limit).map((anime, index) => (
 					<GridListTile
 						className={classes.bigCard}
@@ -351,9 +351,9 @@ const SuperTable = ({ classes, ...props }) => {
 						onClick={() =>
 							props.changePage(
 								`/show?${props.type}=${
-									props.typeof === 'progress'
-										? anime.anime ? anime.anime.meta.i : anime.showId
-										: anime.id
+								props.typeof === 'progress'
+									? anime.anime ? anime.anime.meta.i : anime.showId
+									: anime.id
 								}`
 							)
 						}
@@ -407,8 +407,8 @@ const SuperTable = ({ classes, ...props }) => {
 										? props.type.includes('m')
 											? null
 											: timeFormatter(anime.nextAiringEpisode.timeUntilAiring) +
-												' till Episode ' +
-												anime.nextAiringEpisode.episode
+											' till Episode ' +
+											anime.nextAiringEpisode.episode
 										: props.typeof === 'ranking'
 											? anime.category
 											: props.typeof === 'progress'
@@ -433,18 +433,18 @@ const SuperTable = ({ classes, ...props }) => {
 										dangerouslySetInnerHTML={
 											props.typeof === 'ongoing'
 												? {
-														__html: anime.description,
-													}
+													__html: anime.description,
+												}
 												: props.typeof === 'ranking'
 													? {
-															__html: anime.desc,
-														}
+														__html: anime.desc,
+													}
 													: null
 										}
 									>
 										{props.typeof === 'progress'
 											? 'Last watched ' +
-												moment(anime.recentlyWatched).from(Date.now())
+											moment(anime.recentlyWatched).from(Date.now())
 											: null}
 									</Typography>
 								</Dotdotdot>
@@ -456,7 +456,7 @@ const SuperTable = ({ classes, ...props }) => {
 		);
 	} else if (props.typeof === 'ongoing') {
 		return (
-			<GridList className={classes.list} cellHeight={300}>
+			<GridList className={classes.list} cols={[theme.breakpoint.up('md')] ? 3 : 2} cellHeight={300}>
 				{props.data.splice(0, props.limit).map((anime, index) => (
 					<GridListTile
 						className={classes.bigCard}
@@ -464,9 +464,9 @@ const SuperTable = ({ classes, ...props }) => {
 						onClick={() =>
 							props.changePage(
 								`/show?${props.type}=${
-									props.typeof === 'progress'
-										? anime.anime ? anime.anime.meta.i : anime.showId
-										: anime.id
+								props.typeof === 'progress'
+									? anime.anime ? anime.anime.meta.i : anime.showId
+									: anime.id
 								}`
 							)
 						}
@@ -514,18 +514,18 @@ const SuperTable = ({ classes, ...props }) => {
 									{anime.averageScore ? `Score ${anime.averageScore}%` : null}{' '}
 									{anime.rankings
 										? `• #${anime.rankings[0].rank +
-												' ' +
-												anime.rankings[0].context +
-												' ' +
-												anime.rankings[0].format +
-												' ' +
-												(anime.rankings[0].allTime
-													? ''
-													: `${
-															anime.rankings[0].season
-																? anime.rankings[0].season
-																: ''
-														} ${anime.rankings[0].year}`)}`
+										' ' +
+										anime.rankings[0].context +
+										' ' +
+										anime.rankings[0].format +
+										' ' +
+										(anime.rankings[0].allTime
+											? ''
+											: `${
+											anime.rankings[0].season
+												? anime.rankings[0].season
+												: ''
+											} ${anime.rankings[0].year}`)}`
 										: null}
 								</Typography>
 								<Dotdotdot clamp={2} className={classes.dotdot}>
@@ -548,10 +548,10 @@ const SuperTable = ({ classes, ...props }) => {
 											? props.type.includes('m')
 												? null
 												: timeFormatter(
-														anime.nextAiringEpisode.timeUntilAiring
-													) +
-													' till Episode ' +
-													anime.nextAiringEpisode.episode
+													anime.nextAiringEpisode.timeUntilAiring
+												) +
+												' till Episode ' +
+												anime.nextAiringEpisode.episode
 											: props.typeof === 'ranking'
 												? anime.category
 												: props.typeof === 'progress'
@@ -586,5 +586,5 @@ SuperTable.defaultProps = {
 };
 
 export default connect(({ routing }) => ({ routing }), mapDispatchToProps)(
-	withStyles(style)(SuperTable)
+	withStyles(style, { withTheme: true })(SuperTable)
 );

@@ -452,8 +452,8 @@ class Home extends Component {
 
 	rankingsObserve = () =>
 		this.props.firebase
-			.ref('ranking')
-			.child('mentionable')
+			.ref('rankings')
+			.child('collections')
 			.on('value', mentionables =>
 				this.setState({
 					rankingMentionable: Object.values(mentionables.val()),
@@ -680,13 +680,14 @@ class Home extends Component {
 									}}
 								>
 									<Typography type="title" className={classes.headline}>
-										Ranking
+										Collections
 								</Typography>
+									<div style={{ flex: 1 }} />
 								</Grid>
 								<Grid container className={classes.itemcontainer} spacing={0}>
 									{rankingMentionable ? (
 										<SuperTable
-											data={Object.values(rankingMentionable[0])}
+											data={Object.values(rankingMentionable)}
 											type="s"
 											typeof="ranking"
 											limit={12}

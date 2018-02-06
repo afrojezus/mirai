@@ -14,6 +14,28 @@ import FadeIn from 'react-fade-in';
 import { connect } from 'react-redux';
 import { firebaseConnect, isEmpty } from 'react-redux-firebase';
 import hsfetcher from '../torrent';
+import CircularProgress from 'material-ui/Progress/CircularProgress';
+import Toolbar from 'material-ui/Toolbar/Toolbar';
+import Button from 'material-ui/Button/Button';
+import IconButton from 'material-ui/IconButton/IconButton';
+import Typography from 'material-ui/Typography/Typography';
+import Divider from 'material-ui/Divider/Divider';
+import Card from 'material-ui/Card/Card';
+import CardContent from 'material-ui/Card/CardContent';
+import LinearProgress from 'material-ui/Progress/LinearProgress';
+import CardActions from 'material-ui/Card/CardActions';
+import Menu from 'material-ui/Menu/Menu';
+import CardHeader from 'material-ui/Card/CardHeader';
+import grey from 'material-ui/colors/grey';
+import MenuItem from 'material-ui/Menu/MenuItem';
+import Tooltip from 'material-ui/Tooltip/Tooltip';
+import FormGroup from 'material-ui/Form/FormGroup';
+import FormControlLabel from 'material-ui/Form/FormControlLabel';
+import Switch from 'material-ui/Switch/Switch';
+import TextField from 'material-ui/TextField/TextField'
+import withStyles from 'material-ui/styles/withStyles';
+import blue from "material-ui/colors/blue";
+import { getState, loadEp, loadFile } from "../utils/mirfetch";
 
 const style = theme => ({
 	root: {
@@ -39,7 +61,7 @@ const style = theme => ({
 		width: 'calc(100% - 128px)',
 		marginLeft: 64,
 		marginRight: 64,
-		background: window.safari ? 'rgba(0,0,0,.2)' : M.colors.grey[800],
+		background: window.safari ? 'rgba(0,0,0,.2)' : grey[800],
 		boxShadow: '0 2px 32px rgba(0,0,0,.3)',
 		transition: theme.transitions.create(['all']),
 		backdropFilter: 'blur(10px)'
@@ -65,7 +87,7 @@ const style = theme => ({
 		width: '100%',
 	},
 	progressBg: {
-		backgroundColor: M.colors.grey[900],
+		backgroundColor: grey[900],
 	},
 	progressBgOver: {
 		backgroundColor: 'transparent',
@@ -75,7 +97,7 @@ const style = theme => ({
 	},
 	progressBarLoaded: {
 		transition: 'none',
-		backgroundColor: M.colors.grey[700],
+		backgroundColor: grey[700],
 	},
 	duration: {
 		padding: theme.spacing.unit,
@@ -154,7 +176,7 @@ const style = theme => ({
 		position: 'relative',
 	},
 	nextButtonProgress: {
-		color: M.colors.blue.A200,
+		color: blue.A200,
 		position: 'absolute',
 		top: '50%',
 		left: '50%',
@@ -237,7 +259,7 @@ class Watch extends Component {
 				if (this.props.history.location.state) {
 					console.info('Location state found! No need for refetching.');
 					this.setState({ status: 'Setting up...' });
-						this.getSource(this.props.history.location.state);
+					this.getSource(this.props.history.location.state);
 				} else {
 					console.info('Location state not found! Refetching...');
 					this.setState({ status: 'Fetching...' });
@@ -753,12 +775,12 @@ class Watch extends Component {
 				onMouseMove={this.reveal}
 				onTouchMove={this.reveal}
 			>
-				<M.CircularProgress
+				<CircularProgress
 					className={classes.loading}
 					style={!buffering ? { opacity: 0 } : null}
 				/>
-				<M.Toolbar id="backbutton" className={classes.backToolbar}>
-					<M.IconButton
+				<Toolbar id="backbutton" className={classes.backToolbar}>
+					<IconButton
 						style={{
 							marginLeft: -12,
 							marginRight: 20,
@@ -766,11 +788,11 @@ class Watch extends Component {
 						onClick={() => this.props.history.goBack()}
 					>
 						<Icon.ArrowBack />
-					</M.IconButton>
+					</IconButton>
 					{!playing && !source ? (
-						<M.Typography type="title">{title}</M.Typography>
+						<Typography type="title">{title}</Typography>
 					) : null}
-				</M.Toolbar>
+				</Toolbar>
 				<ReactPlayer
 					id="player"
 					ref={player => {
@@ -806,11 +828,11 @@ class Watch extends Component {
 								/>
 							</div>
 							<div className={classes.showInfoColumn} style={{ flex: 1 }}>
-								<M.Typography type="display2" className={classes.showInfoTitle}>
+								<Typography type="display2" className={classes.showInfoTitle}>
 									{title}
-								</M.Typography>
-								<M.Divider />
-								<M.Typography
+								</Typography>
+								<Divider />
+								<Typography
 									type="body1"
 									className={classes.showInfoDesc}
 									dangerouslySetInnerHTML={{ __html: showDesc }}
@@ -819,9 +841,9 @@ class Watch extends Component {
 						</div>
 					</FadeIn>
 				) : null}
-				<M.Card id="controls" className={classes.controlpanel}>
-					<M.CardContent className={classes.indicator}>
-						<M.LinearProgress
+				<Card id="controls" className={classes.controlpanel}>
+					<CardContent className={classes.indicator}>
+						<LinearProgress
 							classes={{
 								root: classes.progress,
 								primaryColor: classes.progressBgOver,
@@ -831,7 +853,7 @@ class Watch extends Component {
 							value={played * 100}
 							valueBuffer={loaded * 100}
 						/>
-						<M.LinearProgress
+						<LinearProgress
 							classes={{
 								root: classes.progressLoaded,
 								primaryColor: classes.progressBg,
@@ -851,10 +873,10 @@ class Watch extends Component {
 							onChange={this.onSeekChange}
 							onMouseUp={this.onSeekMouseUp}
 						/>
-					</M.CardContent>
-					<M.CardActions>
+					</CardContent>
+					<CardActions>
 
-						<M.IconButton disabled={loaded === 0 || !source ? (
+						<IconButton disabled={loaded === 0 || !source ? (
 							true
 						) : false} onClick={this.playPause}>
 							{playing ? (
@@ -865,41 +887,41 @@ class Watch extends Component {
 							) : (
 										<Icon.PlayArrow />
 									)}
-						</M.IconButton>
-						<M.Typography
+						</IconButton>
+						<Typography
 							type="title"
 							className={!source ? classes.left : null}
 						>
 							{status}
-						</M.Typography>
+						</Typography>
 						<div style={{ flex: 1 }} />
 						{willLoadNextEp ? (
 							<div className={classes.nextWrapper}>
-								<M.Button
+								<Button
 									onClick={this.skipToNextEp}
 									className={classes.nextButton}
 								>
 									Loading next episode in 5 seconds...
-								</M.Button>
+								</Button>
 							</div>
 						) : null}
-						<M.IconButton
+						<IconButton
 							disabled={torrent ? false : true}
 							aria-owns={qualityMenu ? 'quality-menu' : null}
 							aria-haspopup="true"
 							onClick={e => this.setState({ quaEl: e.currentTarget })}
 							color="contrast"
 						>
-							{torrent ? quality === 480 ? <M.Typography type="title" className={classes.qualityTitle}>480p</M.Typography> :
-								quality === 720 ? <M.Typography type="title" className={classes.qualityTitle}>720p</M.Typography> :
-									quality === 1080 ? <M.Typography type="title" className={classes.qualityTitle}>1080p</M.Typography> : null : <M.Typography type="title" style={torrent ? null : { opacity: '.2' }} className={classes.qualityTitle}>
+							{torrent ? quality === 480 ? <Typography type="title" className={classes.qualityTitle}>480p</Typography> :
+								quality === 720 ? <Typography type="title" className={classes.qualityTitle}>720p</Typography> :
+									quality === 1080 ? <Typography type="title" className={classes.qualityTitle}>1080p</Typography> : null : <Typography type="title" style={torrent ? null : { opacity: '.2' }} className={classes.qualityTitle}>
 									{videoQuality ? videoQuality + 'p' : 'HD'}
-								</M.Typography>}
-						</M.IconButton>
-						<M.Typography type="body1" className={classes.duration}>
+								</Typography>}
+						</IconButton>
+						<Typography type="body1" className={classes.duration}>
 							<Duration seconds={duration * played} />
-						</M.Typography>
-						<M.Menu
+						</Typography>
+						<Menu
 							id="quality-menu"
 							anchorEl={quaEl}
 							anchorOrigin={{
@@ -920,7 +942,7 @@ class Watch extends Component {
 									width: 300,
 									padding: 0,
 									outline: 'none',
-									background: M.colors.grey[800],
+									background: grey[800],
 								},
 							}}
 							MenuListProps={{
@@ -930,14 +952,14 @@ class Watch extends Component {
 								},
 							}}
 						>
-							<M.Card style={{ background: M.colors.grey[800] }}>
-								<M.CardHeader
-									style={{ background: M.colors.grey[900] }}
+							<Card style={{ background: grey[800] }}>
+								<CardHeader
+									style={{ background: grey[900] }}
 									title="Quality"
 								/>
-								<M.Divider />
-								<M.CardContent className={classes.epListCont}>
-									<M.MenuItem
+								<Divider />
+								<CardContent className={classes.epListCont}>
+									<MenuItem
 										onClick={() => this.changeQuality(1080)}
 										selected={quality === 1080}
 										className={classes.epListItem}
@@ -945,8 +967,8 @@ class Watch extends Component {
 										1080p
                                             <div style={{ flex: 1 }} />
 										{quality === 1080 ? <Icon.PlayArrow /> : null}
-									</M.MenuItem>
-									<M.MenuItem
+									</MenuItem>
+									<MenuItem
 										onClick={() => this.changeQuality(720)}
 										selected={quality === 720}
 										className={classes.epListItem}
@@ -954,8 +976,8 @@ class Watch extends Component {
 										720p
                                         <div style={{ flex: 1 }} />
 										{quality === 720 ? <Icon.PlayArrow /> : null}
-									</M.MenuItem>
-									<M.MenuItem
+									</MenuItem>
+									<MenuItem
 										onClick={() => this.changeQuality(480)}
 										selected={quality === 480}
 										className={classes.epListItem}
@@ -963,19 +985,19 @@ class Watch extends Component {
 										480p
                                         <div style={{ flex: 1 }} />
 										{quality === 480 ? <Icon.PlayArrow /> : null}
-									</M.MenuItem>
-								</M.CardContent>
-							</M.Card>
-						</M.Menu>
-						<M.IconButton
+									</MenuItem>
+								</CardContent>
+							</Card>
+						</Menu>
+						<IconButton
 							aria-owns={volumeMenu ? 'volume-menu' : null}
 							aria-haspopup="true"
 							onClick={e => this.setState({ volEl: e.currentTarget })}
 							color="contrast"
 						>
 							{volume > 0 ? <Icon.VolumeUp /> : <Icon.VolumeOff />}
-						</M.IconButton>
-						<M.Menu
+						</IconButton>
+						<Menu
 							id="volume-menu"
 							anchorEl={volEl}
 							anchorOrigin={{
@@ -991,7 +1013,7 @@ class Watch extends Component {
 							PaperProps={{
 								style: {
 									outline: 'none',
-									background: M.colors.grey[800],
+									background: grey[800],
 								},
 							}}
 							MenuListProps={{
@@ -1010,8 +1032,8 @@ class Watch extends Component {
 								value={volume}
 								onChange={this.setVolume}
 							/>
-						</M.Menu>
-						<M.IconButton
+						</Menu>
+						<IconButton
 							disabled={
 								loaded === 0
 									? eps.length > 0
@@ -1022,18 +1044,18 @@ class Watch extends Component {
 							onClick={this.skipToNextEp}
 						>
 							<Icon.SkipNext />
-						</M.IconButton>
-						<M.IconButton
+						</IconButton>
+						<IconButton
 							disabled={loaded === 0 ? true : false}
 							onClick={this.skip30Sec}
 						>
 							<Icon.Forward30 />
-						</M.IconButton>
-						<M.IconButton onClick={this.handleFullscreen}>
+						</IconButton>
+						<IconButton onClick={this.handleFullscreen}>
 							{fullscreen ? <Icon.FullscreenExit /> : <Icon.Fullscreen />}
-						</M.IconButton>
+						</IconButton>
 						<div>
-							<M.IconButton
+							<IconButton
 								disabled={eps.length > 0 ? false : true}
 								aria-owns={menu ? 'ep-menu' : null}
 								aria-haspopup="true"
@@ -1041,8 +1063,8 @@ class Watch extends Component {
 								color="contrast"
 							>
 								<Icon.ViewList />
-							</M.IconButton>
-							<M.Menu
+							</IconButton>
+							<Menu
 								id="ep-menu"
 								anchorEl={menuEl}
 								anchorOrigin={{
@@ -1063,7 +1085,7 @@ class Watch extends Component {
 										width: 300,
 										padding: 0,
 										outline: 'none',
-										background: M.colors.grey[800],
+										background: grey[800],
 									},
 								}}
 								MenuListProps={{
@@ -1073,16 +1095,16 @@ class Watch extends Component {
 									},
 								}}
 							>
-								<M.Card style={{ background: M.colors.grey[800] }}>
-									<M.CardHeader
-										style={{ background: M.colors.grey[900] }}
+								<Card style={{ background: grey[800] }}>
+									<CardHeader
+										style={{ background: grey[900] }}
 										title="Episodes"
 									/>
-									<M.Divider />
-									<M.CardContent className={classes.epListCont}>
+									<Divider />
+									<CardContent className={classes.epListCont}>
 										{eps &&
 											eps.map((e, i) => (
-												<M.MenuItem
+												<MenuItem
 													onClick={() => {
 														this.setState({ ep: e.ep }, async () =>
 															this.loadEp(e, null)
@@ -1095,28 +1117,28 @@ class Watch extends Component {
 													Episode {e.ep}
 													<div style={{ flex: 1 }} />
 													{e.ep === ep ? <Icon.PlayArrow /> : null}
-												</M.MenuItem>
+												</MenuItem>
 											))}
-									</M.CardContent>
-								</M.Card>
-							</M.Menu>
+									</CardContent>
+								</Card>
+							</Menu>
 						</div>
-						<M.Tooltip PopperProps={{ PaperProps: { style: { fontSize: 16 } } }} title='Switch between Twist mode (recommended) or Nyaa mode (highly experimental)'>
-							<M.FormGroup>
-								<M.FormControlLabel
+						<Tooltip PopperProps={{ PaperProps: { style: { fontSize: 16 } } }} title='Switch between Twist mode (recommended) or Nyaa mode (highly experimental)'>
+							<FormGroup>
+								<FormControlLabel
 									disabled
 									control={
-										<M.Switch
+										<Switch
 											checked={torrent}
 											onChange={this.switchMode}
 										/>
 									}
 									label={torrent ? "Nyaa" : "Twist"}
 								/>
-							</M.FormGroup>
-						</M.Tooltip>
-					</M.CardActions>
-				</M.Card>
+							</FormGroup>
+						</Tooltip>
+					</CardActions>
+				</Card>
 			</div>
 		);
 	}
@@ -1124,6 +1146,6 @@ class Watch extends Component {
 
 export default firebaseConnect()(
 	connect(({ firebase: { profile }, mir }) => ({ profile, mir }))(
-		M.withStyles(style)(Watch)
+		withStyles(style)(Watch)
 	)
 );
