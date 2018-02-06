@@ -1,26 +1,31 @@
-import React, { Component } from 'react';
-import {  Root, CommandoBar, Container, LoadingIndicator, TitleHeader } from "../components/layouts";
-import { withStyles } from 'material-ui/styles'
+// TODO: Fix every single eslint-airbnb issue
+import React, { Component } from "react";
+import {
+  Root,
+  CommandoBar,
+  Container,
+  LoadingIndicator,
+  TitleHeader
+} from "../components/layouts";
+import { withStyles } from "material-ui/styles";
 import { connect } from "react-redux";
 import { firebaseConnect } from "react-redux-firebase";
 
-const style = theme => ({
-
-});
+const style = theme => ({});
 
 class History extends Component {
-    render = () => (<div>
-        <TitleHeader title={'History'} />
-        <Root>
-            <Container hasHeader>
-
-            </Container>
-        </Root></div>
-    )
+  render = () => (
+    <div>
+      <TitleHeader title="History" />
+      <Root>
+        <Container hasHeader />
+      </Root>
+    </div>
+  );
 }
 
 export default firebaseConnect()(
-    connect(({ firebase: { profile } }) => ({ profile }))(
-        withStyles(style)(History)
-    )
+  connect(({ firebase: { profile } }) => ({ profile }))(
+    withStyles(style)(History)
+  )
 );

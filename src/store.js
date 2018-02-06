@@ -1,3 +1,4 @@
+// TODO: Fix every single eslint-airbnb issue
 import { createStore, applyMiddleware, compose, combineReducers } from "redux";
 import { routerMiddleware, routerReducer } from "react-router-redux";
 import thunk from "redux-thunk";
@@ -59,17 +60,15 @@ const createStoreWithFirebase = compose(
 
 const store = createStoreWithFirebase(rootReducer, initialState);
 
-const twistInit = twist => {
-  return {
-    type: MIR_TWIST_LOAD,
-    twist
-  };
-};
+const twistInit = twist => ({
+  type: MIR_TWIST_LOAD,
+  twist
+});
 
 export const twistLoad = async () => {
-  let state = store.getState();
+  const state = store.getState();
   if (state.mir && state.mir.twist) return null;
-  else Twist.load().then(twist => store.dispatch(twistInit(twist)));
+  Twist.load().then(twist => store.dispatch(twistInit(twist)));
 };
 
 twistLoad();

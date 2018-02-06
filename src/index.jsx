@@ -1,5 +1,5 @@
 // @flow
-
+// TODO: Fix every single eslint-airbnb issue
 import React from "react";
 import { render } from "react-dom";
 import { Provider } from "react-redux";

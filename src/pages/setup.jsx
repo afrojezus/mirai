@@ -1,3 +1,4 @@
+// TODO: Fix every single eslint-airbnb issue
 import Typography from "material-ui/Typography";
 import React, { Component } from "react";
 import withStyles from "material-ui/styles/withStyles";
@@ -192,10 +193,10 @@ class Setup extends Component {
                   Access
                 </Button>
               ) : (
-                  <Button color="primary" onClick={this.signup}>
-                    Dive in
+                <Button color="primary" onClick={this.signup}>
+                  Dive in
                 </Button>
-                )}
+              )}
             </CardActions>
           </Card>
         </Grid>

@@ -6,6 +6,8 @@
 
 // TODO - MAYBE CONSIDER APOLLO?
 
+// TODO: Fix every single eslint-airbnb issue
+
 import { clientID, clientSecret } from "./config.json";
 
 import {
@@ -43,7 +45,7 @@ class Segoku {
       method: "POST",
       headers: this.segoku.headers,
       body: JSON.stringify({
-        query: query,
+        query,
         variables: requestObject
       })
     };

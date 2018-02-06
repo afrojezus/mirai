@@ -1,3 +1,4 @@
+// TODO: Fix every single eslint-airbnb issue
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import localForage from 'localforage';

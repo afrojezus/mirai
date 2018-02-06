@@ -1,3 +1,4 @@
+// TODO: Fix every single eslint-airbnb issue
 import React, { Component } from "react";
 import * as M from "material-ui";
 import * as Icon from "material-ui-icons";
@@ -438,9 +439,7 @@ class PageNotFound extends Component {
     const { loading } = this.state;
     return (
       <div>
-        <LoadingIndicator
-          loading={loading}
-        />
+        <LoadingIndicator loading={loading} />
         <div className={classes.root} style={loading ? { opacity: 0 } : null}>
           <M.Typography type="display2" className={classes.bigTitle}>
             404: page not found.

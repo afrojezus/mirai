@@ -1,5 +1,7 @@
+// TODO: Fix every single eslint-airbnb issue
+
 import React, { Component } from "react";
-import PropTypes from 'prop-types'
+import PropTypes from "prop-types";
 import * as Icon from "material-ui-icons";
 import ReactPlayer from "react-player";
 import localForage from "localforage";

@@ -1,3 +1,4 @@
+// TODO: Fix every single eslint-airbnb issue
 import React, { Component } from "react";
 import localForage from "localforage";
 import Grid from "material-ui/Grid";
