@@ -1,24 +1,46 @@
 // TODO: Fix every single eslint-airbnb issue
-import MenuItem from "material-ui/Menu/MenuItem";
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import { withStyles } from "material-ui/styles";
 import Typography from "material-ui/Typography";
-import { Database } from "../utils/firebase";
 import localForage from "localforage";
 import Grid from "material-ui/Grid";
 import Divider from "material-ui/Divider";
 import Avatar from "material-ui/Avatar";
-import Slider from "react-slick";
+import MenuItem from "material-ui/Menu/MenuItem";
 import Card, {
   CardContent,
   CardMedia,
   CardHeader,
   CardActions
 } from "material-ui/Card";
-import { grey } from "material-ui/colors";
 import IconButton from "material-ui/IconButton";
 import { graphql } from "react-apollo";
 import gql from "graphql-tag";
+
+import Dotdotdot from "react-dotdotdot";
+
+import PlusOneIcon from "material-ui-icons/PlusOne";
+import Button from "material-ui/Button";
+import MoreVertIcon from "material-ui-icons/MoreVert";
+import ShareIcon from "material-ui-icons/Share";
+import { Menu } from "material-ui";
+import ArrowForward from "material-ui-icons/ArrowForward";
+import ArrowBack from "material-ui-icons/ArrowBack";
+
+import { firebaseConnect, isEmpty, firebase } from "react-redux-firebase";
+
+import { blue, grey } from "material-ui/colors";
+
+import Snackbar from "material-ui/Snackbar";
+import CloseIcon from "material-ui-icons/Close";
+
+import CircularProgress from "material-ui/Progress/CircularProgress";
+
+import { push } from "react-router-redux";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import * as Vibrant from "node-vibrant";
 
 import CardButton from "../components/cardButton";
 import {
@@ -28,38 +50,13 @@ import {
   LoadingIndicator,
   TitleHeader
 } from "../components/layouts";
-
-import Twist from "../twist-api";
-
-import Dotdotdot from "react-dotdotdot";
-
-import PlusOneIcon from "material-ui-icons/PlusOne";
-import Button from "material-ui/Button";
-import MoreVertIcon from "material-ui-icons/MoreVert";
-import ShareIcon from "material-ui-icons/Share";
-import { Menu } from "material-ui";
-import miraiIcon from "../assets/mirai-icon.png";
-import ArrowForward from "material-ui-icons/ArrowForward";
-import ArrowBack from "material-ui-icons/ArrowBack";
-
-import { firebaseConnect, isEmpty } from "react-redux-firebase";
-
-import { blue } from "material-ui/colors";
-
-import Snackbar from "material-ui/Snackbar";
-import CloseIcon from "material-ui-icons/Close";
+import SuperTable from "../components/supertable";
 
 import Segoku from "../utils/segoku/segoku";
 
-import ripple from "../assets/Ripple.mp4";
-import CircularProgress from "material-ui/Progress/CircularProgress";
-
-import { push } from "react-router-redux";
-import { bindActionCreators } from "redux";
-import { connect } from "react-redux";
-
-import SuperTable from "../components/supertable";
-import * as Vibrant from "node-vibrant";
+import Twist from "../twist-api";
+import miraiIcon from "../assets/mirai-icon.png";
+import { history } from "../store";
 
 const styles = theme => ({
   root: {
@@ -356,18 +353,39 @@ const styles = theme => ({
   }
 });
 
-const nextArrow = props => (
-  <IconButton {...props}>
-    <ArrowForward />
-  </IconButton>
-);
-const prevArrow = props => (
-  <IconButton {...props}>
-    <ArrowBack />
-  </IconButton>
-);
-
 class Home extends Component {
+  static propTypes = {
+    profile: {},
+    history,
+    firebase,
+    location: {
+      state: {},
+      search: PropTypes.string,
+      pathname: PropTypes.string
+    },
+    classes: styles,
+    mir: {
+      title: PropTypes.string,
+      mir: []
+    },
+    changePage: PropTypes.func,
+    status: PropTypes.string
+  };
+
+  static defaultProps = {
+    profile: null,
+    history,
+    location: null,
+    firebase: null,
+    classes: styles,
+    changePage: PropTypes.func,
+    status: PropTypes.string,
+    mir: {
+      title: PropTypes.string,
+      mir: []
+    }
+  };
+
   state = {
     feeds: null,
     anchorEl: null,
@@ -380,24 +398,17 @@ class Home extends Component {
     hueVibN: "#111"
   };
 
-  componentWillMount = () => {
-    console.log(this);
-  };
+  componentWillMount = () => {};
 
   componentDidMount = async () => {
     this.feedsObserve();
     this.rankingsObserve();
-    this.makeTitlebarWhite();
     this.getColors();
     this.fetchOngoing().then(() =>
       setTimeout(() => this.setState({ loading: false }), 300)
     );
   };
-
-  makeTitlebarWhite = () => {
-    const superbar = document.getElementById("superBar");
-    // if (superbar) superbar.classList.add("whiteshit");
-  };
+  componentWillUnmount = () => {};
 
   getColors = async () => {
     const hues = await localForage.getItem("user-hue");
@@ -475,12 +486,6 @@ class Home extends Component {
   openEntity = link => this.props.changePage(link);
 
   easterEggOne = () => this.setState({ es: !this.state.es });
-
-  componentWillUnmount = () => {
-    const superbar = document.getElementById("superBar");
-    // if (superbar) superbar.classList.remove("whiteshit");
-  };
-
   render() {
     const { classes, status } = this.props;
     const {
@@ -535,8 +540,8 @@ class Home extends Component {
                   </Typography>
                   <Grid container spacing={16}>
                     {feeds &&
-                      feeds.map((feed, index) => (
-                        <Grid item xs key={index}>
+                      feeds.map(feed => (
+                        <Grid item xs key={feed.id}>
                           <Card classes={{ root: classes.cardColor }}>
                             <CardHeader
                               avatar={
@@ -716,7 +721,7 @@ class Home extends Component {
                     }}
                   >
                     <Typography type="title" className={classes.headline}>
-                      Animes you've watched previously
+                      {"Animes you've watched previously"}
                     </Typography>
                     <div style={{ flex: 1 }} />
                     <Typography type="title" className={classes.headline}>
@@ -768,9 +773,9 @@ class Home extends Component {
                   >
                     {Object.values(user.favs.show)
                       .sort((a, b) => a.name - b.name)
-                      .map((anime, index) => (
+                      .map(anime => (
                         <CardButton
-                          key={index}
+                          key={anime.id}
                           title={anime.name}
                           image={anime.image}
                           onClick={() =>

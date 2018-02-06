@@ -1,5 +1,10 @@
 // TODO: Fix every single eslint-airbnb issue
 import React, { Component } from "react";
+import { withStyles } from "material-ui/styles";
+import { connect } from "react-redux";
+import { firebaseConnect, firebase } from "react-redux-firebase";
+import Typography from "material-ui/Typography/Typography";
+import Divider from "material-ui/Divider/Divider";
 import {
   Root,
   CommandoBar,
@@ -7,11 +12,6 @@ import {
   LoadingIndicator,
   TitleHeader
 } from "../components/layouts";
-import { withStyles } from "material-ui/styles";
-import { connect } from "react-redux";
-import { firebaseConnect } from "react-redux-firebase";
-import Typography from "material-ui/Typography/Typography";
-import Divider from "material-ui/Divider/Divider";
 
 const style = theme => ({
   column: {
@@ -34,6 +34,26 @@ const style = theme => ({
 });
 
 class Help extends Component {
+  static propTypes = {
+    classes: style,
+    firebase
+  };
+  static defaultProps = {
+    classes: style,
+    firebase
+  };
+  state = {
+    articles: null
+  };
+  componentDidMount = () =>
+    this.props.firebase
+      .database()
+      .ref("/articles")
+      .child("help")
+      .on("value", value =>
+        this.setState({ articles: Object.values(value.val()) })
+      );
+  // TODO: All information-related matters handled dynamically from firebase. Also eslint, go fuck yourself with the entities rule.
   render = () => (
     <div>
       <TitleHeader title="Help" />

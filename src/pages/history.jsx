@@ -1,5 +1,8 @@
 // TODO: Fix every single eslint-airbnb issue
 import React, { Component } from "react";
+import { withStyles } from "material-ui/styles";
+import { connect } from "react-redux";
+import { firebaseConnect } from "react-redux-firebase";
 import {
   Root,
   CommandoBar,
@@ -7,13 +10,12 @@ import {
   LoadingIndicator,
   TitleHeader
 } from "../components/layouts";
-import { withStyles } from "material-ui/styles";
-import { connect } from "react-redux";
-import { firebaseConnect } from "react-redux-firebase";
 
 const style = theme => ({});
 
 class History extends Component {
+  componentDidMount = () => {};
+
   render = () => (
     <div>
       <TitleHeader title="History" />

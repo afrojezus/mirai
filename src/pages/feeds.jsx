@@ -1,5 +1,10 @@
 // TODO: Fix every single eslint-airbnb issue
 import React, { Component } from "react";
+import { withStyles } from "material-ui/styles";
+import { connect } from "react-redux";
+import { firebaseConnect } from "react-redux-firebase";
+import Typography from "material-ui/Typography/Typography";
+import blue from "material-ui/colors/blue";
 import {
   Root,
   CommandoBar,
@@ -8,15 +13,12 @@ import {
   TitleHeader,
   Header
 } from "../components/layouts";
-import { withStyles } from "material-ui/styles";
-import { connect } from "react-redux";
-import { firebaseConnect } from "react-redux-firebase";
-import Typography from "material-ui/Typography/Typography";
-import blue from "material-ui/colors/blue";
 
 const style = theme => ({});
 
 class Feeds extends Component {
+  componentDidMount = () => {};
+
   render = () => (
     <div>
       <TitleHeader title="Feeds" color={blue.A700} />

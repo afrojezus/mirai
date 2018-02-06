@@ -202,6 +202,7 @@ class DevPlayer extends Component {
     profile: {},
     history,
     firebase,
+    theme: {},
     location: {
       state: {},
       search: PropTypes.string,
@@ -215,7 +216,8 @@ class DevPlayer extends Component {
     history,
     location: null,
     firebase: null,
-    classes: style
+    classes: style,
+    theme: {}
   };
 
   state = {
@@ -265,34 +267,27 @@ class DevPlayer extends Component {
       if (this.props.profile !== nextProps.profile) return null;
       await getState(this);
     }
+    return false;
   };
 
-  playPause = resume => {
-    this.setState({ playing: !this.state.playing });
-    if (this.timer && this.timer !== undefined) clearInterval(this.timer);
-  };
-
-  /* stop = () => {
-        this.setState({ source: null, playing: false });
-      }; */
-
-  setVolume = e => {
-    this.setState({ volume: parseFloat(e.target.value) }, async () => {
-      await localForage.setItem("player-settings-volume", this.state.volume);
-    });
-  };
-
-  mute = e => {
-    const prevVol = this.state.volume;
-    if (this.state.volume > 0) {
-      this.setState({ volume: 0 });
-    } else {
-      this.setState({ volume: prevVol });
+  componentWillUnmount = async () => {
+    if (!isEmpty(this.props.profile) && this.state.loaded > 0) {
+      const episodePro = this.props.firebase
+        .database()
+        .ref("users")
+        .child(`${this.props.profile.userID}`)
+        .child("episodeProgress");
+      localForage.getItem("player-state").then(async a => {
+        if (a && a.showId) {
+          episodePro.child(`${a.showId}`).update(a);
+          return true;
+        }
+        return false;
+      });
     }
-  };
 
-  setPlaybackRate = e => {
-    this.setState({ playbackRate: parseFloat(e.target.value) });
+    if (this.state.torrent && this.state.torrentFile)
+      hsfetcher.destroyClient(this.state.torrentFile);
   };
 
   onSeekMouseDown = e => {
@@ -308,43 +303,85 @@ class DevPlayer extends Component {
     this.player.seekTo(parseFloat(e.target.value));
   };
 
+  onBuffer = () => {
+    this.setState({ buffering: true, status: "Buffering..." }, () => {});
+  };
+
+  onProgress = state => {
+    const play = this.state.played;
+    if (!this.state.seeking)
+      this.setState(state, async () => {
+        this.setState({
+          videoQuality: this.player.getInternalPlayer().videoHeight
+        });
+        switch (this.player.getInternalPlayer().networkState) {
+          case 1:
+            console.log("IDLE");
+            this.setState({ buffering: false });
+            break;
+          case 2:
+            console.log("LOADING");
+            this.setState({ buffering: false });
+            break;
+          default:
+            break;
+        }
+
+        if (this.state.resume) {
+          const { resume } = this.state;
+          this.setState({ resume: null, buffering: true }, () => {
+            this.player.seekTo(resume);
+            if (resume === this.state.played)
+              this.setState({ buffering: false });
+          });
+        }
+        if (!this.state.menuEl && !this.state.volEl)
+          await localForage.setItem("player-state", this.state);
+      });
+  };
+
+  setVolume = e => {
+    this.setState({ volume: parseFloat(e.target.value) }, async () => {
+      await localForage.setItem("player-settings-volume", this.state.volume);
+    });
+  };
+
+  setPlaybackRate = e => {
+    this.setState({ playbackRate: parseFloat(e.target.value) });
+  };
+
+  mute = e => {
+    const prevVol = this.state.volume;
+    if (this.state.volume > 0) {
+      this.setState({ volume: 0 });
+    } else {
+      this.setState({ volume: prevVol });
+    }
+  };
+
+  inactivityTimeout;
+  /* stop = () => {
+        this.setState({ source: null, playing: false });
+      }; */
+
+  playPause = resume => {
+    this.setState({ playing: !this.state.playing });
+    if (this.timer && this.timer !== undefined) clearInterval(this.timer);
+  };
+
   skip30Sec = () => {
     this.player.seekTo(this.state.played + 18 / 1000, null);
   };
 
   skipToNextEp = () => {
     let nextEp = this.state.ep;
-    loadEp(this, this.state.eps[nextEp++], null);
+    nextEp += 1;
+    loadEp(this, this.state.eps[nextEp], null);
     if (this.state.willLoadNextEp) this.setState({ willLoadNextEp: false });
-  };
-
-  onBuffer = () => {
-    this.setState({ buffering: true, status: "Buffering..." }, () => {});
   };
 
   player = HTMLMediaElement;
   closeMenu = () => this.setState({ menuEl: null });
-
-  componentWillUnmount = async () => {
-    if (!isEmpty(this.props.profile) && this.state.loaded > 0) {
-      const episodePro = this.props.firebase
-        .database()
-        .ref("users")
-        .child(`${this.props.profile.userID}`)
-        .child("episodeProgress");
-      localForage.getItem("player-state").then(async a => {
-        if (a && a.showId) {
-          episodePro.child(`${a.showId}`).update(a);
-          return true;
-        }
-      });
-    }
-
-    if (this.state.torrent && this.state.torrentFile)
-      hsfetcher.destroyClient(this.state.torrentFile);
-  };
-
-  inactivityTimeout;
 
   mouseResetDelay = () => {
     clearTimeout(this.inactivityTimeout);
@@ -408,36 +445,6 @@ class DevPlayer extends Component {
       }
     });
 
-  onProgress = state => {
-    const play = this.state.played;
-    if (!this.state.seeking)
-      this.setState(state, async () => {
-        this.setState({
-          videoQuality: this.player.getInternalPlayer().videoHeight
-        });
-        switch (this.player.getInternalPlayer().networkState) {
-          case 1:
-            console.log("IDLE");
-            this.setState({ buffering: false });
-            break;
-          case 2:
-            console.log("LOADING");
-            this.setState({ buffering: false });
-        }
-
-        if (this.state.resume) {
-          const resume = this.state.resume;
-          this.setState({ resume: null, buffering: true }, () => {
-            this.player.seekTo(resume);
-            if (resume === this.state.played)
-              this.setState({ buffering: false });
-          });
-        }
-        if (!this.state.menuEl && !this.state.volEl)
-          await localForage.setItem("player-state", this.state);
-      });
-  };
-
   handleEnded = () => {
     this.reveal();
     if (!isEmpty(this.props.profile) && this.state.loaded > 0) {
@@ -451,6 +458,7 @@ class DevPlayer extends Component {
           episodePro.child(`${a.showId}`).update(a);
           return true;
         }
+        return false;
       });
     }
 
@@ -486,6 +494,7 @@ class DevPlayer extends Component {
           },
           async () => getState(this)
         );
+        break;
       case 720:
         if (this.state.torrentFile)
           hsfetcher.destroyClient(this.state.torrentFile);
@@ -503,6 +512,7 @@ class DevPlayer extends Component {
           },
           async () => getState(this)
         );
+        break;
       case 480:
         if (this.state.torrentFile)
           hsfetcher.destroyClient(this.state.torrentFile);
@@ -520,12 +530,15 @@ class DevPlayer extends Component {
           },
           async () => getState(this)
         );
+        break;
+      default:
+        break;
     }
   };
 
   switchMode = () =>
     this.setState({ torrent: !this.state.torrent }, async () => {
-      const torrent = this.state.torrent;
+      const { torrent } = this.state;
       if (torrent) {
         await localForage.setItem("player-setting-torrent", true);
         if (this.state.torrentFile)
@@ -694,7 +707,7 @@ class DevPlayer extends Component {
           onPause={() => this.setState({ playing: false })}
           onEnded={this.handleEnded}
           onError={e => console.error(e)}
-          onDuration={duration => this.setState({ duration })}
+          onDuration={dur => this.setState({ duration: dur })}
           style={played === 1 ? { filter: "brightness(.2)" } : null}
         />
         {!native ? (
@@ -972,14 +985,14 @@ class DevPlayer extends Component {
                     <Divider />
                     <CardContent className={classes.epListCont}>
                       {eps &&
-                        eps.map((e, i) => (
+                        eps.map(e => (
                           <MenuItem
                             onClick={() => {
                               this.setState({ ep: e.ep }, async () =>
                                 this.loadEp(e, null)
                               );
                             }}
-                            key={i}
+                            key={e.ep}
                             selected={e.ep === ep}
                             className={classes.epListItem}
                           >
@@ -1062,14 +1075,14 @@ class DevPlayer extends Component {
                 <Divider />
                 <CardContent className={classes.epListCont}>
                   {eps &&
-                    eps.map((e, i) => (
+                    eps.map(e => (
                       <MenuItem
                         onClick={() => {
                           this.setState({ ep: e.ep }, async () =>
                             this.loadEp(e, null)
                           );
                         }}
-                        key={i}
+                        key={e.ep}
                         selected={e.ep === ep}
                         className={classes.epListItem}
                       >
