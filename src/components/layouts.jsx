@@ -7,7 +7,7 @@ import Paper from 'material-ui/Paper/Paper';
 import CircularProgress from 'material-ui/Progress/CircularProgress';
 import Typography from 'material-ui/Typography/Typography';
 import { blue } from 'material-ui/colors';
-import withTheme from 'material-ui/styles/withTheme';
+// import withTheme from 'material-ui/styles/withTheme';
 
 const style = theme => ({
 	compacMode: {

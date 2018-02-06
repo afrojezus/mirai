@@ -17,20 +17,20 @@ import {
   feedQuery,
   smolQuery,
   tagQuery
-} from "./queries.js";
+} from "./queries";
 
 class Segoku {
   segoku = {
     id: clientID,
     secret: clientSecret,
-    entryQuery: entryQuery,
-    entryQueryM: entryQueryM,
-    bigFuckingQuery: bigFuckingQuery,
-    bigFuckingQueryS: bigFuckingQueryS,
-    bigFuckingQueryM: bigFuckingQueryM,
-    feedQuery: feedQuery,
-    smolQuery: smolQuery,
-    tagQuery: tagQuery,
+    entryQuery,
+    entryQueryM,
+    bigFuckingQuery,
+    bigFuckingQueryS,
+    bigFuckingQueryM,
+    feedQuery,
+    smolQuery,
+    tagQuery,
     source: "https://graphql.anilist.co",
     headers: {
       "Content-type": "application/json",

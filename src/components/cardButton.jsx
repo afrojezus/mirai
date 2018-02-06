@@ -257,8 +257,7 @@ export const PeopleButton = withStyles(styles, { withTheme: true })(
 		charOnClick,
 		role,
 		...props
-	}) => {
-		return (
+	}) => (
 			<Grid className={classes.peopleCard} item xs>
 				<Card
 					style={{
@@ -296,8 +295,7 @@ export const PeopleButton = withStyles(styles, { withTheme: true })(
 					</Typography>
 				</Card>
 			</Grid>
-		);
-	}
+		)
 );
 
 /*export const PlayButton = withStyles(styles, { withTheme: true })(({ classes, theme,  ...props }) => (
