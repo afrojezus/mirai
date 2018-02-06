@@ -11,6 +11,7 @@
     "no-unused-vars": "warn",
     "react/no-unused-prop-types": "warn",
     "react/no-unused-state": "warn",
-    "react/no-multi-comp": "off"
+    "react/no-multi-comp": "off",
+    "linebreak-style": "off"
   }
 }

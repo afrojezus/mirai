@@ -1,17 +1,12 @@
-// TODO: Fix every single eslint-airbnb issue
-
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import * as Icon from "material-ui-icons";
 import ReactPlayer from "react-player";
 import localForage from "localforage";
 import Dropzone from "react-dropzone";
-import queryString from "query-string";
-import FadeIn from "react-fade-in";
 import { connect } from "react-redux";
 import { firebaseConnect, isEmpty, firebase } from "react-redux-firebase";
 import CircularProgress from "material-ui/Progress/CircularProgress";
-import Toolbar from "material-ui/Toolbar/Toolbar";
 import Button from "material-ui/Button/Button";
 import IconButton from "material-ui/IconButton/IconButton";
 import Typography from "material-ui/Typography/Typography";
@@ -32,8 +27,6 @@ import TextField from "material-ui/TextField/TextField";
 import withStyles from "material-ui/styles/withStyles";
 import blue from "material-ui/colors/blue";
 import hsfetcher from "../../torrent";
-import Twist from "../../twist-api";
-import Segoku from "../../utils/segoku/segoku";
 import Duration from "../../components/yuplayer/Duration";
 import { getState, loadEp, loadFile } from "../../utils/mirfetch";
 import { history } from "../../store";

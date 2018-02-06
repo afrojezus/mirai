@@ -1,6 +1,6 @@
 // List of graphQL queries to send to anilist
 
-import gql from "graphql-tag";
+// import gql from "graphql-tag";
 
 // TODO - Perhaps more and specific queries?
 export const entryQuery = `

@@ -1,24 +1,24 @@
 // TODO: Fix every single eslint-airbnb issue
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import * as M from 'material-ui';
 import * as Icon from 'material-ui-icons';
 import queryString from 'query-string';
-import Segoku from '../utils/segoku/segoku';
 import * as Vibrant from 'node-vibrant';
-
-import { MIR_SET_TITLE } from '../constants';
-
 import { connect } from 'react-redux';
-import { firebaseConnect } from 'react-redux-firebase';
-import { LoadingIndicator, TitleHeader, Root } from '../components/layouts';
 import red from 'material-ui/colors/red';
+import { firebaseConnect, firebase } from 'react-redux-firebase';
+import { MIR_SET_TITLE } from '../constants';
+import { history } from '../store';
+import { LoadingIndicator, TitleHeader, Root } from '../components/layouts';
+import Segoku from '../utils/segoku/segoku';
 
 const style = theme => ({
 	root: {
 		height: '100%',
 		width: '100%',
 		position: 'relative',
-		transition: theme.transitions.create(['all']),
+		transition: theme.transitions.create(['all'])
 	},
 	bgImage: {
 		position: 'fixed',
@@ -31,16 +31,16 @@ const style = theme => ({
 		objectFit: 'cover',
 		width: '100%',
 		zIndex: -1,
-		transform: 'scale(10)',
+		transform: 'scale(10)'
 	},
 	content: {
 		width: '100%',
-		paddingTop: theme.spacing.unit * 8,
+		paddingTop: theme.spacing.unit * 8
 	},
 	header: {
 		position: 'relative',
 		margin: 'auto',
-		paddingTop: theme.spacing.unit * 3,
+		paddingTop: theme.spacing.unit * 3
 	},
 	title: {
 		color: 'white',
@@ -49,7 +49,7 @@ const style = theme => ({
 		textShadow: '0 3px 16px rgba(0,0,0,.4)',
 		padding: theme.spacing.unit,
 		textAlign: 'center',
-		margin: 'auto',
+		margin: 'auto'
 	},
 	icon: {
 		boxShadow: '0 1px 12px rgba(0,0,0,.2)',
@@ -59,13 +59,13 @@ const style = theme => ({
 		zIndex: -1,
 		background: 'linear-gradient(to top, #9900ff 0%, #ff00ff 70%)',
 		borderRadius: '50%',
-		padding: theme.spacing.unit * 2,
+		padding: theme.spacing.unit * 2
 	},
 	fillImg: {
 		height: '100%',
 		width: '100%',
 		objectFit: 'cover',
-		background: 'white',
+		background: 'white'
 	},
 	peopleCard: {
 		height: 'auto',
@@ -79,14 +79,14 @@ const style = theme => ({
 			overflow: 'initial',
 			zIndex: 200,
 			boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
-			background: M.colors.blue.A200,
+			background: M.colors.blue.A200
 		},
 		'&:hover > * > h1': {
 			transform: 'scale(1.1)',
-			textShadow: '0 2px 12px rgba(0,0,0,.7)',
+			textShadow: '0 2px 12px rgba(0,0,0,.7)'
 		},
 		position: 'relative',
-		overflow: 'hidden',
+		overflow: 'hidden'
 	},
 	peopleImage: {
 		height: 156,
@@ -97,10 +97,10 @@ const style = theme => ({
 		boxShadow: '0 2px 12px rgba(0,0,0,.2)',
 		transition: theme.transitions.create(['all']),
 		'&:hover': {
-			boxShadow: '0 3px 16px rgba(0,0,0,.5)',
+			boxShadow: '0 3px 16px rgba(0,0,0,.5)'
 		},
 		top: 0,
-		left: 0,
+		left: 0
 	},
 	peopleCharImage: {
 		height: 64,
@@ -113,15 +113,15 @@ const style = theme => ({
 		transition: theme.transitions.create(['all']),
 		'&:hover': {
 			boxShadow: '0 3px 16px rgba(0,0,0,.5)',
-			transform: 'scale(1.2)',
+			transform: 'scale(1.2)'
 		},
 		right: theme.spacing.unit * 3,
-		bottom: theme.spacing.unit * 7,
+		bottom: theme.spacing.unit * 7
 	},
 	entityContext: {
 		'&:last-child': {
-			paddingBottom: 12,
-		},
+			paddingBottom: 12
+		}
 	},
 	peopleTitle: {
 		fontSize: 14,
@@ -133,7 +133,7 @@ const style = theme => ({
 		zIndex: 5,
 		margin: 'auto',
 		textAlign: 'center',
-		textShadow: '0 1px 12px rgba(0,0,0,.2)',
+		textShadow: '0 1px 12px rgba(0,0,0,.2)'
 	},
 	peopleSubTitle: {
 		fontSize: 14,
@@ -144,7 +144,7 @@ const style = theme => ({
 		zIndex: 5,
 		textShadow: '0 1px 12px rgba(0,0,0,.2)',
 		textAlign: 'center',
-		whiteSpace: 'nowrap',
+		whiteSpace: 'nowrap'
 	},
 	entityCard: {
 		height: 200,
@@ -158,18 +158,18 @@ const style = theme => ({
 			overflow: 'initial',
 			zIndex: 200,
 			boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
-			background: M.colors.blue.A200,
+			background: M.colors.blue.A200
 		},
 		'&:hover > div': {
-			boxShadow: 'none',
+			boxShadow: 'none'
 		},
 		'&:hover > * > h1': {
 			transform: 'scale(1.4)',
 			fontWeight: 700,
-			textShadow: '0 2px 12px rgba(0,0,0,.7)',
+			textShadow: '0 2px 12px rgba(0,0,0,.7)'
 		},
 		position: 'relative',
-		overflow: 'hidden',
+		overflow: 'hidden'
 	},
 	entityCardDisabled: {
 		height: 200,
@@ -180,7 +180,7 @@ const style = theme => ({
 		transition: theme.transitions.create(['all']),
 		filter: 'brightness(.8)',
 		position: 'relative',
-		overflow: 'hidden',
+		overflow: 'hidden'
 	},
 	entityImage: {
 		height: '100%',
@@ -190,10 +190,10 @@ const style = theme => ({
 		zIndex: -1,
 		transition: theme.transitions.create(['filter']),
 		'&:hover': {
-			filter: 'brightness(0.8)',
+			filter: 'brightness(0.8)'
 		},
 		top: 0,
-		left: 0,
+		left: 0
 	},
 	entityTitle: {
 		fontSize: 14,
@@ -204,7 +204,7 @@ const style = theme => ({
 		bottom: 0,
 		zIndex: 5,
 		left: 0,
-		textShadow: '0 1px 12px rgba(0,0,0,.2)',
+		textShadow: '0 1px 12px rgba(0,0,0,.2)'
 	},
 	entitySubTitle: {
 		fontSize: 14,
@@ -215,41 +215,41 @@ const style = theme => ({
 		top: 0,
 		left: 0,
 		zIndex: 5,
-		textShadow: '0 1px 12px rgba(0,0,0,.2)',
+		textShadow: '0 1px 12px rgba(0,0,0,.2)'
 	},
 	itemcontainer: {
 		paddingBottom: theme.spacing.unit * 2,
 		marginLeft: theme.spacing.unit,
-		marginRight: theme.spacing.unit,
+		marginRight: theme.spacing.unit
 	},
 	gradientCard: {
 		position: 'relative',
 		background: 'linear-gradient(to top, transparent, rgba(0,0,0,.6))',
 		height: 183,
-		width: '100%',
+		width: '100%'
 	},
 	sectDivide: {
-		marginTop: theme.spacing.unit * 2,
+		marginTop: theme.spacing.unit * 2
 	},
 	progressCon: {
 		display: 'flex',
 		flexDirection: 'column',
 		width: '100%',
 		maxWidth: 400,
-		margin: 'auto',
+		margin: 'auto'
 	},
 	progressTitle: {
 		display: 'flex',
 		fontSize: 12,
 		margin: 'auto',
-		textAlign: 'center',
+		textAlign: 'center'
 	},
 	progressBar: {
 		background: 'rgba(255,255,255,.3)',
-		margin: theme.spacing.unit / 2,
+		margin: theme.spacing.unit / 2
 	},
 	progressBarActive: {
-		background: 'white',
+		background: 'white'
 	},
 	commandoBar: {
 		width: '100%',
@@ -257,31 +257,31 @@ const style = theme => ({
 		display: 'inline-flex',
 		boxSizing: 'border-box',
 		background: '#222',
-		boxShadow: '0 3px 18px rgba(0,0,0,.1)',
+		boxShadow: '0 3px 18px rgba(0,0,0,.1)'
 	},
 	commandoText: {
 		margin: 'auto',
-		textAlign: 'center',
+		textAlign: 'center'
 	},
 	commandoTextBox: {
 		paddingLeft: theme.spacing.unit,
 		paddingRight: theme.spacing.unit,
-		margin: 'auto',
+		margin: 'auto'
 	},
 	commandoTextLabel: {
 		fontSize: 10,
 		textAlign: 'center',
-		color: 'rgba(255,255,255,.8)',
+		color: 'rgba(255,255,255,.8)'
 	},
 	smallTitlebar: {
-		display: 'flex',
+		display: 'flex'
 	},
 	secTitle: {
 		padding: theme.spacing.unit,
 		fontWeight: 700,
 		fontSize: 22,
 		zIndex: 'inherit',
-		paddingBottom: theme.spacing.unit * 2,
+		paddingBottom: theme.spacing.unit * 2
 	},
 	loading: {
 		height: '100%',
@@ -293,10 +293,10 @@ const style = theme => ({
 		transform: 'translate(-50%,-50%)',
 		padding: 0,
 		margin: 'auto',
-		transition: theme.transitions.create(['all']),
+		transition: theme.transitions.create(['all'])
 	},
 	backToolbar: {
-		marginTop: theme.spacing.unit * 8,
+		marginTop: theme.spacing.unit * 8
 	},
 	bigBar: {
 		width: '100%',
@@ -308,7 +308,7 @@ const style = theme => ({
 		overflow: 'hidden',
 		paddingBottom: theme.spacing.unit * 4,
 		marginBottom: theme.spacing.unit * 8,
-		transition: theme.transitions.create(['all']),
+		transition: theme.transitions.create(['all'])
 	},
 	glassEffect: {
 		position: 'absolute',
@@ -320,12 +320,12 @@ const style = theme => ({
 		height: '100vh',
 		objectFit: 'cover',
 		width: '100%',
-		transform: 'scale(20)',
+		transform: 'scale(20)'
 	},
 	rootInactive: {
 		opacity: 0,
 		pointerEvents: 'none',
-		transition: theme.transitions.create(['all']),
+		transition: theme.transitions.create(['all'])
 	},
 	container: {
 		marginLeft: 'auto',
@@ -333,14 +333,14 @@ const style = theme => ({
 		maxWidth: 1200,
 		[theme.breakpoints.up('md')]: {
 			maxWidth: 'calc(100% - 64px)',
-			paddingTop: 24,
-		},
+			paddingTop: 24
+		}
 	},
 	frame: {
 		height: '100%',
 		width: '100%',
 		position: 'relative',
-		transition: theme.transitions.create(['all']),
+		transition: theme.transitions.create(['all'])
 	},
 	grDImage: {
 		position: 'fixed',
@@ -353,55 +353,55 @@ const style = theme => ({
 		width: '100%',
 		zIndex: -1,
 		overflow: 'hidden',
-		transition: theme.transitions.create(['all']),
+		transition: theme.transitions.create(['all'])
 	},
 	mainFrame: {
-		marginLeft: 24,
+		marginLeft: 24
 	},
 	bigTitle: {
 		fontWeight: 700,
 		color: 'white',
-		textShadow: '0 2px 12px rgba(0,0,0,.2)',
+		textShadow: '0 2px 12px rgba(0,0,0,.2)'
 	},
 	smallTitle: {
 		fontWeight: 600,
 		color: 'white',
 		fontSize: 16,
-		textShadow: '0 2px 12px rgba(0,0,0,.17)',
+		textShadow: '0 2px 12px rgba(0,0,0,.17)'
 	},
 	tagBox: {
-		marginTop: theme.spacing.unit,
+		marginTop: theme.spacing.unit
 	},
 	tagTitle: {
 		fontSize: 16,
 		fontWeight: 600,
 		color: 'white',
 		textShadow: '0 2px 12px rgba(0,0,0,.17)',
-		marginBottom: theme.spacing.unit,
+		marginBottom: theme.spacing.unit
 	},
 	desc: {
 		marginTop: theme.spacing.unit,
 		color: 'white',
 		textShadow: '0 0 12px rgba(0,0,0,.1)',
-		marginBottom: theme.spacing.unit * 6,
+		marginBottom: theme.spacing.unit * 6
 	},
 	boldD: {
 		marginTop: theme.spacing.unit,
 		color: 'white',
 		textShadow: '0 0 12px rgba(0,0,0,.1)',
 		marginBottom: theme.spacing.unit,
-		fontWeight: 600,
+		fontWeight: 600
 	},
 	smallD: {
 		marginLeft: theme.spacing.unit,
 		marginTop: theme.spacing.unit,
 		color: 'white',
 		textShadow: '0 0 12px rgba(0,0,0,.1)',
-		marginBottom: theme.spacing.unit,
+		marginBottom: theme.spacing.unit
 	},
 	sepD: {
 		display: 'flex',
-		marginLeft: theme.spacing.unit,
+		marginLeft: theme.spacing.unit
 	},
 	artworkimg: {
 		width: '100%',
@@ -409,7 +409,7 @@ const style = theme => ({
 		objectFit: 'cover',
 		background: 'white',
 		transition: theme.transitions.create(['all']),
-		zIndex: -1,
+		zIndex: -1
 	},
 	artwork: {
 		width: 400,
@@ -420,8 +420,8 @@ const style = theme => ({
 		boxShadow: '0 3px 18px rgba(0,0,0,.5)',
 		transition: theme.transitions.create(['all']),
 		position: 'relative',
-		zIndex: 500,
-	},
+		zIndex: 500
+	}
 });
 
 const tagQuery = `
@@ -551,9 +551,42 @@ query($id: Int) {
 }
 `;
 
-const nameSwapper = (first, last) => (last ? first + ' ' + last : first);
+const nameSwapper = (first, last) => (last ? `${first} ${last}` : first);
 
 class Tag extends Component {
+	static propTypes = {
+		profile: {},
+		history,
+		firebase,
+		location: {
+			state: {},
+			search: PropTypes.string,
+			pathname: PropTypes.string
+		},
+		classes: style,
+		mir: {
+			title: PropTypes.string,
+			mir: []
+		},
+		changePage: PropTypes.func,
+		status: PropTypes.string,
+		sendTitleToMir: PropTypes.func
+	};
+
+	static defaultProps = {
+		profile: null,
+		history,
+		location: null,
+		firebase: null,
+		classes: style,
+		changePage: PropTypes.func,
+		status: PropTypes.string,
+		mir: {
+			title: PropTypes.string,
+			mir: []
+		},
+		sendTitleToMir: PropTypes.func
+	};
 	state = {
 		data: null,
 		loading: true,
@@ -563,22 +596,18 @@ class Tag extends Component {
 		hueVib: '#222',
 		hueVibN: '#222',
 		fav: false,
-		title: '',
+		title: ''
 	};
-
-	unlisten = this.props.history.listen((location, action) => {
-		let id = queryString.parse(location.search);
-		if (location.pathname === '/tag') {
-			if (this.state.type === 'TAG') if (id.t !== this.state.id) this.init();
-			if (this.state.type === 'GENRE') if (id.g !== this.state.id) this.init();
-			if (this.state.type === 'STUDIO') if (id.s !== this.state.id) this.init();
-		} else {
-			return false;
-		}
-	});
 
 	componentDidMount = () => {
 		this.init();
+	};
+
+	componentWillUnmount = () => {
+		const superBar = document.getElementById('superBar');
+		if (superBar) superBar.style.background = null;
+		this.props.sendTitleToMir('');
+		this.unlisten();
 	};
 
 	init = async () =>
@@ -596,7 +625,7 @@ class Tag extends Component {
 							console.log(data);
 							this.setState(
 								{
-									data,
+									data
 								},
 								() =>
 									setTimeout(
@@ -626,14 +655,12 @@ class Tag extends Component {
 													fav: this.props.history.location.search.includes(
 														'?s='
 													)
-														? this.props.profile.favs &&
-															this.props.profile.favs.studio &&
-															this.props.profile.favs.studio.hasOwnProperty(
-																id.c
+														? !!(
+																this.props.profile.favs &&
+																this.props.profile.favs.studio &&
+																this.props.profile.favs.studio[id.c]
 															)
-															? true
-															: false
-														: null,
+														: null
 												},
 												() => this.vibrance()
 											),
@@ -649,8 +676,8 @@ class Tag extends Component {
 		);
 
 	vibrance = () => {
-		/*let superBar = document.getElementById('superBar');
-		if (superBar) superBar.style.background = this.state.hue;*/
+		/* let superBar = document.getElementById('superBar');
+		if (superBar) superBar.style.background = this.state.hue; */
 	};
 
 	openEntity = link => {
@@ -667,7 +694,7 @@ class Tag extends Component {
 						id: this.state.id,
 						link:
 							this.props.history.location.pathname +
-							this.props.history.location.search,
+							this.props.history.location.search
 					}
 				)
 				.then(() => {
@@ -684,36 +711,39 @@ class Tag extends Component {
 				.then(() => this.setState({ fav: false }));
 	};
 
-	componentWillUnmount = () => {
-		let superBar = document.getElementById('superBar');
-		if (superBar) superBar.style.background = null;
-		this.props.sendTitleToMir('');
-		this.unlisten();
-	};
+	unlisten = this.props.history.listen((location, action) => {
+		const id = queryString.parse(location.search);
+		if (location.pathname === '/tag') {
+			if (this.state.type === 'TAG') if (id.t !== this.state.id) this.init();
+			if (this.state.type === 'GENRE') if (id.g !== this.state.id) this.init();
+			if (this.state.type === 'STUDIO') if (id.s !== this.state.id) this.init();
+		} else {
+			return false;
+		}
+		return false;
+	});
 
 	render() {
 		const { classes } = this.props;
 		const user = this.props.profile;
 		const { data, loading, hue, fav, title } = this.state;
 		return (
-			<div>
-				<TitleHeader title={title} color={red.A200} />
-				<LoadingIndicator loading={loading} />
-				<Root style={loading ? { opacity: 0 } : null} />
-			</div>
+  <div>
+    <TitleHeader title={title} color={red.A200} />
+    <LoadingIndicator loading={loading} />
+    <Root style={loading ? { opacity: 0 } : null} />
+  </div>
 		);
 	}
 }
 
-const mapPTS = dispatch => {
-	return {
-		sendTitleToMir: title => dispatch(updateMirTitle(title)),
-	};
-};
-
 export const updateMirTitle = title => ({
 	type: MIR_SET_TITLE,
-	title,
+	title
+});
+
+const mapPTS = dispatch => ({
+	sendTitleToMir: title => dispatch(updateMirTitle(title))
 });
 
 export default firebaseConnect()(
