@@ -645,6 +645,23 @@ class MirPlayer extends Component {
             }
         });
 
+    logTheWatch = () => {
+        if (!isEmpty(this.props.profile) && this.state.loaded > 0) {
+            const episodePro = this.props.firebase
+                .database()
+                .ref('users')
+                .child(`${this.props.profile.userID}`)
+                .child('episodeProgress');
+            localForage.getItem('player-state').then(async a => {
+                if (a && a.showId) {
+                    episodePro.child(`${a.showId}`).update(a);
+                    return true;
+                }
+                return false;
+            });
+        }
+    };
+
     render() {
         const {classes, mir, fullSize} = this.props;
         const {
@@ -705,6 +722,7 @@ class MirPlayer extends Component {
                   <IconButton
                     onClick={() => {
                                     this.props.removeDataFromMir(null);
+                                    this.logTheWatch();
                                     this.setState({
                                         playing: false,
                                         buffering: true,

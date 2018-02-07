@@ -58,6 +58,7 @@
 		"react-scripts": "^1.1.0",
 		"react-slick": "^0.16.0",
 		"react-swipeable-views": "^0.12.12",
+		"react-tilt": "^0.1.4",
 		"recompose": "latest",
 		"redux": "^3.7.2",
 		"redux-thunk": "^2.2.0",

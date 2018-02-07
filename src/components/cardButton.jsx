@@ -7,6 +7,7 @@ import Typography from 'material-ui/Typography/Typography';
 import CardMedia from 'material-ui/Card/CardMedia';
 import { blue } from 'material-ui/colors';
 import Avatar from 'material-ui/Avatar/Avatar';
+import Tilt from 'react-tilt';
 
 const styles = theme => ({
 	entityCard: {
@@ -99,7 +100,8 @@ const styles = theme => ({
 		height: 183,
 		zIndex: 2,
 		width: '100%',
-		background: 'linear-gradient(to top, rgba(0,0,0,.6), transparent)'
+		background: 'linear-gradient(to top, rgba(0,0,0,.6), transparent)',
+        transition: theme.transitions.create(['all']),
 	},
 	peopleCard: {
 		height: 'auto',
@@ -133,7 +135,8 @@ const styles = theme => ({
 			boxShadow: '0 3px 16px rgba(0,0,0,.5)'
 		},
 		top: 0,
-		left: 0
+		left: 0,
+        transform: 'translateZ(5px)'
 	},
 	peopleCharImage: {
 		height: 64,
@@ -146,10 +149,11 @@ const styles = theme => ({
 		transition: theme.transitions.create(['all']),
 		'&:hover': {
 			boxShadow: '0 3px 16px rgba(0,0,0,.5)',
-			transform: 'scale(1.2)'
+			transform: 'scale(1.2) translateZ(30px)'
 		},
-		right: theme.spacing.unit * 3,
-		bottom: theme.spacing.unit * 7
+		right: theme.spacing.unit * 1,
+		bottom: 0,
+        transform: 'translateZ(20px)'
 	},
 	peopleTitle: {
 		fontSize: 14,
@@ -164,7 +168,8 @@ const styles = theme => ({
 		textShadow: '0 1px 12px rgba(0,0,0,.5)',
 		willChange: 'auto',
 		cursor: 'default',
-		userSelect: 'none'
+		userSelect: 'none',
+        transform: 'translateZ(20px)'
 	},
 	peopleSubTitle: {
 		fontSize: 14,
@@ -178,7 +183,8 @@ const styles = theme => ({
 		whiteSpace: 'nowrap',
 		willChange: 'auto',
 		cursor: 'default',
-		userSelect: 'none'
+		userSelect: 'none',
+        transform: 'translateZ(20px)'
 	},
 	artworktype: {
 		fontSize: 12,
@@ -268,28 +274,30 @@ export const PeopleButton = withStyles(styles, { withTheme: true })(
 					boxShadow: 'none'
 				}}
     >
-      <Avatar
-        className={classes.peopleImage}
-        classes={{ img: classes.fillImg }}
-        src={image}
-        imgProps={{
+      <Tilt style={{transformStyle: 'preserve-3d'}} options={{scale: 1}}>
+        <Avatar
+          className={classes.peopleImage}
+          classes={{ img: classes.fillImg }}
+          src={image}
+          imgProps={{
 						style: { opacity: 0 },
 						onLoad: e => (e.currentTarget.style.opacity = null)
 					}}
-        onClick={props.onClick}
-      />
-      {actor ? (
-        <Avatar
-          className={classes.peopleCharImage}
-          classes={{ img: classes.fillImg }}
-          src={charImg}
-          imgProps={{
+          onClick={props.onClick}
+        />
+        {actor ? (
+          <Avatar
+            className={classes.peopleCharImage}
+            classes={{ img: classes.fillImg }}
+            src={charImg}
+            imgProps={{
 							style: { opacity: 0 },
 							onLoad: e => (e.currentTarget.style.opacity = null)
 						}}
-          onClick={charOnClick}
-        />
+            onClick={charOnClick}
+          />
 				) : null}
+      </Tilt>
       <Typography type="headline" className={classes.peopleTitle}>
         {nameSwapper(first, last)}
       </Typography>

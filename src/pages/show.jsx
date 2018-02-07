@@ -9,6 +9,7 @@ import FadeIn from 'react-fade-in';
 import { connect } from 'react-redux';
 import { firebaseConnect, isEmpty, firebase } from 'react-redux-firebase';
 import * as jquery from 'jquery';
+import Tilt from 'react-tilt'
 import Button from 'material-ui/Button/Button';
 import Grid from 'material-ui/Grid/Grid';
 import CircularProgress from 'material-ui/Progress/CircularProgress';

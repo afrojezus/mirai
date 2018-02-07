@@ -12,6 +12,7 @@ import GridListTile from "material-ui/GridList/GridListTile";
 import moment from "moment";
 import withStyles from "material-ui/styles/withStyles";
 import Typography from "material-ui/Typography/Typography";
+import FadeIn from 'react-fade-in';
 
 const style = theme => ({
   bigCard: {
@@ -32,9 +33,10 @@ const style = theme => ({
         zIndex: 200,
         margin: theme.spacing.unit * 2
       },
-      margin: "auto"
+      margin: "auto",
     },
-    overflowX: "hidden"
+    overflowX: "hidden",
+      animation: 'loadIn .5s ease'
   },
   bigCardIcon: {
     background: "white",
@@ -123,7 +125,8 @@ const style = theme => ({
     margin: 0,
     paddingTop: theme.spacing.unit * 2,
     paddingBottom: theme.spacing.unit * 2,
-    transform: "translateZ(0)"
+    transform: "translateZ(0)",
+      animation: 'loadIn .5s ease'
   }
 });
 
