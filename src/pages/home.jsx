@@ -716,7 +716,7 @@ class Home extends Component {
                   {rankingMentionable ? (
                     <SuperTable
                       data={Object.values(rankingMentionable)}
-                      type="s"
+                      type="c"
                       typeof="ranking"
                       limit={12}
                     />

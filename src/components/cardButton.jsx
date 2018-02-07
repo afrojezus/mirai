@@ -35,7 +35,8 @@ const styles = theme => ({
 		position: 'relative',
 		overflow: 'hidden',
 		willChange: 'auto',
-		cursor: 'pointer'
+		cursor: 'pointer',
+		transformStyle: 'preserve-3d'
 	},
 	entityCardDisabled: {
 		height: 200,
@@ -75,7 +76,8 @@ const styles = theme => ({
 		textShadow: '0 1px 12px rgba(0,0,0,.2)',
 		willChange: 'auto',
 		cursor: 'default',
-		userSelect: 'none'
+		userSelect: 'none',
+		transform: 'translateZ(20px)'
 	},
 	entitySubTitle: {
 		fontSize: 14,
@@ -89,7 +91,8 @@ const styles = theme => ({
 		textShadow: '0 1px 12px rgba(0,0,0,.2)',
 		willChange: 'auto',
 		cursor: 'default',
-		userSelect: 'none'
+		userSelect: 'none',
+        transform: 'translateZ(20px)'
 	},
 	gradientCard: {
 		position: 'relative',
@@ -365,7 +368,7 @@ export const PeopleButton = withStyles(styles, { withTheme: true })(
 
 const CardButton = withStyles(styles, { withTheme: true })(
 	({ classes, theme, ...props }) => (
-  <Grid item xs className={classes.entityCard}>
+  <Grid item xs className={classes.entityCard} data-tilt>
     <Card style={{ background: 'transparent' }} onClick={props.onClick}>
       <div className={classes.gradientCard}>
         <CardMedia className={classes.entityImage} image={props.image} />

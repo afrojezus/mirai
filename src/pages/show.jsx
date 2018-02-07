@@ -629,7 +629,11 @@ class Show extends Component {
 		classes: styles,
 		mir: PropTypes.shape({
 			title: PropTypes.string,
-			twist: []
+			twist: PropTypes.arrayOf(PropTypes.shape({})),
+			play: PropTypes.shape({
+				id: PropTypes.number,
+				eps: PropTypes.arrayOf(PropTypes.shape({}))
+			})
 		}),
 		changePage: PropTypes.func,
 		status: PropTypes.string,
@@ -756,12 +760,21 @@ class Show extends Component {
 			? this.state.data.Media.bannerImage
 			: this.state.data.Media.coverImage.medium;
 
-		const similars = await new Segoku().getSimilar({
-			tag: data.tags.length > 0 ? data.tags[0].name : null,
-			sort: ['POPULARITY_DESC'],
-			page: 1,
-			isAdult: false
-		});
+		const similarReq = {
+            tag: data.tags.length > 0 ? data.tags[0].name : null,
+            sort: ['POPULARITY_DESC'],
+            page: 1,
+            isAdult: false
+		};
+
+        const similarReq2 = {
+            tag: data.tags.length > 1 ? data.tags[1].name : null,
+            sort: ['POPULARITY_DESC'],
+            page: 1,
+            isAdult: false
+        }
+
+		const similars = data.type.includes('MANGA') ? await new Segoku().getSimilarM(similarReq) : await new Segoku().getSimilar(similarReq);
 		/* if (data) {
 			let epArray = []
             const epwiki = await wiki().page(data.title.english);
@@ -819,12 +832,7 @@ class Show extends Component {
 			);
 		if (similars) this.setState({ similars });
 		if (data && data.tags.length > 1) {
-			const similars2 = await new Segoku().getSimilar({
-				tag: data.tags.length > 1 ? data.tags[1].name : null,
-				sort: ['POPULARITY_DESC'],
-				page: 1,
-				isAdult: false
-			});
+			const similars2 =  data.type.includes('MANGA') ? await new Segoku().getSimilarM(similarReq2) : await new Segoku().getSimilar(similarReq2);
 
 			if (similars2) this.setState({ similars2 });
 		}
@@ -850,7 +858,7 @@ class Show extends Component {
 			);
 	};
 
-	executeTwist = async () => {
+	executeTwist = async (reload) => {
 		const db = this.props.firebase.ref('twist');
 		const dbval = await db.once('value');
 		if (dbval && Object(dbval.val())[this.state.id]) {
@@ -861,6 +869,9 @@ class Show extends Component {
 				);
 			else throw new Error('owo');
 		} else if (this.props.mir && this.props.mir.twist) {
+			if (this.props.mir.play && this.props.mir.play.eps && !reload) {
+				return this.setState({eps: this.props.mir.play.eps});
+			}
 			const correctedtitle = this.state.data.Media.title.romaji
 				.toLowerCase()
 				.replace('(tv)', '')
@@ -900,14 +911,16 @@ class Show extends Component {
 			this.state.data.Media.type.includes('ANIME') &&
 			this.state.eps
 		) {
-			this.props.sendDataToMir({
-				eps: this.state.eps,
-				meta: this.state.data.Media
-			});
-			this.props.history.push(`/watch?w=${this.state.data.Media.id}`, {
-				meta: this.state.data.Media,
-				eps: this.state.eps
-			});
+			this.props
+				.sendDataToMir({
+					eps: Object.values(this.state.eps),
+					meta: this.state.data.Media,
+					id: this.state.data.Media.id
+				})
+				.then(() => {
+					console.log(this.props)
+						return this.props.history.push(`/watch`);
+				});
 		} else
 			this.props.history.push(
 				`/read?r=${this.state.data.Media.id}`,
@@ -1002,7 +1015,7 @@ class Show extends Component {
 	reportError = () => this.setState({ reportModal: !this.state.reportModal });
 	/* eslint-disable */
 	render() {
-		const { classes } = this.props;
+		const { classes, mir } = this.props;
 		const {
 			data,
 			loading,
@@ -1062,17 +1075,24 @@ class Show extends Component {
 						<div>
 							<div
 								id="fabShowButton"
-								style={window.safari ? { opacity: 1 } : null}
+								style={
+									mir && mir.play && mir.play.meta.id === data.Media.id
+										? { display: 'none' }
+										: window.safari ? { opacity: 1 } : null
+								}
 								className={classes.fabContainer}
 							>
 								<Button
 									color="primary"
 									disabled={
-										data.Media.type.includes('MANGA')
-											? false
-											: !!(
-													data.Media.status.includes('NOT_YET_RELEASED') || !eps
-												)
+										mir && mir.play && mir.play.meta.id === data.Media.id
+											? true
+											: data.Media.type.includes('MANGA')
+												? false
+												: !!(
+														data.Media.status.includes('NOT_YET_RELEASED') ||
+														!eps
+													)
 									}
 									className={classes.fabPlayButton}
 									fab
@@ -1109,19 +1129,25 @@ class Show extends Component {
 										role="play-show"
 										aria-controls="button"
 										className={
-											data.Media.type.includes('MANGA')
-												? classes.artwork
-												: data.Media.status.includes('NOT_YET_RELEASED') || !eps
-													? classes.artworkDisabled
-													: classes.artwork
+											mir && mir.play && mir.play.meta.id === data.Media.id
+												? classes.artworkDisabled
+												: data.Media.type.includes('MANGA')
+													? classes.artwork
+													: data.Media.status.includes('NOT_YET_RELEASED') ||
+														!eps
+														? classes.artworkDisabled
+														: classes.artwork
 										}
 										style={{ background: hueVib }}
 										onClick={
-											data.Media.type.includes('MANGA')
-												? this.play
-												: data.Media.status.includes('NOT_YET_RELEASED') || !eps
-													? null
-													: this.play
+											mir && mir.play && mir.play.meta.id === data.Media.id
+												? null
+												: data.Media.type.includes('MANGA')
+													? this.play
+													: data.Media.status.includes('NOT_YET_RELEASED') ||
+														!eps
+														? null
+														: this.play
 										}
 										onKeyDown={this.handleKeyDown}
 									>
@@ -1143,7 +1169,9 @@ class Show extends Component {
 											}
 										/>
 										<Typography className="artworktitle" type="display1">
-											{data.Media.status.includes('NOT_YET_RELEASED') ? (
+											{mir && mir.play && mir.play.meta.id === data.Media.id ? (
+												'Playing'
+											) : data.Media.status.includes('NOT_YET_RELEASED') ? (
 												'TBA'
 											) : data.Media.type.includes('MANGA') ? (
 												<Icon.Book
@@ -1835,7 +1863,7 @@ export const loadPlayer = play => ({
 
 const mapPTS = dispatch => ({
 	sendTitleToMir: title => dispatch(updateMirTitle(title)),
-	sendDataToMir: play => dispatch(loadPlayer(play))
+	sendDataToMir: async play => dispatch(loadPlayer(play))
 });
 
 export default firebaseConnect()(

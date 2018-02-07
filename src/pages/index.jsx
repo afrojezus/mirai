@@ -13,7 +13,7 @@ import {
 	firebase
 } from 'react-redux-firebase';
 import { connect } from 'react-redux';
-
+import { MIR_PLAY_SHOW } from '../constants';
 import Watch from './watch';
 import withRoot from '../components/withRoot';
 
@@ -21,7 +21,6 @@ import Superbar from '../components/superbar';
 import { LoadingScreen } from '../components/layouts';
 
 import { history } from '../store';
-import MirPlayer from '../components/mirplayer';
 
 const styles = theme => ({
 	root: {},
@@ -122,6 +121,10 @@ class Index extends Component {
 		loading: true
 	};
 
+	componentWillMount = () => {
+		this.props.removeDataFromMir(null);
+	};
+
 	componentDidMount = async () => {
 		const { auth } = this.props.firebase;
 		if (isLoaded(auth)) {
@@ -204,10 +207,6 @@ class Index extends Component {
 					this.props.firebase.profile.isDeveloper === true ? (
   <Route path="/dev/player" exact component={DevPlayer} />
 					) : null}
-
-      {this.props.mir.play ? (
-        <MirPlayer data={this.props.mir.play} />
-					) : null}
     </Superbar>
   </div>
 		);
@@ -222,6 +221,7 @@ Index.propTypes = {
 		})
 	}),
 	classes: styles,
+	removeDataFromMir: PropTypes.func,
 	mir: PropTypes.shape({
 		twist: PropTypes.arrayOf(PropTypes.shape({})),
 		title: PropTypes.string,
@@ -241,11 +241,21 @@ Index.propTypes = {
 Index.defaultProps = {
 	classes: styles,
 	firebase: null,
-	mir: null
+	mir: null,
+	removeDataFromMir: null
 };
+
+export const loadPlayer = play => ({
+	type: MIR_PLAY_SHOW,
+	play
+});
+
+const mapPTS = dispatch => ({
+	removeDataFromMir: play => dispatch(loadPlayer(play))
+});
 
 export default withRouter(
 	firebaseConnect()(
-		connect(state => state)(withRoot(withStyles(styles)(Index)))
+		connect(state => state, mapPTS)(withRoot(withStyles(styles, {withTheme: true})(Index)))
 	)
 );

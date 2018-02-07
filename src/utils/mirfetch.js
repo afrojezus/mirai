@@ -243,31 +243,60 @@ const getSource = async (parent, data) => {
  * @returns {Promise<void>}
  */
 export const getState = async parent => {
+	if (!parent.props.mir) {
+		return null;
+	} else if (!parent.props.mir.play) {
+		return null;
+	}
 	try {
 		if (parent.state.torrent) {
-			if (parent.props.data) {
+			if (parent.props.mir.play) {
+				if (
+					parent.props.mir.play &&
+					parent.props.mir.play.id === parent.state.showId
+				) {
+					return false;
+				}
 				console.info('Nyaa mode, found location state.');
 				parent.setState({ status: 'Setting up...' });
-				getTorrent(parent, parent.props.data);
+				getTorrent(parent, parent.props.mir.play);
 			} else {
+				if (
+					parent.props.mir.play &&
+					parent.props.mir.play.id === parent.state.showId
+				) {
+					return false;
+				}
 				console.info(
 					'Nyaa mode, location state not found. Requesting metadata...'
 				);
 				parent.setState({ status: 'Fetching...' });
 				const { data } = await new Segoku().getSingle({
-					id: parent.props.data.id
+					id: parent.props.mir.play.id
 				});
 				if (data) getTorrent(parent, { meta: data.Media });
 			}
-		} else if (parent.props.data) {
+		} else if (parent.props.mir.play) {
+			if (
+				parent.props.mir.play &&
+				parent.props.mir.play.id === parent.state.showId
+			) {
+				return false;
+			}
 			console.info('Location state found! No need for refetching.');
 			parent.setState({ status: 'Setting up...' });
-			await getSource(parent, parent.props.data);
+			await getSource(parent, parent.props.mir.play);
 		} else {
+			if (
+				parent.props.mir.play &&
+				parent.props.mir.play.id === parent.state.showId
+			) {
+				return false;
+			}
 			console.info('Location state not found! Refetching...');
 			parent.setState({ status: 'Fetching...' });
 			const { data } = await new Segoku().getSingle({
-				id: parent.props.data.id
+				id: parent.props.mir.play.id
 			});
 			if (data) await getSource(parent, { meta: data.Media });
 		}
@@ -278,4 +307,5 @@ export const getState = async parent => {
 			status: 'Error 1: Failed to fetch metadata'
 		});
 	}
+	return null;
 };

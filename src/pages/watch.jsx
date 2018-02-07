@@ -207,12 +207,17 @@ class Watch extends Component {
 			goBack: PropTypes.func,
 			location: PropTypes.shape({
 				pathname: PropTypes.string,
+				search: PropTypes.string,
 				state: PropTypes.shape({
 					eps: PropTypes.arrayOf(PropTypes.shape({}))
 				})
-			})
+			}),
+			push: PropTypes.func
 		}),
 		theme: PropTypes.shape({}),
+		mir: PropTypes.shape({
+			play: PropTypes.shape({})
+		}),
 		location: PropTypes.shape({
 			state: PropTypes.shape({}),
 			search: PropTypes.string,
@@ -224,11 +229,14 @@ class Watch extends Component {
 	static defaultProps = {
 		profile: null,
 		history,
+		mir: null,
 		location: null,
 		classes: style,
 		theme: {}
 	};
 	state = {};
+
+	componentWillMount = () => {};
 
 	componentDidMount = () => {};
 

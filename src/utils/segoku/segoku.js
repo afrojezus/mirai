@@ -156,6 +156,26 @@ class Segoku {
 		return null;
 	};
 
+    getSimilarM = async requestObjects => {
+        const opt = {
+            method: 'POST',
+            headers: this.segoku.headers,
+            body: JSON.stringify({
+                query: this.segoku.bigFuckingQueryM,
+                variables: requestObjects
+            })
+        };
+
+        try {
+            const response = await fetch(this.segoku.source, opt);
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error(error);
+        }
+        return null;
+    };
+
 	get = async requestObjects => {
 		const opt = {
 			method: 'POST',

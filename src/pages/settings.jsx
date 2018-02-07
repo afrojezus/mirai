@@ -202,7 +202,7 @@ class Settings extends Component {
 						})
 						.then(() => {
 							console.info('Avatar updated.');
-							this.setState({ avaLoading: false });
+							this.setState({ avaLoading: false, ava: null });
 						});
 				}
 			);
@@ -232,7 +232,7 @@ class Settings extends Component {
 						.updateProfile({ headers: bg.snapshot.downloadURL })
 						.then(() => {
 							console.info('Background updated.');
-							this.setState({ bgLoading: false });
+							this.setState({ bgLoading: false, bg: null });
 						});
 				}
 			);

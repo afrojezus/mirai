@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import React from "react";
 import PropTypes from "prop-types";
 import * as Icon from "material-ui-icons";
@@ -231,52 +232,26 @@ const SuperTable = ({ classes, theme, ...props }) => {
         cols={[theme.breakpoint.up("md")] ? 3 : 2}
         cellHeight={300}
       >
-        {props.data.splice(0, props.limit).map(anime => (
+        {props.data.splice(0, props.limit).map((collection) => (
           <GridListTile
             className={classes.bigCard}
-            key={anime.id}
+            key={collection.id}
             onClick={() =>
               props.changePage(
-                `/show?${props.type}=${
-                  props.typeof === "progress"
-                    ? anime.anime ? anime.anime.meta.i : anime.showId
-                    : anime.id
-                }`
+                `/rankings?${props.type}=${collection.id}`
               )
             }
           >
             <div className={classes.bigCardImage}>
               <img
-                src={
-                  props.typeof === "ongoing"
-                    ? anime.bannerImage
-                      ? anime.bannerImage
-                      : anime.coverImage.large
-                    : props.typeof === "ranking"
-                      ? anime.bg
-                      : props.typeof === "progress"
-                        ? anime.anime
-                          ? anime.anime.meta.a
-                          : anime.showHeaders
-                            ? anime.showHeaders
-                            : anime.showArtwork
-                        : props.typeof === "favs" ? anime.image : null
-                }
+                src={collection.bg}
                 alt=""
                 className={classes.bigCardImageImg}
               />
             </div>
             <div className={classes.bigCardRow}>
               <img
-                src={
-                  props.typeof === "ongoing"
-                    ? anime.coverImage.large
-                    : props.typeof === "ranking"
-                      ? anime.bg
-                      : props.typeof === "progress"
-                        ? anime.anime ? anime.anime.meta.a : anime.showArtwork
-                        : props.typeof === "favs" ? anime.image : null
-                }
+                src={collection.image}
                 alt=""
                 className={classes.bigCardIcon}
               />
@@ -285,55 +260,22 @@ const SuperTable = ({ classes, theme, ...props }) => {
                   type="display2"
                   className={classes.bigCardVerySmallTitle}
                 >
-                  {props.typeof === "ranking" ? (
-                    <span role="img" aria-label="emoji">
-                      {anime.emoji}
-                    </span>
-                  ) : null}
-                  {props.typeof === "ongoing"
-                    ? props.type.includes("m")
-                      ? null
-                      : `${timeFormatter(
-                          anime.nextAiringEpisode.timeUntilAiring
-                        )} till Episode ${anime.nextAiringEpisode.episode}`
-                    : props.typeof === "ranking"
-                      ? anime.category
-                      : props.typeof === "progress"
-                        ? anime.ep ? `EPISODE ${anime.ep}` : null
-                        : null}
+                  <span role="img" aria-label="emoji">
+                    {collection.emoji}
+                  </span>
+                  {collection.category}
                 </Typography>
                 <Dotdotdot clamp={2} className={classes.dotdot}>
                   <Typography type="display2" className={classes.bigCardTitle}>
-                    {props.typeof === "ongoing"
-                      ? anime.title.romaji
-                      : props.typeof === "ranking"
-                        ? anime.name
-                        : props.typeof === "progress"
-                          ? anime.anime ? anime.anime.meta.r : anime.title
-                          : props.typeof === "favs" ? anime.name : null}
+                    {collection.name}
                   </Typography>
                 </Dotdotdot>
                 <Dotdotdot clamp={3}>
                   <Typography
                     type="display2"
                     className={classes.bigCardSmallTitle}
-                    dangerouslySetInnerHTML={
-                      props.typeof === "ongoing"
-                        ? {
-                            __html: anime.description
-                          }
-                        : props.typeof === "ranking"
-                          ? {
-                              __html: anime.desc
-                            }
-                          : null
-                    }
                   >
-                    {props.typeof === "progress"
-                      ? `Last watched ${moment(anime.recentlyWatched).from(
-                          Date.now()
-                        )}`
-                      : null}
+                    {collection.desc}
                   </Typography>
                 </Dotdotdot>
               </div>
