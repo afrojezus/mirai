@@ -68,13 +68,24 @@ const style = theme => ({
 
 class Monika extends Component {
 	static propTypes = {
-		profile: {},
-		history,
-		location: {
-			state: {},
+		profile: PropTypes.shape({
+			avatar: PropTypes.string,
+			role: PropTypes.string,
+			isDeveloper: PropTypes.bool
+		}),
+		history: PropTypes.shape({
+			location: PropTypes.shape({
+				pathname: PropTypes.string
+			}),
+			push: PropTypes.func,
+			listen: PropTypes.func,
+			goBack: PropTypes.func
+		}),
+		location: PropTypes.shape({
+			state: PropTypes.shape({}),
 			search: PropTypes.string,
 			pathname: PropTypes.string
-		},
+		}),
 		classes: style
 	};
 

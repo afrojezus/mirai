@@ -78,22 +78,35 @@ const styles = theme => ({
 
 class Setup extends Component {
 	static propTypes = {
-		profile: {},
-		history,
-		firebase,
-		location: {
-			state: {},
+		profile: PropTypes.shape({
+			avatar: PropTypes.string,
+			role: PropTypes.string,
+			isDeveloper: PropTypes.bool,
+			isEmpty: PropTypes.bool,
+		}),
+		history: PropTypes.shape({
+			location: PropTypes.shape({
+				pathname: PropTypes.string
+			}),
+			push: PropTypes.func,
+			listen: PropTypes.func,
+			goBack: PropTypes.func
+		}),
+		firebase: PropTypes.shape({
+		  login: PropTypes.func,
+		  createUser: PropTypes.func,
+		  updateProfile: PropTypes.func,
+		}),
+		location: PropTypes.shape({
+			state: PropTypes.shape({}),
 			search: PropTypes.string,
 			pathname: PropTypes.string
-		},
+		}),
 		classes: styles,
-		mir: {
-			title: PropTypes.string,
-			mir: []
-		},
-		changePage: PropTypes.func,
-		status: PropTypes.string,
-		theme: {}
+		theme: PropTypes.shape({
+		  
+		}),
+
 	};
 
 	static defaultProps = {
@@ -102,12 +115,6 @@ class Setup extends Component {
 		location: null,
 		firebase: null,
 		classes: styles,
-		changePage: PropTypes.func,
-		status: PropTypes.string,
-		mir: {
-			title: PropTypes.string,
-			mir: []
-		},
 		theme: {}
 	};
 	state = {

@@ -2,7 +2,7 @@
 // TODO: Fix every single eslint-airbnb issue
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Loadable from 'react-loadable';
+import LoadableVisibility from 'react-loadable-visibility/react-loadable';
 import { Route, withRouter } from 'react-router-dom';
 import { CircularProgress } from 'material-ui/Progress';
 import { withStyles } from 'material-ui/styles';
@@ -14,26 +14,17 @@ import {
 } from 'react-redux-firebase';
 import { connect } from 'react-redux';
 
+import Watch from './watch';
 import withRoot from '../components/withRoot';
 
 import Superbar from '../components/superbar';
+import { LoadingScreen } from '../components/layouts';
 
 import { history } from '../store';
+import MirPlayer from '../components/mirplayer';
 
 const styles = theme => ({
 	root: {},
-	loadingRoot: {
-		height: '100%',
-		width: '100%',
-		display: 'flex',
-		flexDirection: 'column',
-		animation: 'loadIn .3s ease',
-		transition: theme.transitions.create(['all'])
-	},
-	loadingCircle: {
-		margin: 'auto',
-		color: 'white'
-	},
 	welcomeMessage: {
 		margin: 'auto',
 		flex: 0,
@@ -44,68 +35,85 @@ const styles = theme => ({
 	}
 });
 
-const Home = Loadable({
-	loader: () => import('./home.jsx')
+const Home = LoadableVisibility({
+	loader: () => import('./home.jsx'),
+	loading: LoadingScreen
 });
-const Setup = Loadable({
-	loader: () => import('./setup.jsx')
+const Setup = LoadableVisibility({
+	loader: () => import('./setup.jsx'),
+	loading: LoadingScreen
 });
-const Show = Loadable({
-	loader: () => import('./show.jsx')
+const Show = LoadableVisibility({
+	loader: () => import('./show.jsx'),
+	loading: LoadingScreen
 });
-const Wizard = Loadable({
-	loader: () => import('./wizard.jsx')
+const Wizard = LoadableVisibility({
+	loader: () => import('./wizard.jsx'),
+	loading: LoadingScreen
 });
-const Later = Loadable({
-	loader: () => import('./later.jsx')
+const Later = LoadableVisibility({
+	loader: () => import('./later.jsx'),
+	loading: LoadingScreen
 });
-const Live = Loadable({
-	loader: () => import('./live.jsx')
+const Live = LoadableVisibility({
+	loader: () => import('./live.jsx'),
+	loading: LoadingScreen
 });
-const Monika = Loadable({
-	loader: () => import('./monika.jsx')
+const Monika = LoadableVisibility({
+	loader: () => import('./monika.jsx'),
+	loading: LoadingScreen
 });
-const Read = Loadable({
-	loader: () => import('./read.jsx')
+const Read = LoadableVisibility({
+	loader: () => import('./read.jsx'),
+	loading: LoadingScreen
 });
-const Search = Loadable({
-	loader: () => import('./search.jsx')
+const Search = LoadableVisibility({
+	loader: () => import('./search.jsx'),
+	loading: LoadingScreen
 });
-const History = Loadable({
-	loader: () => import('./history.jsx')
+const History = LoadableVisibility({
+	loader: () => import('./history.jsx'),
+	loading: LoadingScreen
 });
-const Rankings = Loadable({
-	loader: () => import('./rankings.jsx')
+const Rankings = LoadableVisibility({
+	loader: () => import('./rankings.jsx'),
+	loading: LoadingScreen
 });
-const User = Loadable({
-	loader: () => import('./user.jsx')
+const User = LoadableVisibility({
+	loader: () => import('./user.jsx'),
+	loading: LoadingScreen
 });
-const Watch = Loadable({
-	loader: () => import('./watch.jsx')
+const Tos = LoadableVisibility({
+	loader: () => import('./tos.jsx'),
+	loading: LoadingScreen
 });
-const Tos = Loadable({
-	loader: () => import('./tos.jsx')
+const Tag = LoadableVisibility({
+	loader: () => import('./tag.jsx'),
+	loading: LoadingScreen
 });
-const Tag = Loadable({
-	loader: () => import('./tag.jsx')
+const Feeds = LoadableVisibility({
+	loader: () => import('./feeds.jsx'),
+	loading: LoadingScreen
 });
-const Feeds = Loadable({
-	loader: () => import('./feeds.jsx')
+const Settings = LoadableVisibility({
+	loader: () => import('./settings.jsx'),
+	loading: LoadingScreen
 });
-const Settings = Loadable({
-	loader: () => import('./settings.jsx')
+const Fig = LoadableVisibility({
+	loader: () => import('./fig.jsx'),
+	loading: LoadingScreen
 });
-const Fig = Loadable({
-	loader: () => import('./fig.jsx')
+const Help = LoadableVisibility({
+	loader: () => import('./help.jsx'),
+	loading: LoadingScreen
 });
-const Help = Loadable({
-	loader: () => import('./help.jsx')
+const DevDB = LoadableVisibility({
+	loader: () => import('./dev/db.jsx'),
+	loading: LoadingScreen
 });
-const DevDB = Loadable({
-	loader: () => import('./dev/db.jsx')
-});
-const DevPlayer = Loadable({
-	loader: () => import('./dev/player.jsx')
+const DevPlayer = LoadableVisibility({
+	loader: () => import('./dev/player.jsx'),
+	loading: LoadingScreen
 });
 
 // TODO: Use code-splitting on every route
@@ -196,6 +204,10 @@ class Index extends Component {
 					this.props.firebase.profile.isDeveloper === true ? (
   <Route path="/dev/player" exact component={DevPlayer} />
 					) : null}
+
+      {this.props.mir.play ? (
+        <MirPlayer data={this.props.mir.play} />
+					) : null}
     </Superbar>
   </div>
 		);
@@ -203,17 +215,32 @@ class Index extends Component {
 }
 
 Index.propTypes = {
+	firebase: PropTypes.shape({
+		ref: PropTypes.func,
+		profile: PropTypes.shape({
+			isDeveloper: PropTypes.bool
+		})
+	}),
 	classes: styles,
-	firebase,
-	mir: {
+	mir: PropTypes.shape({
+		twist: PropTypes.arrayOf(PropTypes.shape({})),
 		title: PropTypes.string,
-		mir: []
-	}
+		play: PropTypes.shape({
+			eps: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+			meta: PropTypes.shape({
+				title: PropTypes.string,
+				showArtwork: PropTypes.string,
+				showId: PropTypes.number,
+				showDesc: PropTypes.string,
+				showHeaders: PropTypes.string
+			})
+		})
+	})
 };
 
 Index.defaultProps = {
 	classes: styles,
-	firebase,
+	firebase: null,
 	mir: null
 };
 

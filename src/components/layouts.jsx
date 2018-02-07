@@ -1,172 +1,192 @@
-import React from "react";
-import PropTypes from "prop-types";
-import withStyles from "material-ui/styles/withStyles";
-import Grid from "material-ui/Grid/Grid";
-import Toolbar from "material-ui/Toolbar/Toolbar";
-import Paper from "material-ui/Paper/Paper";
-import CircularProgress from "material-ui/Progress/CircularProgress";
-import Typography from "material-ui/Typography/Typography";
-import { blue } from "material-ui/colors";
+import React from 'react';
+import PropTypes from 'prop-types';
+import withStyles from 'material-ui/styles/withStyles';
+import Grid from 'material-ui/Grid/Grid';
+import Toolbar from 'material-ui/Toolbar/Toolbar';
+import Paper from 'material-ui/Paper/Paper';
+import CircularProgress from 'material-ui/Progress/CircularProgress';
+import Typography from 'material-ui/Typography/Typography';
+import { blue } from 'material-ui/colors';
 // import withTheme from 'material-ui/styles/withTheme';
 
 const style = theme => ({
-  compacMode: {
-    background: "transparent"
-  },
-  container: {
-    padding: theme.spacing.unit * 3,
-    boxSizing: "border-box",
-    [theme.breakpoints.down("sm")]: {
-      flexDirection: "column"
-    },
-    background: "transparent !important",
-    transition: theme.transitions.create(["all"])
-  },
-  root: {
-    paddingTop: theme.spacing.unit * 8,
-    transition: theme.transitions.create(["all"]),
-    animation: "load .3s ease",
-    marginLeft: "auto",
-    marginRight: "auto",
-    maxWidth: 1970,
-    paddingLeft: theme.spacing.unit * 2,
-    paddingRight: theme.spacing.unit * 2,
-    [theme.breakpoints.down("sm")]: {
-      paddingLeft: 0,
-      paddingRight: 0
-    },
-    boxSizing: "border-box"
-  },
-  commandoBar: {
-    width: "100%",
-    display: "inline-flex",
-    boxSizing: "border-box",
-    background: "#222",
-    borderBottom: `1px solid rgba(255,255,255,.1)`
-  },
-  commandoText: {
-    margin: "auto",
-    textAlign: "center"
-  },
-  commandoTextBox: {
-    paddingLeft: theme.spacing.unit,
-    paddingRight: theme.spacing.unit,
-    margin: "auto"
-  },
-  commandoTextLabel: {
-    fontSize: theme.typography.pxToRem(12),
-    textAlign: "center",
-    color: "rgba(255,255,255,.8)"
-  },
-  bigBar: {
-    width: "100%",
-    height: "auto",
-    // boxShadow: '0 2px 24px rgba(0,0,0,.2)',
-    background: "#111",
-    marginTop: theme.spacing.unit * 8,
-    position: "relative",
-    // overflow: 'hidden',
-    paddingBottom: theme.spacing.unit * 4,
-    marginBottom: theme.spacing.unit * 8,
-    transition: theme.transitions.create(["all"])
-  },
-  header: {
-    position: "absolute",
-    zIndex: -1,
-    opacity: 0.3,
-    top: 0,
-    width: "100%",
-    objectFit: "cover",
-    left: 0,
-    transition: theme.transitions.create(["all"]),
-    animation: "fadeInSlowly 1.1s ease",
-    textIndent: -999,
-    border: "none",
-    height: "100vh",
-    maskImage: "linear-gradient(rgba(0, 0, 0, 1.0), transparent)",
-    filter:
-      window.navigator.userAgent.indexOf("Edge") > -1 ? "blur(10px)" : null
-  },
-  headerD: {
-    position: "fixed",
-    zIndex: -1,
-    opacity: 0.8,
-    top: 0,
-    width: "100%",
-    objectFit: "cover",
-    left: 0,
-    transition: theme.transitions.create(["all"]),
-    animation: "fadeInSlowly 1.1s ease",
-    textIndet: -999,
-    border: "none",
-    height: "100vh"
-  },
-  loading: {
-    height: "100%",
-    width: "100%",
-    zIndex: 1200,
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%,-50%)",
-    padding: 0,
-    margin: "auto",
-    color: "white",
-    transition: theme.transitions.create(["all"])
-  },
-  titleheader: {
-    width: "100%",
-    minHeight: 900,
-    background: `linear-gradient(to top, transparent, ${blue.A200})`,
-    position: "absolute",
-    top: 0,
-    left: 0,
-    display: "flex",
-    zIndex: -1,
-    transition: theme.transitions.create(["all"])
-  },
-  titleheadertitle: {
-    color: "white",
-    margin: "auto",
-    flex: 1,
-    fontSize: theme.typography.pxToRem(64),
-    position: "relative",
-    marginTop: theme.spacing.unit * 14,
-    fontWeight: 800,
-    textAlign: "center",
-    textShadow: "0 2px 24px rgba(0,0,0,.07)",
-    whiteSpace: "nowrap"
-  }
+	compacMode: {
+		background: 'transparent'
+	},
+	container: {
+		padding: theme.spacing.unit * 3,
+		boxSizing: 'border-box',
+		[theme.breakpoints.down('sm')]: {
+			flexDirection: 'column'
+		},
+		background: 'transparent !important',
+		transition: theme.transitions.create(['all'])
+	},
+	root: {
+		paddingTop: theme.spacing.unit * 8,
+		transition: theme.transitions.create(['all']),
+		animation: 'load .3s ease',
+		marginLeft: 'auto',
+		marginRight: 'auto',
+		maxWidth: 1970,
+		paddingLeft: theme.spacing.unit * 2,
+		paddingRight: theme.spacing.unit * 2,
+		[theme.breakpoints.down('sm')]: {
+			paddingLeft: 0,
+			paddingRight: 0
+		},
+		boxSizing: 'border-box'
+	},
+	commandoBar: {
+		width: '100%',
+		display: 'inline-flex',
+		boxSizing: 'border-box',
+		background: '#222',
+		borderBottom: `1px solid rgba(255,255,255,.1)`
+	},
+	commandoText: {
+		margin: 'auto',
+		textAlign: 'center'
+	},
+	commandoTextBox: {
+		paddingLeft: theme.spacing.unit,
+		paddingRight: theme.spacing.unit,
+		margin: 'auto'
+	},
+	commandoTextLabel: {
+		fontSize: theme.typography.pxToRem(12),
+		textAlign: 'center',
+		color: 'rgba(255,255,255,.8)'
+	},
+	bigBar: {
+		width: '100%',
+		height: 'auto',
+		// boxShadow: '0 2px 24px rgba(0,0,0,.2)',
+		background: '#111',
+		marginTop: theme.spacing.unit * 8,
+		position: 'relative',
+		// overflow: 'hidden',
+		paddingBottom: theme.spacing.unit * 4,
+		marginBottom: theme.spacing.unit * 8,
+		transition: theme.transitions.create(['all'])
+	},
+	header: {
+		position: 'absolute',
+		zIndex: -1,
+		opacity: 0.3,
+		top: 0,
+		width: '100%',
+		objectFit: 'cover',
+		left: 0,
+		transition: theme.transitions.create(['all']),
+		animation: 'fadeInSlowly 1.1s ease',
+		textIndent: -999,
+		border: 'none',
+		height: '100vh',
+		maskImage: 'linear-gradient(rgba(0, 0, 0, 1.0), transparent)',
+		filter:
+			window.navigator.userAgent.indexOf('Edge') > -1 ? 'blur(10px)' : null
+	},
+	headerD: {
+		position: 'fixed',
+		zIndex: -1,
+		opacity: 0.8,
+		top: 0,
+		width: '100%',
+		objectFit: 'cover',
+		left: 0,
+		transition: theme.transitions.create(['all']),
+		animation: 'fadeInSlowly 1.1s ease',
+		textIndet: -999,
+		border: 'none',
+		height: '100vh'
+	},
+	loading: {
+		height: '100%',
+		width: '100%',
+		zIndex: 1200,
+		position: 'fixed',
+		top: '50%',
+		left: '50%',
+		transform: 'translate(-50%,-50%)',
+		padding: 0,
+		margin: 'auto',
+		color: 'white',
+		transition: theme.transitions.create(['all'])
+	},
+	titleheader: {
+		width: '100%',
+		minHeight: 900,
+		background: `linear-gradient(to top, transparent, ${blue.A200})`,
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		display: 'flex',
+		zIndex: -1,
+		transition: theme.transitions.create(['all'])
+	},
+	titleheadertitle: {
+		color: 'white',
+		margin: 'auto',
+		flex: 1,
+		fontSize: theme.typography.pxToRem(64),
+		position: 'relative',
+		marginTop: theme.spacing.unit * 14,
+		fontWeight: 800,
+		textAlign: 'center',
+		textShadow: '0 2px 24px rgba(0,0,0,.07)',
+		whiteSpace: 'nowrap'
+	},
+	loadingRoot: {
+		height: '100vh',
+		width: '100%',
+		display: 'flex',
+		flexDirection: 'column',
+		animation: 'loadIn .3s ease',
+		transition: theme.transitions.create(['all'])
+	},
+	loadingCircle: {
+		margin: 'auto',
+		color: 'white'
+	}
 });
 
+export const LoadingScreen = withStyles(style, { withTheme: true })(
+	({ classes }) => (
+  <div className={classes.loadingRoot}>
+    <CircularProgress className={classes.loadingCircle} />
+  </div>
+	)
+);
+
 export const Container = withStyles(style, { withTheme: true })(
-  ({ classes, theme, children, spacing, special, hasHeader, ...props }) => (
-    <Grid
-      container
-      style={hasHeader ? { marginTop: theme.spacing.unit * 16 } : null}
-      spacing={spacing}
-      {...props}
-      className={special ? "containerS" : classes.container}
-    >
-      {children}
-    </Grid>
-  )
+	({ classes, theme, children, spacing, special, hasHeader, ...props }) => (
+  <Grid
+    container
+    style={hasHeader ? { marginTop: theme.spacing.unit * 16 } : null}
+    spacing={spacing}
+    {...props}
+    className={special ? 'containerS' : classes.container}
+		>
+    {children}
+  </Grid>
+	)
 );
 
 export const Root = withStyles(style)(
-  ({ classes, theme, children, ...props }) => (
-    <div className={classes.root} {...props}>
-      {children}
-    </div>
-  )
+	({ classes, theme, children, ...props }) => (
+  <div className={classes.root} {...props}>
+    {children}
+  </div>
+	)
 );
 
 export const CommandoBar = withStyles(style)(
-  ({ classes, children, ...props }) => (
-    <Toolbar id="commandoBar" className={classes.commandoBar} {...props}>
-      {children}
-    </Toolbar>
-  )
+	({ classes, children, ...props }) => (
+  <Toolbar id="commandoBar" className={classes.commandoBar} {...props}>
+    {children}
+  </Toolbar>
+	)
 );
 
 export const MainCard = withStyles(style)(({ classes, children, ...props }) => (
@@ -176,70 +196,70 @@ export const MainCard = withStyles(style)(({ classes, children, ...props }) => (
 ));
 
 export const TitleHeader = withStyles(style)(
-  ({ classes, children, title, color, colortext, ...props }) => (
-    <div
-      className={classes.titleheader}
-      style={
-        color
-          ? { background: `linear-gradient(to top, transparent, ${color})` }
-          : null
-      }
-      {...props}
+	({ classes, children, title, color, colortext, ...props }) => (
+  <div
+    className={classes.titleheader}
+    style={
+				color
+					? { background: `linear-gradient(to top, transparent, ${color})` }
+					: null
+			}
+    {...props}
+		>
+    <div style={{ flex: 1 }} />
+    <Typography
+      className={classes.titleheadertitle}
+      style={colortext ? { color: colortext } : null}
+      type="display2"
     >
-      <div style={{ flex: 1 }} />
-      <Typography
-        className={classes.titleheadertitle}
-        style={colortext ? { color: colortext } : null}
-        type="display2"
-      >
-        {title}
-      </Typography>
-      <div style={{ flex: 1 }} />
-      {children}
-    </div>
-  )
+      {title}
+    </Typography>
+    <div style={{ flex: 1 }} />
+    {children}
+  </div>
+	)
 );
 
 class HeaderRaw extends React.Component {
-  static propTypes = {
-    color: PropTypes.string,
-    image: PropTypes.string,
-    classes: style
-  };
-  static defaultProps = {
-    color: "#111",
-    image: null,
-    classes: style
-  };
-  componentWillReceiveProps = nextProps => {
-    if (this.props.color) {
-      document.documentElement.style.background = nextProps.color;
-    }
-  };
+	static propTypes = {
+		color: PropTypes.string,
+		image: PropTypes.string,
+		classes: PropTypes.shape({})
+	};
+	static defaultProps = {
+		color: '#111',
+		image: null,
+		classes: style
+	};
+	componentWillReceiveProps = nextProps => {
+		if (this.props.color) {
+			document.documentElement.style.background = nextProps.color;
+		}
+	};
 
-  componentWillUnmount = () => {
-    if (this.props.color) {
-      document.documentElement.style.background = null;
-    }
-  };
+	componentWillUnmount = () => {
+		if (this.props.color) {
+			document.documentElement.style.background = null;
+		}
+	};
 
-  render() {
-    const { image, classes } = this.props;
-    if (image) {
-      return (
-        <img
-          id="header"
-          style={{ opacity: 0 }}
-          onLoad={e => e.currentTarget.style.opacity == null}
-          className={classes.header}
-          src={image}
-          alt=""
-          {...this.props}
-        />
-      );
-    }
-    return <div />;
-  }
+	render() {
+		const { image, classes } = this.props;
+		if (image) {
+			return (
+  <img
+    id="header"
+    style={{ opacity: 0 }}
+    onLoad={e => (e.currentTarget.style.opacity = null)}
+    className={classes.header}
+    src={image}
+    alt=""
+    {...this.props}
+  />
+			);
+		}
+		return <div />;
+	}
 }
 
 export const Header = withStyles(style)(HeaderRaw);
@@ -253,14 +273,14 @@ export const LoadingIndicator = withStyles(style)(({ classes, loading }) => (
 
 // Proptypes
 Container.propTypes = {
-  classes: style,
-  children: PropTypes.node,
-  spacing: PropTypes.number
+	classes: PropTypes.shape({}),
+	children: PropTypes.node,
+	spacing: PropTypes.number
 };
 Container.defaultProps = {
-  spacing: 0
+	spacing: 0
 };
 Root.propTypes = {
-  classes: style,
-  children: PropTypes.node
+	classes: style,
+	children: PropTypes.node
 };

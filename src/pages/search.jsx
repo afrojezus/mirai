@@ -350,19 +350,35 @@ const style = theme => ({
 
 class Search extends Component {
 	static propTypes = {
-		profile: {},
-		history,
-		firebase,
-		user: {},
-		location: {
-			state: {},
+		profile: PropTypes.shape({
+			avatar: PropTypes.string,
+			role: PropTypes.string,
+			isDeveloper: PropTypes.bool,
+			userID: PropTypes.string,
+		}),
+		user: PropTypes.shape({
+			
+		}),
+		firebase: PropTypes.shape({
+			database: PropTypes.func,
+		}),
+		mir: PropTypes.shape({
+			twist: []
+		}),
+		history: PropTypes.shape({
+			location: PropTypes.shape({
+				pathname: PropTypes.string,
+				search: PropTypes.string,
+			}),
+			push: PropTypes.func,
+			listen: PropTypes.func,
+			goBack: PropTypes.func,
+		}),
+		location: PropTypes.shape({
+			state: PropTypes.shape({}),
 			search: PropTypes.string,
 			pathname: PropTypes.string
-		},
-		mir: {
-			title: PropTypes.string,
-			twist: []
-		},
+		}),
 		classes: style
 	};
 
@@ -373,10 +389,7 @@ class Search extends Component {
 		location: null,
 		firebase: null,
 		classes: style,
-		mir: {
-			title: PropTypes.string,
-			twist: []
-		}
+		mir: null
 	};
 	state = {
 		searchVal: '',

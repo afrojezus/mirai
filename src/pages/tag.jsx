@@ -555,19 +555,33 @@ const nameSwapper = (first, last) => (last ? `${first} ${last}` : first);
 
 class Tag extends Component {
 	static propTypes = {
-		profile: {},
-		history,
-		firebase,
-		location: {
-			state: {},
+		profile: PropTypes.shape({
+		  userID: PropTypes.func,
+		}),
+		history: PropTypes.shape({
+		  push: PropTypes.func,
+		  location: PropTypes.shape({
+			search: PropTypes.string,
+			pathname: PropTypes.string,
+		  }),
+		  listen: PropTypes.func,
+		}),
+		firebase: PropTypes.shape({
+		  update: PropTypes.func,
+		  remove: PropTypes.func,
+		}),
+		location: PropTypes.shape({
+			state: PropTypes.shape({
+			  
+			}),
 			search: PropTypes.string,
 			pathname: PropTypes.string
-		},
+		}),
 		classes: style,
-		mir: {
+		mir: PropTypes.shape({
 			title: PropTypes.string,
 			mir: []
-		},
+		}),
 		changePage: PropTypes.func,
 		status: PropTypes.string,
 		sendTitleToMir: PropTypes.func

@@ -430,18 +430,10 @@ const style = theme => ({
 
 class PageNotFound extends Component {
 	static propTypes = {
-		profile: {},
-		location: {
-			state: {},
-			search: PropTypes.string,
-			pathname: PropTypes.string
-		},
 		classes: style
 	};
 
 	static defaultProps = {
-		profile: null,
-		location: null,
 		classes: style
 	};
 	state = {

@@ -475,15 +475,29 @@ const style = theme => ({
 
 class User extends Component {
   static propTypes = {
-    profile: {},
-    history,
-    firebase,
-    location: {
-      state: {},
+    profile: PropTypes.shape({
+      avatar: PropTypes.string,
+      role: PropTypes.string,
+      isDeveloper: PropTypes.bool,
+      headers: PropTypes.string,
+      userID: PropTypes.string,
+    }),
+    history: PropTypes.shape({
+      location: PropTypes.shape({
+        pathname: PropTypes.string,
+      }),
+      push: PropTypes.func,
+      listen: PropTypes.func,
+    }),
+    firebase: PropTypes.shape({
+      database: PropTypes.func,
+    }),
+    location: PropTypes.shape({
+      state: PropTypes.shape({}),
       search: PropTypes.string,
       pathname: PropTypes.string
-    },
-    classes: style
+    }),
+    classes: style,
   };
 
   static defaultProps = {
@@ -635,7 +649,7 @@ class User extends Component {
                   classes={{ img: classes.fillImg }}
                   imgProps={{
                     style: { opacity: 0 },
-                    onLoad: e => e.currentTarget.style.opacity == null
+                    onLoad: e => e.currentTarget.style.opacity = null
                   }}
                 />
               </M.Grid>

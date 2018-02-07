@@ -36,25 +36,15 @@ const style = theme => ({
 
 class Tos extends Component {
 	static propTypes = {
-		profile: {},
-		firebase,
-		location: {
-			state: {},
-			search: PropTypes.string,
-			pathname: PropTypes.string
-		},
-		classes: style,
-		changePage: PropTypes.func,
-		status: PropTypes.string
+		firebase: PropTypes.shape({
+			logout: PropTypes.func
+		}),
+		classes: style
 	};
 
 	static defaultProps = {
-		profile: null,
-		location: null,
 		firebase: null,
-		classes: style,
-		changePage: PropTypes.func,
-		status: PropTypes.string
+		classes: style
 	};
 	componentDidMount = () => {};
 

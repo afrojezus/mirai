@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import Github from 'github-api';
 import Button from "material-ui/Button";
 import AppBar from "material-ui/AppBar";
 import Typography from "material-ui/Typography";
@@ -345,34 +346,48 @@ const styles = theme => ({
 
 class Superbar extends Component {
   static propTypes = {
-    profile: {},
-    history,
-    firebase,
-    location: {
-      state: {},
+    profile: PropTypes.shape({
+      avatar: PropTypes.string,
+      role: PropTypes.string,
+      isDeveloper: PropTypes.bool,
+    }),
+    history: PropTypes.shape({
+      location: PropTypes.shape({
+        pathname: PropTypes.string,
+      }),
+      push: PropTypes.func,
+      listen: PropTypes.func,
+    }),
+    firebase: PropTypes.shape({
+      logout: PropTypes.func
+    }),
+    location: PropTypes.shape({
+      state: PropTypes.shape({}),
       search: PropTypes.string,
       pathname: PropTypes.string
-    },
+    }),
     classes: styles,
-    mir: {
-      twist: [],
+    mir: PropTypes.shape({
+      twist: PropTypes.arrayOf(PropTypes.shape({
+        
+      })),
       title: PropTypes.string
-    },
+    }),
 
     children: PropTypes.node
   };
 
   static defaultProps = {
     profile: null,
-    history,
+    history: null,
     location: null,
     firebase: null,
-    classes: styles,
+    classes: null,
     mir: {
       twist: null,
-      title: PropTypes.string
+      title: null
     },
-    children: PropTypes.node
+    children: null
   };
 
   state = {
@@ -386,7 +401,7 @@ class Superbar extends Component {
     status: 0,
     mirTitle: "",
     scrolling: false,
-    commit: "d10",
+    commit: "d12",
     hue: null,
     hueVib: null,
     hueVibN: null
@@ -947,7 +962,7 @@ class Superbar extends Component {
                     classes={{ img: classes.userButtonImg }}
                     imgProps={{
                       style: { opacity: 0 },
-                      onLoad: e => e.currentTarget.style.opacity == null
+                      onLoad: e => e.currentTarget.style.opacity = null
                     }}
                   />
                 </IconButton>
@@ -984,13 +999,13 @@ class Superbar extends Component {
                           className={classes.avatar}
                           imgProps={{
                             style: { opacity: 0 },
-                            onLoad: e => e.currentTarget.style.opacity == null
+                            onLoad: e => e.currentTarget.style.opacity = null
                           }}
                         />
                       }
                       title={user.username}
                       subheader={user.nick}
-                      actionRight={
+                      actionright={
                         <Typography>{this.props.profile.role}</Typography>
                       }
                     />
@@ -1150,34 +1165,32 @@ class Superbar extends Component {
 
 class SearchBox extends Component {
   static propTypes = {
-    profile: firebase,
-    history,
-    firebase,
-    location: {
-      state: {},
+    history: PropTypes.shape({
+      push: PropTypes.func,
+    }),
+    location: PropTypes.shape({
+      state: PropTypes.shape({
+        
+      }),
       search: PropTypes.string,
       pathname: PropTypes.string
-    },
+    }),
     classes: styles,
-    mir: {
-      twist: [],
+    mir: PropTypes.shape({
+      twist: PropTypes.arrayOf(PropTypes.shape({
+        
+      })),
       title: PropTypes.string
-    },
-
+    }),
     children: PropTypes.node
   };
 
   static defaultProps = {
-    profile: null,
     history,
     location: null,
-    firebase: null,
     classes: styles,
-    mir: {
-      twist: null,
-      title: PropTypes.string
-    },
-    children: PropTypes.node
+    mir: null,
+    children: null
   };
   state = {
     value: "",

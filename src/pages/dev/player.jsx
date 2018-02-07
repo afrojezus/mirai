@@ -192,16 +192,34 @@ const style = theme => ({
 
 class DevPlayer extends Component {
   static propTypes = {
-    profile: {},
-    history,
-    firebase,
-    theme: {},
-    location: {
-      state: {},
+    profile: PropTypes.shape({
+      avatar: PropTypes.string,
+      role: PropTypes.string,
+      isDeveloper: PropTypes.bool,
+      userID: PropTypes.string,
+    }),
+    history: PropTypes.shape({
+      location: PropTypes.shape({
+        pathname: PropTypes.string,
+      }),
+      push: PropTypes.func,
+      listen: PropTypes.func,
+    }),
+    firebase: PropTypes.shape({
+      logout: PropTypes.func,
+      database: PropTypes.func,
+    }),
+    location: PropTypes.shape({
+      state: PropTypes.shape({}),
       search: PropTypes.string,
       pathname: PropTypes.string
-    },
-    classes: style
+    }),
+    classes: PropTypes.shape({
+      
+    }),
+    theme: PropTypes.shape({
+      
+    }),
   };
 
   static defaultProps = {

@@ -7,7 +7,7 @@ import { composeWithDevTools } from 'remote-redux-devtools';
 import {
 	reactReduxFirebase,
 	firebaseReducer,
-	getFirebase,
+	getFirebase
 } from 'react-redux-firebase';
 import firebase from 'firebase';
 import mirReducer from './modules';
@@ -24,7 +24,7 @@ const rrfConfig = {
 		// default factory includes name, fullPath, downloadURL
 		return downloadURLs[0];
 	},
-	resetBeforeLogin: false,
+	resetBeforeLogin: false
 };
 
 firebase.initializeApp(fireconfig);
@@ -35,7 +35,7 @@ const initialState = {};
 const enhancers = [];
 const middleware = [
 	thunk.withExtraArgument(getFirebase),
-	routerMiddleware(history),
+	routerMiddleware(history)
 ];
 
 if (process.env.NODE_ENV === 'development') {
@@ -49,7 +49,7 @@ if (process.env.NODE_ENV === 'development') {
 const rootReducer = combineReducers({
 	firebase: firebaseReducer,
 	routing: routerReducer,
-	mir: mirReducer,
+	mir: mirReducer
 });
 
 const createStoreWithFirebase = compose(
@@ -62,16 +62,16 @@ const store = createStoreWithFirebase(rootReducer, initialState);
 
 const twistInit = twist => ({
 	type: MIR_TWIST_LOAD,
-	twist,
+	twist
 });
 
 export const twistLoad = async () => {
 	const state = store.getState();
 	if (state.mir && state.mir.twist) {
 		return null;
-	} else {
-		Twist.load().then(twist => store.dispatch(twistInit(twist)));
 	}
+	Twist.load().then(twist => store.dispatch(twistInit(twist)));
+
 	return null;
 };
 

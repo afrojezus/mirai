@@ -34,14 +34,30 @@ const style = theme => ({
 
 class Later extends Component {
 	static propTypes = {
-		profile: {},
-		history,
-		firebase,
-		location: {
-			state: {},
+		profile: PropTypes.shape({
+			avatar: PropTypes.string,
+			role: PropTypes.string,
+			isDeveloper: PropTypes.bool,
+			later: PropTypes.shape({
+				show: PropTypes.shape({}),
+				manga: PropTypes.shape({})
+			})
+		}),
+		history: PropTypes.shape({
+			location: PropTypes.shape({
+				pathname: PropTypes.string
+			}),
+			push: PropTypes.func,
+			listen: PropTypes.func
+		}),
+		firebase: PropTypes.shape({
+			logout: PropTypes.func
+		}),
+		location: PropTypes.shape({
+			state: PropTypes.shape({}),
 			search: PropTypes.string,
 			pathname: PropTypes.string
-		},
+		}),
 		classes: style
 	};
 

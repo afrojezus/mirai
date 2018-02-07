@@ -1,5 +1,7 @@
 // TODO: Fix every single eslint-airbnb issue
+/* eslint-disable react/no-array-index-key */
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import { connect } from 'react-redux';
 import { firebaseConnect, firebase } from 'react-redux-firebase';
@@ -36,11 +38,14 @@ const style = theme => ({
 class Help extends Component {
 	static propTypes = {
 		classes: style,
-		firebase
+		firebase: PropTypes.shape({
+			logout: PropTypes.func,
+			database: PropTypes.func
+		})
 	};
 	static defaultProps = {
 		classes: style,
-		firebase
+		firebase: null
 	};
 	state = {
 		articles: null
@@ -63,18 +68,19 @@ class Help extends Component {
           <Typography className={this.props.classes.title} type="title">
 							FAQ
           </Typography>
-          {this.state.articles.map(paragraph => (
-            <div>
-              <Typography
-                className={this.props.classes.headline}
-                type="headline"
-              >
-                {paragraph.headline}
-              </Typography>
-              <Typography type="body1">{paragraph.text}</Typography>
-              <Divider className={this.props.classes.divider} />
-            </div>
-						))}
+          {this.state.articles &&
+							this.state.articles.map((paragraph, index) => (
+  <div key={index}>
+    <Typography
+      className={this.props.classes.headline}
+      type="headline"
+    >
+      {paragraph.headline}
+    </Typography>
+    <Typography type="body1">{paragraph.text}</Typography>
+    <Divider className={this.props.classes.divider} />
+  </div>
+							))}
         </div>
       </Container>
     </Root>

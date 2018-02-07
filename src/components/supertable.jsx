@@ -581,12 +581,18 @@ const mapDispatchToProps = dispatch => ({
 
 SuperTable.propTypes = {
   type: PropTypes.string.isRequired,
-  data: [],
-  classes: style,
-  routing: {},
+  data: PropTypes.arrayOf(PropTypes.shape({})),
+  classes: PropTypes.shape({
+    
+  }),
+  routing: PropTypes.shape({
+    
+  }),
   typeof: PropTypes.string.isRequired,
   limit: PropTypes.number,
-  theme: {}
+  theme: PropTypes.shape({
+    
+  }),
 };
 
 SuperTable.defaultProps = {

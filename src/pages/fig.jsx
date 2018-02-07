@@ -536,15 +536,30 @@ const nameSwapper = (first, last) => (last ? `${first} ${last}` : first);
 
 class Fig extends Component {
   static propTypes = {
-    profile: {},
-    history,
-    firebase,
-    location: {
-      state: {},
-      search: PropTypes.string,
-      pathname: PropTypes.string
-    },
-    classes: style,
+    profile: PropTypes.shape({
+      avatar: PropTypes.string,
+      role: PropTypes.string,
+      isDeveloper: PropTypes.bool,
+      userID: PropTypes.string,
+    }),
+    history: PropTypes.shape({
+      location: PropTypes.shape({
+        pathname: PropTypes.string,
+        search: PropTypes.string,
+      }),
+      push: PropTypes.func,
+      listen: PropTypes.func,
+    }),
+    firebase: PropTypes.shape({
+      update: PropTypes.func,
+      remove: PropTypes.func,
+    }),
+    location: PropTypes.shape({
+      
+    }),
+    classes: PropTypes.shape({
+      
+    }),
     sendTitleToMir: PropTypes.func
   };
 
@@ -554,7 +569,7 @@ class Fig extends Component {
     location: null,
     firebase: null,
     classes: style,
-    sendTitleToMir: PropTypes.func
+    sendTitleToMir: null
   };
   state = {
     data: null,
