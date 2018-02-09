@@ -75,7 +75,6 @@ const styles = theme => ({
 		height: 'auto',
 		boxShadow: '0 2px 24px rgba(0,0,0,.2)',
 		background: '#111',
-		marginTop: theme.spacing.unit * 8,
 		position: 'relative',
 		overflow: 'hidden',
 		paddingBottom: theme.spacing.unit * 4,
@@ -490,13 +489,13 @@ const styles = theme => ({
 		fontSize: theme.typography.pxToRem(12),
 		boxSizing: 'border-box',
 		padding: theme.spacing.unit * 2,
-		width: '100%',
 		margin: 'auto',
 		textAlign: 'center',
-		background: '#111',
+		background: 'transparent',
 		color: 'white',
-		boxShadow: '0 2px 16px rgba(0,0,0,.2)',
-		fontWeight: 600
+		border: '1px solid rgba(255,255,255,.1)',
+		fontWeight: 600,
+		borderRadius: theme.spacing.unit
 	},
 	loadingArtwork: {
 		margin: 'auto',
@@ -1064,13 +1063,12 @@ class Show extends Component {
 		return (
 			<div className={classes.frame}>
 				<LoadingIndicator loading={loading} />
-				<div style={loading ? { opacity: 0 } : null}>
+				<div>
 					<TitleHeader color={hue} colortext={hueVib} />
 				</div>
 				<Root
 					id="previewFrame"
 					className={classes.root}
-					style={loading ? { opacity: 0 } : null}
 				>
 					{data && data.Media ? (
 						<div>
@@ -1188,24 +1186,6 @@ class Show extends Component {
 												'Not avaliable'
 											) : null}
 										</Typography>
-
-										<Typography
-											className={classes.artworktype}
-											style={{ background: hue }}
-											type="display1"
-										>
-											{data.Media.status
-												.replace('RELEASING', 'ONGOING')
-												.replace(/_/gi, ' ')}{' '}
-											{data.Media.type} <br />
-											{data.Media.nextAiringEpisode
-												? `${timeFormatter(
-														data.Media.nextAiringEpisode.timeUntilAiring
-													)} till Episode ${
-														data.Media.nextAiringEpisode.episode
-													}`
-												: null}
-										</Typography>
 									</div>
 								</Grid>
 								<Grid item xs className={classes.mainFrame}>
@@ -1242,6 +1222,7 @@ class Show extends Component {
 											Data provided by AniList
 										</Typography>
 									</div>
+									<div style={{display: 'flex', width: '100%'}}>
 									<Typography
 										style={
 											data.Media.synonyms.length > 0
@@ -1253,6 +1234,24 @@ class Show extends Component {
 									>
 										{data.Media.title.romaji}
 									</Typography>
+										<div style={{flex: 1}} />
+                                    <Typography
+                                        className={classes.artworktype}
+                                        type="display1"
+                                    >
+                                        {data.Media.status
+                                            .replace('RELEASING', 'ONGOING')
+                                            .replace(/_/gi, ' ')}{' '}
+                                        {data.Media.type} <br />
+                                        {data.Media.nextAiringEpisode
+                                            ? `${timeFormatter(
+                                                data.Media.nextAiringEpisode.timeUntilAiring
+                                            )} till Episode ${
+                                                data.Media.nextAiringEpisode.episode
+                                                }`
+                                            : null}
+                                    </Typography>
+									</div>
 									{data.Media.synonyms.length > 0 ? (
 										<Typography
 											style={{ marginBottom: 12 }}

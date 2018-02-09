@@ -418,9 +418,7 @@ class Home extends Component {
     this.feedsObserve();
     this.rankingsObserve();
     this.getColors();
-    this.fetchOngoing().then(() =>
-      setTimeout(() => this.setState({ loading: false }), 300)
-    );
+    this.fetchOngoing().then(() => this.setState({ loading: false }));
   };
   componentWillUnmount = () => {};
 
@@ -524,7 +522,7 @@ class Home extends Component {
         {!isEmpty(user) && user.headers ? (
           <Header image={user.headers} color={hueVibN} />
         ) : null}
-        <div className={classes.frame} style={loading ? { opacity: 0 } : null}>
+        <div className={classes.frame}>
           {/* <div className={classes.topHeaderBig}>
             <Grid container spacing={16} className={classes.container}>
               <Grid item xs className={classes.itemContainer}>
@@ -544,6 +542,7 @@ class Home extends Component {
                 ? `Welcome back, ${this.props.profile.username}.`
                 : "Mirai. Gateway to the future."
             }
+            subtitle="Mirai Preview"
           />
           <Root>
             <Container hasHeader spacing={16}>

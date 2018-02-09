@@ -136,7 +136,7 @@ const styles = theme => ({
 		},
 		top: 0,
 		left: 0,
-        transform: 'translateZ(5px)'
+        transform: 'translateZ(20px)'
 	},
 	peopleCharImage: {
 		height: 64,
@@ -153,7 +153,7 @@ const styles = theme => ({
 		},
 		right: theme.spacing.unit * 1,
 		bottom: 0,
-        transform: 'translateZ(20px)'
+        transform: 'translateZ(40px)'
 	},
 	peopleTitle: {
 		fontSize: 14,

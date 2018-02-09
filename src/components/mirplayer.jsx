@@ -694,6 +694,7 @@ class MirPlayer extends Component {
         const menu = Boolean(menuEl);
         const volumeMenu = Boolean(volEl);
         const qualityMenu = Boolean(quaEl);
+        if (!mir.play) return null;
         return (
           <div
             id="frame"

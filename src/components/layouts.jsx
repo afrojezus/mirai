@@ -5,6 +5,7 @@ import Grid from 'material-ui/Grid/Grid';
 import Toolbar from 'material-ui/Toolbar/Toolbar';
 import Paper from 'material-ui/Paper/Paper';
 import CircularProgress from 'material-ui/Progress/CircularProgress';
+import LinearProgress from 'material-ui/Progress/LinearProgress';
 import Typography from 'material-ui/Typography/Typography';
 import { blue } from 'material-ui/colors';
 // import withTheme from 'material-ui/styles/withTheme';
@@ -44,6 +45,14 @@ const style = theme => ({
 		background: '#222',
 		borderBottom: `1px solid rgba(255,255,255,.1)`
 	},
+    commandoBarTop: {
+        width: '100%',
+        display: 'inline-flex',
+        boxSizing: 'border-box',
+        background: 'rgba(0,0,0,.1)',
+		position: 'static',
+        borderBottom: `1px solid rgba(255,255,255,.1)`
+    },
 	commandoText: {
 		margin: 'auto',
 		textAlign: 'center'
@@ -63,7 +72,6 @@ const style = theme => ({
 		height: 'auto',
 		// boxShadow: '0 2px 24px rgba(0,0,0,.2)',
 		background: '#111',
-		marginTop: theme.spacing.unit * 8,
 		position: 'relative',
 		// overflow: 'hidden',
 		paddingBottom: theme.spacing.unit * 4,
@@ -114,6 +122,21 @@ const style = theme => ({
 		color: 'white',
 		transition: theme.transitions.create(['all'])
 	},
+	loadingBar: {
+		position: 'fixed',
+		top: theme.mixins.toolbar.minHeight,
+		left: 0,
+		width: '100%',
+		zIndex: 2000,
+		height: 1,
+		[theme.breakpoints.up('sm')]: {
+			top: 64
+		},
+		background: 'transparent'
+	},
+	loadingBarColor: {
+		background: 'white'
+	},
 	titleheader: {
 		width: '100%',
 		minHeight: 900,
@@ -126,17 +149,26 @@ const style = theme => ({
 		transition: theme.transitions.create(['all'])
 	},
 	titleheadertitle: {
-		color: 'white',
-		margin: 'auto',
+        color: 'white',
+        margin: 'auto 0',
+        position: 'relative',
+        marginTop: theme.spacing.unit * 14,
+        fontWeight: 800,
+        textShadow: '0 2px 24px rgba(0,0,0,.07)',
+        whiteSpace: 'nowrap',
 		flex: 1,
-		fontSize: theme.typography.pxToRem(64),
-		position: 'relative',
-		marginTop: theme.spacing.unit * 14,
-		fontWeight: 800,
-		textAlign: 'center',
-		textShadow: '0 2px 24px rgba(0,0,0,.07)',
-		whiteSpace: 'nowrap'
-	},
+    },
+    titleheadersubtitle: {
+        color: 'white',
+        margin: 'auto 0',
+        fontSize: theme.typography.pxToRem(24),
+        position: 'relative',
+        marginTop: theme.spacing.unit * 17,
+        fontWeight: 500,
+        textShadow: '0 2px 24px rgba(0,0,0,.07)',
+        whiteSpace: 'nowrap',
+		flex: 1,
+    },
 	loadingRoot: {
 		height: '100vh',
 		width: '100%',
@@ -189,14 +221,20 @@ export const CommandoBar = withStyles(style)(
 	)
 );
 
+export const CommandoBarTop = withStyles(style)(({ classes, children, ...props }) => (
+  <Toolbar id='commandoBarMain' className={classes.commandoBarTop} {...props}>
+    {children}
+  </Toolbar>
+));
+
 export const MainCard = withStyles(style)(({ classes, children, ...props }) => (
   <Paper id="mainCard" className={classes.bigBar} {...props}>
     {children}
   </Paper>
 ));
 
-export const TitleHeader = withStyles(style)(
-	({ classes, children, title, color, colortext, ...props }) => (
+export const TitleHeader = withStyles(style, {withTheme: true})(
+	({ classes, theme, children, title, subtitle, color, colortext, ...props }) => (
   <div
     className={classes.titleheader}
     style={
@@ -206,15 +244,23 @@ export const TitleHeader = withStyles(style)(
 			}
     {...props}
 		>
-    <div style={{ flex: 1 }} />
-    <Typography
-      className={classes.titleheadertitle}
-      style={colortext ? { color: colortext } : null}
-      type="display2"
-    >
-      {title}
-    </Typography>
-    <div style={{ flex: 1 }} />
+    <div style={{marginLeft: theme.spacing.unit * 5, marginRight: theme.spacing.unit * 5, boxSizing: 'border-box', display: 'flex', width: '100%'}}>
+      <Typography
+        className={classes.titleheadertitle}
+        style={colortext ? { color: colortext } : null}
+        type="display3"
+      >
+        {title}
+      </Typography>
+      <div style={{flex: '1 1 100%'}} />
+      <Typography
+        className={classes.titleheadersubtitle}
+        style={colortext ? { color: colortext } : null}
+        type="headline"
+      >
+        {subtitle}
+      </Typography>
+    </div>
     {children}
   </div>
 	)
@@ -265,8 +311,9 @@ class HeaderRaw extends React.Component {
 export const Header = withStyles(style)(HeaderRaw);
 
 export const LoadingIndicator = withStyles(style)(({ classes, loading }) => (
-  <CircularProgress
-    className={classes.loading}
+  <LinearProgress
+    className={classes.loadingBar}
+    classes={{primaryColorBar: classes.loadingBarColor}}
     style={!loading ? { opacity: 0 } : null}
   />
 ));

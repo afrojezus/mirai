@@ -831,14 +831,12 @@ class Superbar extends Component {
 							: { transform: 'translate3d(0,0,0)' }
 					}
     >
-      <div
+      {window.safari && window.navigator.userAgent.indexOf('Edge') > -1 ? null : <div
         className={classes.gd}
         style={
-							window.safari && window.navigator.userAgent.indexOf('Edge') > -1
-								? { opacity: 0.2 }
-								: scrolling ? { opacity: 0 } : { opacity: 0.2 }
+							scrolling ? { opacity: 0 } : { opacity: 0.2 }
 						}
-      />
+      />}
       <Toolbar>
         <IconButton
           className={classes.menuButton}
