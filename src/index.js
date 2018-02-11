@@ -1,6 +1,3 @@
-// @flow
-/* eslint-disable react/jsx-filename-extension */
-// TODO: Fix every single eslint-airbnb issue
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
@@ -34,7 +31,6 @@ if (rootElement) {
 
 	if (module.hot)
 		module.hot.accept('./pages/index', () => {
-			// eslint-disable-next-line
 			const NewLoad = require('./pages/index').default;
 			render(
   <ApolloProvider client={client}>

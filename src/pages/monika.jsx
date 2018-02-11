@@ -28,7 +28,6 @@ const style = theme => ({
 		objectFit: 'cover',
 		width: '100%',
 		zIndex: -1,
-		animation: 'fuck infinite 20s ease',
 		transition: theme.transitions.create(['all'])
 	},
 	content: {
@@ -67,34 +66,7 @@ const style = theme => ({
 });
 
 class Monika extends Component {
-	static propTypes = {
-		profile: PropTypes.shape({
-			avatar: PropTypes.string,
-			role: PropTypes.string,
-			isDeveloper: PropTypes.bool
-		}),
-		history: PropTypes.shape({
-			location: PropTypes.shape({
-				pathname: PropTypes.string
-			}),
-			push: PropTypes.func,
-			listen: PropTypes.func,
-			goBack: PropTypes.func
-		}),
-		location: PropTypes.shape({
-			state: PropTypes.shape({}),
-			search: PropTypes.string,
-			pathname: PropTypes.string
-		}),
-		classes: style
-	};
 
-	static defaultProps = {
-		profile: null,
-		history,
-		location: null,
-		classes: style
-	};
 	state = {
 		dialog: '',
 		wait: false,
@@ -158,7 +130,7 @@ class Monika extends Component {
       style={wait ? { opacity: 0, pointerEvents: 'none' } : null}
     >
       <M.CardContent>
-        <M.Typography type="body1" className={classes.text}>
+        <M.Typography variant="body1" className={classes.text}>
           {dialog}
         </M.Typography>
       </M.CardContent>

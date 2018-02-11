@@ -199,41 +199,6 @@ const style = theme => ({
 });
 
 class Watch extends Component {
-	static propTypes = {
-		profile: PropTypes.shape({
-			userID: PropTypes.string
-		}),
-		history: PropTypes.shape({
-			goBack: PropTypes.func,
-			location: PropTypes.shape({
-				pathname: PropTypes.string,
-				search: PropTypes.string,
-				state: PropTypes.shape({
-					eps: PropTypes.arrayOf(PropTypes.shape({}))
-				})
-			}),
-			push: PropTypes.func
-		}),
-		theme: PropTypes.shape({}),
-		mir: PropTypes.shape({
-			play: PropTypes.shape({})
-		}),
-		location: PropTypes.shape({
-			state: PropTypes.shape({}),
-			search: PropTypes.string,
-			pathname: PropTypes.string
-		}),
-		classes: style
-	};
-
-	static defaultProps = {
-		profile: null,
-		history,
-		mir: null,
-		location: null,
-		classes: style,
-		theme: {}
-	};
 	state = {};
 
 	componentWillMount = () => {};

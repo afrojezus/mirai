@@ -1,6 +1,13 @@
 import { MIR_SET_TITLE, MIR_TWIST_LOAD, MIR_PLAY_SHOW } from './constants';
 
-export default (state = null, action) => {
+const initialState = {
+    mir: {
+        twist: [],
+        title: '',
+        play: null
+    }
+};
+export default (state = initialState, action) => {
 	switch (action.type) {
 		case MIR_SET_TITLE:
 			return {

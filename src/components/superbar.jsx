@@ -1,32 +1,24 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import Github from 'github-api';
 import Button from 'material-ui/Button';
 import AppBar from 'material-ui/AppBar';
 import Typography from 'material-ui/Typography';
 import IconButton from 'material-ui/IconButton';
 import { withStyles } from 'material-ui/styles';
 import Toolbar from 'material-ui/Toolbar';
-import Menu, { MenuItem } from 'material-ui/Menu';
+import Menu from 'material-ui/Menu';
 import MenuIcon from 'material-ui-icons/Menu';
 import AccountCircle from 'material-ui-icons/AccountCircle';
-import Info from 'material-ui-icons/Info';
 import { grey } from 'material-ui/colors';
 import Drawer from 'material-ui/Drawer';
 import List, {
 	ListItem,
 	ListItemIcon,
 	ListItemText,
-	ListSubheader
+	ListSubheader,
 } from 'material-ui/List';
 import Hidden from 'material-ui/Hidden';
 import Divider from 'material-ui/Divider';
-import Card, {
-	CardContent,
-	CardMedia,
-	CardActions,
-	CardHeader
-} from 'material-ui/Card';
+import { CardHeader } from 'material-ui/Card';
 import HomeIcon from 'material-ui-icons/Home';
 import SearchIcon from 'material-ui-icons/Search';
 import DashboardIcon from 'material-ui-icons/Dashboard';
@@ -39,31 +31,22 @@ import ArrowBackIcon from 'material-ui-icons/ArrowBack';
 import MoreVert from 'material-ui-icons/MoreVert';
 import CloseIcon from 'material-ui-icons/Close';
 import AppsIcon from 'material-ui-icons/Apps';
-import Input, { InputLabel } from 'material-ui/Input';
-import { FormControl, FormHelperText } from 'material-ui/Form';
-import Select from 'material-ui/Select';
 
 import * as Vibrant from 'node-vibrant';
 
 import localForage from 'localforage';
 
 import { connect } from 'react-redux';
-
-import Autosuggest from 'react-autosuggest';
 import TextField from 'material-ui/TextField';
 import Paper from 'material-ui/Paper';
-import match from 'autosuggest-highlight/match';
-import parse from 'autosuggest-highlight/parse';
 
 import Tabs, { Tab } from 'material-ui/Tabs';
 
-import { firebaseConnect, isEmpty, firebase } from 'react-redux-firebase';
-import BottomNavigation from 'material-ui/BottomNavigation/BottomNavigation';
-import BottomNavigationAction from 'material-ui/BottomNavigation/BottomNavigationAction';
+import { firebaseConnect, isEmpty } from 'react-redux-firebase';
 import miraiLogo from '../assets/mirai-icon.png';
 import NotificationForm from './notificationForm';
 import { history } from '../store';
-import MirPlayer from './mirplayer'
+import MirPlayer from './mirplayer';
 
 const drawerWidth = 240;
 
@@ -72,37 +55,43 @@ const styles = theme => ({
 		width: '100%',
 		transition: theme.transitions.create(['all']),
 		paddingLeft: 'env(safe-area-inset-left)',
-		paddingRight: 'env(safe-area-inset-right)'
+		paddingRight: 'env(safe-area-inset-right)',
+	},
+	mainToolbar: {
+		maxWidth: '1970px',
+		marginLeft: 'auto',
+		width: '100%',
+		marginRight: 'auto',
 	},
 	gd: {
 		width: '100%',
 		height: 82,
 		position: 'fixed',
 		transition: theme.transitions.create(['all']),
-		background: 'linear-gradient(to top, transparent, rgba(0,0,0,1))'
+		background: 'linear-gradient(to top, transparent, rgba(0,0,0,1))',
 	},
 	appBar: {
 		background: theme.palette.background.appBar,
-		borderBottom: `1px solid rgba(255,255,255,0)`
+		borderBottom: `1px solid rgba(255,255,255,0)`,
 	},
 	appBarTop: {
 		background: 'rgba(0,0,0,.18)',
 		boxShadow: 'none',
 		borderBottom: `1px solid rgba(255,255,255,.16)`,
-		backdropFilter: 'blur(10px)'
+		backdropFilter: 'blur(10px)',
 	},
 	appFrame: {
 		position: 'relative',
 		display: 'flex',
 		width: '100%',
-		height: '100%'
+		height: '100%',
 	},
 	flex: {
-		flex: 1
+		flex: 1,
 	},
 	menuButton: {
 		marginLeft: -12,
-		marginRight: 20
+		marginRight: 20,
 	},
 	logoButton: {
 		position: 'absolute',
@@ -117,37 +106,33 @@ const styles = theme => ({
 			right: 'initial',
 			transform: 'initial',
 			margin: 'auto',
-			top: 'initial'
-		}
+			top: 'initial',
+		},
 	},
 	userButton: {
 		width: 32,
 		height: 32,
 		margin: 'auto',
-		overflow: 'hidden'
+		overflow: 'hidden',
 	},
 	userButtonImg: {
 		height: 32,
-		objectFit: 'cover'
+		objectFit: 'cover',
 	},
 	list: {
-		width: drawerWidth
+		width: drawerWidth,
 	},
 	listFull: {
-		width: 'auto'
+		width: 'auto',
 	},
 	listDivider: {
 		marginLeft: theme.spacing.unit,
-		marginRight: theme.spacing.unit
+		marginRight: theme.spacing.unit,
 	},
 	drawerToolbar: theme.mixins.toolbar,
 	drawer: {
 		width: drawerWidth,
 		height: '100%',
-		paddingLeft: 'env(safe-area-inset-left)',
-		[theme.breakpoints.up('md')]: {
-			height: 'auto'
-		},
 		background:
 			window.safari && window.navigator.userAgent.indexOf('Edge') > -1
 				? 'rgba(0,0,0,.1)'
@@ -156,22 +141,22 @@ const styles = theme => ({
 		boxShadow:
 			window.safari && window.navigator.userAgent.indexOf('Edge') > -1
 				? 'none'
-				: null
+				: null,
 	},
 	drawerBg: {},
 	drawerDocked: {
 		height: '100%',
-		position: 'fixed'
+		position: 'fixed',
 	},
 	menuPadding: {
 		padding: 0,
-		overflow: 'initial'
+		overflow: 'initial',
 	},
 	profileCard: {
-		width: 345
+		width: 345,
 	},
 	profileCardHeader: {
-		cursor: 'pointer'
+		cursor: 'pointer',
 	},
 	profileCardImg: {
 		position: 'absolute',
@@ -184,33 +169,33 @@ const styles = theme => ({
 		width: '100%',
 		opacity: 0.4,
 		zIndex: -1,
-		transition: theme.transitions.create(['all'])
+		transition: theme.transitions.create(['all']),
 	},
 	searchContainer: {
 		flexGrow: 1,
-		position: 'relative'
+		position: 'relative',
 	},
 	suggestionsContainerOpen: {
 		position: 'absolute',
 		marginTop: theme.spacing.unit,
 		marginBottom: theme.spacing.unit * 3,
 		left: 0,
-		right: 0
+		right: 0,
 	},
 	suggestion: {
-		display: 'block'
+		display: 'block',
 	},
 	suggestionsList: {
 		margin: 0,
 		padding: 0,
-		listStyleType: 'none'
+		listStyleType: 'none',
 	},
 	textField: {
 		width: '100%',
 		padding: 0,
 		'label + &': {
-			marginTop: theme.spacing.unit * 3
-		}
+			marginTop: theme.spacing.unit * 3,
+		},
 	},
 	input: {
 		borderRadius: 4,
@@ -221,72 +206,73 @@ const styles = theme => ({
 		width: 'calc(100% - 24px)',
 		transition: theme.transitions.create(['box-shadow']),
 		'&:focus': {
-			boxShadow: '0 1pt 0.2rem rgba(0,0,0,.25)'
-		}
+			boxShadow: '0 1pt 0.2rem rgba(0,0,0,.25)',
+		},
 	},
 	content: {
 		backgroundColor: theme.palette.background.default,
 		width: '100%',
 		height: 'calc(100% - 56px)',
 		[theme.breakpoints.up('sm')]: {
-			height: 'calc(100% - 64px)'
+			height: 'calc(100% - 64px)',
 		},
 		position: 'relative',
 		'& > div': {
 			position: 'absolute',
 			width: '100%',
 			[theme.breakpoints.down('md')]: {
-				marginBottom: 56
-			}
-		}
+				marginBottom: 56,
+			},
+		},
 	},
 	footerCopy: {
 		fontWeight: 700,
 		padding: theme.spacing.unit * 3,
 		fontSize: theme.typography.pxToRem(12),
-		color: grey[800]
+		color: grey[800],
 	},
 	contextBar: {
 		[theme.breakpoints.down('sm')]: {
-			display: 'none'
-		}
+			display: 'none',
+		},
 	},
 	tabLabel: {
 		opacity: 0.5,
 		fontSize: theme.typography.pxToRem(14),
-		textTransform: 'initial'
+		textTransform: 'initial',
 	},
 	tabLabelActive: {
 		fontWeight: 700,
 		fontSize: theme.typography.pxToRem(14),
-		textTransform: 'initial'
+		textTransform: 'initial',
 	},
 	tabLine: {
 		filter: 'drop-shadow(0 1px 12px rgba(0,0,255,.2))',
 		height: 2,
-		background: 'white'
+		background: 'white',
 	},
 	tab: {
-		height: 64
+		height: 64,
+		minWidth: 72,
 	},
 	avatar: {
 		height: 64,
-		width: 64
+		width: 64,
 	},
 	avatarImg: {
 		height: '100%',
 		width: '100%',
 		objectFit: 'cover',
-		transition: theme.transitions.create(['all'])
+		transition: theme.transitions.create(['all']),
 	},
 	statusForm: {
-		width: '100%'
+		width: '100%',
 	},
 	navBar: {
 		position: 'fixed',
 		width: '100%',
 		bottom: 0,
-		zIndex: 9999
+		zIndex: 9999,
 	},
 	sideNav: {
 		position: 'fixed',
@@ -296,14 +282,14 @@ const styles = theme => ({
 		display: 'flex',
 		flexDirection: 'column',
 		margin: theme.spacing.unit,
-		zIndex: 1200
+		zIndex: 1200,
 	},
 	sideButton: {
 		display: 'flex',
 		'& > span': {
 			flexDirection: 'column',
-			textTransform: 'initial'
-		}
+			textTransform: 'initial',
+		},
 	},
 	searchBar: {
 		background: 'rgba(255,255,255,.05)',
@@ -315,79 +301,36 @@ const styles = theme => ({
 		transition: theme.transitions.create(['all']),
 		'&:hover': {
 			background: 'rgba(255,255,255,.08)',
-			border: '1px solid rgba(255,255,255,.15)'
+			border: '1px solid rgba(255,255,255,.15)',
 		},
 		'&:focus': {
 			background: 'rgba(255,255,255,.08)',
-			border: '1px solid rgba(255,255,255,.15)'
+			border: '1px solid rgba(255,255,255,.15)',
 		},
 		margin: 'auto',
-		marginRight: theme.spacing.unit
+		marginRight: theme.spacing.unit,
 	},
 	searchInput: {
 		maxWidth: 1970,
 		minWidth: 300,
-		boxSizing: 'border-box'
+		boxSizing: 'border-box',
 	},
 	searchIcon: {
 		paddingLeft: theme.spacing.unit * 2,
 		paddingRight: theme.spacing.unit * 2,
-		margin: 'auto 0'
+		margin: 'auto 0',
 	},
 	barTitle: {
-		fontFamily: "'Fugaz One', cursive"
+		fontFamily: "'Fugaz One', cursive",
 	},
 	logoImg: {
 		height: 38,
 		margin: 'auto',
 		position: 'relative',
-	}
+	},
 });
 
 class Superbar extends Component {
-	static propTypes = {
-		profile: PropTypes.shape({
-			avatar: PropTypes.string,
-			role: PropTypes.string,
-			isDeveloper: PropTypes.bool
-		}),
-		history: PropTypes.shape({
-			location: PropTypes.shape({
-				pathname: PropTypes.string
-			}),
-			push: PropTypes.func,
-			listen: PropTypes.func
-		}),
-		firebase: PropTypes.shape({
-			logout: PropTypes.func
-		}),
-		location: PropTypes.shape({
-			state: PropTypes.shape({}),
-			search: PropTypes.string,
-			pathname: PropTypes.string
-		}),
-		classes: styles,
-		mir: PropTypes.shape({
-			twist: PropTypes.arrayOf(PropTypes.shape({})),
-      title: PropTypes.string,
-		}),
-
-		children: PropTypes.node
-	};
-
-	static defaultProps = {
-		profile: null,
-		history: null,
-		location: null,
-		firebase: null,
-		classes: null,
-		mir: {
-			twist: null,
-			title: null
-		},
-		children: null
-	};
-
 	state = {
 		anchorEl: null,
 		infoEl: null,
@@ -402,7 +345,7 @@ class Superbar extends Component {
 		commit: 'd12',
 		hue: null,
 		hueVib: null,
-		hueVibN: null
+		hueVibN: null,
 	};
 
 	componentWillMount = () => {
@@ -528,7 +471,7 @@ class Superbar extends Component {
 				this.setState({
 					currentPage: 'History',
 					tabVal: 4,
-					watchIsOn: false
+					watchIsOn: false,
 				});
 				break;
 			case '/later':
@@ -541,28 +484,28 @@ class Superbar extends Component {
 				this.setState({
 					currentPage: '',
 					tabVal: 4,
-					watchIsOn: false
+					watchIsOn: false,
 				});
 				break;
 			case '/fig':
 				this.setState({
 					currentPage: '',
 					tabVal: 4,
-					watchIsOn: false
+					watchIsOn: false,
 				});
 				break;
 			case '/show':
 				this.setState({
 					currentPage: '',
 					tabVal: 4,
-					watchIsOn: false
+					watchIsOn: false,
 				});
 				break;
 			case '/settings':
 				this.setState({
 					currentPage: 'Settings',
 					tabVal: 4,
-					watchIsOn: false
+					watchIsOn: false,
 				});
 				break;
 			case '/setup':
@@ -581,7 +524,7 @@ class Superbar extends Component {
 				this.setState({
 					currentPage: 'Terms of Usage',
 					tabVal: 4,
-					watchIsOn: false
+					watchIsOn: false,
 				});
 				break;
 			case '/monika':
@@ -590,7 +533,10 @@ class Superbar extends Component {
 			case '/search':
 				this.setState({ currentPage: 'Search', tabVal: 4, watchIsOn: false });
 				break;
-			case '/dev':
+			case '/dev/player':
+				this.setState({ currentPage: 'Developer', tabVaL: 4 });
+				break;
+			case '/dev/db':
 				this.setState({ currentPage: 'Developer', tabVaL: 4 });
 				break;
 			default:
@@ -611,9 +557,9 @@ class Superbar extends Component {
 				(err, pal) => {
 					if (pal) {
 						this.setState({
-							hue: pal.DarkMuted.getHex(),
+							hue: pal.DarkMuted && pal.DarkMuted.getHex(),
 							hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
-							hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
+							hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex(),
 						});
 					}
 				}
@@ -623,9 +569,9 @@ class Superbar extends Component {
 				(err, pal) => {
 					if (pal) {
 						this.setState({
-							hue: pal.DarkMuted.getHex(),
+							hue: pal.DarkMuted && pal.DarkMuted.getHex(),
 							hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
-							hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
+							hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex(),
 						});
 					}
 				}
@@ -634,7 +580,7 @@ class Superbar extends Component {
 			this.setState({
 				hue: hues.hue,
 				hueVib: hues.vib,
-				hueVibN: hues.vibn
+				hueVibN: hues.vibn,
 			});
 
 		setTimeout(() => this.setState({ loading: false }), 200);
@@ -653,7 +599,7 @@ class Superbar extends Component {
 			hue,
 			mirTitle,
 			scrolling,
-			commit
+			commit,
 		} = this.state;
 
 		const user = !isEmpty(this.props.profile) ? this.props.profile : null;
@@ -662,356 +608,363 @@ class Superbar extends Component {
 		const infoOpen = Boolean(infoEl);
 
 		const menuList = (
-  <div className={classes.list}>
-    <Toolbar className={classes.drawerToolbar}>
-      <IconButton
-        className={classes.menuButton}
-        color="contrast"
-        aria-label="Menu"
-        onClick={this.toggleDrawer}
-      >
-        <CloseIcon />
-      </IconButton>
-    </Toolbar>
-    <List>
-      <ListItem
-        button
-        onClick={() => {
+			<div className={classes.list}>
+				<Toolbar className={classes.drawerToolbar}>
+					<Typography variant="title">Mirai</Typography>
+				</Toolbar>
+				<Divider />
+				<List>
+					<ListItem
+						button
+						onClick={() => {
 							this.toggleDrawer();
 							this.tabChange(null, 0);
 						}}
-      >
-        <ListItemText primary="Home" />
-      </ListItem>
-      <ListItem
-        button
-        onClick={() => {
+					>
+						<ListItemIcon>
+							<HomeIcon />
+						</ListItemIcon>
+						<ListItemText primary="Home" />
+					</ListItem>
+					<ListItem
+						button
+						onClick={() => {
 							this.toggleDrawer();
 							this.tabChange(null, 1);
 						}}
-      >
-        <ListItemText primary="Feeds" />
-      </ListItem>
-      <ListItem
-        button
-        onClick={() => {
+					>
+						<ListItemIcon>
+							<DashboardIcon />
+						</ListItemIcon>
+						<ListItemText primary="Feeds" />
+					</ListItem>
+					<ListItem
+						button
+						onClick={() => {
 							this.toggleDrawer();
 							this.tabChange(null, 2);
 						}}
-      >
-        <ListItemText primary="Rankings" />
-      </ListItem>
-      <ListItem
-        button
-        onClick={() => {
+					>
+						<ListItemIcon>
+							<StarIcon />
+						</ListItemIcon>
+						<ListItemText primary="Rankings" />
+					</ListItem>
+					<ListItem
+						button
+						onClick={() => {
 							this.toggleDrawer();
 							this.tabChange(null, 3);
 						}}
-      >
-        <ListItemText primary="Live" />
-      </ListItem>
-    </List>
-    {user ? (
-      <div>
-        <Divider className={classes.listDivider} />
-        <List subheader={<ListSubheader>YOU</ListSubheader>}>
-          <ListItem
-            button
-            onClick={() => {
+					>
+						<ListItemIcon>
+							<LiveTvIcon />
+						</ListItemIcon>
+						<ListItemText primary="Live" />
+					</ListItem>
+				</List>
+				{user ? (
+					<div>
+						<Divider className={classes.listDivider} />
+						<List subheader={<ListSubheader>YOU</ListSubheader>}>
+							<ListItem
+								button
+								onClick={() => {
 									this.toggleDrawer();
 									this.tabChange(null, 4);
 									this.props.history.push('/history');
 								}}
-          >
-            <ListItemText primary="History" />
-          </ListItem>
-          <ListItem
-            button
-            onClick={() => {
+							>
+								<ListItemText primary="History" />
+							</ListItem>
+							<ListItem
+								button
+								onClick={() => {
 									this.toggleDrawer();
 									this.tabChange(null, 4);
 									this.props.history.push('/later');
 								}}
-          >
-            <ListItemText primary="Later" />
-          </ListItem>
-          <ListItem
-            button
-            onClick={() => {
+							>
+								<ListItemText primary="Later" />
+							</ListItem>
+							<ListItem
+								button
+								onClick={() => {
 									this.toggleDrawer();
 									this.tabChange(null, 4);
 									this.props.history.push('/user#favorites');
 								}}
-          >
-            <ListItemText primary="Favorites" />
-          </ListItem>
-        </List>
-      </div>
+							>
+								<ListItemText primary="Favorites" />
+							</ListItem>
+						</List>
+					</div>
 				) : null}
-    <Divider className={classes.listDivider} />
-    <List>
-      <ListItem
-        button
-        onClick={() => {
+				<Divider className={classes.listDivider} />
+				<List>
+					<ListItem
+						button
+						onClick={() => {
 							this.toggleDrawer();
 							this.tabChange(null, 4);
 							this.props.history.push('/help');
 						}}
-      >
-        <ListItemText primary="Help" />
-      </ListItem>
-      <ListItem
-        button
-        onClick={() => {
+					>
+						<ListItemText primary="Help" />
+					</ListItem>
+					<ListItem
+						button
+						onClick={() => {
 							this.toggleDrawer();
 							this.tabChange(null, 4);
 							this.props.history.push('/feedback');
 						}}
-      >
-        <ListItemText primary="Feedback" />
-      </ListItem>
-      <ListItem
-        button
-        onClick={() => {
+					>
+						<ListItemText primary="Feedback" />
+					</ListItem>
+					<ListItem
+						button
+						onClick={() => {
 							this.toggleDrawer();
 							window.open('https://discord.gg/gt69fbe');
 						}}
-      >
-        <ListItemText primary="Discord" />
-      </ListItem>
-      <ListItem
-        button
-        onClick={() => {
+					>
+						<ListItemText primary="Discord" />
+					</ListItem>
+					<ListItem
+						button
+						onClick={() => {
 							this.toggleDrawer();
 							this.tabChange(null, 4);
 							this.props.history.push('/tou');
 						}}
-      >
-        <ListItemText primary="Terms of Usage" />
-      </ListItem>
-      <ListItem
-        button
-        onClick={() => {
+					>
+						<ListItemText primary="Terms of Usage" />
+					</ListItem>
+					<ListItem
+						button
+						onClick={() => {
 							this.toggleDrawer();
 							this.tabChange(null, 4);
 							this.props.history.push('/monika');
 						}}
-      >
-        <ListItemText primary="Monika" />
-      </ListItem>
-    </List>
-    <Divider className={classes.listDivider} />
-    <Typography className={classes.footerCopy} type="headline">
+					>
+						<ListItemText primary="Monika" />
+					</ListItem>
+				</List>
+				<Divider className={classes.listDivider} />
+				<Typography className={classes.footerCopy} variant="headline">
 					Mirai commit-{commit}
-      <br />
-      {this.props.mir && this.props.mir.twist
+					<br />
+					{this.props.mir && this.props.mir.twist
 						? `${Object.keys(this.props.mir.twist).length -
 								1} animes in database`
 						: null}
-      <br />2018 afroJ
-    </Typography>
-  </div>
+					<br />2018 afroJ
+				</Typography>
+			</div>
 		);
 
 		return (
-  <div className={classes.appFrame}>
-    <AppBar
-      id="superBar"
-      classes={{ root: classes.root }}
-      className={
+			<div className={classes.appFrame}>
+				<AppBar
+					id="superBar"
+					classes={{ root: classes.root }}
+					className={
 						scrolling &&
 						!(window.navigator.userAgent.indexOf('Edge') > -1) &&
 						!window.safari
 							? classes.appBar
 							: classes.appBarTop
 					}
-      style={
+					style={
 						watchIsOn
 							? { display: 'none' }
 							: { transform: 'translate3d(0,0,0)' }
 					}
-    >
-      {window.safari && window.navigator.userAgent.indexOf('Edge') > -1 ? null : <div
-        className={classes.gd}
-        style={
-							scrolling ? { opacity: 0 } : { opacity: 0.2 }
-						}
-      />}
-      <Toolbar>
-        <IconButton
-          className={classes.menuButton}
-          color="contrast"
-          aria-label="Menu"
-          onClick={this.toggleDrawer}
-        >
-          <MenuIcon />
-        </IconButton>
-        <Tabs
-          className={classes.contextBar}
-          value={tabVal}
-          onChange={this.tabChange}
-          indicatorClassName={classes.tabLine}
-          centered
-        >
-          <Tab
-            classes={{
+				>
+					{window.safari &&
+					window.navigator.userAgent.indexOf('Edge') > -1 ? null : (
+						<div
+							className={classes.gd}
+							style={scrolling ? { opacity: 0 } : { opacity: 0.2 }}
+						/>
+					)}
+					<Toolbar className={classes.mainToolbar}>
+						<IconButton
+							className={classes.menuButton}
+							contrast={'default'}
+							aria-label="Menu"
+							onClick={this.toggleDrawer}
+						>
+							<MenuIcon />
+						</IconButton>
+						<Tabs
+							className={classes.contextBar}
+							value={tabVal}
+							onChange={this.tabChange}
+							indicatorClassName={classes.tabLine}
+							centered
+						>
+							<Tab
+								classes={{
 									root: classes.tab,
 									label:
-										tabVal === 0 ? classes.tabLabelActive : classes.tabLabel
+										tabVal === 0 ? classes.tabLabelActive : classes.tabLabel,
 								}}
-            label="Home"
-          />
-          <Tab
-            label="Feeds"
-            classes={{
+								icon={<HomeIcon />}
+							/>
+							<Tab
+								icon={<DashboardIcon />}
+								classes={{
 									root: classes.tab,
 									label:
-										tabVal === 1 ? classes.tabLabelActive : classes.tabLabel
+										tabVal === 1 ? classes.tabLabelActive : classes.tabLabel,
 								}}
-          />
-          <Tab
-            label="Rankings"
-            classes={{
+							/>
+							<Tab
+								icon={<StarIcon />}
+								classes={{
 									root: classes.tab,
 									label:
-										tabVal === 2 ? classes.tabLabelActive : classes.tabLabel
+										tabVal === 2 ? classes.tabLabelActive : classes.tabLabel,
 								}}
-          />
-          <Tab
-            label="Live"
-            classes={{
+							/>
+							<Tab
+								icon={<LiveTvIcon />}
+								classes={{
 									root: classes.tab,
 									label:
-										tabVal === 3 ? classes.tabLabelActive : classes.tabLabel
+										tabVal === 3 ? classes.tabLabelActive : classes.tabLabel,
 								}}
-          />
-          <Tab style={{ display: 'none' }} />
-        </Tabs>
-        <Hidden smDown>
-          <div className={classes.flex} />
-        </Hidden>
-        <IconButton
-          className={classes.logoButton}
-          onClick={() => this.props.history.push('/')}
-        >
-          <img src={miraiLogo} alt="" className={classes.logoImg} />
-        </IconButton>
-        <div className={classes.flex} />
-        <Hidden smDown>
-          <SearchBox
-            mir={this.props.mir}
-            history={history}
-            classes={{
+							/>
+							<Tab style={{ display: 'none' }} />
+						</Tabs>
+						<Hidden smDown>
+							<div className={classes.flex} />
+						</Hidden>
+						<IconButton
+							className={classes.logoButton}
+							onClick={() => window.scrollTo(0, 0)}
+						>
+							<img src={miraiLogo} alt="" className={classes.logoImg} />
+						</IconButton>
+						<div className={classes.flex} />
+						<Hidden smDown>
+							<SearchBox
+								mir={this.props.mir}
+								history={history}
+								classes={{
 									searchBar: classes.searchBar,
 									searchInput: classes.searchInput,
-									searchIcon: classes.searchIcon
+									searchIcon: classes.searchIcon,
 								}}
-          />
-        </Hidden>
-        {user && user.noMine ? <Button>Donate</Button> : null}
-        <Hidden smUp>
-          <IconButton
-            onClick={() => {
+							/>
+						</Hidden>
+						{user && user.noMine ? <Button>Donate</Button> : null}
+						<Hidden smUp>
+							<IconButton
+								onClick={() => {
 									this.tabChange(null, 4);
 									this.props.history.push('/search');
 								}}
-            color="contrast"
-          >
-            <SearchIcon />
-          </IconButton>
-        </Hidden>
-        <div>
-          <IconButton
-            aria-owns={open ? 'info-menu' : null}
-            aria-haspopup="true"
-            onClick={this.handleInfoMenu}
-            color="contrast"
-          >
-            {user && user.notifcations ? <BellIcon /> : <BellOffIcon />}
-          </IconButton>
-          <Menu
-            id="info-menu"
-            anchorEl={infoEl}
-            transformOrigin={{
+								contrast={'default'}
+							>
+								<SearchIcon />
+							</IconButton>
+						</Hidden>
+						<div>
+							<IconButton
+								aria-owns={open ? 'info-menu' : null}
+								aria-haspopup="true"
+								onClick={this.handleInfoMenu}
+								contrast={'default'}
+							>
+								{user && user.notifcations ? <BellIcon /> : <BellOffIcon />}
+							</IconButton>
+							<Menu
+								id="info-menu"
+								anchorEl={infoEl}
+								transformOrigin={{
 									vertical: 'bottom',
-									horizontal: 'center'
+									horizontal: 'center',
 								}}
-            MenuListProps={{ style: { padding: 0 } }}
-            open={infoOpen}
-            onClose={this.handleInfoRequestClose}
-          >
-            <NotificationForm />
-          </Menu>
-        </div>
-        {user ? (
-          <div>
-            <IconButton
-              aria-owns={open ? 'profile-menu' : null}
-              aria-haspopup="true"
-              onClick={this.handleMenu}
-              color="contrast"
-            >
-              <Avatar
-                src={user.avatar}
-                alt=""
-                className={classes.userButton}
-                classes={{ img: classes.userButtonImg }}
-                imgProps={{
+								MenuListProps={{ style: { padding: 0 } }}
+								open={infoOpen}
+								onClose={this.handleInfoRequestClose}
+							>
+								<NotificationForm />
+							</Menu>
+						</div>
+						{user ? (
+							<div>
+								<IconButton
+									aria-owns={open ? 'profile-menu' : null}
+									aria-haspopup="true"
+									onClick={this.handleMenu}
+									contrast={'default'}
+								>
+									<Avatar
+										src={user.avatar}
+										alt=""
+										className={classes.userButton}
+										classes={{ img: classes.userButtonImg }}
+										imgProps={{
 											style: { opacity: 0 },
-											onLoad: e => (e.currentTarget.style.opacity = null)
+											onLoad: e => (e.currentTarget.style.opacity = null),
 										}}
-              />
-            </IconButton>
-            <Menu
-              id="profile-menu"
-              anchorEl={anchorEl}
-              anchorOrigin={{
+									/>
+								</IconButton>
+								<Menu
+									id="profile-menu"
+									anchorEl={anchorEl}
+									anchorOrigin={{
 										vertical: 'top',
-										horizontal: 'right'
+										horizontal: 'right',
 									}}
-              transformOrigin={{
+									transformOrigin={{
 										vertical: 'top',
-										horizontal: 'right'
+										horizontal: 'right',
 									}}
-              open={open}
-              onClose={this.handleRequestClose}
-              PopoverClasses={{ paper: classes.menuPadding }}
-            >
-              <div
-                style={{ outline: 'none' }}
-                className={classes.profileCard}
-              >
-                <CardHeader
-                  className={classes.profileCardHeader}
-                  onClick={() => {
+									open={open}
+									onClose={this.handleRequestClose}
+									PopoverClasses={{ paper: classes.menuPadding }}
+								>
+									<div
+										style={{ outline: 'none' }}
+										className={classes.profileCard}
+									>
+										<CardHeader
+											className={classes.profileCardHeader}
+											onClick={() => {
 												this.handleRequestClose();
 												this.tabChange(null, 4);
 												this.props.history.push('/user');
 											}}
-                  avatar={
-                    <Avatar
-                      src={user.avatar}
-                      classes={{ img: classes.avatarImg }}
-                      className={classes.avatar}
-                      imgProps={{
+											avatar={
+												<Avatar
+													src={user.avatar}
+													classes={{ img: classes.avatarImg }}
+													className={classes.avatar}
+													imgProps={{
 														style: { opacity: 0 },
-														onLoad: e => (e.currentTarget.style.opacity = null)
+														onLoad: e => (e.currentTarget.style.opacity = null),
 													}}
-                    />
+												/>
 											}
-                  title={user.username}
-                  subheader={user.nick}
-                  actionright={
-                    <Typography>{this.props.profile.role}</Typography>
+											title={user.username}
+											subheader={user.nick}
+											actionright={
+												<Typography>{this.props.profile.role}</Typography>
 											}
-                />
-                <img
-                  src={user.headers}
-                  alt=""
-                  className={classes.profileCardImg}
-                />
-                <Divider />
-                {/* <form>
+										/>
+										<img
+											src={user.headers}
+											alt=""
+											className={classes.profileCardImg}
+										/>
+										<Divider />
+										{/* <form>
                       <FormControl className={classes.statusForm}>
                         <Select
                           value={status}
@@ -1025,74 +978,75 @@ class Superbar extends Component {
                       </FormControl>
                     </form>
                     <Divider /> */}
-                {!isEmpty(this.props.profile) &&
+										{!isEmpty(this.props.profile) &&
 										this.props.profile.isDeveloper === true ? (
-  <List subheader={<ListSubheader>DEV</ListSubheader>}>
-    <ListItem
-      button
-      onClick={() => {
+											<List subheader={<ListSubheader>DEV</ListSubheader>}>
+												<ListItem
+													button
+													onClick={() => {
 														this.handleRequestClose();
 														this.props.history.push('/dev/db');
 													}}
-    >
-      <ListItemText primary="Developer Dashboard" />
-    </ListItem>
-    <ListItem
-      button
-      onClick={() => {
+												>
+													<ListItemText primary="Developer Dashboard" />
+												</ListItem>
+												<ListItem
+													button
+													onClick={() => {
 														this.handleRequestClose();
 														this.props.history.push('/dev/player');
 													}}
-    >
-      <ListItemText primary="Media Player" />
-    </ListItem>
-    <Divider />
-  </List>
+												>
+													<ListItemText primary="Media Player" />
+												</ListItem>
+												<Divider />
+											</List>
 										) : null}
-                <List>
-                  <ListItem
-                    button
-                    onClick={() => {
+										<List>
+											<ListItem
+												button
+												onClick={() => {
 													this.handleRequestClose();
 													this.tabChange(null, 4);
 													this.props.history.push('/settings');
 												}}
-                  >
-                    <ListItemText primary="Settings" />
-                  </ListItem>
-                  <ListItem
-                    button
-                    onClick={() => {
+											>
+												<ListItemText primary="Settings" />
+											</ListItem>
+											<ListItem
+												button
+												onClick={() => {
 													this.handleRequestClose();
 													this.props.firebase
 														.logout()
 														.then(async () =>
-															localForage.removeItem('user', () => {
+															localForage.removeItem('user', async () => {
 																this.tabChange(null, 4);
 																this.props.history.push('/setup');
+																await localForage.removeItem('player-state');
 															})
 														)
 														.catch(err => console.error(err.message));
 												}}
-                  >
-                    <ListItemText primary="Log off" />
-                  </ListItem>
-                </List>
-              </div>
-            </Menu>
-          </div>
+											>
+												<ListItemText primary="Log off" />
+											</ListItem>
+										</List>
+									</div>
+								</Menu>
+							</div>
 						) : (
-  <IconButton
-    onClick={() => {
+							<IconButton
+								onClick={() => {
 									this.props.history.push('/setup');
 								}}
-  >
-    <AccountCircle />
-  </IconButton>
+							>
+								<AccountCircle />
+							</IconButton>
 						)}
-      </Toolbar>
-    </AppBar>
-    {/* <Hidden lgDown>
+					</Toolbar>
+				</AppBar>
+				{/* <Hidden lgDown>
 					<div
 						className={classes.sideNav}
 						id="sideNav"
@@ -1128,19 +1082,19 @@ class Superbar extends Component {
 						</Button>
 					</div>
 				</Hidden> */}
-    <Drawer
-      classes={{ paper: classes.drawer }}
-      open={drawerOpen}
-      onClose={this.toggleDrawer}
-      type="temporary"
-      ModalProps={{
-						keepMounted: true
+				<Drawer
+					classes={{ paper: classes.drawer }}
+					open={drawerOpen}
+					onClose={this.toggleDrawer}
+					type="temporary"
+					ModalProps={{
+						keepMounted: true,
 					}}
-    >
-      {menuList}
-    </Drawer>
-    <div className={classes.content}>{this.props.children}</div>
-    {/* <Hidden xlUp>
+				>
+					{menuList}
+				</Drawer>
+				<div className={classes.content}>{this.props.children}</div>
+				{/* <Hidden xlUp>
 					<BottomNavigation
 						value={tabVal}
 						onChange={this.tabChange}
@@ -1154,40 +1108,16 @@ class Superbar extends Component {
 						<BottomNavigationAction label="Live" icon={<LiveTvIcon />} />
 					</BottomNavigation>
 				</Hidden> */}
-    <MirPlayer fullSize={watchIsOn} />
-  </div>
+				<MirPlayer fullSize={watchIsOn} />
+			</div>
 		);
 	}
 }
 
 class SearchBox extends Component {
-	static propTypes = {
-		history: PropTypes.shape({
-			push: PropTypes.func
-		}),
-		location: PropTypes.shape({
-			state: PropTypes.shape({}),
-			search: PropTypes.string,
-			pathname: PropTypes.string
-		}),
-		classes: styles,
-		mir: PropTypes.shape({
-			twist: PropTypes.arrayOf(PropTypes.shape({})),
-			title: PropTypes.string
-		}),
-		children: PropTypes.node
-	};
-
-	static defaultProps = {
-		history,
-		location: null,
-		classes: styles,
-		mir: null,
-		children: null
-	};
 	state = {
 		value: '',
-		suggestionList: null
+		suggestionList: null,
 	};
 
 	onChange = e =>
@@ -1196,7 +1126,7 @@ class SearchBox extends Component {
 				this.setState({
 					suggestionList: this.props.mir.twist.filter(s =>
 						s.name.toLowerCase().match(this.state.value.toLowerCase())
-					)
+					),
 				});
 			}
 		});
@@ -1211,27 +1141,27 @@ class SearchBox extends Component {
 		const { value, suggestionList } = this.state;
 		const { classes } = this.props;
 		return (
-  <div>
-    <Paper className={classes.searchBar}>
-      <SearchIcon className={classes.searchIcon} />
-      <form onSubmit={this.onSubmit}>
-        <TextField
-          autoFocus
-          onChange={this.onChange}
-          fullWidth
-          value={value}
-          placeholder="Min. 3 characters"
-          InputProps={{
+			<div>
+				<Paper className={classes.searchBar}>
+					<SearchIcon className={classes.searchIcon} />
+					<form onSubmit={this.onSubmit}>
+						<TextField
+							autoFocus
+							onChange={this.onChange}
+							fullWidth
+							value={value}
+							placeholder="Min. 3 characters"
+							InputProps={{
 								className: classes.searchInput,
 								disableUnderline: true,
-								fullWidth: true
+								fullWidth: true,
 							}}
-          type="search"
-        />
-      </form>
-    </Paper>
-    {suggestionList ? <Paper square /> : null}
-  </div>
+							type="search"
+						/>
+					</form>
+				</Paper>
+				{suggestionList ? <Paper square /> : null}
+			</div>
 		);
 	}
 }
@@ -1240,7 +1170,7 @@ export default firebaseConnect()(
 	connect(
 		({ firebase: { profile }, mir }) => ({
 			profile,
-			mir
+			mir,
 		}),
 		null
 	)(withStyles(styles)(Superbar))

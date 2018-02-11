@@ -37,7 +37,8 @@ const styles = theme => ({
 		overflow: 'hidden',
 		willChange: 'auto',
 		cursor: 'pointer',
-		transformStyle: 'preserve-3d'
+		transformStyle: 'preserve-3d',
+		animation: 'loadIn .5s ease'
 	},
 	entityCardDisabled: {
 		height: 200,
@@ -108,32 +109,49 @@ const styles = theme => ({
 		width: 183,
 		flexGrow: 'initial',
 		flexBasis: 'initial',
-		margin: theme.spacing.unit / 2,
+		margin: theme.spacing.unit / 4,
 		transition: 'all .2s cubic-bezier(.07,.95,0,1)',
 		'&:hover': {
 			overflow: 'initial',
-			boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
-			background: blue.A200
+			// boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
+			// background: blue.A200
 		},
+        '&:hover > div > div > div': {
+            boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
+            borderColor: blue.A200
+        },
+        '&:hover > div > div > div > img': {
+            boxShadow: 'none'
+        },
 		'&:hover > * > h1': {
 			textShadow: '0 2px 12px rgba(0,0,0,.7)'
 		},
 		position: 'relative',
 		overflow: 'hidden',
 		willChange: 'auto',
-		cursor: 'pointer'
+		cursor: 'pointer',
+        animation: 'loadIn .5s ease'
 	},
+    cardImage: {
+        height: 210,
+        width: 156,
+        margin: 'auto',
+        zIndex: 1,
+		borderRadius: 2,
+		border: '8px solid transparent',
+        transition: theme.transitions.create(['all']),
+        top: 0,
+        left: 0,
+        transform: 'translateZ(20px)'
+    },
 	peopleImage: {
 		height: 156,
 		width: 156,
 		margin: 'auto',
 		zIndex: 1,
 		borderRadius: '50%',
-		boxShadow: '0 2px 12px rgba(0,0,0,.2)',
-		transition: theme.transitions.create(['all']),
-		'&:hover': {
-			boxShadow: '0 3px 16px rgba(0,0,0,.5)'
-		},
+        border: '8px solid transparent',
+        transition: theme.transitions.create(['all']),
 		top: 0,
 		left: 0,
         transform: 'translateZ(20px)'
@@ -144,6 +162,7 @@ const styles = theme => ({
 		margin: 'auto',
 		zIndex: 2,
 		position: 'absolute',
+		background: 'white',
 		borderRadius: '50%',
 		boxShadow: '0 2px 12px rgba(0,0,0,.2)',
 		transition: theme.transitions.create(['all']),
@@ -169,7 +188,7 @@ const styles = theme => ({
 		willChange: 'auto',
 		cursor: 'default',
 		userSelect: 'none',
-        transform: 'translateZ(20px)'
+        transform: 'translateZ(20px)',
 	},
 	peopleSubTitle: {
 		fontSize: 14,
@@ -250,6 +269,13 @@ const styles = theme => ({
 			opacity: 0.7
 		},
 		zIndex: 500
+	},
+	fillImg: {
+		height: '100%',
+		width: '100%',
+		objectFit: 'cover',
+		background: 'white',
+        boxShadow: '0 2px 12px rgba(0,0,0,.2)',
 	}
 });
 
@@ -298,10 +324,10 @@ export const PeopleButton = withStyles(styles, { withTheme: true })(
           />
 				) : null}
       </Tilt>
-      <Typography type="headline" className={classes.peopleTitle}>
+      <Typography variant="headline" className={classes.peopleTitle}>
         {nameSwapper(first, last)}
       </Typography>
-      <Typography type="headline" className={classes.peopleSubTitle}>
+      <Typography variant="headline" className={classes.peopleSubTitle}>
         {role}
       </Typography>
     </Card>
@@ -375,20 +401,34 @@ export const PeopleButton = withStyles(styles, { withTheme: true })(
 */
 
 const CardButton = withStyles(styles, { withTheme: true })(
-	({ classes, theme, ...props }) => (
-  <Grid item xs className={classes.entityCard} data-tilt>
-    <Card style={{ background: 'transparent' }} onClick={props.onClick}>
-      <div className={classes.gradientCard}>
-        <CardMedia className={classes.entityImage} image={props.image} />
-      </div>
-      <Typography type="headline" className={classes.entityTitle}>
-        {props.title}
-      </Typography>
-      <Typography type="headline" className={classes.entitySubTitle}>
-        {props.subtitle}
-      </Typography>
-    </Card>
-  </Grid>
+	({ classes, theme, image, title, subtitle, ...props }) => (
+        <Grid className={classes.peopleCard} item xs>
+            <Card
+                style={{
+                    background: 'transparent',
+                    boxShadow: 'none'
+                }}
+                onClick={props.onClick}
+            >
+                <Tilt style={{transformStyle: 'preserve-3d'}} options={{scale: 1}}>
+                    <Avatar
+                        className={classes.cardImage}
+                        classes={{ img: classes.fillImg }}
+                        src={image}
+                        imgProps={{
+                            style: { opacity: 0 },
+                            onLoad: e => (e.currentTarget.style.opacity = null)
+                        }}
+                    />
+                </Tilt>
+                <Typography variant="headline" className={classes.peopleTitle}>
+                    {title}
+                </Typography>
+                <Typography variant="headline" className={classes.peopleSubTitle}>
+                    {subtitle}
+                </Typography>
+            </Card>
+        </Grid>
 	)
 );
 

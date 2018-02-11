@@ -1,68 +1,47 @@
 /* eslint-disable flowtype/require-valid-file-annotation */
 
 import React, { Component } from "react";
-import JssProvider from "react-jss/lib/JssProvider";
-import { withStyles, MuiThemeProvider } from "material-ui/styles";
-import wrapDisplayName from "recompose/wrapDisplayName";
-import createContext from "../styles/createContext";
+import { MuiThemeProvider, createMuiTheme } from "material-ui/styles";
+import Reboot from 'material-ui/Reboot';
+import {blue} from "material-ui/colors/index";
 
 // Apply some reset
-const styles = theme => ({
-  "@global": {
-    html: {
-      background: theme.palette.background.default,
-      WebkitFontSmoothing: "antialiased", // Antialiasing.
-      MozOsxFontSmoothing: "grayscale", // Antialiasing.,
-      height: "100%",
-      overflowX: "hidden",
-      boxSizing: "border-box",
-      transition: theme.transitions.create(["all"]),
-      WebkitOverflowScrolling: "touch"
+const theme = createMuiTheme({
+    palette: {
+        primary: blue,
+        secondary: blue,
+        type: 'dark',
+        background: {
+            default: '#111',
+            paper: '#111',
+            appBar: '#111',
+            contentFrame: '#eeeeee'
+        }
     },
-    body: {
-      margin: 0,
-      height: "100%"
+    typography: {
+        // Use the system font.
+        fontFamily: "BlinkMacSystemFont, -apple-system, 'SF Display'"
     }
-  }
 });
+// Expose the theme as a global variable so people can play with it.
+if (process.browser) {
+    window.theme = theme;
+}
 
-let AppWrapper = props => props.children;
-
-AppWrapper = withStyles(styles)(AppWrapper);
-
-const context = createContext();
-
-function withRoot(BaseComponent) {
-  class WithRoot extends Component {
-    componentDidMount() {
-      // Remove the server-side injected CSS.
-      const jssStyles = document.querySelector("#jss-server-side");
-      if (jssStyles && jssStyles.parentNode) {
-        jssStyles.parentNode.removeChild(jssStyles);
-      }
+function withRoot(Component) {
+    function WithRoot(props) {
+        // MuiThemeProvider makes the theme available down the React tree
+        // thanks to React context.
+        return (
+            <MuiThemeProvider theme={theme}>
+                {/* Reboot kickstart an elegant, consistent, and simple baseline to build upon. */}
+                <Reboot />
+                <Component {...props} />
+            </MuiThemeProvider>
+        );
     }
 
-    render() {
-      return (
-        <JssProvider registry={context.sheetsRegistry} jss={context.jss}>
-          <MuiThemeProvider
-            theme={context.theme}
-            sheetsManager={context.sheetsManager}
-          >
-            <AppWrapper>
-              <BaseComponent {...this.props} />
-            </AppWrapper>
-          </MuiThemeProvider>
-        </JssProvider>
-      );
-    }
-  }
-
-  if (process.env.NODE_ENV !== "production") {
-    WithRoot.displayName = wrapDisplayName(BaseComponent, "withRoot");
-  }
-
-  return WithRoot;
+    return WithRoot;
 }
 
 export default withRoot;

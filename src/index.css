@@ -2,7 +2,7 @@ html::-webkit-scrollbar {
 	display: none;
 }
 
-html::-moz-scrollbars {
+ul::-webkit-scrollbar {
 	display: none;
 }
 @font-face {
@@ -376,7 +376,7 @@ html::-moz-scrollbars {
 	from {
 		opacity: 0;
 		filter: grayscale(1);
-		transform: scale(1.2);
+		transform: scale(1.2) translateZ(-20px);
 	}
 	to {
 	}

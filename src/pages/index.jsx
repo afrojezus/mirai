@@ -14,7 +14,29 @@ import {
 } from 'react-redux-firebase';
 import { connect } from 'react-redux';
 import { MIR_PLAY_SHOW } from '../constants';
+
+import Home from './home';
+import Setup from './setup';
+import Show from './show';
+import Wizard from './wizard';
+import User from './user';
+import Feeds from './feeds';
+import Rankings from './rankings';
+import Live from './live';
 import Watch from './watch';
+import Monika from './monika';
+import Settings from './settings';
+import Search from './search';
+import Fig from './fig';
+import Read from './read';
+import Tag from './tag';
+import Later from './later';
+import History from './history';
+import PageNotFound from './pnf';
+import Help from './help';
+import Tos from './tos';
+import DevPlayer from './dev/player';
+import DevDB from './dev/db'
 import withRoot from '../components/withRoot';
 
 import Superbar from '../components/superbar';
@@ -33,7 +55,7 @@ const styles = theme => ({
 		transition: theme.transitions.create(['all'])
 	}
 });
-
+/*
 const Home = LoadableVisibility({
 	loader: () => import('./home.jsx'),
 	loading: LoadingScreen
@@ -113,9 +135,7 @@ const DevDB = LoadableVisibility({
 const DevPlayer = LoadableVisibility({
 	loader: () => import('./dev/player.jsx'),
 	loading: LoadingScreen
-});
-
-// TODO: Use code-splitting on every route
+}); */
 class Index extends Component {
 	state = {
 		loading: true
@@ -144,6 +164,10 @@ class Index extends Component {
 			((null && nextProps.mir.twist !== undefined) || null)
 		) {
 			this.setState({ loading: false });
+		}
+
+		if (this.props.firebase.auth !== nextProps.firebase.auth) {
+			this.setState({loading: true}, () => this.setState({loading: false}));
 		}
 	};
 
@@ -212,38 +236,6 @@ class Index extends Component {
 		);
 	}
 }
-
-Index.propTypes = {
-	firebase: PropTypes.shape({
-		ref: PropTypes.func,
-		profile: PropTypes.shape({
-			isDeveloper: PropTypes.bool
-		})
-	}),
-	classes: styles,
-	removeDataFromMir: PropTypes.func,
-	mir: PropTypes.shape({
-		twist: PropTypes.arrayOf(PropTypes.shape({})),
-		title: PropTypes.string,
-		play: PropTypes.shape({
-			eps: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-			meta: PropTypes.shape({
-				title: PropTypes.string,
-				showArtwork: PropTypes.string,
-				showId: PropTypes.number,
-				showDesc: PropTypes.string,
-				showHeaders: PropTypes.string
-			})
-		})
-	})
-};
-
-Index.defaultProps = {
-	classes: styles,
-	firebase: null,
-	mir: null,
-	removeDataFromMir: null
-};
 
 export const loadPlayer = play => ({
 	type: MIR_PLAY_SHOW,

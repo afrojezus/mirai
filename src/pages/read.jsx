@@ -54,12 +54,6 @@ const style = theme => ({
 });
 
 class Read extends Component {
-	static propTypes = {
-		classes: style
-	};
-	static defaultProps = {
-		classes: style
-	};
 	state = {
 		data: null
 	};
@@ -78,7 +72,7 @@ class Read extends Component {
 				) : null}
     <M.Grid container spacing={0} className={classes.content}>
       <div className={classes.header}>
-        <M.Typography type="display3" className={classes.title}>
+        <M.Typography variant="display3" className={classes.title}>
 							Reading mangos is not supported yet.
         </M.Typography>
       </div>

@@ -11,7 +11,7 @@ import {
 	CommandoBar,
 	Container,
 	LoadingIndicator,
-	TitleHeader
+	TitleHeader,
 } from '../components/layouts';
 import Supertable from '../components/supertable';
 
@@ -20,69 +20,28 @@ const style = theme => ({
 		display: 'flex',
 		flexFlow: 'column wrap',
 		marginBottom: theme.spacing.unit,
-		width: '100%'
+		width: '100%',
 	},
 	noneMessage: {
 		paddingTop: theme.spacing.unit * 3,
 		paddingBottom: theme.spacing.unit * 3,
-		color: 'rgba(255,255,255,.8)'
+		color: 'rgba(255,255,255,.8)',
 	},
 	categoryTitle: {
-		fontWeight: 700
-	}
+		fontWeight: 700,
+	},
 });
 
 class Later extends Component {
-	static propTypes = {
-		profile: PropTypes.shape({
-			avatar: PropTypes.string,
-			role: PropTypes.string,
-			isDeveloper: PropTypes.bool,
-			later: PropTypes.shape({
-				show: PropTypes.shape({}),
-				manga: PropTypes.shape({})
-			})
-		}),
-		history: PropTypes.shape({
-			location: PropTypes.shape({
-				pathname: PropTypes.string
-			}),
-			push: PropTypes.func,
-			listen: PropTypes.func
-		}),
-		firebase: PropTypes.shape({
-			logout: PropTypes.func
-		}),
-		location: PropTypes.shape({
-			state: PropTypes.shape({}),
-			search: PropTypes.string,
-			pathname: PropTypes.string
-		}),
-		classes: style
-	};
-
-	static defaultProps = {
-		profile: null,
-		history,
-		location: null,
-		firebase: null,
-		classes: style
-	};
-
 	state = {
 		loading: true,
-		userShows: null,
-		userManga: null
 	};
 
-	componentDidMount = () =>
-		this.setState({ loading: false, ...this.userprops });
+	componentDidMount = () => this.setState({ loading: false });
 
 	componentWillReceiveProps = nextProps => {
-		if (this.props.profile !== nextProps.profile)
-			this.setState({ ...this.userprops }, () =>
-				this.setState({ loading: false })
-			);
+		if (this.props.profile !== nextProps.profile) {
+		}
 	};
 
 	userprops = {
@@ -97,62 +56,62 @@ class Later extends Component {
 			this.props.profile.later &&
 			this.props.profile.later.manga
 				? Object.values(this.props.profile.later.manga)
-				: null
+				: null,
 	};
 
 	render = () => (
-  <div>
-    <LoadingIndicator loading={this.state.loading} />
-    <Root style={this.state.loading ? { opacity: 0 } : null}>
-      <TitleHeader title="Later" />
-      <Container hasHeader>
-        <div className={this.props.classes.column}>
-          <Typography
-            className={this.props.classes.categoryTitle}
-            type="title"
-          >
+		<div>
+			<LoadingIndicator loading={this.state.loading} />
+			<Root>
+				<TitleHeader title="Later" />
+				<Container hasHeader>
+					<div className={this.props.classes.column}>
+						<Typography
+							className={this.props.classes.categoryTitle}
+							variant="title"
+						>
 							Anime you want to check out later
-          </Typography>
-          {!isEmpty(this.props.profile) && this.state.userShows ? (
-            <Supertable
-              data={this.state.userShows.sort((a, b) => b.date - a.date)}
-              type="s"
-              typeof="later"
-            />
+						</Typography>
+						{!isEmpty(this.props.profile) && this.userprops.userShows ? (
+							<Supertable
+								data={this.userprops.userShows.sort((a, b) => b.date - a.date)}
+								type="s"
+								typeof="later"
+							/>
 						) : (
-  <Typography
-    className={this.props.classes.noneMessage}
-    type="title"
-  >
+							<Typography
+								className={this.props.classes.noneMessage}
+								variant="title"
+							>
 								It appears you got no anime to check out later...
-  </Typography>
+							</Typography>
 						)}
-        </div>
-        <div className={this.props.classes.column}>
-          <Typography
-            className={this.props.classes.categoryTitle}
-            type="title"
-          >
+					</div>
+					<div className={this.props.classes.column}>
+						<Typography
+							className={this.props.classes.categoryTitle}
+							variant="title"
+						>
 							Manga you want to check out later
-          </Typography>
-          {!isEmpty(this.props.profile) && this.state.userManga ? (
-            <Supertable
-              data={this.state.userManga.sort((a, b) => b.date - a.date)}
-              type="m"
-              typeof="later"
-            />
+						</Typography>
+						{!isEmpty(this.props.profile) && this.userprops.userManga ? (
+							<Supertable
+								data={this.userprops.userManga.sort((a, b) => b.date - a.date)}
+								type="m"
+								typeof="later"
+							/>
 						) : (
-  <Typography
-    className={this.props.classes.noneMessage}
-    type="title"
-  >
+							<Typography
+								className={this.props.classes.noneMessage}
+								variant="title"
+							>
 								It appears you got no manga to check out later...
-  </Typography>
+							</Typography>
 						)}
-        </div>
-      </Container>
-    </Root>
-  </div>
+					</div>
+				</Container>
+			</Root>
+		</div>
 	);
 }
 

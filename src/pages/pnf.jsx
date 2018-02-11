@@ -429,13 +429,6 @@ const style = theme => ({
 });
 
 class PageNotFound extends Component {
-	static propTypes = {
-		classes: style
-	};
-
-	static defaultProps = {
-		classes: style
-	};
 	state = {
 		loading: true
 	};
@@ -448,8 +441,8 @@ class PageNotFound extends Component {
 		return (
   <div>
     <LoadingIndicator loading={loading} />
-    <div className={classes.root} style={loading ? { opacity: 0 } : null}>
-      <M.Typography type="display2" className={classes.bigTitle}>
+    <div className={classes.root}>
+      <M.Typography variant="display2" className={classes.bigTitle}>
 						404: page not found.
       </M.Typography>
     </div>

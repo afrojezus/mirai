@@ -15,7 +15,7 @@ export const loadEp = (parent, ep, resume) =>
 			status: 'Loading...',
 			loaded: 0,
 			played: 0,
-			videoQuality: null
+			videoQuality: null,
 		},
 		async () => {
 			if (document.getElementById('player'))
@@ -33,7 +33,7 @@ export const loadEp = (parent, ep, resume) =>
 									torrentFile: torrent,
 									source: url,
 									ep: ep.ep,
-									resume: resume || null
+									resume: resume || null,
 								},
 								() => parent.playPause()
 							);
@@ -67,7 +67,7 @@ export const loadFile = (parent, link) =>
 			status: 'Loading...',
 			loaded: 0,
 			played: 0,
-			videoQuality: null
+			videoQuality: null,
 		},
 		async () => {
 			console.log(link);
@@ -82,7 +82,7 @@ export const loadFile = (parent, link) =>
 						source: link.preview,
 						status: link.name.trim(),
 						ep: null,
-						resume: null
+						resume: null,
 					},
 					() => {
 						parent.playPause();
@@ -106,7 +106,7 @@ const getTorrent = (parent, data) =>
 			showDesc: data.meta.description,
 			showHeaders: data.meta.bannerImage
 				? data.meta.bannerImage
-				: data.meta.coverImage.large
+				: data.meta.coverImage.large,
 		},
 		async () => {
 			const list = await hsfetcher.getList(data.meta.title.romaji);
@@ -121,7 +121,7 @@ const getTorrent = (parent, data) =>
 								name: s.title,
 								link: s.torrent,
 								ep: i + 1,
-								provider: 'Nyaa'
+								provider: 'Nyaa',
 							})
 						);
 					parent.setState({ eps, status: 'Initiating client...' }, async () =>
@@ -145,7 +145,7 @@ const getSource = async (parent, data) => {
 		showDesc: data.meta.description,
 		showHeaders: data.meta.bannerImage
 			? data.meta.bannerImage
-			: data.meta.coverImage.large
+			: data.meta.coverImage.large,
 	});
 	const correctedtitle = data.meta.title.romaji.toLowerCase();
 	const meta = Object.values(parent.props.mir.twist).filter(s =>
@@ -167,6 +167,7 @@ const getSource = async (parent, data) => {
 					.catch(async a => {
 						if (
 							!isEmpty(parent.props.profile) &&
+							parent.props.profile.episodeProgress &&
 							parent.props.profile.episodeProgress[parent.state.showId]
 						) {
 							console.info('No metadata found locally, attempting remote.');
@@ -204,6 +205,7 @@ const getSource = async (parent, data) => {
 						.catch(async a => {
 							if (
 								!isEmpty(parent.props.profile) &&
+								parent.props.profile.episodeProgress &&
 								parent.props.profile.episodeProgress[parent.state.showId]
 							) {
 								console.info('No metadata found locally, attempting remote.');
@@ -232,7 +234,7 @@ const getSource = async (parent, data) => {
 		console.error(error);
 		parent.setState({
 			error: true,
-			status: 'Error 2: Failed to load videodata.'
+			status: 'Error 2: Failed to load videodata.',
 		});
 	}
 };
@@ -272,7 +274,7 @@ export const getState = async parent => {
 				);
 				parent.setState({ status: 'Fetching...' });
 				const { data } = await new Segoku().getSingle({
-					id: parent.props.mir.play.id
+					id: parent.props.mir.play.id,
 				});
 				if (data) getTorrent(parent, { meta: data.Media });
 			}
@@ -296,7 +298,7 @@ export const getState = async parent => {
 			console.info('Location state not found! Refetching...');
 			parent.setState({ status: 'Fetching...' });
 			const { data } = await new Segoku().getSingle({
-				id: parent.props.mir.play.id
+				id: parent.props.mir.play.id,
 			});
 			if (data) await getSource(parent, { meta: data.Media });
 		}
@@ -304,7 +306,7 @@ export const getState = async parent => {
 		console.error(error);
 		parent.setState({
 			error: true,
-			status: 'Error 1: Failed to fetch metadata'
+			status: 'Error 1: Failed to fetch metadata',
 		});
 	}
 	return null;

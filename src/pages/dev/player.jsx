@@ -1,11 +1,10 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 import * as Icon from "material-ui-icons";
 import ReactPlayer from "react-player";
 import localForage from "localforage";
 import Dropzone from "react-dropzone";
 import { connect } from "react-redux";
-import { firebaseConnect, isEmpty, firebase } from "react-redux-firebase";
+import { firebaseConnect, isEmpty } from "react-redux-firebase";
 import CircularProgress from "material-ui/Progress/CircularProgress";
 import Button from "material-ui/Button/Button";
 import IconButton from "material-ui/IconButton/IconButton";
@@ -29,7 +28,6 @@ import blue from "material-ui/colors/blue";
 import hsfetcher from "../../torrent";
 import Duration from "../../components/yuplayer/Duration";
 import { getState, loadEp, loadFile } from "../../utils/mirfetch";
-import { history } from "../../store";
 
 const style = theme => ({
   root: {
@@ -191,45 +189,6 @@ const style = theme => ({
 });
 
 class DevPlayer extends Component {
-  static propTypes = {
-    profile: PropTypes.shape({
-      avatar: PropTypes.string,
-      role: PropTypes.string,
-      isDeveloper: PropTypes.bool,
-      userID: PropTypes.string,
-    }),
-    history: PropTypes.shape({
-      location: PropTypes.shape({
-        pathname: PropTypes.string,
-      }),
-      push: PropTypes.func,
-      listen: PropTypes.func,
-    }),
-    firebase: PropTypes.shape({
-      logout: PropTypes.func,
-      database: PropTypes.func,
-    }),
-    location: PropTypes.shape({
-      state: PropTypes.shape({}),
-      search: PropTypes.string,
-      pathname: PropTypes.string
-    }),
-    classes: PropTypes.shape({
-      
-    }),
-    theme: PropTypes.shape({
-      
-    }),
-  };
-
-  static defaultProps = {
-    profile: null,
-    history,
-    location: null,
-    firebase: null,
-    classes: style,
-    theme: {}
-  };
 
   state = {
     playing: false,
@@ -790,7 +749,7 @@ class DevPlayer extends Component {
                 aria-owns={qualityMenu ? "quality-menu" : null}
                 aria-haspopup="true"
                 onClick={e => this.setState({ quaEl: e.currentTarget })}
-                color="contrast"
+                color="default"
               >
                 {torrent ? (
                   quality === 480 ? (
@@ -891,7 +850,7 @@ class DevPlayer extends Component {
                 aria-owns={volumeMenu ? "volume-menu" : null}
                 aria-haspopup="true"
                 onClick={e => this.setState({ volEl: e.currentTarget })}
-                color="contrast"
+                color="default"
               >
                 {volume > 0 ? <Icon.VolumeUp /> : <Icon.VolumeOff />}
               </IconButton>
@@ -953,7 +912,7 @@ class DevPlayer extends Component {
                   aria-owns={menu ? "ep-menu" : null}
                   aria-haspopup="true"
                   onClick={e => this.setState({ menuEl: e.currentTarget })}
-                  color="contrast"
+                  color="default"
                 >
                   <Icon.ViewList />
                 </IconButton>
@@ -1038,7 +997,7 @@ class DevPlayer extends Component {
               aria-owns={menu ? "ep-menu" : null}
               aria-haspopup="true"
               onClick={e => this.setState({ menuEl: e.currentTarget })}
-              color="contrast"
+              color="default"
               style={{
                 position: "fixed",
                 bottom: theme.spacing.unit * 4,

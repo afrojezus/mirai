@@ -22,14 +22,6 @@ const style = theme => ({
 });
 
 class NotificationForm extends PureComponent {
-	static propTypes = {
-		classes: PropTypes.shape({}),
-		user: PropTypes.shape({})
-	};
-	static defaultProps = {
-		classes: style,
-		user: null
-	};
 	render = () => {
 		const { classes, user } = this.props;
 		return (

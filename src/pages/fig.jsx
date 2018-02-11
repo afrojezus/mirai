@@ -1,21 +1,18 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 import * as M from "material-ui";
 import * as Icon from "material-ui-icons";
+import Tilt from 'react-tilt';
 import queryString from "query-string";
 import * as Vibrant from "node-vibrant";
 import { connect } from "react-redux";
-import { firebaseConnect, isEmpty, firebase } from "react-redux-firebase";
+import { firebaseConnect, isEmpty } from "react-redux-firebase";
 import Grid from "material-ui/Grid/Grid";
-
-import { history } from "../store";
 import { MIR_SET_TITLE } from "../constants";
 import Segoku from "../utils/segoku/segoku";
 import {
   LoadingIndicator,
   Header,
   Root,
-  Container,
   CommandoBar
 } from "../components/layouts";
 import CardButton, { PeopleButton } from "../components/cardButton";
@@ -425,7 +422,7 @@ const style = theme => ({
     borderRadius: "50%",
     overflow: "hidden",
     margin: "auto",
-    boxShadow: "0 3px 18px rgba(0,0,0,.5)",
+    boxShadow: "0px 3px 18px rgba(0,0,0,0.5)",
     transition: theme.transitions.create(["all"]),
     position: "relative",
     zIndex: 500
@@ -535,42 +532,6 @@ query($id: Int) {
 const nameSwapper = (first, last) => (last ? `${first} ${last}` : first);
 
 class Fig extends Component {
-  static propTypes = {
-    profile: PropTypes.shape({
-      avatar: PropTypes.string,
-      role: PropTypes.string,
-      isDeveloper: PropTypes.bool,
-      userID: PropTypes.string,
-    }),
-    history: PropTypes.shape({
-      location: PropTypes.shape({
-        pathname: PropTypes.string,
-        search: PropTypes.string,
-      }),
-      push: PropTypes.func,
-      listen: PropTypes.func,
-    }),
-    firebase: PropTypes.shape({
-      update: PropTypes.func,
-      remove: PropTypes.func,
-    }),
-    location: PropTypes.shape({
-      
-    }),
-    classes: PropTypes.shape({
-      
-    }),
-    sendTitleToMir: PropTypes.func
-  };
-
-  static defaultProps = {
-    profile: null,
-    history,
-    location: null,
-    firebase: null,
-    classes: style,
-    sendTitleToMir: null
-  };
   state = {
     data: null,
     loading: true,
@@ -667,7 +628,7 @@ class Fig extends Component {
         if (pal) {
           this.setState(
             {
-              hue: pal.DarkMuted.getHex(),
+              hue: pal.DarkMuted && pal.DarkMuted.getHex(),
               hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
               hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
             },
@@ -762,20 +723,22 @@ class Fig extends Component {
                   style={{ width: 400, flexGrow: 0, marginRight: 24 }}
                   xs
                 >
-                  <div className={classes.artwork}>
-                    <img
-                      src={
+                  <Tilt style={{transformStyle: 'preserve-3d'}} options={{scale: 1}}>
+                    <div className={classes.artwork}>
+                      <img
+                        src={
                         data.Character
                           ? data.Character.image.large
                           : data.Staff ? data.Staff.image.large : null
                       }
-                      alt=""
-                      className={classes.artworkimg}
-                    />
-                  </div>
+                        alt=""
+                        className={classes.artworkimg}
+                      />
+                    </div>
+                  </Tilt>
                 </M.Grid>
                 <M.Grid item xs>
-                  <M.Typography className={classes.bigTitle} type="display3">
+                  <M.Typography className={classes.bigTitle} variant="display3">
                     {data.Character
                       ? nameSwapper(
                           data.Character.name.first,
@@ -791,7 +754,7 @@ class Fig extends Component {
                   <M.Divider />
                   <M.Typography
                     className={classes.desc}
-                    type="body1"
+                    variant="body1"
                     dangerouslySetInnerHTML={{
                       __html: data.Character
                         ? data.Character.description
@@ -806,7 +769,7 @@ class Fig extends Component {
                   {user && data.Character ? (
                     <M.IconButton
                       className={classes.commandoButton}
-                      color="contrast"
+                      color="default"
                       onClick={
                         user.favs &&
                         user.favs.char &&
@@ -821,7 +784,7 @@ class Fig extends Component {
                   {user && data.Staff ? (
                     <M.IconButton
                       className={classes.commandoButton}
-                      color="contrast"
+                      color="default"
                       onClick={
                         user.favs &&
                         user.favs.staff &&
@@ -833,7 +796,7 @@ class Fig extends Component {
                       {fav ? <Icon.Favorite /> : <Icon.FavoriteBorder />}
                     </M.IconButton>
                   ) : null}
-                  <M.IconButton color="contrast">
+                  <M.IconButton color="default">
                     <Icon.MoreVert />
                   </M.IconButton>
                 </CommandoBar>
@@ -843,7 +806,7 @@ class Fig extends Component {
                   data.Staff.characters.edges &&
                   data.Staff.characters.edges.length > 0 ? (
                     <M.Grid item xs style={{ zIndex: 10 }}>
-                      <M.Typography type="title" className={classes.secTitle}>
+                      <M.Typography variant="title" className={classes.secTitle}>
                         Voice actor for
                       </M.Typography>
                       <M.Grid container className={classes.itemcontainer}>
@@ -869,7 +832,7 @@ class Fig extends Component {
                   data.Staff.staffMedia.edges &&
                   data.Staff.staffMedia.edges.length > 0 ? (
                     <M.Grid item xs style={{ zIndex: 10 }}>
-                      <M.Typography type="title" className={classes.secTitle}>
+                      <M.Typography variant="title" className={classes.secTitle}>
                         Works
                       </M.Typography>
                       <M.Grid container className={classes.itemcontainer}>
@@ -897,7 +860,7 @@ class Fig extends Component {
                   ) : null}
                   {data.Character ? (
                     <M.Grid item xs style={{ zIndex: 10 }}>
-                      <M.Typography type="title" className={classes.secTitle}>
+                      <M.Typography variant="title" className={classes.secTitle}>
                         Stars in
                       </M.Typography>
                       <M.Grid container className={classes.itemcontainer}>

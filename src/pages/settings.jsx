@@ -118,47 +118,6 @@ const style = theme => ({
 });
 
 class Settings extends Component {
-	static propTypes = {
-		profile: PropTypes.shape({
-			avatar: PropTypes.string,
-			role: PropTypes.string,
-      isDeveloper: PropTypes.bool,
-      noMine: PropTypes.bool,
-      willLog: PropTypes.bool,
-      userID: PropTypes.string,
-		}),
-		history: PropTypes.shape({
-			location: PropTypes.shape({
-				pathname: PropTypes.string
-			}),
-			push: PropTypes.func,
-			listen: PropTypes.func,
-			goBack: PropTypes.func
-    }),
-    firebase: PropTypes.shape({
-      storage: PropTypes.func,
-      updateProfile: PropTypes.func,
-      ref: PropTypes.func,
-    }),
-		location: PropTypes.shape({
-			state: PropTypes.shape({}),
-			search: PropTypes.string,
-			pathname: PropTypes.string
-		}),
-    classes: style,
-    theme: PropTypes.shape({
-      
-    }),
-	};
-
-	static defaultProps = {
-		profile: null,
-		history,
-		location: null,
-		firebase: null,
-    classes: style,
-    theme: {}
-	};
 	state = {
 		ava: null,
 		bg: null,
@@ -294,13 +253,13 @@ class Settings extends Component {
         style={{ marginTop: theme.spacing.unit * 16 }}
         className={classes.content}
       >
-        <M.Typography type="headline" className={classes.headline}>
+        <M.Typography variant="headline" className={classes.headline}>
 							Aesthetics
         </M.Typography>
         <M.ExpansionPanel className={classes.panel}>
           <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
             <div className={classes.column}>
-              <M.Typography type="title">Theme</M.Typography>
+              <M.Typography variant="title">Theme</M.Typography>
             </div>
             <div className={classes.column}>
               <M.Typography className={classes.secondaryHeading}>
@@ -311,7 +270,7 @@ class Settings extends Component {
           <M.ExpansionPanelDetails />
           <M.ExpansionPanelActions>
             {this.state.theme !== 'Mirai' ? (
-              <M.Button dense onClick={this.changeTheme} color="primary">
+              <M.Button  onClick={this.changeTheme} color="primary">
 										Apply
               </M.Button>
 								) : null}
@@ -320,7 +279,7 @@ class Settings extends Component {
         <M.ExpansionPanel className={classes.panel}>
           <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
             <div className={classes.column}>
-              <M.Typography type="title">Avatar</M.Typography>
+              <M.Typography variant="title">Avatar</M.Typography>
             </div>
             <div className={classes.column}>
               <M.Avatar
@@ -345,12 +304,12 @@ class Settings extends Component {
           </M.ExpansionPanelDetails>
           <M.ExpansionPanelActions>
             {this.state.ava ? (
-              <M.Button dense onClick={() => this.setState({ ava: null })}>
+              <M.Button onClick={() => this.setState({ ava: null })}>
 										Cancel
               </M.Button>
 								) : null}
             {this.state.ava ? (
-              <M.Button dense onClick={this.changeAva} color="primary">
+              <M.Button  onClick={this.changeAva} color="primary">
                 {this.state.avaLoading ? <M.CircularProgress /> : null}
 										Use as avatar
               </M.Button>
@@ -360,7 +319,7 @@ class Settings extends Component {
         <M.ExpansionPanel className={classes.panel}>
           <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
             <div className={classes.column}>
-              <M.Typography type="title">Background</M.Typography>
+              <M.Typography variant="title">Background</M.Typography>
             </div>
             <div className={classes.column}>
               <M.Avatar
@@ -371,7 +330,7 @@ class Settings extends Component {
             </div>
           </M.ExpansionPanelSummary>
           <M.ExpansionPanelDetails style={{ display: 'block' }}>
-            <M.Typography type="body1">
+            <M.Typography variant="body1">
 									The background also changes the accent color of your
 									personalized home.
             </M.Typography>
@@ -389,12 +348,12 @@ class Settings extends Component {
           </M.ExpansionPanelDetails>
           <M.ExpansionPanelActions>
             {this.state.bg ? (
-              <M.Button dense onClick={() => this.setState({ bg: null })}>
+              <M.Button onClick={() => this.setState({ bg: null })}>
 										Cancel
               </M.Button>
 								) : null}
             {this.state.bg ? (
-              <M.Button dense onClick={this.changeBg} color="primary">
+              <M.Button  onClick={this.changeBg} color="primary">
                 {this.state.bgLoading ? <M.CircularProgress /> : null}
 										Use as background
               </M.Button>
@@ -404,7 +363,7 @@ class Settings extends Component {
         <M.ExpansionPanel className={classes.panel}>
           <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
             <div className={classes.column}>
-              <M.Typography type="title">Nickname</M.Typography>
+              <M.Typography variant="title">Nickname</M.Typography>
             </div>
             <div className={classes.column}>
               <M.Typography className={classes.secondaryHeading}>
@@ -423,12 +382,12 @@ class Settings extends Component {
           </M.ExpansionPanelDetails>
           <M.ExpansionPanelActions>
             {this.state.nick !== '' ? (
-              <M.Button dense onClick={() => this.setState({ nick: '' })}>
+              <M.Button onClick={() => this.setState({ nick: '' })}>
 										Cancel
               </M.Button>
 								) : null}
             {this.state.nick !== '' ? (
-              <M.Button dense onClick={this.changeNick} color="primary">
+              <M.Button  onClick={this.changeNick} color="primary">
 										Use as nickname
               </M.Button>
 								) : null}
@@ -437,7 +396,7 @@ class Settings extends Component {
         <M.ExpansionPanel className={classes.panel}>
           <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
             <div className={classes.column}>
-              <M.Typography type="title">Username</M.Typography>
+              <M.Typography variant="title">Username</M.Typography>
             </div>
             <div className={classes.column}>
               <M.Typography className={classes.secondaryHeading}>
@@ -456,12 +415,12 @@ class Settings extends Component {
           </M.ExpansionPanelDetails>
           <M.ExpansionPanelActions>
             {this.state.user !== '' ? (
-              <M.Button dense onClick={() => this.setState({ user: '' })}>
+              <M.Button onClick={() => this.setState({ user: '' })}>
 										Cancel
               </M.Button>
 								) : null}
             {this.state.user !== '' ? (
-              <M.Button dense onClick={this.changeUsername} color="primary">
+              <M.Button  onClick={this.changeUsername} color="primary">
 										Use as username
               </M.Button>
 								) : null}
@@ -470,7 +429,7 @@ class Settings extends Component {
         <M.ExpansionPanel className={classes.panel}>
           <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
             <div className={classes.column}>
-              <M.Typography type="title">Motto</M.Typography>
+              <M.Typography variant="title">Motto</M.Typography>
             </div>
             <div className={classes.column}>
               <M.Typography className={classes.secondaryHeading}>
@@ -489,24 +448,24 @@ class Settings extends Component {
           </M.ExpansionPanelDetails>
           <M.ExpansionPanelActions>
             {this.state.motto !== '' ? (
-              <M.Button dense onClick={() => this.setState({ motto: '' })}>
+              <M.Button  onClick={() => this.setState({ motto: '' })}>
 										Cancel
               </M.Button>
 								) : null}
             {this.state.motto !== '' ? (
-              <M.Button dense onClick={this.changeMotto} color="primary">
+              <M.Button  onClick={this.changeMotto} color="primary">
 										Use as motto
               </M.Button>
 								) : null}
           </M.ExpansionPanelActions>
         </M.ExpansionPanel>
         <div className={classes.divide} />
-        <M.Typography type="headline" className={classes.headline}>
+        <M.Typography variant="headline" className={classes.headline}>
 							Account
         </M.Typography>
         <M.ExpansionPanel disabled className={classes.panel}>
           <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
-            <M.Typography type="title">Email</M.Typography>
+            <M.Typography variant="title">Email</M.Typography>
           </M.ExpansionPanelSummary>
           <M.ExpansionPanelDetails>
             <M.TextField
@@ -518,12 +477,12 @@ class Settings extends Component {
           </M.ExpansionPanelDetails>
           <M.ExpansionPanelActions>
             {this.state.email !== '' ? (
-              <M.Button dense onClick={() => this.setState({ email: '' })}>
+              <M.Button  onClick={() => this.setState({ email: '' })}>
 										Cancel
               </M.Button>
 								) : null}
             {this.state.email !== '' ? (
-              <M.Button dense onClick={this.changeEmail} color="primary">
+              <M.Button  onClick={this.changeEmail} color="primary">
 										Change primary email for Mirai
               </M.Button>
 								) : null}
@@ -531,7 +490,7 @@ class Settings extends Component {
         </M.ExpansionPanel>
         <M.ExpansionPanel disabled className={classes.panel}>
           <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
-            <M.Typography type="title">Password</M.Typography>
+            <M.Typography variant="title">Password</M.Typography>
           </M.ExpansionPanelSummary>
           <M.ExpansionPanelDetails>
             <M.TextField
@@ -544,12 +503,12 @@ class Settings extends Component {
           </M.ExpansionPanelDetails>
           <M.ExpansionPanelActions>
             {this.state.pass !== '' ? (
-              <M.Button dense onClick={() => this.setState({ pass: '' })}>
+              <M.Button  onClick={() => this.setState({ pass: '' })}>
 										Cancel
               </M.Button>
 								) : null}
             {this.state.pass !== '' ? (
-              <M.Button dense onClick={this.changePass} color="primary">
+              <M.Button  onClick={this.changePass} color="primary">
 										Change password for your account
               </M.Button>
 								) : null}
@@ -558,7 +517,7 @@ class Settings extends Component {
         <M.ExpansionPanel className={classes.panel}>
           <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
             <div className={classes.column}>
-              <M.Typography type="title">Logging</M.Typography>
+              <M.Typography variant="title">Logging</M.Typography>
             </div>
             <div className={classes.column}>
               <M.Typography className={classes.secondaryHeading}>
@@ -567,13 +526,13 @@ class Settings extends Component {
             </div>
           </M.ExpansionPanelSummary>
           <M.ExpansionPanelDetails>
-            <M.Typography type="body1">
+            <M.Typography variant="body1">
 									Delete your current log?
             </M.Typography>
-            <M.Button onClick={this.deleteLogg} color="accent">
+            <M.Button onClick={this.deleteLogg} color="primary">
 									Yes
             </M.Button>
-            <M.Typography type="body1">Allow logging?</M.Typography>
+            <M.Typography variant="body1">Allow logging?</M.Typography>
             <M.FormGroup>
               <M.FormControlLabel
                 control={
@@ -588,13 +547,13 @@ class Settings extends Component {
           </M.ExpansionPanelDetails>
         </M.ExpansionPanel>
         <div className={classes.divide} />
-        <M.Typography type="headline" className={classes.headline}>
+        <M.Typography variant="headline" className={classes.headline}>
 							Misc. Settings
         </M.Typography>
         <M.ExpansionPanel className={classes.panel}>
           <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
             <div className={classes.column}>
-              <M.Typography type="title">Contributor Module</M.Typography>
+              <M.Typography variant="title">Contributor Module</M.Typography>
             </div>
             <div className={classes.column}>
               <M.Typography className={classes.secondaryHeading}>
@@ -603,7 +562,7 @@ class Settings extends Component {
             </div>
           </M.ExpansionPanelSummary>
           <M.ExpansionPanelDetails>
-            <M.Typography type="body1">
+            <M.Typography variant="body1">
 									The contribution module as explained in the terms of usage
 									allows Mirai to fund itself based on the processing power of
 									the machine the user is on. <br />

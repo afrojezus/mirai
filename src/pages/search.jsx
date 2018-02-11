@@ -17,7 +17,7 @@ import searchQuery, {
 	searchStudiosQuery
 } from '../utils/searchquery';
 import { LoadingIndicator, TitleHeader, Header } from '../components/layouts';
-import CardButton from '../components/cardButton';
+import CardButton, { PeopleButton } from '../components/cardButton';
 import Segoku from '../utils/segoku/segoku';
 import { history } from '../store';
 
@@ -349,48 +349,6 @@ const style = theme => ({
 });
 
 class Search extends Component {
-	static propTypes = {
-		profile: PropTypes.shape({
-			avatar: PropTypes.string,
-			role: PropTypes.string,
-			isDeveloper: PropTypes.bool,
-			userID: PropTypes.string,
-		}),
-		user: PropTypes.shape({
-			
-		}),
-		firebase: PropTypes.shape({
-			database: PropTypes.func,
-		}),
-		mir: PropTypes.shape({
-			twist: []
-		}),
-		history: PropTypes.shape({
-			location: PropTypes.shape({
-				pathname: PropTypes.string,
-				search: PropTypes.string,
-			}),
-			push: PropTypes.func,
-			listen: PropTypes.func,
-			goBack: PropTypes.func,
-		}),
-		location: PropTypes.shape({
-			state: PropTypes.shape({}),
-			search: PropTypes.string,
-			pathname: PropTypes.string
-		}),
-		classes: style
-	};
-
-	static defaultProps = {
-		profile: null,
-		user: {},
-		history,
-		location: null,
-		firebase: null,
-		classes: style,
-		mir: null
-	};
 	state = {
 		searchVal: '',
 		loading: true,
@@ -436,12 +394,13 @@ class Search extends Component {
 				}`
 			).getPalette((err, pal) => {
 				if (pal) {
-					this.setState({
+					return this.setState({
 						hue: pal.DarkMuted.getHex(),
 						hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
 						hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
 					});
 				}
+				return null;
 			});
 	};
 
@@ -566,7 +525,7 @@ class Search extends Component {
 							this.props.mir &&
 							this.props.mir.twist ? (
   <M.Grid container className={classes.container}>
-    <M.Typography type="title" className={classes.secTitle}>
+    <M.Typography variant="title" className={classes.secTitle}>
 										Anime
     </M.Typography>
     <M.Grid container className={classes.itemcontainer}>
@@ -593,42 +552,20 @@ class Search extends Component {
 							) : null}
           {manga && manga.length > 0 ? (
             <M.Grid container className={classes.container}>
-              <M.Typography type="title" className={classes.secTitle}>
+              <M.Typography variant="title" className={classes.secTitle}>
 										Manga
               </M.Typography>
               <M.Grid container className={classes.itemcontainer}>
                 {manga
 											? manga.map((mang) => (
-  <M.Grid
-    className={classes.entityCard}
-    item
-    xs
+  <CardButton
     key={mang.id}
-  >
-    <M.Card
-      style={{ background: 'transparent' }}
-      onClick={() =>
-																this.openEntity(`/show?m=${mang.id}`)
-															}
-    >
-      <div className={classes.gradientCard}>
-        <M.CardMedia
-          className={classes.entityImage}
-          image={mang.coverImage.large}
-        />
-      </div>
-      <M.Typography
-        type="headline"
-        className={classes.entityTitle}
-      >
-        {mang.title.romaji}
-      </M.Typography>
-      <M.Typography
-        type="headline"
-        className={classes.entitySubTitle}
-      />
-    </M.Card>
-  </M.Grid>
+    title={mang.title.romaji}
+    image={mang.coverImage.large}
+    onClick={() =>
+              this.openEntity(`/show?m=${mang.id}`)
+          }
+  />
 												))
 											: null}
               </M.Grid>
@@ -636,42 +573,13 @@ class Search extends Component {
 							) : null}
           {characters && characters.data.Page.characters.length > 0 ? (
             <M.Grid container className={classes.container}>
-              <M.Typography type="title" className={classes.secTitle}>
+              <M.Typography variant="title" className={classes.secTitle}>
 										Characters
               </M.Typography>
               <M.Grid container className={classes.itemcontainer}>
                 {characters
 											? characters.data.Page.characters.map((char) => (
-  <M.Grid
-    className={classes.peopleCard}
-    item
-    xs
-    key={char.id}
-  >
-    <M.Card
-      style={{
-																background: 'transparent',
-																boxShadow: 'none'
-															}}
-      onClick={() =>
-																this.props.history.push(`/fig?c=${char.id}`)
-															}
-    >
-      <M.Avatar
-        className={classes.peopleImage}
-        classes={{ img: classes.fillImg }}
-        src={char.image.large}
-      />
-      <M.Typography
-        type="headline"
-        className={classes.peopleTitle}
-      >
-        {char.name.last
-																	? `${char.name.first} ${char.name.last}`
-																	: char.name.first}
-      </M.Typography>
-    </M.Card>
-  </M.Grid>
+  <PeopleButton key={char.id} name={{first: char.name.first, last: char.name.last}} image={char.image.large} onClick={() => this.props.history.push(`/fig?c=${char.id}`)} />
 												))
 											: null}
               </M.Grid>
@@ -679,42 +587,13 @@ class Search extends Component {
 							) : null}
           {staff && staff.data.Page.staff.length > 0 ? (
             <M.Grid container className={classes.container}>
-              <M.Typography type="title" className={classes.secTitle}>
+              <M.Typography variant="title" className={classes.secTitle}>
 										Staff & Actors
               </M.Typography>
               <M.Grid container className={classes.itemcontainer}>
                 {staff
 											? staff.data.Page.staff.map((staf) => (
-  <M.Grid
-    className={classes.peopleCard}
-    item
-    xs
-    key={staf.id}
-  >
-    <M.Card
-      style={{
-																background: 'transparent',
-																boxShadow: 'none'
-															}}
-      onClick={() =>
-																this.props.history.push(`/fig?s=${staf.id}`)
-															}
-    >
-      <M.Avatar
-        className={classes.peopleImage}
-        classes={{ img: classes.fillImg }}
-        src={staf.image.large}
-      />
-      <M.Typography
-        type="headline"
-        className={classes.peopleTitle}
-      >
-        {staf.name.last
-																	? `${staf.name.first} ${staf.name.last}`
-																	: staf.name.first}
-      </M.Typography>
-    </M.Card>
-  </M.Grid>
+  <PeopleButton key={staf.id} name={{first: staf.name.first, last: staf.name.last}} image={staf.image.large} onClick={() => this.props.history.push(`/fig?s=${staf.id}`)} />
 												))
 											: null}
               </M.Grid>
@@ -722,33 +601,19 @@ class Search extends Component {
 							) : null}
           {studios && studios.data.Page.studios.length > 0 ? (
             <M.Grid container className={classes.container}>
-              <M.Typography type="title" className={classes.secTitle}>
+              <M.Typography variant="title" className={classes.secTitle}>
 										Studios
               </M.Typography>
               <M.Grid container className={classes.itemcontainer}>
                 {studios
 											? studios.data.Page.studios.map((studio) => (
-  <M.Grid
-    className={classes.entityCard}
-    item
-    xs
+  <CardButton
     key={studio.id}
-  >
-    <M.Card
-      style={{ background: 'transparent' }}
-      onClick={() =>
-																this.props.history.push(`/studio?s=${studio.id}`)
-															}
-    >
-      <div className={classes.gradientCard} />
-      <M.Typography
-        type="headline"
-        className={classes.entityTitle}
-      >
-        {studio.name}
-      </M.Typography>
-    </M.Card>
-  </M.Grid>
+    title={studio.name}
+    onClick={() =>
+                                this.openEntity(`/studio?s=${studio.id}`)
+                            }
+  />
 												))
 											: null}
               </M.Grid>
@@ -756,49 +621,27 @@ class Search extends Component {
 							) : null}
           {users && users.length > 0 ? (
             <M.Grid container className={classes.container}>
-              <M.Typography type="title" className={classes.secTitle}>
+              <M.Typography variant="title" className={classes.secTitle}>
 										Users
               </M.Typography>
               <M.Grid container className={classes.itemcontainer}>
                 {users
 											? users.map((user) => (
-  <M.Grid
-    className={classes.peopleCard}
-    item
-    xs
+  <PeopleButton
     key={user.userID}
-  >
-    <M.Card
-      style={{
-																background: 'transparent',
-																boxShadow: 'none'
-															}}
-      onClick={() =>
-																this.props.history.push(
-																	`/user${
-																		this.props.profile
-																			? user.userID ===
-																				this.props.profile.userID
-																				? ``
-																				: `?u=${user.userID}`
-																			: `?u=${user.userID}`
-																	}`
-																)
-															}
-    >
-      <M.Avatar
-        className={classes.peopleImage}
-        classes={{ img: classes.fillImg }}
-        src={user.avatar}
-      />
-      <M.Typography
-        type="headline"
-        className={classes.peopleTitle}
-      >
-        {user.username}
-      </M.Typography>
-    </M.Card>
-  </M.Grid>
+    name={{first: user.username}}
+    image={user.avatar}
+    onClick={() => this.props.history.push(
+                            `/user${
+                                this.props.profile
+                                    ? user.userID ===
+                                    this.props.profile.userID
+                                    ? ``
+                                    : `?u=${user.userID}`
+                                    : `?u=${user.userID}`
+                                }`
+                        )}
+  />
 												))
 											: null}
               </M.Grid>

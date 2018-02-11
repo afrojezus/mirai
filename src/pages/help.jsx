@@ -12,43 +12,35 @@ import {
 	CommandoBar,
 	Container,
 	LoadingIndicator,
-	TitleHeader
+	TitleHeader,
 } from '../components/layouts';
 
 const style = theme => ({
 	column: {
 		display: 'flex',
 		flexFlow: 'column wrap',
-		width: '100%'
+		width: '100%',
 	},
 	headline: {
-		marginBottom: theme.spacing.unit
+		marginBottom: theme.spacing.unit,
 	},
 	title: {
 		fontWeight: 700,
 		marginBottom: theme.spacing.unit * 2,
-		fontSize: theme.typography.pxToRem(24)
+		fontSize: theme.typography.pxToRem(24),
 	},
 	divider: {
 		marginTop: theme.spacing.unit * 3,
-		marginBottom: theme.spacing.unit * 3
-	}
+		marginBottom: theme.spacing.unit * 3,
+	},
+	paragraph: {
+		fontSize: theme.typography.pxToRem(16),
+	},
 });
 
 class Help extends Component {
-	static propTypes = {
-		classes: style,
-		firebase: PropTypes.shape({
-			logout: PropTypes.func,
-			database: PropTypes.func
-		})
-	};
-	static defaultProps = {
-		classes: style,
-		firebase: null
-	};
 	state = {
-		articles: null
+		articles: null,
 	};
 	componentDidMount = () =>
 		this.props.firebase
@@ -60,31 +52,35 @@ class Help extends Component {
 			);
 	// TODO: All information-related matters handled dynamically from firebase. Also eslint, go fuck yourself with the entities rule.
 	render = () => (
-  <div>
-    <TitleHeader title="Help" />
-    <Root>
-      <Container hasHeader>
-        <div className={this.props.classes.column}>
-          <Typography className={this.props.classes.title} type="title">
+		<div>
+			<TitleHeader title="Help" />
+			<Root>
+				<Container hasHeader>
+					<div className={this.props.classes.column}>
+						<Typography className={this.props.classes.title} variant="title">
 							FAQ
-          </Typography>
-          {this.state.articles &&
+						</Typography>
+						{this.state.articles &&
 							this.state.articles.map((paragraph, index) => (
-  <div key={index}>
-    <Typography
-      className={this.props.classes.headline}
-      type="headline"
-    >
-      {paragraph.headline}
-    </Typography>
-    <Typography type="body1">{paragraph.text}</Typography>
-    <Divider className={this.props.classes.divider} />
-  </div>
+								<div key={index}>
+									<Typography
+										className={this.props.classes.headline}
+										variant="headline"
+									>
+										{paragraph.headline}
+									</Typography>
+									<Typography
+										variant="body1"
+										className={this.props.classes.paragraph}
+										dangerouslySetInnerHTML={{ __html: paragraph.paragraph }}
+									/>
+									<Divider className={this.props.classes.divider} />
+								</div>
 							))}
-        </div>
-      </Container>
-    </Root>
-  </div>
+					</div>
+				</Container>
+			</Root>
+		</div>
 	);
 }
 
