@@ -58,9 +58,7 @@ class Wizard extends Component {
 	componentDidMount = () => {};
 
 	handleAva = accept =>
-		accept.forEach(file =>
-			this.setState({ ava: file }, () => console.log(file))
-		);
+		accept.forEach(file => this.setState({ ava: file }, () => {}));
 
 	changeAva = async () => {
 		const ava = this.props.firebase
@@ -75,7 +73,7 @@ class Wizard extends Component {
 			() => {},
 			error => console.error(error),
 			() => {
-				console.log(ava);
+				// console.log(ava);
 				return this.props.firebase
 					.updateProfile({
 						avatar: ava.snapshot.downloadURL,
@@ -93,7 +91,7 @@ class Wizard extends Component {
 			.updateProfile({
 				username: this.state.user,
 			})
-			.then(() => console.info('Username updated.'));
+			.then(() => {});
 
 	continue = () => {
 		if (this.state.ava && this.state.user) {

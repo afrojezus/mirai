@@ -135,8 +135,6 @@ const style = theme => ({
 	},
 	epListItem: {},
 	volumeSlider: {
-		paddingLeft: theme.spacing.unit,
-		paddingRight: theme.spacing.unit,
 		outline: 'none',
 	},
 	progressInput: {
@@ -337,11 +335,9 @@ class MirPlayer extends Component {
 				});
 				switch (this.player.getInternalPlayer().networkState) {
 					case 1:
-						console.log('IDLE');
 						this.setState({ buffering: false });
 						break;
 					case 2:
-						console.log('LOADING');
 						this.setState({ buffering: false });
 						break;
 					default:

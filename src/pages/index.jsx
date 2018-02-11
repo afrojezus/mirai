@@ -10,7 +10,7 @@ import {
 	firebaseConnect,
 	isLoaded,
 	isEmpty,
-	firebase
+	firebase,
 } from 'react-redux-firebase';
 import { connect } from 'react-redux';
 import { MIR_PLAY_SHOW } from '../constants';
@@ -36,7 +36,7 @@ import PageNotFound from './pnf';
 import Help from './help';
 import Tos from './tos';
 import DevPlayer from './dev/player';
-import DevDB from './dev/db'
+import DevDB from './dev/db';
 import withRoot from '../components/withRoot';
 
 import Superbar from '../components/superbar';
@@ -52,8 +52,8 @@ const styles = theme => ({
 		marginBottom: -500,
 		color: 'white',
 		fontWeight: 700,
-		transition: theme.transitions.create(['all'])
-	}
+		transition: theme.transitions.create(['all']),
+	},
 });
 /*
 const Home = LoadableVisibility({
@@ -138,7 +138,7 @@ const DevPlayer = LoadableVisibility({
 }); */
 class Index extends Component {
 	state = {
-		loading: true
+		loading: true,
 	};
 
 	componentWillMount = () => {
@@ -167,7 +167,7 @@ class Index extends Component {
 		}
 
 		if (this.props.firebase.auth !== nextProps.firebase.auth) {
-			this.setState({loading: true}, () => this.setState({loading: false}));
+			this.setState({ loading: true }, () => this.setState({ loading: false }));
 		}
 	};
 
@@ -197,57 +197,59 @@ class Index extends Component {
 	render() {
 		if (this.state.loading)
 			return (
-  <div className={this.props.classes.loadingRoot}>
-    <CircularProgress className={this.props.classes.loadingCircle} />
-  </div>
+				<div className={this.props.classes.loadingRoot}>
+					<CircularProgress className={this.props.classes.loadingCircle} />
+				</div>
 			);
 		return (
-  <div className={this.props.classes.root}>
-    <Superbar history={history}>
-      <Route path="/" exact component={Home} />
-      <Route path="/setup" exact component={Setup} />
-      <Route path="/show" exact component={Show} />
-      <Route path="/wizard" exact component={Wizard} />
-      <Route path="/user" exact component={User} />
-      <Route path="/feeds" exact component={Feeds} />
-      <Route path="/rankings" exact component={Rankings} />
-      <Route path="/live" exact component={Live} />
-      <Route path="/watch" exact component={Watch} />
-      <Route path="/monika" exact component={Monika} />
-      <Route path="/settings" exact component={Settings} />
-      <Route path="/search" exact component={Search} />
-      <Route path="/read" exact component={Read} />
-      <Route path="/fig" exact component={Fig} />
-      <Route path="/tag" exact component={Tag} />
-      <Route path="/later" exact component={Later} />
-      <Route path="/history" exact component={History} />
-      <Route path="/help" exact component={Help} />
-      <Route path="/tou" exact component={Tos} />
-      {!isEmpty(this.props.firebase.profile) &&
+			<div className={this.props.classes.root}>
+				<Superbar history={history}>
+					<Route path="/" exact component={Home} />
+					<Route path="/setup" exact component={Setup} />
+					<Route path="/show" exact component={Show} />
+					<Route path="/wizard" exact component={Wizard} />
+					<Route path="/user" exact component={User} />
+					<Route path="/feeds" exact component={Feeds} />
+					<Route path="/rankings" exact component={Rankings} />
+					<Route path="/live" exact component={Live} />
+					<Route path="/watch" exact component={Watch} />
+					<Route path="/monika" exact component={Monika} />
+					<Route path="/settings" exact component={Settings} />
+					<Route path="/search" exact component={Search} />
+					<Route path="/read" exact component={Read} />
+					<Route path="/fig" exact component={Fig} />
+					<Route path="/tag" exact component={Tag} />
+					<Route path="/later" exact component={Later} />
+					<Route path="/history" exact component={History} />
+					<Route path="/help" exact component={Help} />
+					<Route path="/tou" exact component={Tos} />
+					{!isEmpty(this.props.firebase.profile) &&
 					this.props.firebase.profile.isDeveloper === true ? (
-  <Route path="/dev/db" exact component={DevDB} />
+						<Route path="/dev/db" exact component={DevDB} />
 					) : null}
-      {!isEmpty(this.props.firebase.profile) &&
+					{!isEmpty(this.props.firebase.profile) &&
 					this.props.firebase.profile.isDeveloper === true ? (
-  <Route path="/dev/player" exact component={DevPlayer} />
+						<Route path="/dev/player" exact component={DevPlayer} />
 					) : null}
-    </Superbar>
-  </div>
+				</Superbar>
+			</div>
 		);
 	}
 }
 
 export const loadPlayer = play => ({
 	type: MIR_PLAY_SHOW,
-	play
+	play,
 });
 
 const mapPTS = dispatch => ({
-	removeDataFromMir: play => dispatch(loadPlayer(play))
+	removeDataFromMir: play => dispatch(loadPlayer(play)),
 });
 
 export default withRouter(
 	firebaseConnect()(
-		connect(state => state, mapPTS)(withRoot(withStyles(styles, {withTheme: true})(Index)))
+		connect(state => state, mapPTS)(
+			withRoot(withStyles(styles, { withTheme: true })(Index))
+		)
 	)
 );

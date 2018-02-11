@@ -782,7 +782,7 @@ class Show extends Component {
 			const meta = Object.values(this.props.mir.twist).filter(s =>
 				s.name.toLowerCase().match(`${correctedtitle}`)
 			);
-			console.log(meta);
+			// console.log(meta);
 			if (meta.length > 0) {
 				const eps = await Twist.get(meta[0].link);
 				try {
@@ -821,7 +821,7 @@ class Show extends Component {
 					id: this.state.data.Media.id,
 				})
 				.then(() => {
-					console.log(this.props);
+					// console.log(this.props);
 					return this.props.history.push(`/watch`);
 				});
 		} else

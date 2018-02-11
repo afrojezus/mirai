@@ -115,7 +115,7 @@ class Setup extends Component {
 			.auth()
 			.createUserWithEmailAndPassword(this.state.email, this.state.password)
 			.then(userData => {
-				console.log(userData);
+				// console.log(userData);
 				this.props.firebase
 					.database()
 					.ref('/users')

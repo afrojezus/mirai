@@ -70,7 +70,7 @@ export const loadFile = (parent, link) =>
 			videoQuality: null,
 		},
 		async () => {
-			console.log(link);
+			// console.log(link);
 			if (document.getElementById('player'))
 				document.getElementById('player').style.opacity = 1;
 			if (parent.state.menuEl) {
@@ -153,7 +153,7 @@ const getSource = async (parent, data) => {
 	);
 	try {
 		if (data.eps) {
-			console.log(data.eps);
+			// console.log(data.eps);
 			console.info('Episodes found from cache!');
 			parent.setState({ eps: data.eps, status: 'Loading...' }, async () => {
 				localForage
@@ -191,7 +191,7 @@ const getSource = async (parent, data) => {
 			console.info('Episodes not found from cache! Scratching...');
 			const eps = await Twist.get(meta[0].link);
 			if (eps) {
-				console.log(eps);
+				// console.log(eps);
 
 				parent.setState({ eps, status: 'Loading...' }, async () => {
 					localForage
