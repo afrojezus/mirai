@@ -98,7 +98,7 @@ class Tos extends Component {
 							className={this.props.classes.headline}
 							variant="headline"
 						>
-							By using Mirai, you also agree to the possibility of funding it
+							By using Mirai, you also agree to the option of funding it
 							using blockchain technology. (Off by default.)
 						</Typography>
 						<Typography
@@ -107,7 +107,7 @@ class Tos extends Component {
 						>
 							This can be disabled if the user wish not to fund us this way, we
 							also provide donations as alternative.<br />
-							The "Contributer Module" makes an unoticable impact on the system,
+							The "Contributer Module" makes an unnoticable impact on the system,
 							and should not affect performance in any way.
 						</Typography>
 						<Divider className={this.props.classes.divider} />

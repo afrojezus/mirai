@@ -67,6 +67,10 @@ const style = theme => ({
 		animation: 'playerLoad .5s ease',
 		transition: theme.transitions.create(['all']),
 		display: 'flex',
+        [theme.breakpoints.down('sm')]: {
+		    minHeight: 80,
+            minWidth: 140,
+        }
 	},
 	player: {
 		height: '100%',
@@ -226,7 +230,15 @@ const style = theme => ({
 		transform: 'translate(-50%,-50%)',
 		transition: theme.transitions.create(['all']),
 		opacity: 0,
+        [theme.breakpoints.down('sm')]: {
+		    opacity: 1
+        }
 	},
+    piptitle: {
+	    [theme.breakpoints.down('sm')]: {
+	        display: 'none'
+        }
+    }
 });
 
 class MirPlayer extends Component {
@@ -268,6 +280,8 @@ class MirPlayer extends Component {
 			'player-setting-torrent'
 		);
 
+		if (window.mobilecheck()) this.setState({native: true});
+
 		if (playerVolume) this.setState({ volume: playerVolume });
 
 		/* if (playerUseTorrent) this.setState({ torrent: playerUseTorrent });
@@ -281,6 +295,9 @@ class MirPlayer extends Component {
 	componentWillReceiveProps = async nextProps => {
 		if (this.props.mir !== nextProps.mir) {
 			if (this.props.profile !== nextProps.profile) return false;
+			if (!this.props.fullSize) {
+				this.logTheWatch();
+			}
 			await getState(this);
 		}
 		return false;
@@ -438,7 +455,7 @@ class MirPlayer extends Component {
 			player.style.cursor = 'none';
 			back.style.opacity = 0;
 			if (controls) controls.style.opacity = 0;
-			if (pcontrols) pcontrols.style.opacity = 0;
+			if (pcontrols && window.mobilecheck() === false) pcontrols.style.opacity = 0;
 		}
 	};
 
@@ -615,7 +632,7 @@ class MirPlayer extends Component {
 	};
 
 	render() {
-		const { classes, mir, fullSize } = this.props;
+		const { classes, mir, fullSize, theme } = this.props;
 		const {
 			playing,
 			buffering,
@@ -642,6 +659,7 @@ class MirPlayer extends Component {
 			torrent,
 			quaEl,
 			quality,
+            native
 		} = this.state;
 		const menu = Boolean(menuEl);
 		const volumeMenu = Boolean(volEl);
@@ -662,7 +680,7 @@ class MirPlayer extends Component {
 						style={!loaded > 0 ? { opacity: 0 } : null}
 						id="pipcontrols"
 					>
-						<Typography variant="title" style={{ textAlign: 'center' }}>
+						<Typography variant="title" className={classes.piptitle} style={{ textAlign: 'center' }}>
 							{status} {loaded > 0 ? `EP ${ep}` : null}
 						</Typography>
 						<div style={{ display: 'flex', margin: 'auto' }}>
@@ -703,7 +721,6 @@ class MirPlayer extends Component {
 										quality: 480,
 										torrentFile: null,
 										quaEl: null,
-										native: false,
 									});
 								}}
 							>
@@ -714,9 +731,9 @@ class MirPlayer extends Component {
 				) : null}
 				<div
 					style={
-						!fullSize
+						!fullSize && !window.mobilecheck()
 							? { position: 'relative', height: 280, width: '100%' }
-							: null
+							: !fullSize && window.mobilecheck() ? { position: 'relative', height: 80, width: '100%' } : null
 					}
 				>
 					<CircularProgress
@@ -751,6 +768,7 @@ class MirPlayer extends Component {
 						url={source}
 						volume={volume}
 						playing={playing}
+                        controls={native}
 						onProgress={this.onProgress}
 						className={classes.player}
 						width="100%"
@@ -766,7 +784,7 @@ class MirPlayer extends Component {
 						style={played === 1 ? { filter: 'brightness(.2)' } : null}
 					/>
 				</div>
-				{played === 1 ? (
+				{/*played === 1 ? (
 					<FadeIn>
 						<div className={classes.showInfo}>
 							<div className={classes.showInfoColumn}>
@@ -794,8 +812,8 @@ class MirPlayer extends Component {
 							</div>
 						</div>
 					</FadeIn>
-				) : null}
-				<Card
+				) : null*/}
+                {!native ? <Card
 					id="controls"
 					className={classes.controlpanel}
 					style={!fullSize ? { display: 'none' } : null}
@@ -1105,7 +1123,82 @@ class MirPlayer extends Component {
           </FormGroup>
         </Tooltip> */}
 					</CardActions>
-				</Card>
+				</Card> : (
+                        <div>
+                            <IconButton
+                                disabled={!(eps.length > 0)}
+                                aria-owns={menu ? "ep-menu" : null}
+                                aria-haspopup="true"
+                                onClick={e => this.setState({ menuEl: e.currentTarget })}
+                                color="default"
+                                style={{
+                                    position: "fixed",
+                                    bottom: theme.spacing.unit * 4,
+                                    right: theme.spacing.unit * 4
+                                }}
+                            >
+                                <Icon.ViewList />
+                            </IconButton>
+                            <Menu
+                                id="ep-menu"
+                                anchorEl={menuEl}
+                                anchorOrigin={{
+                                    vertical: "top",
+                                    horizontal: "right"
+                                }}
+                                transformOrigin={{
+                                    vertical: "center",
+                                    horizontal: "right"
+                                }}
+                                open={menu}
+                                classes={{
+                                    paper: classes.menuPaper
+                                }}
+                                onClose={this.closeMenu}
+                                PaperProps={{
+                                    style: {
+                                        width: 300,
+                                        padding: 0,
+                                        outline: "none",
+                                        background: grey[800]
+                                    }
+                                }}
+                                MenuListProps={{
+                                    style: {
+                                        padding: 0,
+                                        outline: "none"
+                                    }
+                                }}
+                            >
+                                <Card style={{ background: grey[800] }}>
+                                    <CardHeader
+                                        style={{ background: grey[900] }}
+                                        title="Episodes"
+                                    />
+                                    <Divider />
+                                    <CardContent className={classes.epListCont}>
+                                        {eps &&
+                                        eps.map(e => (
+                                            <MenuItem
+                                                onClick={() => {
+                                                    this.setState({ ep: e.ep }, async () =>
+                                                        loadEp(e, null)
+                                                    );
+                                                }}
+                                                key={e.ep}
+                                                selected={e.ep === ep}
+                                                className={classes.epListItem}
+                                            >
+                                                Episode {e.ep}
+                                                <div style={{ flex: 1 }} />
+                                                {e.ep === ep ? <Icon.PlayArrow /> : null}
+                                            </MenuItem>
+                                        ))}
+                                    </CardContent>
+                                </Card>
+                            </Menu>
+                        </div>
+                    )}
 			</div>
 		);
 	}
@@ -1122,6 +1215,6 @@ const mapPTS = dispatch => ({
 
 export default firebaseConnect()(
 	connect(({ firebase: { profile }, mir }) => ({ profile, mir }), mapPTS)(
-		withStyles(style)(MirPlayer)
+		withStyles(style, { withTheme: true })(MirPlayer)
 	)
 );

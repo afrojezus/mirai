@@ -538,12 +538,12 @@ const styles = theme => ({
 		opacity: 0,
 		zIndex: 10000,
 	},
+	playArtworkButtonContainer: {
+        borderRadius: '50%',
+        background: grey[800],
+	},
 	playArtworkButton: {
-		background: grey[50],
-		color: '#111',
-		padding: theme.spacing.unit * 2,
-		borderRadius: '50%',
-		boxShadow: '0 2px 16px rgba(0,0,0,.1)',
+		color: 'white',
 		width: 32,
 		height: 32,
 	},
@@ -959,7 +959,7 @@ class Show extends Component {
 				>
 					Report error
 				</MenuItem>
-				<MenuItem onClick={this.editEntry}>Edit entry</MenuItem>
+				{user.isDeveloper === true ? <MenuItem onClick={this.editEntry}>Edit entry</MenuItem> : null}
 			</Menu>
 		);
 
@@ -1073,15 +1073,19 @@ class Show extends Component {
 											) : data.Media.status.includes('NOT_YET_RELEASED') ? (
 												'TBA'
 											) : data.Media.type.includes('MANGA') ? (
+                                                <Button variant={'fab'} className={classes.playArtworkButtonContainer} style={{ background: hue }}>
 												<Icon.Book
 													style={{ color: hue }}
 													className={classes.playArtworkButton}
 												/>
+												</Button>
 											) : eps ? (
+												<Button variant={'fab'} className={classes.playArtworkButtonContainer} style={{ background: hue }}>
 												<Icon.PlayArrow
-													style={{ color: hue }}
+
 													className={classes.playArtworkButton}
 												/>
+												</Button>
 											) : epError ? (
 												'Not avaliable'
 											) : null}

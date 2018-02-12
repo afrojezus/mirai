@@ -101,7 +101,7 @@ const style = theme => ({
 		position: 'relative',
 		// overflow: 'hidden',
 		transformStyle: 'preserve-3d',
-		transform: 'translateZ(20px)',
+		// transform: 'translateZ(20px)',
 		paddingBottom: theme.spacing.unit * 4,
 		marginBottom: theme.spacing.unit * 8,
 		transition: theme.transitions.create(['all']),

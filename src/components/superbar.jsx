@@ -751,10 +751,15 @@ class Superbar extends Component {
 					>
 						<ListItemText primary="Monika" />
 					</ListItem>
+					<ListItem button onClick={() => {
+
+					}}>
+						<ListItemText primary='Donate'></ListItemText>
+					</ListItem>
 				</List>
 				<Divider className={classes.listDivider} />
 				<Typography className={classes.footerCopy} variant="headline">
-					Mirai commit-{commit}
+					Mirai preview
 					<br />
 					{this.props.mir && this.props.mir.twist
 						? `${Object.keys(this.props.mir.twist).length -
@@ -850,7 +855,6 @@ class Superbar extends Component {
 							<img src={miraiLogo} alt="" className={classes.logoImg} />
 						</IconButton>
 						<div className={classes.flex} />
-						<Hidden smDown>
 							<SearchBox
 								mir={this.props.mir}
 								history={history}
@@ -860,19 +864,6 @@ class Superbar extends Component {
 									searchIcon: classes.searchIcon,
 								}}
 							/>
-						</Hidden>
-						{user && user.noMine ? <Button>Donate</Button> : null}
-						<Hidden smUp>
-							<IconButton
-								onClick={() => {
-									this.tabChange(null, 4);
-									this.props.history.push('/search');
-								}}
-								contrast={'default'}
-							>
-								<SearchIcon />
-							</IconButton>
-						</Hidden>
 						<div>
 							<IconButton
 								aria-owns={open ? 'info-menu' : null}

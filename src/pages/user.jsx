@@ -545,12 +545,14 @@ class User extends Component {
 								hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex(),
 							},
 							async () => {
-								await localForage.setItem('user-hue', {
-									hue: this.state.hue,
-									vib: this.state.hueVib,
-									vibn: this.state.hueVibN,
-									image,
-								});
+								if (!this.state.data) {
+                                    await localForage.setItem('user-hue', {
+                                        hue: this.state.hue,
+                                        vib: this.state.hueVib,
+                                        vibn: this.state.hueVibN,
+                                        image,
+                                    });
+                                }
 							}
 						);
 					}
@@ -570,13 +572,14 @@ class User extends Component {
 							async () => {
 								// let superBar = document.getElementById('superBar');
 								// if (superBar) superBar.style.background = this.state.hue;
-
-								await localForage.setItem('user-hue', {
-									hue: this.state.hue,
-									vib: this.state.hueVib,
-									vibn: this.state.hueVibN,
-									image,
-								});
+                                if (!this.state.data) {
+                                    await localForage.setItem('user-hue', {
+                                        hue: this.state.hue,
+                                        vib: this.state.hueVib,
+                                        vibn: this.state.hueVibN,
+                                        image,
+                                    });
+                                }
 							}
 						);
 					}

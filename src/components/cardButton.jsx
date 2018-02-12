@@ -300,7 +300,7 @@ export const PeopleButton = withStyles(styles, { withTheme: true })(
 					boxShadow: 'none'
 				}}
     >
-      <Tilt style={{transformStyle: 'preserve-3d'}} options={{scale: 1}}>
+      <Tilt style={{transformStyle: 'preserve-3d'}} options={{scale: 1, max: window.safari ? 2 : 35}}>
         <Avatar
           className={classes.peopleImage}
           classes={{ img: classes.fillImg }}
@@ -410,7 +410,7 @@ const CardButton = withStyles(styles, { withTheme: true })(
                 }}
                 onClick={props.onClick}
             >
-                <Tilt style={{transformStyle: 'preserve-3d'}} options={{scale: 1}}>
+                <Tilt style={{transformStyle: 'preserve-3d'}} options={{scale: 1, max: window.safari ? 2 : 35, }}>
                     <Avatar
                         className={classes.cardImage}
                         classes={{ img: classes.fillImg }}

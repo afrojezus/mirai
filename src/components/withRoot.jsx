@@ -21,7 +21,7 @@ const theme = createMuiTheme({
     typography: {
         // Use the system font.
         fontFamily: "BlinkMacSystemFont, -apple-system, 'SF Display'"
-    }
+    },
 });
 // Expose the theme as a global variable so people can play with it.
 if (process.browser) {

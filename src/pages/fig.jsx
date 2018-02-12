@@ -227,6 +227,11 @@ const style = theme => ({
 		paddingBottom: theme.spacing.unit * 2,
 		marginLeft: theme.spacing.unit,
 		marginRight: theme.spacing.unit,
+        [theme.breakpoints.down('sm')]: {
+            marginLeft: 0,
+            marginRight: 0,
+			paddingBottom: 0
+        }
 	},
 	gradientCard: {
 		position: 'relative',
@@ -314,6 +319,9 @@ const style = theme => ({
 		paddingBottom: theme.spacing.unit * 4,
 		marginBottom: theme.spacing.unit * 8,
 		transition: theme.transitions.create(['all']),
+        [theme.breakpoints.down('sm')]: {
+            marginTop: 0
+        }
 	},
 	glassEffect: {
 		position: 'absolute',
@@ -367,6 +375,11 @@ const style = theme => ({
 		fontWeight: 700,
 		color: 'white',
 		textShadow: '0 2px 12px rgba(0,0,0,.2)',
+        [theme.breakpoints.down('sm')]: {
+            whiteSpace: 'initial',
+			fontSize: theme.typography.pxToRem(28),
+			textAlign: 'center',
+        }
 	},
 	smallTitle: {
 		fontWeight: 600,
@@ -426,7 +439,31 @@ const style = theme => ({
 		transition: theme.transitions.create(['all']),
 		position: 'relative',
 		zIndex: 500,
+		[theme.breakpoints.down('sm')]: {
+			width: 200,
+			height: 200,
+		}
 	},
+	artworkContainer: {
+		width: 400,
+		flexGrow: 0,
+		marginRight: 24,
+        [theme.breakpoints.down('sm')]: {
+            width: '100%',
+			margin: 0,
+			flexGrow: 1
+        }
+	},
+	artworkTilt: {
+        [theme.breakpoints.down('sm')]: {
+            margin: 'auto'
+        }
+	},
+	topBar: {
+        [theme.breakpoints.down('sm')]: {
+            padding: theme.spacing.unit
+        }
+	}
 });
 
 const staffQuery = `
@@ -720,10 +757,11 @@ class Fig extends Component {
 							<M.Grid container spacing={0} className={classes.container}>
 								<M.Grid
 									item
-									style={{ width: 400, flexGrow: 0, marginRight: 24 }}
+									className={classes.artworkContainer}
 									xs
 								>
 									<Tilt
+										className={classes.artworkTilt}
 										style={{ transformStyle: 'preserve-3d' }}
 										options={{ scale: 1 }}
 									>
@@ -740,7 +778,7 @@ class Fig extends Component {
 										</div>
 									</Tilt>
 								</M.Grid>
-								<M.Grid item xs>
+								<M.Grid item xs className={classes.topBar}>
 									<M.Typography className={classes.bigTitle} variant="display3">
 										{data.Character
 											? nameSwapper(

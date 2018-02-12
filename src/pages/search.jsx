@@ -414,6 +414,9 @@ class Search extends Component {
 				loading: true,
 			},
 			async () => {
+				if (this.state.searchVal === '') {
+					return null;
+				}
 				const { data } = await new Segoku().customQuery(searchQuery, {
 					search: this.state.searchVal,
 					isAdult: false,
@@ -457,7 +460,7 @@ class Search extends Component {
 								this.props.mir.twist.filter(s => s.name.match(d.title.romaji))
 							)
 					); */
-					this.setState(
+					return this.setState(
 						{
 							anime: data.Page.media
 								.filter(s => s.type === 'ANIME')

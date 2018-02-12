@@ -368,53 +368,64 @@ class Home extends Component {
 
 	componentWillMount = () => {};
 
-	componentDidMount = async () => {
+	componentDidMount = () => {
 		this.feedsObserve();
 		this.rankingsObserve();
-		this.getColors()
+		return this.getColors()
 			.then(() => this.fetchOngoing())
 			.then(() => this.setState({ loading: false }))
 			.catch(error => console.error(error));
-		return null;
 	};
 	componentWillUnmount = () => {};
 
 	getColors = async () => {
 		const hues = await localForage.getItem('user-hue');
-		if (!isEmpty(this.props.profile) && this.props.profile.headers && !hues)
-			Vibrant.from(
-				`https://cors-anywhere.herokuapp.com/${this.props.profile.headers}`
-			).getPalette((err, pal) => {
-				if (pal) {
-					return this.setState(
-						{
-							hue: pal.DarkMuted && pal.DarkMuted.getHex(),
-							hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
-							hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex(),
-						},
-						async () => {
-							await localForage.setItem('user-hue', {
-								hue: this.state.hue,
-								vib: this.state.hueVib,
-								vibn: this.state.hueVibN,
-							});
-						}
-					);
-				}
-				return null;
-			});
-		else if (!hues) {
-			return this.setState({
-				hue: '#002656',
-				hueVib: '#1ba0e1',
-				hueVibN: '#000b17',
-			});
-		} else
-			return this.setState({
-				hue: hues.hue,
-				hueVib: hues.vib,
-				hueVibN: hues.vibn,
-			});
+		if (!hues) {
+            if (!isEmpty(this.props.profile) && this.props.profile.headers) {
+                Vibrant.from(
+                    `https://cors-anywhere.herokuapp.com/${this.props.profile.headers}`
+                ).getPalette((err, pal) => {
+                    if (pal) {
+                        return this.setState(
+                            {
+                                hue: pal.DarkMuted && pal.DarkMuted.getHex(),
+                                hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
+                                hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex(),
+                            },
+                            async () => {
+                                await localForage.setItem('user-hue', {
+                                    hue: this.state.hue,
+                                    vib: this.state.hueVib,
+                                    vibn: this.state.hueVibN,
+                                });
+                            }
+                        );
+                    }
+                    return null;
+                });
+            } else {
+                return this.setState({
+                    hue: '#002656',
+                    hueVib: '#1ba0e1',
+                    hueVibN: '#000b17',
+                });
+            }
+        } else {
+		    if (!isEmpty(this.props.profile)) {
+		        return this.setState({
+                    hue: hues.hue,
+                    hueVib: hues.vib,
+                    hueVibN: hues.vibn,
+                })
+            } else {
+                await localForage.removeItem('user-hue');
+                return this.setState({
+                    hue: '#002656',
+                    hueVib: '#1ba0e1',
+                    hueVibN: '#000b17',
+                });
+            }
+        }
 		return null;
 	};
 
