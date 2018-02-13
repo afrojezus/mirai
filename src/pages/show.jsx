@@ -1073,16 +1073,14 @@ class Show extends Component {
 											) : data.Media.status.includes('NOT_YET_RELEASED') ? (
 												'TBA'
 											) : data.Media.type.includes('MANGA') ? (
-                                                <Button variant={'fab'} className={classes.playArtworkButtonContainer} style={{ background: hue }}>
+                                                <Button variant={'fab'} className={classes.playArtworkButtonContainer} style={{ background: hueVib }}>
 												<Icon.Book
-													style={{ color: hue }}
 													className={classes.playArtworkButton}
 												/>
 												</Button>
 											) : eps ? (
-												<Button variant={'fab'} className={classes.playArtworkButtonContainer} style={{ background: hue }}>
+												<Button variant={'fab'} className={classes.playArtworkButtonContainer} style={{ background: hueVib }}>
 												<Icon.PlayArrow
-
 													className={classes.playArtworkButton}
 												/>
 												</Button>
