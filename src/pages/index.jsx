@@ -23,7 +23,6 @@ import User from './user';
 import Feeds from './feeds';
 import Rankings from './rankings';
 import Live from './live';
-import Watch from './watch';
 import Monika from './monika';
 import Settings from './settings';
 import Search from './search';
@@ -37,6 +36,7 @@ import Tos from './tos';
 import DevPlayer from './dev/player';
 import DevDB from './dev/db';
 */
+import Watch from './watch';
 import PageNotFound from './pnf';
 
 import withRoot from '../components/withRoot';

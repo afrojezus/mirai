@@ -5,20 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="311a99da-8f6c-417f-8fb3-19f2ede7ce35" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/src/components/layouts.jsx" afterPath="$PROJECT_DIR$/src/components/layouts.jsx" />
-      <change beforePath="$PROJECT_DIR$/src/components/mirplayer.jsx" afterPath="$PROJECT_DIR$/src/components/mirplayer.jsx" />
-      <change beforePath="$PROJECT_DIR$/src/components/superbar.jsx" afterPath="$PROJECT_DIR$/src/components/superbar.jsx" />
-      <change beforePath="$PROJECT_DIR$/src/components/supercomment.jsx" afterPath="$PROJECT_DIR$/src/components/supercomment.jsx" />
-      <change beforePath="$PROJECT_DIR$/src/index.css" afterPath="$PROJECT_DIR$/src/index.css" />
-      <change beforePath="$PROJECT_DIR$/src/pages/fig.jsx" afterPath="$PROJECT_DIR$/src/pages/fig.jsx" />
       <change beforePath="$PROJECT_DIR$/src/pages/index.jsx" afterPath="$PROJECT_DIR$/src/pages/index.jsx" />
-      <change beforePath="$PROJECT_DIR$/src/pages/pnf.jsx" afterPath="$PROJECT_DIR$/src/pages/pnf.jsx" />
-      <change beforePath="$PROJECT_DIR$/src/pages/show.jsx" afterPath="$PROJECT_DIR$/src/pages/show.jsx" />
-      <change beforePath="$PROJECT_DIR$/src/pages/user.jsx" afterPath="$PROJECT_DIR$/src/pages/user.jsx" />
-      <change beforePath="$PROJECT_DIR$/src/utils/mirfetch.js" afterPath="$PROJECT_DIR$/src/utils/mirfetch.js" />
-      <change beforePath="$PROJECT_DIR$/src/utils/segoku/queries.js" afterPath="$PROJECT_DIR$/src/utils/segoku/queries.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -57,11 +44,11 @@
       <file leaf-file-name="index.jsx" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/pages/index.jsx">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="328">
-              <caret line="138" column="3" lean-forward="true" selection-start-line="138" selection-start-column="3" selection-end-line="138" selection-end-column="3" />
+            <state relative-caret-position="562">
+              <caret line="31" column="28" lean-forward="true" selection-start-line="31" selection-start-column="28" selection-end-line="31" selection-end-column="28" />
               <folding>
                 <element signature="e#106#147#0" expanded="true" />
-                <element signature="e#1226#1259#0" expanded="true" />
+                <element signature="e#1197#1225#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -226,7 +213,7 @@
   <component name="NodeModulesDirectoryManager">
     <handled-path value="$PROJECT_DIR$/node_modules" />
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="width" value="1680" />
     <option name="height" value="1050" />
   </component>
@@ -384,24 +371,23 @@
       <workItem from="1518210308947" duration="142000" />
       <workItem from="1518211306746" duration="13079000" />
       <workItem from="1518373497010" duration="9946000" />
-      <workItem from="1518545544011" duration="12347000" />
+      <workItem from="1518545544011" duration="12563000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="35514000" />
+    <option name="totallyTimeSpent" value="35730000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="2576" height="1416" extended-state="7" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="2576" height="1416" extended-state="6" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="ReactNative" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2919594" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2919594" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1498829" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14910227" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.178881" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Storybook" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -830,11 +816,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/pages/index.jsx">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="328">
-          <caret line="138" column="3" lean-forward="true" selection-start-line="138" selection-start-column="3" selection-end-line="138" selection-end-column="3" />
+        <state relative-caret-position="562">
+          <caret line="31" column="28" lean-forward="true" selection-start-line="31" selection-start-column="28" selection-end-line="31" selection-end-column="28" />
           <folding>
             <element signature="e#106#147#0" expanded="true" />
-            <element signature="e#1226#1259#0" expanded="true" />
+            <element signature="e#1197#1225#0" expanded="true" />
           </folding>
         </state>
       </provider>
