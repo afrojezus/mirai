@@ -17,7 +17,7 @@ import Twist from './twist-api';
 
 const rrfConfig = {
 	userProfile: 'users',
-	enableLogging: false,
+	enableLogging: true,
 	fileMetadataFactory: uploadRes => {
 		// upload response from Firebase's storage upload
 		const { metadata: { downloadURLs } } = uploadRes;

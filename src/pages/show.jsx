@@ -1724,7 +1724,7 @@ class Show extends Component {
 											{data.Media.staff.edges.map(staff => (
 												<PeopleButton
 													key={staff.id}
-													image={staff.node.image.large}
+													image={staff.node.image.medium}
 													name={{
 														first: staff.node.name.first,
 														last: staff.node.name.last,

@@ -1,7 +1,4 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-// TODO: Fix every single eslint-airbnb issue
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import LoadableVisibility from 'react-loadable-visibility/react-loadable';
 import { Route, withRouter, Switch } from 'react-router-dom';
 import { CircularProgress } from 'material-ui/Progress';
@@ -10,11 +7,9 @@ import {
 	firebaseConnect,
 	isLoaded,
 	isEmpty,
-	firebase,
 } from 'react-redux-firebase';
 import { connect } from 'react-redux';
 import { MIR_PLAY_SHOW } from '../constants';
-
 /* import Home from './home';
 import Setup from './setup';
 import Show from './show';

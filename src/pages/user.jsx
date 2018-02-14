@@ -611,7 +611,11 @@ class User extends Component {
         title: `Friend request`,
         desc: `${you.username} wants to be your friend.`,
         options: ["accept", "ignore"],
-        avatar: you.avatar
+        avatar: you.avatar,
+          ignored: false,
+          userid: you.userID,
+          type: 'fr',
+          username: you.username
       });
     const theirreq = await them
       .child("requests")
@@ -753,24 +757,23 @@ class User extends Component {
                 <div style={{ flex: 1 }} />
                 {!isEmpty(user) && data && data.userID !== user.userID ? (
                   <M.Button
-                      disabled
                     color="default"
                     onClick={
-                      !isEmpty(user) && user.friends && user.friends.data.userID
+                      !isEmpty(user) && user.friends && user.friends[data.userID]
                         ? this.removeFriend
                         : this.addFriend
                     }
                   >
                     {!isEmpty(user) &&
                     user.friends &&
-                    user.friends.data.userID ? (
+                    user.friends[data.userID] ? (
                       <Icon.Remove style={{ marginRight: 12 }} />
                     ) : (
                       <Icon.PersonAdd style={{ marginRight: 12 }} />
                     )}
-                    {!isEmpty(user) && user.friends && user.friends.data.userID
+                    {!isEmpty(user) && user.friends && user.friends[data.userID]
                       ? "Remove friend"
-                      : "Add friend"}
+                      : "Add as friend"}
                   </M.Button>
                 ) : null}
                 <M.IconButton color="default">
@@ -791,10 +794,27 @@ class User extends Component {
                       className={classes.itemcontainer}
                       style={{ flexDirection: "column" }}
                     >
-                      {(data && data.friends) || user.friends ? (
-                        (!isEmpty(user) && user.friends) ||
-                        (data && data.friends) ? (
-                          Object.values(data.friends || user.friends).map(
+                      {data ? data.friends ? (
+                          Object.values(data.friends).map(
+                              (friend, index) => (
+                                  <PeopleButton
+                                      key={index}
+                                      name={{ first: friend.username }}
+                                      onClick={() =>
+                                          this.props.history.push(
+                                              `/user?u=${friend.userID}`
+                                          )
+                                      }
+                                      image={friend.avatar}
+                                  />
+                              )
+                          )
+                      ) : (
+                          <M.Typography variant="body1">
+                              {`${data.username} got no friends`}
+                          </M.Typography>
+                      ) : user.friends ? (
+                          Object.values(user.friends).map(
                             (friend, index) => (
                               <PeopleButton
                                 key={index}
@@ -808,12 +828,9 @@ class User extends Component {
                               />
                             )
                           )
-                        ) : null
-                      ) : (
+                        ) : (
                         <M.Typography variant="body1">
-                          {data
-                            ? `Seems like ${data.username} got no friends yet.`
-                            : `You got no friends.`}
+                          You got no friends.
                         </M.Typography>
                       )}
                     </M.Grid>

@@ -899,7 +899,6 @@ class Superbar extends Component {
             />
             <div>
               <IconButton
-                  disabled
                 aria-owns={open ? "info-menu" : null}
                 aria-haspopup="true"
                 onClick={this.handleInfoMenu}

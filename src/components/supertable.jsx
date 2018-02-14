@@ -1,4 +1,3 @@
-/* eslint-disable react/no-array-index-key */
 import React from 'react';
 import PropTypes from 'prop-types';
 import * as Icon from 'material-ui-icons';
@@ -175,6 +174,7 @@ const style = theme => ({
 		'&:webkit-scrollbar': {
 			display: 'none',
 		},
+        overflow: 'hidden'
 	},
 	listContainer: {
 		width: '100%',
@@ -256,14 +256,68 @@ const SuperTable = class extends React.Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {};
+		this.state = {
+            currentSlide: 0,
+            slideRange: 0,
+        };
 	}
 
-	goBack = e => {};
 
-	goFor = e => {};
+    goBack = e => {
+	    e.persist();
+        const list = document.getElementById(this.getListType());
+        let scrollSlide = this.state.currentSlide;
+        const listelement = list.childNodes[0];
+        console.log(list, listelement);
+        scrollSlide -= listelement.scrollWidth * 3;
+        scrollSlide < 0 ? scrollSlide = 0 : scrollSlide = scrollSlide;
+        console.log(scrollSlide);
+        this.setState({currentSlide: scrollSlide}, () => {
+            list.scroll({left: this.state.currentSlide, behavior: 'smooth'});
+            if (scrollSlide === 0) {
+                console.log('Oh shit')
+            }
+        });
+	};
 
-	shouldComponentUpdate = nextProps => {
+	goFor = e => {
+	    e.persist();
+	    const list = document.getElementById(this.getListType());
+	    let scrollSlide = this.state.currentSlide;
+	    const listelement = list.childNodes[0];
+	    console.log(list, listelement);
+	    scrollSlide += listelement.scrollWidth * 3;
+        scrollSlide > list.scrollWidth ? scrollSlide = list.scrollWidth : scrollSlide = scrollSlide;
+	    console.log(scrollSlide);
+        this.setState({currentSlide: scrollSlide}, () => { list.scroll({left: this.state.currentSlide, behavior: 'smooth'})
+            console.log(list.scrollWidth)
+            if (scrollSlide === list.scrollWidth) {
+                console.log('Oh shit')
+            }
+        });
+	};
+
+	getListType = () => {
+	    const props = this.props;
+	    if (props.typeof === 'later') {
+	        return props.type.includes('m') ? 'mangalaterlist' : 'animelaterlist'
+        }
+        if (props.typeof === 'ranking') {
+	        return props.type.includes('c') ? 'collectionlist' : 'rankinglist'
+        }
+        if (props.typeof === 'ongoing') {
+	        return props.type.includes('m') ? 'mangaongoinglist' : 'animeongoinglist'
+        }
+        if (props.typeof === 'progress') {
+	        return "progresslist"
+        }
+        if (props.typeof === 'feeds') {
+	        return "feedlist"
+        }
+        return null;
+    }
+
+	shouldComponentUpdate = (nextProps, nextState) => {
 		if (this.props.data !== nextProps.data) {
 			return true;
 		}
@@ -272,6 +326,7 @@ const SuperTable = class extends React.Component {
 
 	render() {
 		const { classes, theme, loading, data, ...props } = this.props;
+		const { currentSlide, slideRange } = this.state;
 		const backArrow = (
 			<Button onClick={this.goBack} className={classes.bakA} variant="fab">
 				<Icon.ArrowBack />
@@ -372,7 +427,7 @@ const SuperTable = class extends React.Component {
 													}`}`
 												: null}
 										</Typography>
-										<Dotdotdot clamp={2} className={classes.dotdot}>
+										<Dotdotdot clamp={1} className={classes.dotdot}>
 											<Typography
 												variant="display2"
 												className={classes.bigCardTitle}

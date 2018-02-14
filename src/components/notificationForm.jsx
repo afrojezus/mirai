@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 // import * as Icon from "material-ui-icons";
-import Card, { CardHeader, CardActions } from "material-ui/Card/Card";
+import { grey } from 'material-ui/colors'
+import moment from 'moment';
+import Card, { CardHeader, CardActions } from "material-ui/Card";
 import Button from "material-ui/Button/Button";
 import Divider from "material-ui/Divider/Divider";
 import CardContent from "material-ui/Card/CardContent";
@@ -30,22 +32,78 @@ const style = theme => ({
   formTitle: {
     fontSize: 16,
     fontWeight: 500
-  }
+  },
+    notificationCard: {
+      background: grey[800]
+    },
+    notificationCardActions: {
+      background: grey[900]
+    }
 });
 
-const Notification = withStyles(style)(
+const Notification = firebaseConnect()(
+    connect(
+        ({ firebase: { profile }, mir }) => ({
+            profile,
+            mir
+        }),
+        null
+    )(withStyles(style)(
   class extends Component {
+      // Friend request functions
+      acceptFR = async () => {
+          const userid = this.props.userid;
+          const username = this.props.username;
+          const avatar = this.props.avatar;
+          const you = this.props.profile;
+          const db = this.props.firebase.database().ref("/users")
+              .child(this.props.profile.userID);
+          const frienddb = this.props.firebase.database().ref("/users")
+              .child(userid)
+          const frienddbdata = await this.props.firebase.database().ref("/users")
+              .child(userid).once('value');
+          const notify = db.child('notifications');
+          const req = db.child('requests');
+          const id = this.props.id;
+          if (frienddbdata) {
+              const hasAccepted = await notify.child(id).update({ignored: true});
+              const noMorePending = await req.child('friend').child(userid).update({pending: false});
+              const addFriendOnTheirList = await frienddb.child('friends').child(you.userID).update({
+                  username: you.username,
+                  avatar: you.avatar,
+                  userID: you.userID
+              })
+              const addFriendOnYourList = await db.child('friends').child(userid).update({
+                  username: username,
+                  avatar: avatar,
+                  userID: userid
+              })
+          }
+      }
+
+      ignoreFR = async () => {
+          const db = this.props.firebase.database().ref("/users")
+              .child(this.props.profile.userID);
+          const notify = db.child('notifications');
+          const req = db.child('requests');
+          const id = this.props.id;
+          const userid = this.props.userid;
+
+          const hasIgnored = await notify.child(id).update({ignored: true});
+          const noMorePending = await req.child('friend').child(userid).remove();
+      }
+
     render() {
-      const { classes, title, date, desc, options, avatar, type } = this.props;
+      const { classes, title, date, desc, options, avatar, id, type } = this.props;
       if (type === types.FRIEND_REQUEST) {
         return (
-          <Card>
+          <Card className={classes.notificationCard}>
             <CardHeader
-              title={title}
-              subtitle={desc}
+              title={title + ' ' + moment(date).from(Date.now())}
+              subheader={desc}
               avatar={<Avatar src={avatar} />}
             />
-            <CardActions>
+            <CardActions className={classes.notificationCardActions}>
               {options &&
                 options.map((option, index) => (
                   <Button
@@ -65,27 +123,24 @@ const Notification = withStyles(style)(
       return <div />;
     }
   }
-);
+)));
 
 class NotificationForm extends Component {
   state = {
     notifications: null
   };
 
-  componentDidMount = () => {
-    if (isEmpty(this.props.profile)) {
-      return null;
-    }
-    return this.props.firebase
-      .database()
-      .ref("/users")
-      .child(this.props.profile.userID)
-      .child("notifications")
-      .on("value", val => this.setState({ notifications: val.val() }));
-  };
-
-  componentDidCatch = (error, info) => {
-    return console.error(error, info);
+  componentDidMount = async () => {
+      if (!isEmpty(this.props.profile)) {
+          return this.props.firebase
+              .database()
+              .ref("/users")
+              .child(this.props.profile.userID)
+              .child('notifications')
+              .on("value", val => this.setState({notifications: val.val()}));
+      } else {
+          return this.setState({notifications: null})
+      }
   };
 
   render() {
@@ -100,9 +155,10 @@ class NotificationForm extends Component {
         <Divider />
         <CardContent>
           {notifications ? (
-            Object.values(notifications).map((notification, index) => (
+            Object.values(notifications).filter(n => !n.ignored).map((notification, index) => (
               <Notification
                 key={index}
+                userid={notification.userid}
                 id={notification.id}
                 date={notification.date}
                 title={notification.title}
@@ -110,10 +166,11 @@ class NotificationForm extends Component {
                 options={notification.options}
                 avatar={notification.avatar}
                 type={notification.type}
+                username={notification.username}
               />
             ))
           ) : (
-            <Typography variant="title">No notifications for today!</Typography>
+            <Typography variant="title">{isEmpty(this.props.profile) ? 'Sign up for notifications.' : 'No notifications for today!'}</Typography>
           )}
         </CardContent>
       </Card>
