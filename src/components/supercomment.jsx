@@ -26,7 +26,7 @@ class SuperComment extends Component {
 	};
 	componentDidMount = () => {};
 
-	shouldComponentUpdate = (nextProps, nextState) => {};
+
 	render() {
 		const { classes, firebase, profile } = this.props;
 		const { comments } = this.state;

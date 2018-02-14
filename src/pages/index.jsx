@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import LoadableVisibility from 'react-loadable-visibility/react-loadable';
-import { Route, withRouter } from 'react-router-dom';
+import { Route, withRouter, Switch } from 'react-router-dom';
 import { CircularProgress } from 'material-ui/Progress';
 import { withStyles } from 'material-ui/styles';
 import {
@@ -15,7 +15,7 @@ import {
 import { connect } from 'react-redux';
 import { MIR_PLAY_SHOW } from '../constants';
 
-import Home from './home';
+/* import Home from './home';
 import Setup from './setup';
 import Show from './show';
 import Wizard from './wizard';
@@ -32,11 +32,13 @@ import Read from './read';
 import Tag from './tag';
 import Later from './later';
 import History from './history';
-import PageNotFound from './pnf';
 import Help from './help';
 import Tos from './tos';
 import DevPlayer from './dev/player';
 import DevDB from './dev/db';
+*/
+import PageNotFound from './pnf';
+
 import withRoot from '../components/withRoot';
 
 import Superbar from '../components/superbar';
@@ -55,7 +57,6 @@ const styles = theme => ({
 		transition: theme.transitions.create(['all']),
 	},
 });
-/*
 const Home = LoadableVisibility({
 	loader: () => import('./home.jsx'),
 	loading: LoadingScreen
@@ -135,7 +136,7 @@ const DevDB = LoadableVisibility({
 const DevPlayer = LoadableVisibility({
 	loader: () => import('./dev/player.jsx'),
 	loading: LoadingScreen
-}); */
+});
 class Index extends Component {
 	state = {
 		loading: true,
@@ -204,6 +205,7 @@ class Index extends Component {
 		return (
 			<div className={this.props.classes.root}>
 				<Superbar history={history}>
+					<Switch>
 					<Route path="/" exact component={Home} />
 					<Route path="/setup" exact component={Setup} />
 					<Route path="/show" exact component={Show} />
@@ -223,6 +225,8 @@ class Index extends Component {
 					<Route path="/history" exact component={History} />
 					<Route path="/help" exact component={Help} />
 					<Route path="/tou" exact component={Tos} />
+                        {!isEmpty(this.props.firebase.profile) &&
+                        this.props.firebase.profile.isDeveloper === true ? null : <Route exact component={PageNotFound} />}
 					{!isEmpty(this.props.firebase.profile) &&
 					this.props.firebase.profile.isDeveloper === true ? (
 						<Route path="/dev/db" exact component={DevDB} />
@@ -231,6 +235,7 @@ class Index extends Component {
 					this.props.firebase.profile.isDeveloper === true ? (
 						<Route path="/dev/player" exact component={DevPlayer} />
 					) : null}
+					</Switch>
 				</Superbar>
 			</div>
 		);

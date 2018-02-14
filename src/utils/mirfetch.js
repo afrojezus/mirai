@@ -98,9 +98,7 @@ export const loadFile = (parent, link) =>
 const getTorrent = (parent, data) =>
 	parent.setState(
 		{
-			title: data.meta.title.english
-				? data.meta.title.english
-				: data.meta.title.romaji,
+			title: data.meta.title.romaji,
 			showId: data.meta.id,
 			showArtwork: data.meta.coverImage.large,
 			showDesc: data.meta.description,
@@ -137,9 +135,7 @@ const getTorrent = (parent, data) =>
 
 const getSource = async (parent, data) => {
 	parent.setState({
-		title: data.meta.title.english
-			? data.meta.title.english
-			: data.meta.title.romaji,
+		title: data.meta.title.romaji,
 		showId: data.meta.id,
 		showArtwork: data.meta.coverImage.large,
 		showDesc: data.meta.description,

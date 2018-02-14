@@ -633,7 +633,7 @@ query ($id: Int, $page: Int, $season: MediaSeason, $seasonYear: Int, $search: St
       bannerImage
 
       format
-
+        
       type
 
       status

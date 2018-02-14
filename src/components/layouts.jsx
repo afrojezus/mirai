@@ -53,8 +53,10 @@ const style = theme => ({
 		width: '100%',
 		display: 'inline-flex',
 		boxSizing: 'border-box',
-		background: '#222',
+		background: 'transparent',
 		borderBottom: `1px solid rgba(255,255,255,.1)`,
+        flexFlow: 'row wrap'
+
 	},
 	commandoBarTop: {
 		width: '100%',
@@ -96,8 +98,8 @@ const style = theme => ({
 	bigBar: {
 		width: '100%',
 		height: 'auto',
-		// boxShadow: '0 2px 24px rgba(0,0,0,.2)',
-		background: '#111',
+		boxShadow: '0 2px 24px rgba(0,0,0,.0)',
+		background: 'transparent',
 		position: 'relative',
 		// overflow: 'hidden',
 		transformStyle: 'preserve-3d',

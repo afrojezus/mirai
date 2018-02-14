@@ -21,7 +21,8 @@ import {
   Root,
   Container,
   LoadingIndicator,
-  TitleHeader
+  TitleHeader,
+    MainCard
 } from "../components/layouts";
 
 const style = theme => ({
@@ -700,8 +701,8 @@ class User extends Component {
                 />
               </M.Grid>
             </M.Grid>
-            <div className={classes.bigBar} style={{ background: hue }}>
-              <CommandoBar style={{ background: hue }}>
+            <MainCard>
+              <CommandoBar>
                 <M.Tabs
                   value={tabVal}
                   onChange={(e, val) => this.setState({ tabVal: val })}
@@ -752,6 +753,7 @@ class User extends Component {
                 <div style={{ flex: 1 }} />
                 {!isEmpty(user) && data && data.userID !== user.userID ? (
                   <M.Button
+                      disabled
                     color="default"
                     onClick={
                       !isEmpty(user) && user.friends && user.friends.data.userID
@@ -1143,7 +1145,7 @@ class User extends Component {
                   </M.Grid>
                 </M.Grid>
               </SwipableViews>
-            </div>
+            </MainCard>
           </Container>
         </Root>
       </div>

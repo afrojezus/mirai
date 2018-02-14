@@ -67,6 +67,7 @@ const style = theme => ({
 		animation: 'playerLoad .5s ease',
 		transition: theme.transitions.create(['all']),
 		display: 'flex',
+        borderRadius: theme.spacing.unit,
         [theme.breakpoints.down('sm')]: {
 		    minHeight: 80,
             minWidth: 140,

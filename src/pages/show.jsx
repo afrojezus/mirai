@@ -1,15 +1,14 @@
-// TODO: Fix every single eslint-airbnb issue... later?
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import localForage from 'localforage';
 import * as Icon from 'material-ui-icons';
+import moment from 'moment';
 import queryString from 'query-string';
 import * as Vibrant from 'node-vibrant';
 import FadeIn from 'react-fade-in';
 import { connect } from 'react-redux';
 import { firebaseConnect, isEmpty, firebase } from 'react-redux-firebase';
 import * as jquery from 'jquery';
-import Tilt from 'react-tilt';
 import Button from 'material-ui/Button/Button';
 import Grid from 'material-ui/Grid/Grid';
 import CircularProgress from 'material-ui/Progress/CircularProgress';
@@ -24,6 +23,7 @@ import Modal from 'material-ui/Modal/Modal';
 import blue from 'material-ui/colors/blue';
 import grey from 'material-ui/colors/grey';
 import MenuItem from 'material-ui/Menu/MenuItem';
+import Tilt from 'react-tilt';
 import Menu from 'material-ui/Menu/Menu';
 import withStyles from 'material-ui/styles/withStyles';
 import { timeFormatter } from '../components/supertable';
@@ -213,7 +213,7 @@ const styles = theme => ({
 			background: blue.A200,
 		},
 		'&:hover > .artworktitle': {
-			transform: 'translate(-50%,-50%) scale(1.2)',
+			transform: 'translate(-50%,-50%) scale(1.2) translateZ(30%)',
 		},
 		'&:hover > img': {
 			transform: 'scale(0.9)',
@@ -423,6 +423,9 @@ const styles = theme => ({
 	sectDivide: {
 		marginTop: theme.spacing.unit * 2,
 	},
+    sectDivideDown: {
+        marginBottom: theme.spacing.unit * 2,
+    },
 	progressCon: {
 		display: 'flex',
 		flexDirection: 'column',
@@ -541,6 +544,7 @@ const styles = theme => ({
 	playArtworkButtonContainer: {
         borderRadius: '50%',
         background: grey[800],
+        transform: 'translateZ(30%)'
 	},
 	playArtworkButton: {
 		color: 'white',
@@ -576,7 +580,7 @@ class Show extends Component {
 	};
 
 	componentWillReceiveProps = async nextProps => {
-		if (this.props.mir !== nextProps.mir && this.state.data.Media)
+		if (this.props.mir !== nextProps.mir && this.state.data && this.state.data.Media)
 			await this.executeTwist();
 	};
 
@@ -756,7 +760,7 @@ class Show extends Component {
 	};
 
 	executeTwist = async reload => {
-		const db = this.props.firebase.ref('twist');
+		const db = this.props.firebase.ref('anime').child('twist');
 		const dbval = await db.once('value');
 		if (dbval && Object(dbval.val())[this.state.id]) {
 			const eps = await db.child(this.state.id).once('value');
@@ -778,7 +782,8 @@ class Show extends Component {
 			const correctedtitle = this.state.data.Media.title.romaji
 				.toLowerCase()
 				.replace('(tv)', '')
-				.replace('.', '');
+				.replace('.', '')
+                .replace('macross frontier', 'macross f');
 			const meta = Object.values(this.props.mir.twist).filter(s =>
 				s.name.toLowerCase().match(`${correctedtitle}`)
 			);
@@ -789,7 +794,7 @@ class Show extends Component {
 					if (eps)
 						return this.setState({ eps }, async () => {
 							if (meta[0].ongoing === false) {
-								const dbtwist = this.props.firebase.ref('twist');
+								const dbtwist = this.props.firebase.ref('anime').child('twist');
 								await dbtwist.child(this.state.id).update(eps);
 							}
 						});
@@ -970,12 +975,11 @@ class Show extends Component {
 					<TitleHeader color={hue} colortext={hueVib} />
 				</div>
 				<Root id="previewFrame" className={classes.root}>
-					{data && data.Media ? (
+					{!loading && data && data.Media ? (
 						<div>
 							<Header
 								image={data.Media.bannerImage ? data.Media.bannerImage : null}
 								color={hueVibN}
-								style={{ background: hue }}
 							/>
 							<div
 								id="fabShowButton"
@@ -1024,6 +1028,7 @@ class Show extends Component {
 								style={{ background: hue }}
 							>
 								<Grid item xs={2} className={classes.leftSide}>
+									<Tilt style={{transformStyle: 'preserve-3d'}} options={{scale: 1}}>
 									<div
 										role="play-show"
 										aria-controls="button"
@@ -1089,6 +1094,7 @@ class Show extends Component {
 											) : null}
 										</Typography>
 									</div>
+									</Tilt>
 								</Grid>
 								<Grid item xs className={classes.mainFrame}>
 									<div className={classes.smallTitlebar}>
@@ -1256,13 +1262,13 @@ class Show extends Component {
 												Tags
 											</Typography>
 											<div className={classes.genreRow}>
-												{data.Media.tags.map(o => (
+												{data.Media.tags.map((o, index)=> (
 													<Chip
 														onClick={() =>
 															this.props.history.push(`/tag?t=${o.id}`)
 														}
 														className={classes.tagChip}
-														key={o.id}
+														key={index}
 														label={o.name}
 													/>
 												))}
@@ -1277,13 +1283,13 @@ class Show extends Component {
 													Producers
 												</Typography>
 												<div className={classes.genreRow}>
-													{data.Media.studios.edges.map(o => (
+													{data.Media.studios.edges.map((o, index) => (
 														<Chip
 															onClick={() =>
 																this.props.history.push(`/tag?s=${o.node.id}`)
 															}
 															className={classes.tagChip}
-															key={o.id}
+															key={index}
 															label={o.node.name}
 														/>
 													))}
@@ -1293,17 +1299,8 @@ class Show extends Component {
 									</Grid>
 								</Grid>
 							</Container>
-							<MainCard
-								style={
-									!data.Media.bannerImage
-										? {
-												background: hue,
-												boxShadow: '0 5px 32px rgba(0,0,0,.2)',
-											}
-										: { background: hue }
-								}
-							>
-								<CommandoBar style={{ background: hue }}>
+							<MainCard>
+								<CommandoBar style={{borderTop: '1px solid rgba(255,255,255,.1', borderBottom: 'none'}}>
 									{data.Media.averageScore ? (
 										<div className={classes.commandoTextBox}>
 											<Typography
@@ -1570,7 +1567,51 @@ class Show extends Component {
 										</Paper>
 									</Modal>
 								</CommandoBar>
-								<CommandoBar disableGutters style={{ background: hue }}>
+								<CommandoBar>
+                                    {!data.Media.status
+                                        .includes('NOT_YET_RELEASED') ?<div className={classes.commandoTextBox}>
+                                    <Typography
+                                        variant="title"
+                                        className={classes.commandoText}
+                                    >
+                                        {`${data.Media.startDate.day}. ${moment(data.Media.startDate.month, 'MM').format('MMMM')} ${data.Media.startDate.year}`}
+                                    </Typography>
+                                    <Typography
+                                        variant="body1"
+                                        className={classes.commandoTextLabel}
+                                    >
+                                        {data.Media.type.includes('ANIME') ? 'Airing start' : 'Publishing start'}
+                                    </Typography>
+                                </div> : null}
+                                    {!data.Media.status
+                                        .includes('RELEASING' || 'NOT_YET_RELEASED') ? <div className={classes.commandoTextBox}>
+                                        <Typography
+                                            variant="title"
+                                            className={classes.commandoText}
+                                        >
+                                            {`${data.Media.endDate.day}. ${moment(data.Media.endDate.month, 'MM').format('MMMM')} ${data.Media.endDate.year}`}
+                                        </Typography>
+                                        <Typography
+                                            variant="body1"
+                                            className={classes.commandoTextLabel}
+                                        >
+                                            {data.Media.type.includes('ANIME') ? 'Airing ended' : 'Publishing ended'}
+                                        </Typography>
+                                    </div> : null}
+                                    <div className={classes.commandoTextBox}>
+                                        <Typography
+                                            variant="title"
+                                            className={classes.commandoText}
+                                        >
+                                            {data.Media.format}
+                                        </Typography>
+                                        <Typography
+                                            variant="body1"
+                                            className={classes.commandoTextLabel}
+                                        >
+                                            Type
+                                        </Typography>
+                                    </div>
 									<div style={{ flex: 1 }} />
 									{data.Media.rankings.map((ran, index) => (
 										<Paper className={classes.commandoTextBoxRow}>
@@ -1674,7 +1715,7 @@ class Show extends Component {
 											</Grid>
 										) : null}
 										{data.Media.characters.edges.length > 0 ? (
-											<Divider />
+											<Divider className={classes.sectDivideDown} />
 										) : null}
 										<Typography variant="title" className={classes.secTitle}>
 											Staff
@@ -1695,7 +1736,7 @@ class Show extends Component {
 												/>
 											))}
 										</Grid>
-										<Divider />
+										<Divider className={classes.sectDivideDown} />
 										<Typography variant="title" className={classes.secTitle}>
 											Similar to this one
 										</Typography>

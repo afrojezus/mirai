@@ -14,6 +14,8 @@ import {
 	Header,
 	Root,
 	CommandoBar,
+	MainCard,
+	Container
 } from '../components/layouts';
 import CardButton, { PeopleButton } from '../components/cardButton';
 
@@ -740,7 +742,7 @@ class Fig extends Component {
 		return (
 			<div>
 				<LoadingIndicator loading={loading} />
-				<Root style={loading ? { opacity: 0 } : null}>
+				<Root>
 					{data ? (
 						data.Character || data.Staff ? (
 							<Header
@@ -804,8 +806,8 @@ class Fig extends Component {
 									/>
 								</M.Grid>
 							</M.Grid>
-							<div className={classes.bigBar} style={{ background: hue }}>
-								<CommandoBar style={{ background: hue }}>
+							<MainCard>
+								<CommandoBar>
 									<div style={{ flex: 1 }} />
 									{user && data.Character ? (
 										<M.IconButton
@@ -841,7 +843,7 @@ class Fig extends Component {
 										<Icon.MoreVert />
 									</M.IconButton>
 								</CommandoBar>
-								<M.Grid container className={classes.container}>
+								<Container>
 									{data.Staff &&
 									data.Staff.characters &&
 									data.Staff.characters.edges &&
@@ -894,9 +896,7 @@ class Fig extends Component {
 														}
 														key={anime.id}
 														title={
-															anime.node.title.english
-																? anime.node.title.english
-																: anime.node.title.romaji
+															anime.node.title.romaji
 														}
 														subtitle={anime.staffRole}
 														image={anime.node.coverImage.large}
@@ -917,9 +917,7 @@ class Fig extends Component {
 												{data.Character.media.edges.map(anime => (
 													<CardButton
 														title={
-															anime.node.title.english
-																? anime.node.title.english
-																: anime.node.title.romaji
+															anime.node.title.romaji
 														}
 														key={anime.id}
 														image={anime.node.coverImage.large}
@@ -936,8 +934,8 @@ class Fig extends Component {
 											</M.Grid>
 										</M.Grid>
 									) : null}
-								</M.Grid>
-							</div>
+								</Container>
+							</MainCard>
 						</Grid>
 					) : null}
 				</Root>
