@@ -13,7 +13,6 @@ const style = theme => ({
 		right: 0,
 		width: '100%',
 		height: '100%',
-		zIndex: -1,
 		pointerEvents: 'none'
 	}
 });
@@ -31,7 +30,6 @@ class PageNotFound extends Component {
 		return (
   <div>
     <LoadingIndicator loading={loading} />
-	  <TitleHeader title={'404...'} style={{zIndex: 1, background: 'linear-gradient(to top, transparent, rgba(0, 0, 0, 0.5)'}}/>
 		<ReactPlayer className={classes.awoo} onReady={this.onReady} width={'100%'} height={'100%'} url={'https://www.youtube.com/watch?v=eGslweDOihs'} playing loop volume={0.25} />
   </div>
 		);

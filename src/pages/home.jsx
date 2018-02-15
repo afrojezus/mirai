@@ -512,7 +512,7 @@ class Home extends Component {
             </Grid>
           </div> */}
           <TitleHeader
-            color={hue}
+            color={hue !== '#111' ? hue : null}
             title={
               !isEmpty(this.props.profile)
                 ? `Welcome back, ${this.props.profile.username}.`

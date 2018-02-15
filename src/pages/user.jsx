@@ -16,13 +16,13 @@ import {
 import CardButton, { PeopleButton } from "../components/cardButton";
 import { history } from "../store";
 import {
-  CommandoBar,
-  Header,
-  Root,
-  Container,
-  LoadingIndicator,
-  TitleHeader,
-    MainCard
+    CommandoBar,
+    Header,
+    Root,
+    Container,
+    LoadingIndicator,
+    TitleHeader,
+    MainCard, Column
 } from "../components/layouts";
 
 const style = theme => ({
@@ -649,7 +649,15 @@ class User extends Component {
       .child(you.userID)
       .remove();
 
-    if (theirlist && theirreq) {
+    const yourlist = await this.props.firebase
+        .database()
+        .ref("/users")
+        .child(you.userID)
+        .child('friends')
+        .child(this.state.data.userID)
+        .remove();
+
+    if (theirlist && theirreq && yourlist) {
       return true;
     } else {
       return false;
@@ -660,11 +668,15 @@ class User extends Component {
     const { classes } = this.props;
     const user = this.props.profile;
     const { loading, hue, hueVibN, data, tabVal } = this.state;
-    if (isEmpty(user)) return null;
+    if (isEmpty(user)) return (
+        <div>
+            <TitleHeader color={'#000'} title={'In order to view others accounts, you need to log in.'}/>
+        </div>
+    );
     return (
       <div>
         <LoadingIndicator loading={loading} />
-        <TitleHeader color={hue} />
+        <TitleHeader color={hue ? hue : null} />
         <Root>
           <Header image={data ? data.headers : user.headers} color={hueVibN} />
           <Container spacing={0}>
@@ -694,7 +706,7 @@ class User extends Component {
                   {data ? data.username : user.username}
                 </M.Typography>
                 <M.Typography variant="display1" className={classes.smallTitle}>
-                  {data ? data.nick : user.nick}
+                  {data ? data.nick : user.nick}  {!isEmpty(user) && user.friends && data && user.friends[data.userID] ? '- You are both friends' : null}
                 </M.Typography>
                 <M.Typography
                   variant="body1"
@@ -792,7 +804,6 @@ class User extends Component {
                     <M.Grid
                       container
                       className={classes.itemcontainer}
-                      style={{ flexDirection: "column" }}
                     >
                       {data ? data.friends ? (
                           Object.values(data.friends).map(
@@ -1130,7 +1141,7 @@ class User extends Component {
                             <M.Card
                               style={{ background: "transparent" }}
                               onClick={() =>
-                                this.props.history.push(`/studio?s=${show.id}`)
+                                this.props.history.push(`/tag?s=${show.id}`)
                               }
                             >
                               <div className={classes.gradientCard}>
@@ -1161,6 +1172,173 @@ class User extends Component {
                     </M.Grid>
                   </M.Grid>
                 </M.Grid>
+                  <Container>
+                      <Column/>
+                  </Container>
+                  <Container>
+                      <Column>
+                          <M.Typography variant="title" className={classes.secTitle}>
+                              Recently watched
+                          </M.Typography>
+                          <M.Grid
+                              container
+                              className={classes.itemcontainer}
+                          >
+                              {data ? (
+                                  data.episodeProgress ? (
+                                      Object.values(data.episodeProgress).filter(s => s.recentlyWatched)
+                                          .sort(
+                                              (a, b) => b.recentlyWatched - a.recentlyWatched
+                                          ).map(show => (
+                                          <CardButton
+                                              key={show.showId}
+                                              onClick={() =>
+                                                  this.props.history.push(`/show?s=${show.showId}`)
+                                              }
+                                              title={show.title}
+                                              image={show.showArtwork}
+                                              subtitle={show.ep ? `Episode ${show.ep}` : null}
+                                          />
+                                      ))
+                                  ) : (
+                                      <M.Typography variant="body1">
+                                          Appears {data.username} hasn't seen a anime here yet.
+                                      </M.Typography>
+                                  )
+                              ) : !isEmpty(user) && user.episodeProgress ? (
+                                  Object.values(user.episodeProgress).filter(s => s.recentlyWatched)
+                                      .sort(
+                                          (a, b) => b.recentlyWatched - a.recentlyWatched
+                                      ).map(show => (
+                                      <CardButton
+                                          key={show.showId}
+                                          onClick={() =>
+                                              this.props.history.push(`/show?s=${show.showId}`)
+                                          }
+                                          title={show.title}
+                                          image={show.showArtwork}
+                                          subtitle={show.ep ? `Episode ${show.ep}` : null}
+                                      />
+                                  ))
+                              ) : (
+                                  <M.Typography variant="body1">
+                                      Watch something?
+                                  </M.Typography>
+                              )}
+                          </M.Grid>
+                          <M.Typography variant={'title'} className={classes.secTitleSmall}>
+                              Last seen animes on yura
+                          </M.Typography>
+                          <M.Grid
+                              container
+                              className={classes.itemcontainer}
+                          >
+                          {data ? (
+                              data.lastEp ? (
+                                  Object.values(data.lastEp).map((show, index) => (
+                                      <CardButton
+                                          key={index}
+                                          onClick={() =>
+                                              this.props.history.push(`/show?s=${show.id}`)
+                                          }
+                                          title={show.showName}
+                                          image={show.imageLgeBanner}
+                                          subtitle={show.showEp}
+                                      />
+                                  ))
+                              ) : (
+                                  <M.Typography variant="body1">
+                                      {data.username} never used yura, nothing to find.
+                                  </M.Typography>
+                              )
+                          ) : !isEmpty(user) && user.lastEp ? (
+                              Object.values(user.lastEp).map((show, index) => (
+                                  <CardButton
+                                      key={index}
+                                      onClick={() =>
+                                          this.props.history.push(`/show?s=${show.id}`)
+                                      }
+                                      title={show.showName}
+                                      image={show.imageLgeBanner}
+                                      subtitle={show.showEp}
+                                  />
+                              ))
+                          ) : (
+                              <M.Typography variant="body1">
+                                  No information on about yura history.
+                              </M.Typography>
+                          )}
+                          </M.Grid>
+                          <M.Typography variant="title" className={classes.secTitle}>
+                              Later
+                          </M.Typography>
+                          <M.Grid
+                              container
+                              className={classes.itemcontainer}
+                          >
+
+                          </M.Grid>
+                          <M.Typography vairant="title" className={classes.secTitle}>
+                              Completed
+                          </M.Typography>
+                          <M.Grid
+                              container
+                              className={classes.itemcontainer}
+                          >
+
+                          </M.Grid>
+                          <M.Typography vairant="title" className={classes.secTitle}>
+                              Dropped
+                          </M.Typography>
+                          <M.Grid
+                              container
+                              className={classes.itemcontainer}
+                          >
+
+                          </M.Grid>
+                      </Column>
+                  </Container>
+                  <Container>
+                      <Column>
+                          <M.Typography variant="title" className={classes.secTitle}>
+                              Recently read
+                          </M.Typography>
+                          <M.Grid
+                              container
+                              className={classes.itemcontainer}
+                          >
+
+                          </M.Grid>
+                          <M.Typography variant="title" className={classes.secTitle}>
+                              Later
+                          </M.Typography>
+                          <M.Grid
+                              container
+                              className={classes.itemcontainer}
+                          >
+
+                          </M.Grid>
+                          <M.Typography vairant="title" className={classes.secTitle}>
+                              Completed
+                          </M.Typography>
+                          <M.Grid
+                              container
+                              className={classes.itemcontainer}
+                          >
+
+                          </M.Grid>
+                          <M.Typography vairant="title" className={classes.secTitle}>
+                              Dropped
+                          </M.Typography>
+                          <M.Grid
+                              container
+                              className={classes.itemcontainer}
+                          >
+
+                          </M.Grid>
+                      </Column>
+                  </Container>
+                  <Container/>
               </SwipableViews>
             </MainCard>
           </Container>

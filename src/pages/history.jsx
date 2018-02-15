@@ -18,7 +18,7 @@ class History extends Component {
 
   render = () => (
     <div>
-      <TitleHeader title="History" />
+      <TitleHeader title="History" color={'#000'} />
       <Root>
         <Container hasHeader />
       </Root>

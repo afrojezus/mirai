@@ -5,6 +5,7 @@ import Grid from 'material-ui/Grid';
 import { withStyles } from 'material-ui/styles';
 import { connect } from 'react-redux';
 import Dropzone from 'react-dropzone';
+import { blue } from 'material-ui/colors'
 import { firebaseConnect, firebase } from 'react-redux-firebase';
 
 import { TitleHeader, Header, Root, Container } from '../components/layouts';
@@ -121,6 +122,7 @@ class Wizard extends Component {
 				<TitleHeader
 					title="Welcome to the Mirai Preview Program"
 					subtitle="Wizard"
+					color={blue.A200}
 				/>
 				<Root>
 					<Container hasHeader>

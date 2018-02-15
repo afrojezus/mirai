@@ -7,6 +7,9 @@ import queryString from 'query-string';
 import * as Vibrant from 'node-vibrant';
 import FadeIn from 'react-fade-in';
 import { connect } from 'react-redux';
+import Input, { InputLabel } from 'material-ui/Input';
+import { FormControl, FormHelperText } from 'material-ui/Form';
+import Select from 'material-ui/Select';
 import { firebaseConnect, isEmpty, firebase } from 'react-redux-firebase';
 import * as jquery from 'jquery';
 import Button from 'material-ui/Button/Button';
@@ -22,9 +25,8 @@ import Paper from 'material-ui/Paper/Paper';
 import Modal from 'material-ui/Modal/Modal';
 import blue from 'material-ui/colors/blue';
 import grey from 'material-ui/colors/grey';
-import MenuItem from 'material-ui/Menu/MenuItem';
 import Tilt from 'react-tilt';
-import Menu from 'material-ui/Menu/Menu';
+import Menu, { MenuItem } from 'material-ui/Menu';
 import withStyles from 'material-ui/styles/withStyles';
 import { timeFormatter } from '../components/supertable';
 import Segoku from '../utils/segoku/segoku';
@@ -551,6 +553,10 @@ const styles = theme => ({
 		width: 32,
 		height: 32,
 	},
+    selectForm: {
+            margin: theme.spacing.unit,
+            minWidth: 120,
+    }
 });
 
 const nameSwapper = (first, last) => (last ? `${first} ${last}` : first);
@@ -564,11 +570,12 @@ class Show extends Component {
 		id: 0,
 		hue: '#111',
 		hueVib: blue.A200,
-		hueVibN: grey.A700,
+		hueVibN: grey[900],
 		eps: null,
 		epError: false,
 		menuEl: null,
 		reportModal: false,
+        status: ''
 	};
 
 	componentWillMount = () => {
@@ -827,6 +834,7 @@ class Show extends Component {
 				})
 				.then(() => {
 					// console.log(this.props);
+                    this.setState({status: 'active'});
 					return this.props.history.push(`/watch`);
 				});
 		} else
@@ -921,7 +929,11 @@ class Show extends Component {
 	};
 
 	reportError = () => this.setState({ reportModal: !this.state.reportModal });
-	/* eslint-disable */
+
+	handleStatus = event => {
+        return this.setState({ [event.target.name]: event.target.value });
+    };
+
 	render() {
 		const { classes, mir } = this.props;
 		const {
@@ -937,6 +949,7 @@ class Show extends Component {
 			epError,
 			menuEl,
 			similars2,
+            status
 		} = this.state;
 
 		const openMenu = Boolean(menuEl);
@@ -972,7 +985,7 @@ class Show extends Component {
 			<div className={classes.frame}>
 				<LoadingIndicator loading={loading} />
 				<div>
-					<TitleHeader color={hue} colortext={hueVib} />
+					<TitleHeader color={hue !== '#111' ? hue : null} colortext={hueVib} />
 				</div>
 				<Root id="previewFrame" className={classes.root}>
 					{!loading && data && data.Media ? (
@@ -1455,6 +1468,23 @@ class Show extends Component {
 											{data.Media.hashtag}
 										</Button>
 									) : null}
+                                    {!isEmpty(user) ? (
+                                            <FormControl className={classes.selectForm}>
+                                                <InputLabel htmlFor="status">Status</InputLabel>
+                                                <Select
+                                                    value={status}
+                                                    onChange={this.handleStatus}
+                                                    inputProps={{
+                                                        name: 'status',
+                                                        id: 'status',
+                                                    }}>
+                                                    <MenuItem value={''}>None</MenuItem>
+                                                    <MenuItem value={'Dropped'}>Dropped</MenuItem>
+                                                    <MenuItem value={'Completed'}>Completed</MenuItem>
+                                                    <MenuItem value={'Active'}>Active</MenuItem>
+                                                </Select>
+                                            </FormControl>
+                                    ) : null}
 									{!isEmpty(user) ? (
 										<Tooltip
 											title={

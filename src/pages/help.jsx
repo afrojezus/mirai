@@ -53,7 +53,7 @@ class Help extends Component {
 	// TODO: All information-related matters handled dynamically from firebase. Also eslint, go fuck yourself with the entities rule.
 	render = () => (
 		<div>
-			<TitleHeader title="Help" />
+			<TitleHeader title="Help" color={'#000'} />
 			<Root>
 				<Container hasHeader>
 					<div className={this.props.classes.column}>

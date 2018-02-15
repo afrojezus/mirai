@@ -179,6 +179,7 @@ const style = theme => ({
 		display: 'flex',
 		zIndex: -1,
 		transition: theme.transitions.create(['all']),
+		opacity: 0
 	},
 	titleHeaderInner: {
 		paddingLeft: theme.spacing.unit * 5,
@@ -349,7 +350,7 @@ export const TitleHeader = withStyles(style, { withTheme: true })(
 			className={classes.titleheader}
 			style={
 				color
-					? { background: `linear-gradient(to top, transparent, ${color})` }
+					? { opacity: 1, background: `linear-gradient(to top, transparent, ${color})` }
 					: null
 			}
 			{...props}

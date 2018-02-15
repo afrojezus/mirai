@@ -15,6 +15,8 @@ import Typography from 'material-ui/Typography/Typography';
 import FadeIn from 'react-fade-in';
 import Button from 'material-ui/Button/Button';
 
+const windowWidth = window.innerWidth;
+
 const style = theme => ({
 	bigCard: {
 		display: 'flex',
@@ -268,14 +270,12 @@ const SuperTable = class extends React.Component {
         const list = document.getElementById(this.getListType());
         let scrollSlide = this.state.currentSlide;
         const listelement = list.childNodes[0];
-        console.log(list, listelement);
         scrollSlide -= listelement.scrollWidth * 3;
         scrollSlide < 0 ? scrollSlide = 0 : scrollSlide = scrollSlide;
-        console.log(scrollSlide);
         this.setState({currentSlide: scrollSlide}, () => {
             list.scroll({left: this.state.currentSlide, behavior: 'smooth'});
             if (scrollSlide === 0) {
-                console.log('Oh shit')
+                console.log('Oh shit');
             }
         });
 	};
@@ -285,14 +285,11 @@ const SuperTable = class extends React.Component {
 	    const list = document.getElementById(this.getListType());
 	    let scrollSlide = this.state.currentSlide;
 	    const listelement = list.childNodes[0];
-	    console.log(list, listelement);
 	    scrollSlide += listelement.scrollWidth * 3;
         scrollSlide > list.scrollWidth ? scrollSlide = list.scrollWidth : scrollSlide = scrollSlide;
-	    console.log(scrollSlide);
-        this.setState({currentSlide: scrollSlide}, () => { list.scroll({left: this.state.currentSlide, behavior: 'smooth'})
-            console.log(list.scrollWidth)
+        this.setState({currentSlide: scrollSlide}, () => { list.scroll({left: this.state.currentSlide, behavior: 'smooth'});
             if (scrollSlide === list.scrollWidth) {
-                console.log('Oh shit')
+                console.log('Oh shit');
             }
         });
 	};
@@ -300,22 +297,22 @@ const SuperTable = class extends React.Component {
 	getListType = () => {
 	    const props = this.props;
 	    if (props.typeof === 'later') {
-	        return props.type.includes('m') ? 'mangalaterlist' : 'animelaterlist'
+	        return props.type.includes('m') ? 'mangalaterlist' : 'animelaterlist';
         }
         if (props.typeof === 'ranking') {
-	        return props.type.includes('c') ? 'collectionlist' : 'rankinglist'
+	        return props.type.includes('c') ? 'collectionlist' : 'rankinglist';
         }
         if (props.typeof === 'ongoing') {
-	        return props.type.includes('m') ? 'mangaongoinglist' : 'animeongoinglist'
+	        return props.type.includes('m') ? 'mangaongoinglist' : 'animeongoinglist';
         }
         if (props.typeof === 'progress') {
-	        return "progresslist"
+	        return "progresslist";
         }
         if (props.typeof === 'feeds') {
-	        return "feedlist"
+	        return "feedlist";
         }
         return null;
-    }
+    };
 
 	shouldComponentUpdate = (nextProps, nextState) => {
 		if (this.props.data !== nextProps.data) {
@@ -374,7 +371,7 @@ const SuperTable = class extends React.Component {
 					<GridList
 						id={props.type.includes('m') ? 'mangalaterlist' : 'animelaterlist'}
 						className={classes.list}
-						cols={[theme.breakpoint.up('md')] ? 3 : 2}
+						cols={windowWidth > 1000 ? 3 : 2}
 						cellHeight={300}
 					>
 						{data.splice(0, props.limit).map(anime => (

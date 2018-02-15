@@ -137,7 +137,15 @@ class NotificationForm extends Component {
               .ref("/users")
               .child(this.props.profile.userID)
               .child('notifications')
-              .on("value", val => this.setState({notifications: val.val()}));
+              .on("value", val => {
+                  const data = val.val()
+                  if (data) {
+                      const notifications = Object.values(data).filter(n => n.ignored === false);
+                      return this.setState({notifications})
+                  } else {
+                      return null;
+                  }
+              });
       } else {
           return this.setState({notifications: null})
       }
@@ -154,8 +162,8 @@ class NotificationForm extends Component {
         />
         <Divider />
         <CardContent>
-          {notifications ? (
-            Object.values(notifications).filter(n => !n.ignored).map((notification, index) => (
+          {notifications && notifications.length > 0 ? (
+            notifications.map((notification, index) => (
               <Notification
                 key={index}
                 userid={notification.userid}

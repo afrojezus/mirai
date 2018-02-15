@@ -42,7 +42,7 @@ class Tos extends Component {
 
 	render = () => (
 		<div>
-			<TitleHeader title="Terms of Usage" />
+			<TitleHeader title="Terms of Usage" color={"#000"} />
 			<Root>
 				<Container hasHeader>
 					<div className={this.props.classes.column}>

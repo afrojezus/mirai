@@ -63,7 +63,7 @@ class Later extends Component {
 		<div>
 			<LoadingIndicator loading={this.state.loading} />
 			<Root>
-				<TitleHeader title="Later" />
+				<TitleHeader title="Later" color={'#000'} />
 				<Container hasHeader>
 					<div className={this.props.classes.column}>
 						<Typography

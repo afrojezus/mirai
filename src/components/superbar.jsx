@@ -605,6 +605,8 @@ class Superbar extends Component {
 
     const user = !isEmpty(this.props.profile) ? this.props.profile : null;
 
+    const notifications = user ? user.notifications ? Object.values(user.notifications).filter(n => n.ignored === false) : null : null;
+
     const open = Boolean(anchorEl);
     const infoOpen = Boolean(infoEl);
 
@@ -716,9 +718,8 @@ class Superbar extends Component {
           <ListItem
             button
             onClick={() => {
-              this.toggleDrawer();
-              this.tabChange(null, 4);
-              this.props.history.push("/feedback");
+                this.toggleDrawer();
+                window.open("https://github.com/afrojezus/mirai/issues");
             }}
           >
             <ListItemText primary="Feedback" />
@@ -899,12 +900,13 @@ class Superbar extends Component {
             />
             <div>
               <IconButton
+                  disabled={!user}
                 aria-owns={open ? "info-menu" : null}
                 aria-haspopup="true"
                 onClick={this.handleInfoMenu}
                 contrast={"default"}
               >
-                {user && user.notifcations ? <BellIcon /> : <BellOffIcon />}
+                {notifications && notifications.length > 0 ? <BellIcon /> : <BellOffIcon />}
               </IconButton>
               <Menu
                 id="info-menu"
