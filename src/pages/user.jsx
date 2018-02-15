@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 import * as M from "material-ui";
 import * as Icon from "material-ui-icons";
 import localForage from "localforage";
@@ -7,22 +6,23 @@ import queryString from "query-string";
 import * as Vibrant from "node-vibrant";
 import SwipableViews from "react-swipeable-views";
 import Tilt from "react-tilt";
+import moment from "moment";
 import { connect } from "react-redux";
-import { firebaseConnect, isEmpty, firebase } from "react-redux-firebase";
+import { firebaseConnect, isEmpty } from "react-redux-firebase";
 import {
   timeFormatToReadable,
   timeFormatToReadableTime
 } from "../components/supertable";
 import CardButton, { PeopleButton } from "../components/cardButton";
-import { history } from "../store";
 import {
-    CommandoBar,
-    Header,
-    Root,
-    Container,
-    LoadingIndicator,
-    TitleHeader,
-    MainCard, Column
+  CommandoBar,
+  Header,
+  Root,
+  Container,
+  LoadingIndicator,
+  TitleHeader,
+  MainCard,
+  Column
 } from "../components/layouts";
 
 const style = theme => ({
@@ -612,10 +612,10 @@ class User extends Component {
         desc: `${you.username} wants to be your friend.`,
         options: ["accept", "ignore"],
         avatar: you.avatar,
-          ignored: false,
-          userid: you.userID,
-          type: 'fr',
-          username: you.username
+        ignored: false,
+        userid: you.userID,
+        type: "fr",
+        username: you.username
       });
     const theirreq = await them
       .child("requests")
@@ -650,12 +650,12 @@ class User extends Component {
       .remove();
 
     const yourlist = await this.props.firebase
-        .database()
-        .ref("/users")
-        .child(you.userID)
-        .child('friends')
-        .child(this.state.data.userID)
-        .remove();
+      .database()
+      .ref("/users")
+      .child(you.userID)
+      .child("friends")
+      .child(this.state.data.userID)
+      .remove();
 
     if (theirlist && theirreq && yourlist) {
       return true;
@@ -668,11 +668,15 @@ class User extends Component {
     const { classes } = this.props;
     const user = this.props.profile;
     const { loading, hue, hueVibN, data, tabVal } = this.state;
-    if (isEmpty(user)) return (
+    if (isEmpty(user))
+      return (
         <div>
-            <TitleHeader color={'#000'} title={'In order to view others accounts, you need to log in.'}/>
+          <TitleHeader
+            color={"#000"}
+            title={"In order to view others accounts, you need to log in."}
+          />
         </div>
-    );
+      );
     return (
       <div>
         <LoadingIndicator loading={loading} />
@@ -706,7 +710,13 @@ class User extends Component {
                   {data ? data.username : user.username}
                 </M.Typography>
                 <M.Typography variant="display1" className={classes.smallTitle}>
-                  {data ? data.nick : user.nick}  {!isEmpty(user) && user.friends && data && user.friends[data.userID] ? '- You are both friends' : null}
+                  {data ? data.nick : user.nick}{" "}
+                  {!isEmpty(user) &&
+                  user.friends &&
+                  data &&
+                  user.friends[data.userID]
+                    ? "- You are both friends"
+                    : null}
                 </M.Typography>
                 <M.Typography
                   variant="body1"
@@ -771,7 +781,9 @@ class User extends Component {
                   <M.Button
                     color="default"
                     onClick={
-                      !isEmpty(user) && user.friends && user.friends[data.userID]
+                      !isEmpty(user) &&
+                      user.friends &&
+                      user.friends[data.userID]
                         ? this.removeFriend
                         : this.addFriend
                     }
@@ -801,45 +813,40 @@ class User extends Component {
                     <M.Typography vairant="title" className={classes.secTitle}>
                       Friends
                     </M.Typography>
-                    <M.Grid
-                      container
-                      className={classes.itemcontainer}
-                    >
-                      {data ? data.friends ? (
-                          Object.values(data.friends).map(
-                              (friend, index) => (
-                                  <PeopleButton
-                                      key={index}
-                                      name={{ first: friend.username }}
-                                      onClick={() =>
-                                          this.props.history.push(
-                                              `/user?u=${friend.userID}`
-                                          )
-                                      }
-                                      image={friend.avatar}
-                                  />
-                              )
-                          )
-                      ) : (
-                          <M.Typography variant="body1">
-                              {`${data.username} got no friends`}
-                          </M.Typography>
-                      ) : user.friends ? (
-                          Object.values(user.friends).map(
-                            (friend, index) => (
-                              <PeopleButton
-                                key={index}
-                                name={{ first: friend.username }}
-                                onClick={() =>
-                                  this.props.history.push(
-                                    `/user?u=${friend.userID}`
-                                  )
-                                }
-                                image={friend.avatar}
-                              />
-                            )
-                          )
+                    <M.Grid container className={classes.itemcontainer}>
+                      {data ? (
+                        data.friends ? (
+                          Object.values(data.friends).map((friend, index) => (
+                            <PeopleButton
+                              key={index}
+                              name={{ first: friend.username }}
+                              onClick={() =>
+                                this.props.history.push(
+                                  `/user?u=${friend.userID}`
+                                )
+                              }
+                              image={friend.avatar}
+                            />
+                          ))
                         ) : (
+                          <M.Typography variant="body1">
+                            {`${data.username} got no friends`}
+                          </M.Typography>
+                        )
+                      ) : user.friends ? (
+                        Object.values(user.friends).map((friend, index) => (
+                          <PeopleButton
+                            key={index}
+                            name={{ first: friend.username }}
+                            onClick={() =>
+                              this.props.history.push(
+                                `/user?u=${friend.userID}`
+                              )
+                            }
+                            image={friend.avatar}
+                          />
+                        ))
+                      ) : (
                         <M.Typography variant="body1">
                           You got no friends.
                         </M.Typography>
@@ -1172,173 +1179,187 @@ class User extends Component {
                     </M.Grid>
                   </M.Grid>
                 </M.Grid>
-                  <Container>
-                      <Column/>
-                  </Container>
-                  <Container>
-                      <Column>
-                          <M.Typography variant="title" className={classes.secTitle}>
-                              Recently watched
-                          </M.Typography>
-                          <M.Grid
-                              container
-                              className={classes.itemcontainer}
-                          >
-                              {data ? (
-                                  data.episodeProgress ? (
-                                      Object.values(data.episodeProgress).filter(s => s.recentlyWatched)
-                                          .sort(
-                                              (a, b) => b.recentlyWatched - a.recentlyWatched
-                                          ).map(show => (
-                                          <CardButton
-                                              key={show.showId}
-                                              onClick={() =>
-                                                  this.props.history.push(`/show?s=${show.showId}`)
-                                              }
-                                              title={show.title}
-                                              image={show.showArtwork}
-                                              subtitle={show.ep ? `Episode ${show.ep}` : null}
-                                          />
-                                      ))
-                                  ) : (
-                                      <M.Typography variant="body1">
-                                          Appears {data.username} hasn't seen a anime here yet.
-                                      </M.Typography>
+                <Container>
+                  <Column />
+                </Container>
+                <Container>
+                  <Column>
+                    <M.Typography variant="title" className={classes.secTitle}>
+                      Recently watched
+                    </M.Typography>
+                    <M.Grid container className={classes.itemcontainer}>
+                      {data ? (
+                        data.episodeProgress ? (
+                          Object.values(data.episodeProgress)
+                            .filter(s => s.recentlyWatched)
+                            .sort(
+                              (a, b) => b.recentlyWatched - a.recentlyWatched
+                            )
+                            .map(show => (
+                              <CardButton
+                                key={show.showId}
+                                onClick={() =>
+                                  this.props.history.push(
+                                    `/show?s=${show.showId}`
                                   )
-                              ) : !isEmpty(user) && user.episodeProgress ? (
-                                  Object.values(user.episodeProgress).filter(s => s.recentlyWatched)
-                                      .sort(
-                                          (a, b) => b.recentlyWatched - a.recentlyWatched
-                                      ).map(show => (
-                                      <CardButton
-                                          key={show.showId}
-                                          onClick={() =>
-                                              this.props.history.push(`/show?s=${show.showId}`)
-                                          }
-                                          title={show.title}
-                                          image={show.showArtwork}
-                                          subtitle={show.ep ? `Episode ${show.ep}` : null}
-                                      />
-                                  ))
-                              ) : (
-                                  <M.Typography variant="body1">
-                                      Watch something?
-                                  </M.Typography>
-                              )}
-                          </M.Grid>
-                          <M.Typography variant={'title'} className={classes.secTitleSmall}>
-                              Last seen animes on yura
+                                }
+                                title={show.title}
+                                image={show.showArtwork}
+                                subtitle={show.ep ? `Episode ${show.ep}` : null}
+                              />
+                            ))
+                        ) : (
+                          <M.Typography variant="body1">
+                            Appears {data.username} hasn't seen a anime here
+                            yet.
                           </M.Typography>
-                          <M.Grid
-                              container
-                              className={classes.itemcontainer}
-                          >
-                          {data ? (
-                              data.lastEp ? (
-                                  Object.values(data.lastEp).map((show, index) => (
-                                      <CardButton
-                                          key={index}
-                                          onClick={() =>
-                                              this.props.history.push(`/show?s=${show.id}`)
-                                          }
-                                          title={show.showName}
-                                          image={show.imageLgeBanner}
-                                          subtitle={show.showEp}
-                                      />
-                                  ))
-                              ) : (
-                                  <M.Typography variant="body1">
-                                      {data.username} never used yura, nothing to find.
-                                  </M.Typography>
-                              )
-                          ) : !isEmpty(user) && user.lastEp ? (
-                              Object.values(user.lastEp).map((show, index) => (
-                                  <CardButton
-                                      key={index}
-                                      onClick={() =>
-                                          this.props.history.push(`/show?s=${show.id}`)
-                                      }
-                                      title={show.showName}
-                                      image={show.imageLgeBanner}
-                                      subtitle={show.showEp}
-                                  />
-                              ))
-                          ) : (
-                              <M.Typography variant="body1">
-                                  No information on about yura history.
-                              </M.Typography>
-                          )}
-                          </M.Grid>
-                          <M.Typography variant="title" className={classes.secTitle}>
-                              Later
+                        )
+                      ) : !isEmpty(user) && user.episodeProgress ? (
+                        Object.values(user.episodeProgress)
+                          .filter(s => s.recentlyWatched)
+                          .sort((a, b) => b.recentlyWatched - a.recentlyWatched)
+                          .map(show => (
+                            <CardButton
+                              key={show.showId}
+                              onClick={() =>
+                                this.props.history.push(
+                                  `/show?s=${show.showId}`
+                                )
+                              }
+                              title={show.title}
+                              image={show.showArtwork}
+                              subtitle={show.ep ? `Episode ${show.ep}` : null}
+                            />
+                          ))
+                      ) : (
+                        <M.Typography variant="body1">
+                          Watch something?
+                        </M.Typography>
+                      )}
+                    </M.Grid>
+                    <M.Typography
+                      variant={"title"}
+                      className={classes.secTitleSmall}
+                    >
+                      Last seen animes on yura
+                    </M.Typography>
+                    <M.Grid container className={classes.itemcontainer}>
+                      {data ? (
+                        data.lastEp ? (
+                          Object.values(data.lastEp).map((show, index) => (
+                            <CardButton
+                              key={index}
+                              onClick={() =>
+                                this.props.history.push(`/show?s=${show.id}`)
+                              }
+                              title={show.showName}
+                              image={show.imageLgeBanner}
+                              subtitle={show.showEp}
+                            />
+                          ))
+                        ) : (
+                          <M.Typography variant="body1">
+                            {data.username} never used yura, nothing to find.
                           </M.Typography>
-                          <M.Grid
-                              container
-                              className={classes.itemcontainer}
-                          >
-
-                          </M.Grid>
-                          <M.Typography vairant="title" className={classes.secTitle}>
-                              Completed
+                        )
+                      ) : !isEmpty(user) && user.lastEp ? (
+                        Object.values(user.lastEp).map((show, index) => (
+                          <CardButton
+                            key={index}
+                            onClick={() =>
+                              this.props.history.push(`/show?s=${show.id}`)
+                            }
+                            title={show.showName}
+                            image={show.imageLgeBanner}
+                            subtitle={show.showEp}
+                          />
+                        ))
+                      ) : (
+                        <M.Typography variant="body1">
+                          No information on about yura history.
+                        </M.Typography>
+                      )}
+                    </M.Grid>
+                    <M.Typography variant="title" className={classes.secTitle}>
+                      Later
+                    </M.Typography>
+                    <M.Grid container className={classes.itemcontainer}>
+                      {data ? (
+                        data.later && data.later.show ? (
+                          Object.values(data.later.show)
+                            .sort((a, b) => b.date - a.date)
+                            .map(show => (
+                              <CardButton
+                                key={show.id}
+                                onClick={() =>
+                                  this.props.history.push(`/show?s=${show.id}`)
+                                }
+                                title={show.name}
+                                image={show.image}
+                                subtitle={`Added ${moment(show.date).from(
+                                  Date.now()
+                                )}`}
+                              />
+                            ))
+                        ) : (
+                          <M.Typography variant="body1">
+                            Appears {data.username} hasn't been keen on checking
+                            anime lately
                           </M.Typography>
-                          <M.Grid
-                              container
-                              className={classes.itemcontainer}
-                          >
-
-                          </M.Grid>
-                          <M.Typography vairant="title" className={classes.secTitle}>
-                              Dropped
-                          </M.Typography>
-                          <M.Grid
-                              container
-                              className={classes.itemcontainer}
-                          >
-
-                          </M.Grid>
-                      </Column>
-                  </Container>
-                  <Container>
-                      <Column>
-                          <M.Typography variant="title" className={classes.secTitle}>
-                              Recently read
-                          </M.Typography>
-                          <M.Grid
-                              container
-                              className={classes.itemcontainer}
-                          >
-
-                          </M.Grid>
-                          <M.Typography variant="title" className={classes.secTitle}>
-                              Later
-                          </M.Typography>
-                          <M.Grid
-                              container
-                              className={classes.itemcontainer}
-                          >
-
-                          </M.Grid>
-                          <M.Typography vairant="title" className={classes.secTitle}>
-                              Completed
-                          </M.Typography>
-                          <M.Grid
-                              container
-                              className={classes.itemcontainer}
-                          >
-
-                          </M.Grid>
-                          <M.Typography vairant="title" className={classes.secTitle}>
-                              Dropped
-                          </M.Typography>
-                          <M.Grid
-                              container
-                              className={classes.itemcontainer}
-                          >
-
-                          </M.Grid>
-                      </Column>
-                  </Container>
-                  <Container/>
+                        )
+                      ) : !isEmpty(user) && user.later && user.later.show ? (
+                        Object.values(user.later.show)
+                          .sort((a, b) => b.date - a.date)
+                          .map(show => (
+                            <CardButton
+                              key={show.id}
+                              onClick={() =>
+                                this.props.history.push(`/show?s=${show.id}`)
+                              }
+                              title={show.name}
+                              image={show.image}
+                              subtitle={`Added ${moment(show.date).from(
+                                Date.now()
+                              )}`}
+                            />
+                          ))
+                      ) : (
+                        <M.Typography variant="body1">
+                          Add something to later?
+                        </M.Typography>
+                      )}
+                    </M.Grid>
+                    <M.Typography vairant="title" className={classes.secTitle}>
+                      Completed
+                    </M.Typography>
+                    <M.Grid container className={classes.itemcontainer} />
+                    <M.Typography vairant="title" className={classes.secTitle}>
+                      Dropped
+                    </M.Typography>
+                    <M.Grid container className={classes.itemcontainer} />
+                  </Column>
+                </Container>
+                <Container>
+                  <Column>
+                    <M.Typography variant="title" className={classes.secTitle}>
+                      Recently read
+                    </M.Typography>
+                    <M.Grid container className={classes.itemcontainer} />
+                    <M.Typography variant="title" className={classes.secTitle}>
+                      Later
+                    </M.Typography>
+                    <M.Grid container className={classes.itemcontainer} />
+                    <M.Typography vairant="title" className={classes.secTitle}>
+                      Completed
+                    </M.Typography>
+                    <M.Grid container className={classes.itemcontainer} />
+                    <M.Typography vairant="title" className={classes.secTitle}>
+                      Dropped
+                    </M.Typography>
+                    <M.Grid container className={classes.itemcontainer} />
+                  </Column>
+                </Container>
+                <Container />
               </SwipableViews>
             </MainCard>
           </Container>
