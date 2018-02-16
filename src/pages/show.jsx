@@ -556,6 +556,11 @@ const styles = theme => ({
   selectForm: {
     margin: theme.spacing.unit,
     minWidth: 120
+  },
+  streamButton: {
+    width: "100%",
+    marginTop: theme.spacing.unit,
+    background: blue.A200
   }
 });
 
@@ -914,7 +919,10 @@ class Show extends Component {
               : this.state.hue ? this.state.hue : null,
             avgScore: data.averageScore,
             meanScore: data.meanScore,
-            rank: data.rankings && data.rankings.length > 0 ? data.rankings[0] : null
+            rank:
+              data.rankings && data.rankings.length > 0
+                ? data.rankings[0]
+                : null
           }
         )
         .then(() => {
@@ -953,7 +961,8 @@ class Show extends Component {
           avgScore: data.averageScore,
           meanScore: data.meanScore,
           type: data.status.includes("NOT_YET_RELEASED") ? "TBA" : null,
-          rank: data.rankings && data.rankings.length > 0 ? data.rankings[0] : null
+          rank:
+            data.rankings && data.rankings.length > 0 ? data.rankings[0] : null
         }
       );
   };
@@ -1157,6 +1166,15 @@ class Show extends Component {
                       </Typography>
                     </div>
                   </Tilt>
+                  {!isEmpty(user) && data.Media.type.includes("ANIME") ? (
+                    <Button
+                      variant="raised"
+                      color="primary"
+                      className={classes.streamButton}
+                    >
+                      Livestream this anime
+                    </Button>
+                  ) : null}
                 </Grid>
                 <Grid item xs className={classes.mainFrame}>
                   <div className={classes.smallTitlebar}>
