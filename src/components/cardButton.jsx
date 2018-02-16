@@ -20,25 +20,25 @@ const styles = theme => ({
 		'&:hover': {
 			overflow: 'initial',
 			boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
-			background: blue.A200
+			background: blue.A200,
 		},
 		'&:hover > div': {
 			boxShadow: 'none',
-			zIndex: 200
+			zIndex: 200,
 		},
 		'&:hover > div > div': {
-			filter: 'brightness(0.4)'
+			filter: 'brightness(0.4)',
 		},
 		'&:hover > * > h1': {
 			fontWeight: 700,
-			textShadow: '0 2px 12px rgba(0,0,0,.7)'
+			textShadow: '0 2px 12px rgba(0,0,0,.7)',
 		},
 		position: 'relative',
 		overflow: 'hidden',
 		willChange: 'auto',
 		cursor: 'pointer',
 		transformStyle: 'preserve-3d',
-		animation: 'loadIn .5s ease'
+		animation: 'loadIn .5s ease',
 	},
 	entityCardDisabled: {
 		height: 200,
@@ -49,7 +49,7 @@ const styles = theme => ({
 		transition: theme.transitions.create(['all']),
 		filter: 'brightness(.8)',
 		position: 'relative',
-		overflow: 'hidden'
+		overflow: 'hidden',
 	},
 	entityImage: {
 		height: '100%',
@@ -64,7 +64,7 @@ const styles = theme => ({
 		background: 'white',
 		backgroundSize: 'cover',
 		backgroundRepeat: 'no-repeat',
-		backgroundPosition: 'center'
+		backgroundPosition: 'center',
 	},
 	entityTitle: {
 		fontSize: 14,
@@ -79,7 +79,7 @@ const styles = theme => ({
 		willChange: 'auto',
 		cursor: 'default',
 		userSelect: 'none',
-		transform: 'translateZ(20px)'
+		transform: 'translateZ(20px)',
 	},
 	entitySubTitle: {
 		fontSize: 14,
@@ -94,7 +94,7 @@ const styles = theme => ({
 		willChange: 'auto',
 		cursor: 'default',
 		userSelect: 'none',
-        transform: 'translateZ(20px)'
+		transform: 'translateZ(20px)',
 	},
 	gradientCard: {
 		position: 'relative',
@@ -102,7 +102,7 @@ const styles = theme => ({
 		zIndex: 2,
 		width: '100%',
 		background: 'linear-gradient(to top, rgba(0,0,0,.6), transparent)',
-        transition: theme.transitions.create(['all']),
+		transition: theme.transitions.create(['all']),
 	},
 	peopleCard: {
 		height: 'auto',
@@ -116,45 +116,45 @@ const styles = theme => ({
 			// boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
 			// background: blue.A200
 		},
-        '&:hover > div > div > div': {
-            boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
-            borderColor: blue.A200
-        },
-        '&:hover > div > div > div > img': {
-            boxShadow: 'none'
-        },
+		'&:hover > div > div > div': {
+			boxShadow: `0 2px 14px rgba(0,55,230,.3)`,
+			borderColor: blue.A200,
+		},
+		'&:hover > div > div > div > img': {
+			boxShadow: 'none',
+		},
 		'&:hover > * > h1': {
-			textShadow: '0 2px 12px rgba(0,0,0,.7)'
+			textShadow: '0 2px 12px rgba(0,0,0,.7)',
 		},
 		position: 'relative',
 		overflow: 'hidden',
 		willChange: 'auto',
 		cursor: 'pointer',
-        animation: 'loadIn .5s ease'
+		animation: 'loadIn .5s ease',
 	},
-    cardImage: {
-        height: 210,
-        width: 156,
-        margin: 'auto',
-        zIndex: 1,
+	cardImage: {
+		height: 210,
+		width: 156,
+		margin: 'auto',
+		zIndex: 1,
 		borderRadius: 2,
 		border: '8px solid transparent',
-        transition: theme.transitions.create(['all']),
-        top: 0,
-        left: 0,
-        transform: 'translateZ(20px)'
-    },
+		transition: theme.transitions.create(['all']),
+		top: 0,
+		left: 0,
+		transform: 'translateZ(20px)',
+	},
 	peopleImage: {
 		height: 156,
 		width: 156,
 		margin: 'auto',
 		zIndex: 1,
 		borderRadius: '50%',
-        border: '8px solid transparent',
-        transition: theme.transitions.create(['all']),
+		border: '8px solid transparent',
+		transition: theme.transitions.create(['all']),
 		top: 0,
 		left: 0,
-        transform: 'translateZ(20px)'
+		transform: 'translateZ(20px)',
 	},
 	peopleCharImage: {
 		height: 64,
@@ -168,11 +168,11 @@ const styles = theme => ({
 		transition: theme.transitions.create(['all']),
 		'&:hover': {
 			boxShadow: '0 3px 16px rgba(0,0,0,.5)',
-			transform: 'scale(1.2) translateZ(30px)'
+			transform: 'scale(1.2) translateZ(30px)',
 		},
 		right: theme.spacing.unit * 1,
 		bottom: 0,
-        transform: 'translateZ(40px)'
+		transform: 'translateZ(40px)',
 	},
 	peopleTitle: {
 		fontSize: 14,
@@ -188,7 +188,7 @@ const styles = theme => ({
 		willChange: 'auto',
 		cursor: 'default',
 		userSelect: 'none',
-        transform: 'translateZ(20px)',
+		transform: 'translateZ(20px)',
 	},
 	peopleSubTitle: {
 		fontSize: 14,
@@ -203,7 +203,7 @@ const styles = theme => ({
 		willChange: 'auto',
 		cursor: 'default',
 		userSelect: 'none',
-        transform: 'translateZ(20px)'
+		transform: 'translateZ(20px)',
 	},
 	artworktype: {
 		fontSize: 12,
@@ -215,7 +215,7 @@ const styles = theme => ({
 		background: '#111',
 		color: 'white',
 		boxShadow: '0 2px 16px rgba(0,0,0,.2)',
-		fontWeight: 600
+		fontWeight: 600,
 	},
 	loadingArtwork: {
 		margin: 'auto',
@@ -224,14 +224,14 @@ const styles = theme => ({
 		left: '50%',
 		transform: 'translate(-50%, -50%)',
 		color: 'white',
-		filter: 'drop-shadow(0 2px 16px rgba(0,0,0,.3))'
+		filter: 'drop-shadow(0 2px 16px rgba(0,0,0,.3))',
 	},
 	artworkimg: {
 		width: '100%',
 		height: '100%',
 		objectFit: 'cover',
 		background: 'white',
-		transition: theme.transitions.create(['all'])
+		transition: theme.transitions.create(['all']),
 	},
 	artwork: {
 		maxWidth: 300,
@@ -244,19 +244,19 @@ const styles = theme => ({
 			transform: 'scale(1.05)',
 			overflow: 'initial',
 			boxShadow: `0 2px 14px rgba(0,0,0,.3)`,
-			background: blue.A200
+			background: blue.A200,
 		},
 		'&:hover > .artworktitle': {
-			transform: 'scale(1.2)'
+			transform: 'scale(1.2)',
 		},
 		'&:hover > img': {
 			transform: 'scale(0.9)',
-			filter: 'brightness(0.9)'
+			filter: 'brightness(0.9)',
 		},
 		'&:active': {
-			opacity: 0.7
+			opacity: 0.7,
 		},
-		zIndex: 500
+		zIndex: 500,
 	},
 	artworkDisabled: {
 		maxWidth: 300,
@@ -266,17 +266,16 @@ const styles = theme => ({
 		transition: theme.transitions.create(['all']),
 		position: 'relative',
 		'& > img': {
-			opacity: 0.7
+			opacity: 0.7,
 		},
-		zIndex: 500
+		zIndex: 500,
 	},
 	fillImg: {
 		height: '100%',
 		width: '100%',
 		objectFit: 'cover',
 		background: 'white',
-        boxShadow: '0 2px 12px rgba(0,0,0,.2)',
-	}
+	},
 });
 
 const nameSwapper = (first, last) => (last ? `${first} ${last}` : first);
@@ -293,45 +292,48 @@ export const PeopleButton = withStyles(styles, { withTheme: true })(
 		role,
 		...props
 	}) => (
-  <Grid className={classes.peopleCard} item xs>
-    <Card
-      style={{
+		<Grid className={classes.peopleCard} item xs>
+			<Card
+				style={{
 					background: 'transparent',
-					boxShadow: 'none'
+					boxShadow: 'none',
 				}}
-    >
-      <Tilt style={{transformStyle: 'preserve-3d'}} options={{scale: 1, max: window.safari ? 2 : 35}}>
-        <Avatar
-          className={classes.peopleImage}
-          classes={{ img: classes.fillImg }}
-          src={image}
-          imgProps={{
-						style: { opacity: 0 },
-						onLoad: e => (e.currentTarget.style.opacity = null)
-					}}
-          onClick={props.onClick}
-        />
-        {actor ? (
-          <Avatar
-            className={classes.peopleCharImage}
-            classes={{ img: classes.fillImg }}
-            src={charImg}
-            imgProps={{
+			>
+				<Tilt
+					style={{ transformStyle: 'preserve-3d' }}
+					options={{ scale: 1, max: window.safari ? 2 : 35 }}
+				>
+					<Avatar
+						className={classes.peopleImage}
+						classes={{ img: classes.fillImg }}
+						src={image}
+						imgProps={{
 							style: { opacity: 0 },
-							onLoad: e => (e.currentTarget.style.opacity = null)
+							onLoad: e => (e.currentTarget.style.opacity = null),
 						}}
-            onClick={charOnClick}
-          />
-				) : null}
-      </Tilt>
-      <Typography variant="headline" className={classes.peopleTitle}>
-        {nameSwapper(first, last)}
-      </Typography>
-      <Typography variant="headline" className={classes.peopleSubTitle}>
-        {role}
-      </Typography>
-    </Card>
-  </Grid>
+						onClick={props.onClick}
+					/>
+					{actor ? (
+						<Avatar
+							className={classes.peopleCharImage}
+							classes={{ img: classes.fillImg }}
+							src={charImg}
+							imgProps={{
+								style: { opacity: 0 },
+								onLoad: e => (e.currentTarget.style.opacity = null),
+							}}
+							onClick={charOnClick}
+						/>
+					) : null}
+				</Tilt>
+				<Typography variant="headline" className={classes.peopleTitle}>
+					{nameSwapper(first, last)}
+				</Typography>
+				<Typography variant="headline" className={classes.peopleSubTitle}>
+					{role}
+				</Typography>
+			</Card>
+		</Grid>
 	)
 );
 
@@ -402,40 +404,43 @@ export const PeopleButton = withStyles(styles, { withTheme: true })(
 
 const CardButton = withStyles(styles, { withTheme: true })(
 	({ classes, theme, image, title, subtitle, ...props }) => (
-        <Grid className={classes.peopleCard} item xs>
-            <Card
-                style={{
-                    background: 'transparent',
-                    boxShadow: 'none'
-                }}
-                onClick={props.onClick}
-            >
-                <Tilt style={{transformStyle: 'preserve-3d'}} options={{scale: 1, max: window.safari ? 2 : 35, }}>
-                    <Avatar
-                        className={classes.cardImage}
-                        classes={{ img: classes.fillImg }}
-                        src={image}
-                        imgProps={{
-                            style: { opacity: 0 },
-                            onLoad: e => (e.currentTarget.style.opacity = null)
-                        }}
-                    />
-                </Tilt>
-                <Typography variant="headline" className={classes.peopleTitle}>
-                    {title}
-                </Typography>
-                <Typography variant="headline" className={classes.peopleSubTitle}>
-                    {subtitle}
-                </Typography>
-            </Card>
-        </Grid>
+		<Grid className={classes.peopleCard} item xs>
+			<Card
+				style={{
+					background: 'transparent',
+					boxShadow: 'none',
+				}}
+				onClick={props.onClick}
+			>
+				<Tilt
+					style={{ transformStyle: 'preserve-3d' }}
+					options={{ scale: 1, max: window.safari ? 2 : 35 }}
+				>
+					<Avatar
+						className={classes.cardImage}
+						classes={{ img: classes.fillImg }}
+						src={image}
+						imgProps={{
+							style: { opacity: 0 },
+							onLoad: e => (e.currentTarget.style.opacity = null),
+						}}
+					/>
+				</Tilt>
+				<Typography variant="headline" className={classes.peopleTitle}>
+					{title}
+				</Typography>
+				<Typography variant="headline" className={classes.peopleSubTitle}>
+					{subtitle}
+				</Typography>
+			</Card>
+		</Grid>
 	)
 );
 
 CardButton.propTypes = {
 	image: PropTypes.string,
 	title: PropTypes.string,
-	subtitle: PropTypes.string
+	subtitle: PropTypes.string,
 };
 
 PeopleButton.propTypes = {
@@ -444,7 +449,7 @@ PeopleButton.propTypes = {
 	image: PropTypes.string,
 	charImg: PropTypes.string,
 	charOnClick: PropTypes.func,
-	role: PropTypes.string
+	role: PropTypes.string,
 };
 
 export default CardButton;

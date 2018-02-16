@@ -176,7 +176,7 @@ const style = theme => ({
 		'&:webkit-scrollbar': {
 			display: 'none',
 		},
-        overflow: 'hidden'
+		overflow: 'hidden',
 	},
 	listContainer: {
 		width: '100%',
@@ -259,60 +259,62 @@ const SuperTable = class extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-            currentSlide: 0,
-            slideRange: 0,
-        };
+			currentSlide: 0,
+			slideRange: 0,
+		};
 	}
 
-
-    goBack = e => {
-	    e.persist();
-        const list = document.getElementById(this.getListType());
-        let scrollSlide = this.state.currentSlide;
-        const listelement = list.childNodes[0];
-        scrollSlide -= listelement.scrollWidth * 3;
-        scrollSlide < 0 ? scrollSlide = 0 : scrollSlide = scrollSlide;
-        this.setState({currentSlide: scrollSlide}, () => {
-            list.scroll({left: this.state.currentSlide, behavior: 'smooth'});
-            if (scrollSlide === 0) {
-                console.log('Oh shit');
-            }
-        });
+	goBack = e => {
+		e.persist();
+		const list = document.getElementById(this.getListType());
+		let scrollSlide = this.state.currentSlide;
+		const listelement = list.childNodes[0];
+		scrollSlide -= listelement.scrollWidth * 3;
+		scrollSlide < 0 ? (scrollSlide = 0) : (scrollSlide = scrollSlide);
+		this.setState({ currentSlide: scrollSlide }, () => {
+			list.scroll({ left: this.state.currentSlide, behavior: 'smooth' });
+			if (scrollSlide === 0) {
+				console.log('Oh shit');
+			}
+		});
 	};
 
 	goFor = e => {
-	    e.persist();
-	    const list = document.getElementById(this.getListType());
-	    let scrollSlide = this.state.currentSlide;
-	    const listelement = list.childNodes[0];
-	    scrollSlide += listelement.scrollWidth * 3;
-        scrollSlide > list.scrollWidth ? scrollSlide = list.scrollWidth : scrollSlide = scrollSlide;
-        this.setState({currentSlide: scrollSlide}, () => { list.scroll({left: this.state.currentSlide, behavior: 'smooth'});
-            if (scrollSlide === list.scrollWidth) {
-                console.log('Oh shit');
-            }
-        });
+		e.persist();
+		const list = document.getElementById(this.getListType());
+		let scrollSlide = this.state.currentSlide;
+		const listelement = list.childNodes[0];
+		scrollSlide += listelement.scrollWidth * 3;
+		scrollSlide > list.scrollWidth
+			? (scrollSlide = list.scrollWidth)
+			: (scrollSlide = scrollSlide);
+		this.setState({ currentSlide: scrollSlide }, () => {
+			list.scroll({ left: this.state.currentSlide, behavior: 'smooth' });
+			if (scrollSlide === list.scrollWidth) {
+				console.log('Oh shit');
+			}
+		});
 	};
 
 	getListType = () => {
-	    const props = this.props;
-	    if (props.typeof === 'later') {
-	        return props.type.includes('m') ? 'mangalaterlist' : 'animelaterlist';
-        }
-        if (props.typeof === 'ranking') {
-	        return props.type.includes('c') ? 'collectionlist' : 'rankinglist';
-        }
-        if (props.typeof === 'ongoing') {
-	        return props.type.includes('m') ? 'mangaongoinglist' : 'animeongoinglist';
-        }
-        if (props.typeof === 'progress') {
-	        return "progresslist";
-        }
-        if (props.typeof === 'feeds') {
-	        return "feedlist";
-        }
-        return null;
-    };
+		const props = this.props;
+		if (props.typeof === 'later') {
+			return props.type.includes('m') ? 'mangalaterlist' : 'animelaterlist';
+		}
+		if (props.typeof === 'ranking') {
+			return props.type.includes('c') ? 'collectionlist' : 'rankinglist';
+		}
+		if (props.typeof === 'ongoing') {
+			return props.type.includes('m') ? 'mangaongoinglist' : 'animeongoinglist';
+		}
+		if (props.typeof === 'progress') {
+			return 'progresslist';
+		}
+		if (props.typeof === 'feeds') {
+			return 'feedlist';
+		}
+		return null;
+	};
 
 	shouldComponentUpdate = (nextProps, nextState) => {
 		if (this.props.data !== nextProps.data) {
@@ -415,14 +417,18 @@ const SuperTable = class extends React.Component {
 											variant="display2"
 											className={classes.bigCardVerySmallTitle}
 										>
-											{anime.avgScore
-												? `Score ${anime.avgScore}%`
-												: `Score ${anime.meanScore}%`}{' '}
-											{anime.rank
-												? `• #${`${anime.rank.rank} ${anime.rank.context} ${
-														anime.rank.format
-													}`}`
-												: null}
+											{anime.type && anime.type === 'TBA'
+												? `Not yet released`
+												: anime.avgScore
+													? `Score ${anime.avgScore}%`
+													: `Score ${anime.meanScore}%`}{' '}
+											{anime.type && anime.type === 'TBA'
+												? null
+												: anime.rank
+													? `• #${`${anime.rank.rank} ${anime.rank.context} ${
+															anime.rank.format
+														}`}`
+													: null}
 										</Typography>
 										<Dotdotdot clamp={1} className={classes.dotdot}>
 											<Typography

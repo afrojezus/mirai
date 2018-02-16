@@ -15,7 +15,7 @@ import {
 	Root,
 	CommandoBar,
 	MainCard,
-	Container
+	Container,
 } from '../components/layouts';
 import CardButton, { PeopleButton } from '../components/cardButton';
 
@@ -73,6 +73,7 @@ const style = theme => ({
 		height: '100%',
 		width: '100%',
 		objectFit: 'cover',
+		borderRadius: '50%',
 		background: 'white',
 	},
 	peopleCard: {
@@ -229,11 +230,11 @@ const style = theme => ({
 		paddingBottom: theme.spacing.unit * 2,
 		marginLeft: theme.spacing.unit,
 		marginRight: theme.spacing.unit,
-        [theme.breakpoints.down('sm')]: {
-            marginLeft: 0,
-            marginRight: 0,
-			paddingBottom: 0
-        }
+		[theme.breakpoints.down('sm')]: {
+			marginLeft: 0,
+			marginRight: 0,
+			paddingBottom: 0,
+		},
 	},
 	gradientCard: {
 		position: 'relative',
@@ -321,9 +322,9 @@ const style = theme => ({
 		paddingBottom: theme.spacing.unit * 4,
 		marginBottom: theme.spacing.unit * 8,
 		transition: theme.transitions.create(['all']),
-        [theme.breakpoints.down('sm')]: {
-            marginTop: 0
-        }
+		[theme.breakpoints.down('sm')]: {
+			marginTop: 0,
+		},
 	},
 	glassEffect: {
 		position: 'absolute',
@@ -377,11 +378,11 @@ const style = theme => ({
 		fontWeight: 700,
 		color: 'white',
 		textShadow: '0 2px 12px rgba(0,0,0,.2)',
-        [theme.breakpoints.down('sm')]: {
-            whiteSpace: 'initial',
+		[theme.breakpoints.down('sm')]: {
+			whiteSpace: 'initial',
 			fontSize: theme.typography.pxToRem(28),
 			textAlign: 'center',
-        }
+		},
 	},
 	smallTitle: {
 		fontWeight: 600,
@@ -430,6 +431,7 @@ const style = theme => ({
 		background: 'white',
 		transition: theme.transitions.create(['all']),
 		zIndex: -1,
+		borderRadius: '50%',
 	},
 	artwork: {
 		width: 400,
@@ -437,35 +439,36 @@ const style = theme => ({
 		borderRadius: '50%',
 		overflow: 'hidden',
 		margin: 'auto',
-		boxShadow: '0px 3px 18px rgba(0,0,0,0.5)',
 		transition: theme.transitions.create(['all']),
 		position: 'relative',
 		zIndex: 500,
 		[theme.breakpoints.down('sm')]: {
 			width: 200,
 			height: 200,
-		}
+		},
+
+		filter: 'drop-shadow(0 4px 12px rgba(0,0,0,.2))',
 	},
 	artworkContainer: {
 		width: 400,
 		flexGrow: 0,
 		marginRight: 24,
-        [theme.breakpoints.down('sm')]: {
-            width: '100%',
-			margin: 0,
-			flexGrow: 1
-        }
+		[theme.breakpoints.down('sm')]: {
+			width: '100%',
+			margin: 0,
+			flexGrow: 1,
+		},
 	},
 	artworkTilt: {
-        [theme.breakpoints.down('sm')]: {
-            margin: 'auto'
-        }
+		[theme.breakpoints.down('sm')]: {
+			margin: 'auto',
+		},
 	},
 	topBar: {
-        [theme.breakpoints.down('sm')]: {
-            padding: theme.spacing.unit
-        }
-	}
+		[theme.breakpoints.down('sm')]: {
+			padding: theme.spacing.unit,
+		},
+	},
 });
 
 const staffQuery = `
@@ -757,11 +760,7 @@ class Fig extends Component {
 					{(data && data.Character) || (data && data.Staff) ? (
 						<Grid container spacing={0}>
 							<M.Grid container spacing={0} className={classes.container}>
-								<M.Grid
-									item
-									className={classes.artworkContainer}
-									xs
-								>
+								<M.Grid item className={classes.artworkContainer} xs>
 									<Tilt
 										className={classes.artworkTilt}
 										style={{ transformStyle: 'preserve-3d' }}
@@ -895,9 +894,7 @@ class Fig extends Component {
 															)
 														}
 														key={anime.id}
-														title={
-															anime.node.title.romaji
-														}
+														title={anime.node.title.romaji}
 														subtitle={anime.staffRole}
 														image={anime.node.coverImage.large}
 													/>
@@ -916,9 +913,7 @@ class Fig extends Component {
 											<M.Grid container className={classes.itemcontainer}>
 												{data.Character.media.edges.map(anime => (
 													<CardButton
-														title={
-															anime.node.title.romaji
-														}
+														title={anime.node.title.romaji}
 														key={anime.id}
 														image={anime.node.coverImage.large}
 														onClick={() =>

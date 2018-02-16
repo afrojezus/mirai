@@ -206,7 +206,7 @@ const styles = theme => ({
 		margin: 'auto',
 		borderRadius: 3,
 		overflow: 'hidden',
-		boxShadow: '0px 3px 18px rgba(0,0,0,0.5)',
+		filter: 'drop-shadow(0 4px 12px rgba(0,0,0,.2))',
 		transition: theme.transitions.create(['all']),
 		position: 'relative',
 		'&:hover': {
@@ -425,9 +425,9 @@ const styles = theme => ({
 	sectDivide: {
 		marginTop: theme.spacing.unit * 2,
 	},
-    sectDivideDown: {
-        marginBottom: theme.spacing.unit * 2,
-    },
+	sectDivideDown: {
+		marginBottom: theme.spacing.unit * 2,
+	},
 	progressCon: {
 		display: 'flex',
 		flexDirection: 'column',
@@ -544,19 +544,19 @@ const styles = theme => ({
 		zIndex: 10000,
 	},
 	playArtworkButtonContainer: {
-        borderRadius: '50%',
-        background: grey[800],
-        transform: 'translateZ(30%)'
+		borderRadius: '50%',
+		background: blue.A200,
+		transform: 'translateZ(30%)',
 	},
 	playArtworkButton: {
 		color: 'white',
 		width: 32,
 		height: 32,
 	},
-    selectForm: {
-            margin: theme.spacing.unit,
-            minWidth: 120,
-    }
+	selectForm: {
+		margin: theme.spacing.unit,
+		minWidth: 120,
+	},
 });
 
 const nameSwapper = (first, last) => (last ? `${first} ${last}` : first);
@@ -575,7 +575,7 @@ class Show extends Component {
 		epError: false,
 		menuEl: null,
 		reportModal: false,
-        status: ''
+		status: '',
 	};
 
 	componentWillMount = () => {
@@ -587,7 +587,11 @@ class Show extends Component {
 	};
 
 	componentWillReceiveProps = async nextProps => {
-		if (this.props.mir !== nextProps.mir && this.state.data && this.state.data.Media)
+		if (
+			this.props.mir !== nextProps.mir &&
+			this.state.data &&
+			this.state.data.Media
+		)
 			await this.executeTwist();
 	};
 
@@ -790,7 +794,7 @@ class Show extends Component {
 				.toLowerCase()
 				.replace('(tv)', '')
 				.replace('.', '')
-                .replace('macross frontier', 'macross f');
+				.replace('macross frontier', 'macross f');
 			const meta = Object.values(this.props.mir.twist).filter(s =>
 				s.name.toLowerCase().match(`${correctedtitle}`)
 			);
@@ -834,7 +838,7 @@ class Show extends Component {
 				})
 				.then(() => {
 					// console.log(this.props);
-                    this.setState({status: 'active'});
+					this.setState({ status: 'active' });
 					return this.props.history.push(`/watch`);
 				});
 		} else
@@ -914,6 +918,7 @@ class Show extends Component {
 						: this.state.hue ? this.state.hue : null,
 					avgScore: data.averageScore,
 					meanScore: data.meanScore,
+					type: data.status.includes('NOT_YET_RELEASED') ? 'TBA' : null,
 					rank: data.rankings.length > 0 ? data.rankings[0] : null,
 				}
 			);
@@ -931,8 +936,8 @@ class Show extends Component {
 	reportError = () => this.setState({ reportModal: !this.state.reportModal });
 
 	handleStatus = event => {
-        return this.setState({ [event.target.name]: event.target.value });
-    };
+		return this.setState({ [event.target.name]: event.target.value });
+	};
 
 	render() {
 		const { classes, mir } = this.props;
@@ -949,7 +954,7 @@ class Show extends Component {
 			epError,
 			menuEl,
 			similars2,
-            status
+			status,
 		} = this.state;
 
 		const openMenu = Boolean(menuEl);
@@ -977,7 +982,9 @@ class Show extends Component {
 				>
 					Report error
 				</MenuItem>
-				{user.isDeveloper === true ? <MenuItem onClick={this.editEntry}>Edit entry</MenuItem> : null}
+				{user.isDeveloper === true ? (
+					<MenuItem onClick={this.editEntry}>Edit entry</MenuItem>
+				) : null}
 			</Menu>
 		);
 
@@ -1041,72 +1048,80 @@ class Show extends Component {
 								style={{ background: hue }}
 							>
 								<Grid item xs={2} className={classes.leftSide}>
-									<Tilt style={{transformStyle: 'preserve-3d'}} options={{scale: 1}}>
-									<div
-										role="play-show"
-										aria-controls="button"
-										className={
-											mir && mir.play && mir.play.meta.id === data.Media.id
-												? classes.artworkDisabled
-												: data.Media.type.includes('MANGA')
-													? classes.artwork
-													: data.Media.status.includes('NOT_YET_RELEASED') ||
-														!eps
-														? classes.artworkDisabled
-														: classes.artwork
-										}
-										style={{ background: hueVib }}
-										onClick={
-											mir && mir.play && mir.play.meta.id === data.Media.id
-												? null
-												: data.Media.type.includes('MANGA')
-													? this.play
-													: data.Media.status.includes('NOT_YET_RELEASED') ||
-														!eps
-														? null
-														: this.play
-										}
-										onKeyDown={this.handleKeyDown}
+									<Tilt
+										style={{ transformStyle: 'preserve-3d' }}
+										options={{ scale: 1 }}
 									>
-										<img
-											src={data.Media.coverImage.large}
-											alt=""
-											className={classes.artworkimg}
-											style={{ opacity: 0 }}
-											onLoad={e => (e.currentTarget.style.opacity = null)}
-										/>
-										<CircularProgress
-											className={classes.loadingArtwork}
-											style={
-												data.Media.type.includes('MANGA')
-													? { opacity: 0 }
-													: eps
-														? { opacity: 0 }
-														: epError ? { opacity: 0 } : null
+										<div
+											role="play-show"
+											aria-controls="button"
+											className={
+												mir && mir.play && mir.play.meta.id === data.Media.id
+													? classes.artworkDisabled
+													: data.Media.type.includes('MANGA')
+														? classes.artwork
+														: data.Media.status.includes('NOT_YET_RELEASED') ||
+															!eps
+															? classes.artworkDisabled
+															: classes.artwork
 											}
-										/>
-										<Typography className="artworktitle" variant="display1">
-											{mir && mir.play && mir.play.meta.id === data.Media.id ? (
-												'Playing'
-											) : data.Media.status.includes('NOT_YET_RELEASED') ? (
-												'TBA'
-											) : data.Media.type.includes('MANGA') ? (
-                                                <Button variant={'fab'} className={classes.playArtworkButtonContainer} style={{ background: hueVib }}>
-												<Icon.Book
-													className={classes.playArtworkButton}
-												/>
-												</Button>
-											) : eps ? (
-												<Button variant={'fab'} className={classes.playArtworkButtonContainer} style={{ background: hueVib }}>
-												<Icon.PlayArrow
-													className={classes.playArtworkButton}
-												/>
-												</Button>
-											) : epError ? (
-												'Not avaliable'
-											) : null}
-										</Typography>
-									</div>
+											onClick={
+												mir && mir.play && mir.play.meta.id === data.Media.id
+													? null
+													: data.Media.type.includes('MANGA')
+														? this.play
+														: data.Media.status.includes('NOT_YET_RELEASED') ||
+															!eps
+															? null
+															: this.play
+											}
+											onKeyDown={this.handleKeyDown}
+										>
+											<img
+												src={data.Media.coverImage.large}
+												alt=""
+												className={classes.artworkimg}
+												style={{ opacity: 0 }}
+												onLoad={e => (e.currentTarget.style.opacity = null)}
+											/>
+											<CircularProgress
+												className={classes.loadingArtwork}
+												style={
+													data.Media.type.includes('MANGA')
+														? { opacity: 0 }
+														: eps
+															? { opacity: 0 }
+															: epError ? { opacity: 0 } : null
+												}
+											/>
+											<Typography className="artworktitle" variant="display1">
+												{mir &&
+												mir.play &&
+												mir.play.meta.id === data.Media.id ? (
+													'Playing'
+												) : data.Media.status.includes('NOT_YET_RELEASED') ? (
+													'TBA'
+												) : data.Media.type.includes('MANGA') ? (
+													<Button
+														variant={'fab'}
+														className={classes.playArtworkButtonContainer}
+													>
+														<Icon.Book className={classes.playArtworkButton} />
+													</Button>
+												) : eps ? (
+													<Button
+														variant={'fab'}
+														className={classes.playArtworkButtonContainer}
+													>
+														<Icon.PlayArrow
+															className={classes.playArtworkButton}
+														/>
+													</Button>
+												) : epError ? (
+													'Not avaliable'
+												) : null}
+											</Typography>
+										</div>
 									</Tilt>
 								</Grid>
 								<Grid item xs className={classes.mainFrame}>
@@ -1275,7 +1290,7 @@ class Show extends Component {
 												Tags
 											</Typography>
 											<div className={classes.genreRow}>
-												{data.Media.tags.map((o, index)=> (
+												{data.Media.tags.map((o, index) => (
 													<Chip
 														onClick={() =>
 															this.props.history.push(`/tag?t=${o.id}`)
@@ -1313,7 +1328,12 @@ class Show extends Component {
 								</Grid>
 							</Container>
 							<MainCard>
-								<CommandoBar style={{borderTop: '1px solid rgba(255,255,255,.1', borderBottom: 'none'}}>
+								<CommandoBar
+									style={{
+										borderTop: '1px solid rgba(255,255,255,.1',
+										borderBottom: 'none',
+									}}
+								>
 									{data.Media.averageScore ? (
 										<div className={classes.commandoTextBox}>
 											<Typography
@@ -1468,23 +1488,24 @@ class Show extends Component {
 											{data.Media.hashtag}
 										</Button>
 									) : null}
-                                    {!isEmpty(user) ? (
-                                            <FormControl className={classes.selectForm}>
-                                                <InputLabel htmlFor="status">Status</InputLabel>
-                                                <Select
-                                                    value={status}
-                                                    onChange={this.handleStatus}
-                                                    inputProps={{
-                                                        name: 'status',
-                                                        id: 'status',
-                                                    }}>
-                                                    <MenuItem value={''}>None</MenuItem>
-                                                    <MenuItem value={'Dropped'}>Dropped</MenuItem>
-                                                    <MenuItem value={'Completed'}>Completed</MenuItem>
-                                                    <MenuItem value={'Active'}>Active</MenuItem>
-                                                </Select>
-                                            </FormControl>
-                                    ) : null}
+									{!isEmpty(user) ? (
+										<FormControl className={classes.selectForm}>
+											<InputLabel htmlFor="status">Status</InputLabel>
+											<Select
+												value={status}
+												onChange={this.handleStatus}
+												inputProps={{
+													name: 'status',
+													id: 'status',
+												}}
+											>
+												<MenuItem value={''}>None</MenuItem>
+												<MenuItem value={'Dropped'}>Dropped</MenuItem>
+												<MenuItem value={'Completed'}>Completed</MenuItem>
+												<MenuItem value={'Active'}>Active</MenuItem>
+											</Select>
+										</FormControl>
+									) : null}
 									{!isEmpty(user) ? (
 										<Tooltip
 											title={
@@ -1598,50 +1619,64 @@ class Show extends Component {
 									</Modal>
 								</CommandoBar>
 								<CommandoBar>
-                                    {!data.Media.status
-                                        .includes('NOT_YET_RELEASED') ?<div className={classes.commandoTextBox}>
-                                    <Typography
-                                        variant="title"
-                                        className={classes.commandoText}
-                                    >
-                                        {`${data.Media.startDate.day}. ${moment(data.Media.startDate.month, 'MM').format('MMMM')} ${data.Media.startDate.year}`}
-                                    </Typography>
-                                    <Typography
-                                        variant="body1"
-                                        className={classes.commandoTextLabel}
-                                    >
-                                        {data.Media.type.includes('ANIME') ? 'Airing start' : 'Publishing start'}
-                                    </Typography>
-                                </div> : null}
-                                    {!data.Media.status
-                                        .includes('RELEASING' || 'NOT_YET_RELEASED') ? <div className={classes.commandoTextBox}>
-                                        <Typography
-                                            variant="title"
-                                            className={classes.commandoText}
-                                        >
-                                            {`${data.Media.endDate.day}. ${moment(data.Media.endDate.month, 'MM').format('MMMM')} ${data.Media.endDate.year}`}
-                                        </Typography>
-                                        <Typography
-                                            variant="body1"
-                                            className={classes.commandoTextLabel}
-                                        >
-                                            {data.Media.type.includes('ANIME') ? 'Airing ended' : 'Publishing ended'}
-                                        </Typography>
-                                    </div> : null}
-                                    <div className={classes.commandoTextBox}>
-                                        <Typography
-                                            variant="title"
-                                            className={classes.commandoText}
-                                        >
-                                            {data.Media.format}
-                                        </Typography>
-                                        <Typography
-                                            variant="body1"
-                                            className={classes.commandoTextLabel}
-                                        >
-                                            Type
-                                        </Typography>
-                                    </div>
+									{!data.Media.status.includes('NOT_YET_RELEASED') ? (
+										<div className={classes.commandoTextBox}>
+											<Typography
+												variant="title"
+												className={classes.commandoText}
+											>
+												{`${data.Media.startDate.day}. ${moment(
+													data.Media.startDate.month,
+													'MM'
+												).format('MMMM')} ${data.Media.startDate.year}`}
+											</Typography>
+											<Typography
+												variant="body1"
+												className={classes.commandoTextLabel}
+											>
+												{data.Media.type.includes('ANIME')
+													? 'Airing start'
+													: 'Publishing start'}
+											</Typography>
+										</div>
+									) : null}
+									{data.Media.status.includes(
+										'NOT_YET_RELEASED'
+									) ? null : !data.Media.status.includes('RELEASING') ? (
+										<div className={classes.commandoTextBox}>
+											<Typography
+												variant="title"
+												className={classes.commandoText}
+											>
+												{`${data.Media.endDate.day}. ${moment(
+													data.Media.endDate.month,
+													'MM'
+												).format('MMMM')} ${data.Media.endDate.year}`}
+											</Typography>
+											<Typography
+												variant="body1"
+												className={classes.commandoTextLabel}
+											>
+												{data.Media.type.includes('ANIME')
+													? 'Airing ended'
+													: 'Publishing ended'}
+											</Typography>
+										</div>
+									) : null}
+									<div className={classes.commandoTextBox}>
+										<Typography
+											variant="title"
+											className={classes.commandoText}
+										>
+											{data.Media.format}
+										</Typography>
+										<Typography
+											variant="body1"
+											className={classes.commandoTextLabel}
+										>
+											Type
+										</Typography>
+									</div>
 									<div style={{ flex: 1 }} />
 									{data.Media.rankings.map((ran, index) => (
 										<Paper className={classes.commandoTextBoxRow}>

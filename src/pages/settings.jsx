@@ -92,8 +92,9 @@ const style = theme => ({
 		position: 'relative',
 		borderRadius: '50%',
 		margin: 'auto',
+		border: '2px solid white',
 		'&:hover': {
-			background: 'rgba(255,255,255,.3)',
+			filter: 'brightness(1.1)',
 		},
 		zIndex: 1000,
 	},
@@ -240,9 +241,8 @@ class Settings extends Component {
 		if (!user) return null;
 		return (
 			<div>
-				<TitleHeader title="Settings" color={green.A400} />
-				<div className={classes.root} style={loading ? { opacity: 0 } : null}>
-					<Header color={blue[800]} />
+				<TitleHeader title="Settings" color={'#000'} />
+				<div className={classes.root}>
 					<M.Grid
 						container
 						spacing={0}
@@ -252,26 +252,6 @@ class Settings extends Component {
 						<M.Typography variant="headline" className={classes.headline}>
 							Aesthetics
 						</M.Typography>
-						<M.ExpansionPanel className={classes.panel}>
-							<M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
-								<div className={classes.column}>
-									<M.Typography variant="title">Theme</M.Typography>
-								</div>
-								<div className={classes.column}>
-									<M.Typography className={classes.secondaryHeading}>
-										{user.theme}
-									</M.Typography>
-								</div>
-							</M.ExpansionPanelSummary>
-							<M.ExpansionPanelDetails />
-							<M.ExpansionPanelActions>
-								{this.state.theme !== 'Mirai' ? (
-									<M.Button onClick={this.changeTheme} color="primary">
-										Apply
-									</M.Button>
-								) : null}
-							</M.ExpansionPanelActions>
-						</M.ExpansionPanel>
 						<M.ExpansionPanel className={classes.panel}>
 							<M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
 								<div className={classes.column}>
@@ -541,6 +521,72 @@ class Settings extends Component {
 									/>
 								</M.FormGroup>
 							</M.ExpansionPanelDetails>
+						</M.ExpansionPanel>
+						<div className={classes.divide} />
+						<M.Typography variant="headline" className={classes.headline}>
+							Synchronization
+						</M.Typography>
+						<M.ExpansionPanel className={classes.panel}>
+							<M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
+								<div className={classes.column}>
+									<M.Typography variant="title">AniList</M.Typography>
+								</div>
+								<div className={classes.column}>
+									<M.Typography className={classes.secondaryHeading}>
+										{this.props.profile.anilist ? 'ON' : 'OFF'}
+									</M.Typography>
+								</div>
+							</M.ExpansionPanelSummary>
+							<M.ExpansionPanelDetails>
+								<M.Typography variant="body1">
+									The AniList syncing function enables your Mirai account to
+									sync with your AniList account.
+								</M.Typography>
+							</M.ExpansionPanelDetails>
+							<M.ExpansionPanelActions>
+								<M.FormGroup>
+									<M.FormControlLabel
+										control={
+											<M.Switch
+												checked={this.props.profile.anilist}
+												onChange={this.changeAnilistSetting}
+											/>
+										}
+										label={this.props.profile.anilist ? 'ON' : 'OFF'}
+									/>
+								</M.FormGroup>
+							</M.ExpansionPanelActions>
+						</M.ExpansionPanel>
+						<M.ExpansionPanel className={classes.panel}>
+							<M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
+								<div className={classes.column}>
+									<M.Typography variant="title">MyAnimeList</M.Typography>
+								</div>
+								<div className={classes.column}>
+									<M.Typography className={classes.secondaryHeading}>
+										{this.props.profile.mal ? 'ON' : 'OFF'}
+									</M.Typography>
+								</div>
+							</M.ExpansionPanelSummary>
+							<M.ExpansionPanelDetails>
+								<M.Typography variant="body1">
+									The MyAnimeList syncing function enables your Mirai account to
+									sync with your MyAnimeList account.
+								</M.Typography>
+							</M.ExpansionPanelDetails>
+							<M.ExpansionPanelActions>
+								<M.FormGroup>
+									<M.FormControlLabel
+										control={
+											<M.Switch
+												checked={this.props.profile.mal}
+												onChange={this.changeMALSetting}
+											/>
+										}
+										label={this.props.profile.mal ? 'ON' : 'OFF'}
+									/>
+								</M.FormGroup>
+							</M.ExpansionPanelActions>
 						</M.ExpansionPanel>
 						<div className={classes.divide} />
 						<M.Typography variant="headline" className={classes.headline}>
