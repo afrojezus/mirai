@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { firebaseConnect } from 'react-redux-firebase';
 import Typography from 'material-ui/Typography/Typography';
 import orange from 'material-ui/colors/orange';
+import grey from 'material-ui/colors/grey';
 import Supertable from '../components/supertable';
 import SwipeableViews from 'react-swipeable-views';
 import queryString from 'query-string';
@@ -12,6 +13,7 @@ import Tab from 'material-ui/Tabs/Tab';
 import Tabs from 'material-ui/Tabs/Tabs';
 import CardButton from '../components/cardButton';
 import SuperComment from '../components/supercomment';
+import Hidden from 'material-ui/Hidden/Hidden';
 import {
 	Root,
 	CommandoBar,
@@ -88,13 +90,18 @@ class Rankings extends Component {
 		return (
 			<div>
 				<LoadingIndicator loading={this.state.loading} />
-				<TitleHeader color={orange.A400} />
-				<Header color={orange[800]} image={collection ? collection.bg : null} />
+				<TitleHeader color={grey.A700} />
+				<Header color={grey[900]} image={collection ? collection.bg : null} />
 				<CommandoBarTop title="Rankings">
+					<Hidden smDown>
+						<div style={{ flex: 1 }} />
+					</Hidden>
 					<Tabs
 						value={this.state.index}
 						onChange={(e, val) => this.setState({ index: val })}
 						indicatorClassName={classes.tabLine}
+						centered
+						fullWidth
 					>
 						<Tab
 							label="Overview"
@@ -107,7 +114,7 @@ class Rankings extends Component {
 							}}
 						/>
 						<Tab
-							label="Collections"
+							label="Popularity"
 							classes={{
 								root: classes.tab,
 								label:
@@ -117,7 +124,7 @@ class Rankings extends Component {
 							}}
 						/>
 						<Tab
-							label="Friends"
+							label="Score"
 							classes={{
 								root: classes.tab,
 								label:
@@ -126,8 +133,30 @@ class Rankings extends Component {
 										: classes.tabLabel,
 							}}
 						/>
+						<Tab
+							label="Collections"
+							classes={{
+								root: classes.tab,
+								label:
+									this.state.index === 3
+										? classes.tabLabelActive
+										: classes.tabLabel,
+							}}
+						/>
+						<Tab
+							label="Friends"
+							classes={{
+								root: classes.tab,
+								label:
+									this.state.index === 4
+										? classes.tabLabelActive
+										: classes.tabLabel,
+							}}
+						/>
 					</Tabs>
-					<div style={{ flex: 1 }} />
+					<Hidden smDown>
+						<div style={{ flex: 1 }} />
+					</Hidden>
 				</CommandoBarTop>
 				<Root hasTab>
 					<SwipeableViews

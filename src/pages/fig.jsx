@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import { firebaseConnect, isEmpty } from 'react-redux-firebase';
 import Grid from 'material-ui/Grid/Grid';
 import { MIR_SET_TITLE } from '../constants';
-import Segoku from '../utils/segoku/segoku';
+import Anilist from '../anilist-api';
 import {
 	LoadingIndicator,
 	Header,
@@ -600,8 +600,8 @@ class Fig extends Component {
 				try {
 					if (id && this.props.history.location.pathname === '/fig') {
 						const { data } = this.props.history.location.search.includes('?s=')
-							? await new Segoku().customQuery(staffQuery, { id: id.s })
-							: await new Segoku().customQuery(characterQuery, { id: id.c });
+							? await Anilist.get(staffQuery, { id: id.s })
+							: await Anilist.get(characterQuery, { id: id.c });
 						if (data) {
 							// console.log(data);
 							this.setState(

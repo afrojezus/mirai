@@ -7,6 +7,8 @@ import { connect } from 'react-redux';
 import { firebaseConnect, firebase } from 'react-redux-firebase';
 import Typography from 'material-ui/Typography/Typography';
 import Divider from 'material-ui/Divider/Divider';
+import checklang from '../checklang';
+import strings from '../strings.json';
 import {
 	Root,
 	CommandoBar,
@@ -41,7 +43,12 @@ const style = theme => ({
 class Help extends Component {
 	state = {
 		articles: null,
+		lang: strings.enus,
 	};
+	componentWillMount = () => {
+		checklang(this);
+	};
+
 	componentDidMount = () =>
 		this.props.firebase
 			.database()
@@ -53,7 +60,7 @@ class Help extends Component {
 	// TODO: All information-related matters handled dynamically from firebase. Also eslint, go fuck yourself with the entities rule.
 	render = () => (
 		<div>
-			<TitleHeader title="Help" color={'#000'} />
+			<TitleHeader title={this.state.lang.help.title} color={'#000'} />
 			<Root>
 				<Container hasHeader>
 					<div className={this.props.classes.column}>

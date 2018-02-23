@@ -1,6 +1,4 @@
-// TODO: Fix every single eslint-airbnb issue
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import * as M from 'material-ui';
 import * as Icon from 'material-ui-icons';
 import queryString from 'query-string';
@@ -18,8 +16,7 @@ import searchQuery, {
 } from '../utils/searchquery';
 import { LoadingIndicator, TitleHeader, Header } from '../components/layouts';
 import CardButton, { PeopleButton } from '../components/cardButton';
-import Segoku from '../utils/segoku/segoku';
-import { history } from '../store';
+import Anilist from '../anilist-api';
 
 const style = theme => ({
 	container: {
@@ -417,23 +414,23 @@ class Search extends Component {
 				if (this.state.searchVal === '') {
 					return null;
 				}
-				const { data } = await new Segoku().customQuery(searchQuery, {
+				const { data } = await Anilist.get(searchQuery, {
 					search: this.state.searchVal,
 					isAdult: false,
 					page: 1,
 				});
 
-				const characters = await new Segoku().customQuery(searchCharQuery, {
+				const characters = await Anilist.get(searchCharQuery, {
 					search: this.state.searchVal,
 					page: 1,
 				});
 
-				const staff = await new Segoku().customQuery(searchStaffQuery, {
+				const staff = await new Anilist.get(searchStaffQuery, {
 					search: this.state.searchVal,
 					page: 1,
 				});
 
-				const studios = await new Segoku().customQuery(searchStudiosQuery, {
+				const studios = await new Anilist.get(searchStudiosQuery, {
 					search: this.state.searchVal,
 					page: 1,
 				});

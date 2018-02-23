@@ -1,10 +1,10 @@
-// TODO: Fix every single eslint-airbnb issue
 import queryString from 'query-string';
 import localForage from 'localforage';
 import { isEmpty } from 'react-redux-firebase';
 import Twist from '../twist-api';
-import Segoku from './segoku/segoku';
+import Anilist from '../anilist-api';
 import hsfetcher from '../torrent';
+import { entryQuery } from '../anilist-api/queries';
 
 export const loadEp = (parent, ep, resume) =>
 	parent.setState(
@@ -269,7 +269,7 @@ export const getState = async parent => {
 					'Nyaa mode, location state not found. Requesting metadata...'
 				);
 				parent.setState({ status: 'Fetching...' });
-				const { data } = await new Segoku().getSingle({
+				const data = await Anilist.get(entryQuery, {
 					id: parent.props.mir.play.id,
 				});
 				if (data) getTorrent(parent, { meta: data.Media });
@@ -293,7 +293,7 @@ export const getState = async parent => {
 			}
 			console.info('Location state not found! Refetching...');
 			parent.setState({ status: 'Fetching...' });
-			const { data } = await new Segoku().getSingle({
+			const data = await Anilist.get(entryQuery, {
 				id: parent.props.mir.play.id,
 			});
 			if (data) await getSource(parent, { meta: data.Media });

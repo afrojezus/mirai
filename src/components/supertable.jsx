@@ -176,7 +176,8 @@ const style = theme => ({
 		'&:webkit-scrollbar': {
 			display: 'none',
 		},
-		overflow: 'hidden',
+		overflowX: window.mobilecheck() ? 'scroll' : 'hidden',
+		overflowY: 'hidden',
 	},
 	listContainer: {
 		width: '100%',
@@ -342,7 +343,7 @@ const SuperTable = class extends React.Component {
 					<GridList
 						id="nulllist"
 						className={classes.list}
-						cols={[theme.breakpoint.up('md')] ? 3 : 2}
+						cols={windowWidth > 1000 ? 3 : 1}
 						cellHeight={300}
 					>
 						{nullarray.map(o => (
@@ -373,7 +374,7 @@ const SuperTable = class extends React.Component {
 					<GridList
 						id={props.type.includes('m') ? 'mangalaterlist' : 'animelaterlist'}
 						className={classes.list}
-						cols={windowWidth > 1000 ? 3 : 2}
+						cols={windowWidth > 1000 ? 3 : 1}
 						cellHeight={300}
 					>
 						{data.splice(0, props.limit).map(anime => (
@@ -459,7 +460,7 @@ const SuperTable = class extends React.Component {
 					<GridList
 						id={props.type.includes('c') ? 'collectionlist' : 'rankinglist'}
 						className={classes.list}
-						cols={[theme.breakpoint.up('md')] ? 3 : 2}
+						cols={windowWidth > 1000 ? 3 : 1}
 						cellHeight={300}
 					>
 						{data.splice(0, props.limit).map(collection => (
@@ -524,7 +525,7 @@ const SuperTable = class extends React.Component {
 					<GridList
 						id="progresslist"
 						className={classes.list}
-						cols={[theme.breakpoint.up('md')] ? 3 : 2}
+						cols={windowWidth > 1000 ? 3 : 1}
 						cellHeight={300}
 					>
 						{data.splice(0, props.limit).map((anime, index) => (
@@ -654,7 +655,7 @@ const SuperTable = class extends React.Component {
 							props.type.includes('m') ? 'mangaongoinglist' : 'animeongoinglist'
 						}
 						className={classes.list}
-						cols={[theme.breakpoint.up('md')] ? 3 : 2}
+						cols={windowWidth > 1000 ? 3 : 1}
 						cellHeight={300}
 					>
 						{data.splice(0, props.limit).map(anime => (
@@ -779,7 +780,7 @@ const SuperTable = class extends React.Component {
 					<GridList
 						id={'feedlist'}
 						className={classes.list}
-						cols={[theme.breakpoint.up('md')] ? 3 : 2}
+						cols={windowWidth > 1000 ? 3 : 1}
 						cellHeight={300}
 					>
 						{data.splice(0, props.limit).map(feed => (

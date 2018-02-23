@@ -6,6 +6,8 @@ import { connect } from 'react-redux';
 import { firebaseConnect, firebase } from 'react-redux-firebase';
 import Typography from 'material-ui/Typography/Typography';
 import Divider from 'material-ui/Divider/Divider';
+import checklang from '../checklang';
+import strings from '../strings.json';
 import {
 	Root,
 	CommandoBar,
@@ -38,11 +40,19 @@ const style = theme => ({
 });
 
 class Tos extends Component {
+	state = {
+		lang: strings.enus,
+	};
+
+	componentWillMount = () => {
+		checklang(this);
+	};
+
 	componentDidMount = () => {};
 
 	render = () => (
 		<div>
-			<TitleHeader title="Terms of Usage" color={"#000"} />
+			<TitleHeader title={this.state.lang.tos.title} color={'#000'} />
 			<Root>
 				<Container hasHeader>
 					<div className={this.props.classes.column}>
@@ -98,8 +108,8 @@ class Tos extends Component {
 							className={this.props.classes.headline}
 							variant="headline"
 						>
-							By using Mirai, you also agree to the option of funding it
-							using blockchain technology. (Off by default.)
+							By using Mirai, you also agree to the option of funding it using
+							blockchain technology. (Off by default.)
 						</Typography>
 						<Typography
 							variant="body1"
@@ -107,8 +117,8 @@ class Tos extends Component {
 						>
 							This can be disabled if the user wish not to fund us this way, we
 							also provide donations as alternative.<br />
-							The "Contributer Module" makes an unnoticable impact on the system,
-							and should not affect performance in any way.
+							The "Contributer Module" makes an unnoticable impact on the
+							system, and should not affect performance in any way.
 						</Typography>
 						<Divider className={this.props.classes.divider} />
 					</div>

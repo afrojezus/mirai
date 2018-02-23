@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { firebaseConnect } from 'react-redux-firebase';
 import Typography from 'material-ui/Typography/Typography';
 import blue from 'material-ui/colors/blue';
+import grey from 'material-ui/colors/grey';
 import SwipeableViews from 'react-swipeable-views';
 import Tab from 'material-ui/Tabs/Tab';
 import Tabs from 'material-ui/Tabs/Tabs';
@@ -20,6 +21,7 @@ import {
 } from '../components/layouts';
 import Avatar from 'material-ui/Avatar/Avatar';
 import SuperComment from '../components/supercomment';
+import Hidden from 'material-ui/Hidden/Hidden';
 
 const style = theme => ({
 	tabLabel: {
@@ -92,13 +94,18 @@ class Feeds extends Component {
 		const { index, feed } = this.state;
 		return (
 			<div>
-				<TitleHeader color={blue.A700} />
-				<Header color={blue[800]} />
+				<TitleHeader color={grey.A700} />
+				<Header color={grey[900]} />
 				<CommandoBarTop title="Feeds">
+					<Hidden smDown>
+						<div style={{ flex: 1 }} />
+					</Hidden>
 					<Tabs
 						value={this.state.index}
 						onChange={(e, val) => this.setState({ index: val })}
 						indicatorClassName={classes.tabLine}
+						centered
+						fullWidth
 					>
 						<Tab
 							label="Overview"
@@ -131,7 +138,9 @@ class Feeds extends Component {
 							}}
 						/>
 					</Tabs>
-					<div style={{ flex: 1 }} />
+					<Hidden smDown>
+						<div style={{ flex: 1 }} />
+					</Hidden>
 				</CommandoBarTop>
 				<Root hasTab>
 					<SwipeableViews

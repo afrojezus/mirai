@@ -1,14 +1,17 @@
-// TODO: Fix every single eslint-airbnb issue
 import React, { Component } from 'react';
 import { withStyles } from 'material-ui/styles';
 import { connect } from 'react-redux';
 import { firebaseConnect } from 'react-redux-firebase';
 import Typography from 'material-ui/Typography/Typography';
 import green from 'material-ui/colors/green';
+import grey from 'material-ui/colors/grey';
 import SwipeableViews from 'react-swipeable-views';
 import Tab from 'material-ui/Tabs/Tab';
 import Tabs from 'material-ui/Tabs/Tabs';
 import SuperTable from '../components/supertable';
+import Button from 'material-ui/Button/Button';
+import AddIcon from 'material-ui-icons/Add';
+import Hidden from 'material-ui/Hidden/Hidden';
 import {
 	Root,
 	CommandoBar,
@@ -19,6 +22,7 @@ import {
 	CommandoBarTop,
 	Column,
 } from '../components/layouts';
+import CardButton from '../components/cardButton';
 
 const style = theme => ({
 	tabLabel: {
@@ -56,29 +60,78 @@ const style = theme => ({
 	feedContext: {
 		fontSize: theme.typography.pxToRem(16),
 	},
+	fabContainer: {
+		transition: theme.transitions.create(['all']),
+		zIndex: 10000,
+	},
+	fabPlayButton: {
+		position: 'fixed',
+		bottom: theme.spacing.unit * 4,
+		right: theme.spacing.unit * 4,
+		zIndex: 10000,
+		transform: 'translateZ(0)',
+	},
+	fabProgress: {
+		color: 'white',
+		zIndex: 10001,
+		transition: theme.transitions.create(['all']),
+	},
+	fabWrapper: {
+		transition: theme.transitions.create(['all']),
+		margin: theme.spacing.unit,
+		position: 'relative',
+		zIndex: 10000,
+	},
 });
 
 class Live extends Component {
 	state = {
 		loading: true,
 		index: 0,
+		streams: null,
 	};
 
-	componentDidMount = () => {};
+	componentDidMount = () => {
+		this.props.firebase
+			.database()
+			.ref('/streams')
+			.on('value', value =>
+				this.setState({ streams: value.val() }, () =>
+					this.setState({ loading: false })
+				)
+			);
+	};
+
+	showHelp = () => {};
 
 	render() {
 		const { classes } = this.props;
-		const { index } = this.state;
+		const { index, streams } = this.state;
 		return (
 			<div>
 				<LoadingIndicator loading={this.state.loading} />
-				<TitleHeader color={green.A400} />
-				<Header color={green[800]} />
+				<TitleHeader color={grey.A700} />
+				<Header color={grey[900]} />
+				<div id="fabShowButton" className={classes.fabContainer}>
+					<Button
+						color="primary"
+						className={classes.fabPlayButton}
+						variant={'fab'}
+						onClick={this.showHelp}
+					>
+						<AddIcon />
+					</Button>
+				</div>
 				<CommandoBarTop title="Live">
+					<Hidden smDown>
+						<div style={{ flex: 1 }} />
+					</Hidden>
 					<Tabs
 						value={this.state.index}
 						onChange={(e, val) => this.setState({ index: val })}
 						indicatorClassName={classes.tabLine}
+						centered
+						fullWidth
 					>
 						<Tab
 							label="Streams"
@@ -111,7 +164,9 @@ class Live extends Component {
 							}}
 						/>
 					</Tabs>
-					<div style={{ flex: 1 }} />
+					<Hidden smDown>
+						<div style={{ flex: 1 }} />
+					</Hidden>
 				</CommandoBarTop>
 				<Root hasTab>
 					<SwipeableViews
@@ -123,6 +178,22 @@ class Live extends Component {
 								<Typography variant="display3" className={classes.feedTitle}>
 									Streams
 								</Typography>
+								<Container>
+									{streams &&
+										Object.values(streams)
+											.filter(u => u.id !== 'example')
+											.map((stream, index) => (
+												<CardButton
+													key={index}
+													onClick={() =>
+														this.props.history.push(`/stream?s=${stream.id}`)
+													}
+													image={stream.cover}
+													title={stream.title}
+													subtitle={stream.hoster + "'s stream"}
+												/>
+											))}
+								</Container>
 							</Column>
 						</Container>
 						<Container>

@@ -1,0 +1,320 @@
+{
+	"enus": {
+		"superbar": {
+			"home": "Home",
+			"feeds": "Feeds",
+			"rankings": "Rankings",
+			"live": "Live",
+			"you": "You",
+			"history": "History",
+			"later": "Later",
+			"favorites": "Favorites",
+			"help": "Help",
+			"feedback": "Feedback",
+			"termsofusage": "Terms of Usage",
+			"monika": "Monika",
+			"donate": "Donate",
+			"usermenu": {
+				"title": "Mirai",
+				"subheader": "Sign in to access more features",
+				"loginbutton": "Sign in",
+				"developer": "Dev",
+				"developerDb": "Developer Dashboard",
+				"developerMedia": "Media Player",
+				"settings": "Settings",
+				"signout": "Sign out"
+			},
+			"searchbox": {
+				"placeholder": "Min. 3 characters"
+			},
+			"notifications": {
+				"title": "Notifications",
+				"signup": "Sign up for notifcations",
+				"empty": "No notifications for today!"
+			}
+		},
+		"home": {
+			"welcomeuser": "Welcome back",
+			"welcomeanon": "Mirai. A new kind of streamer.",
+			"welcomeSubtitle": "Mirai Preview",
+			"updates": "Updates",
+			"animefavTitle": "Your anime favorites",
+			"animefavEstimate": "anime favourites",
+			"animehistoryTitle": "Animes you've watched previously",
+			"animehistoryEstimate": "animes seen",
+			"history": "History",
+			"collections": "Collections",
+			"ongoingAnimeTitle": "Currently ongoing anime",
+			"ongoingAnimeEstimate": "ongoing animes in database",
+			"ongoingMangaTitle": "Currently ongoing manga"
+		},
+		"later": {
+			"later": "Later",
+			"animetitle": "Anime you want to check out later",
+			"mangatitle": "Manga you want to check out later",
+			"animenone": "It appears you got no anime to check out later...",
+			"manganone": "It appears you got no manga to check out later..."
+		},
+		"settings": {
+			"settings": "Settings",
+			"aesthetics": "Aesthetics",
+			"account": "Account",
+			"sync": "Synchronization",
+			"misc": "Misc. Settings",
+			"language": "Language",
+			"languageDesc":
+				"Change the language of the UX in Mirai (experimental, recommended to use en-us for now.)",
+			"avatar": "Avatar",
+			"avaaccept": "Use as avatar",
+			"bg": "Background",
+			"bgdesc":
+				"The background also changes the accent color of your personalized home.",
+			"bgaccept": "Use as background",
+			"nickname": "Nickname",
+			"nickplaceholder": "Pick a decent nick... can be anything!",
+			"nickaccept": "Use as nickname",
+			"username": "Username",
+			"usernameplaceholder":
+				"Change your username to something quite rememberable... this is your display name afterall!",
+			"useraccept": "Use as username",
+			"motto": "Motto",
+			"mottoplaceholder": "Change your motto, make it your own!",
+			"mottoaccept": "Use as motto",
+			"logging": "Logging",
+			"loggingdelete": "Delete your current log?",
+			"loggingallow": "Allow logging?",
+			"anilistdesc":
+				"The AniList syncing function enables your Mirai account to sync with your AniList account.",
+			"maldesc":
+				"The MyAnimeList syncing function enables your Mirai account to sync with your MyAnimeList account.",
+			"discorddesc":
+				"Sync your Mirai activity onto your Discord as a game. Requires you having Discord linked.",
+			"contribmodule": "Contributor Module",
+			"contribdesc":
+				"The contribution module as explained in the terms of usage allows Mirai to fund itself based on the processing power of the machine the user is on. <br /> Understandably, this is a controversial way to support the project, therefore you have the option to disable it if you do not wish to use your machine to fund Mirai. <br /> <br /> The module should take as little as possible of your processing power as to not damage or cripple your other uses.",
+			"on": "ON",
+			"off": "OFF",
+			"cancel": "Cancel",
+			"accept": "Use",
+			"yes": "Yes"
+		},
+		"help": {
+			"title": "Help"
+		},
+		"tos": {
+			"title": "Terms of Usage"
+		},
+		"setup": {
+			"welcome": "Welcome to the Mirai Preview Program",
+			"login": "Sign in",
+			"register": "Signup",
+			"email": "Email",
+			"password": "Password",
+			"access": "Sign in",
+			"divein": "Enter"
+		},
+		"show": {
+			"moreMenu": {
+				"report": "Report error",
+				"editentry": "Edit anime/manga"
+			},
+			"notavaliable": "Not avaliable",
+			"playing": "Playing",
+			"livestreamButton": "Livestream this anime",
+			"chapters": "chapters",
+			"volumes": "volumes",
+			"provider": "Data provided by AniList",
+			"episodeTooltip":
+				"With ongoing anime or manga, it can take up to 1 day for it to arrive avaliable on Mirai",
+			"episodeWhen": "till Episode",
+			"arrives": "",
+			"alsoKnownAs": "Also known as: ",
+			"director": "Directed by ",
+			"author": "and written by ",
+			"authorProper": "Written by ",
+			"genres": "Genres",
+			"tags": "Tags",
+			"producers": "Producers",
+			"avgscore": "Average Score",
+			"meanscore": "Mean Score",
+			"episodes": "Episodes",
+			"progress": "Your progress",
+			"removelater": "Remove from later",
+			"addlater": "Add to later",
+			"removefav": "Remove from favorites",
+			"addfav": "Add to favorites",
+			"reportModal": {
+				"title": "Report ",
+				"errors": "for errors"
+			},
+			"airingstart": "Airing start",
+			"airingended": "Airing ended",
+			"releasedate": "Release date",
+			"publishstart": "Publishing start",
+			"publishended": "Publishing ended",
+			"cast": "Cast",
+			"char": "Characters",
+			"as": "as",
+			"staff": "Staff",
+			"similar": "Similar to this one"
+		}
+	},
+	"nbno": {
+		"superbar": {
+			"home": "Hjem",
+			"feeds": "Status",
+			"rankings": "Listing",
+			"live": "Live",
+			"you": "Du",
+			"history": "Logg",
+			"later": "Senere",
+			"favorites": "Favoritter",
+			"help": "Hjelp",
+			"feedback": "Tilbakemelding",
+			"termsofusage": "Vilkår for bruk",
+			"monika": "Monika",
+			"donate": "Donasjon",
+			"usermenu": {
+				"title": "Mirai",
+				"subheader": "Logg inn for å bruke flere funksjoner",
+				"loginbutton": "Logg inn",
+				"developer": "Utvikler",
+				"developerDb": "Utvikler kontrollpanel",
+				"developerMedia": "Mediespiller",
+				"settings": "Innstillinger",
+				"signout": "Logg ut"
+			},
+			"searchbox": {
+				"placeholder": "Minimum 3 tegn"
+			},
+			"notifications": {
+				"title": "Varsler",
+				"signup": "Register deg for notifikasjoner!",
+				"empty": "Ingen varsler for i dag!"
+			}
+		},
+		"home": {
+			"welcomeuser": "Velkommen tilbake",
+			"welcomeanon": "Mirai. En annerledes type streaming.",
+			"welcomeSubtitle": "Mirai Forhåndsvisningsutgave",
+			"updates": "Oppdateringer",
+			"animefavTitle": "Dine anime favoritter",
+			"animefavEstimate": "anime favoritter",
+			"animehistoryTitle": "Animer du har sett tidligere",
+			"animehistoryEstimate": "animer",
+			"history": "Logg",
+			"collections": "Artikler",
+			"ongoingAnimeTitle": "Pågående anime",
+			"ongoingAnimeEstimate": "animer som pågår i databasen",
+			"ongoingMangaTitle": "Pågående manga (tegneserier)"
+		},
+		"later": {
+			"later": "Senere",
+			"animetitle": "Anime du har lyst til å sjekke ut senere",
+			"mangatitle": "Manga du har lyst til å sjekke ut senere",
+			"animenone": "Ser ut som du ikke har noe anime å sjekke senere...",
+			"manganone": "Ser ut som du ikke har noe manga å sjekke senere..."
+		},
+		"settings": {
+			"settings": "Innstillinger",
+			"aesthetics": "Utseende",
+			"account": "Konto",
+			"sync": "Synkronisering",
+			"misc": "Andre innstillinger",
+			"language": "Språk",
+			"languageDesc": "Endre språket til brukergrensesnittet til Mirai",
+			"avatar": "Avatar",
+			"avaaccept": "Bruk som avatar",
+			"bg": "Bakgrunn",
+			"bgdesc": "Bakgrunnen endrer også fargepalettet til hjemmesiden din.",
+			"bgaccept": "Bruk som bakgrunn",
+			"nickname": "Kallenavn",
+			"nickplaceholder": "Velg en god kallenavn... kan være hva som helst!",
+			"nickaccept": "Bruk som kallenavn",
+			"username": "Brukernavn",
+			"usernameplaceholder":
+				"Gjør brukernavnet ditt unikt, dette er jo trossalt det folk kommer til å identifisere deg med!",
+			"useraccept": "Bruk som brukernavn",
+			"motto": "Motto",
+			"mottoplaceholder": "Velg en unik motto som passer deg best",
+			"mottoaccept": "Bruk som motto",
+			"logging": "Logging",
+			"loggingdelete": "Vil du slette din nåværende logg?",
+			"loggingallow": "Tilatte logging av din aktivitet?",
+			"anilistdesc":
+				"The AniList syncing function enables your Mirai account to sync with your AniList account.",
+			"maldesc":
+				"The MyAnimeList syncing function enables your Mirai account to sync with your MyAnimeList account.",
+			"discorddesc":
+				"Sync your Mirai activity onto your Discord as a game. Requires you having Discord linked.",
+			"contribmodule": "Kryptogruving modus",
+			"contribdesc":
+				"Kyptogruving modus tilatter Mirai å ta nytte av ditt system for å støtte utviklingen av applikasjonen <br /> Dette burde som regel ikke påvirke ytelsen noe særlig for alt det andre du driver med på systemet.",
+			"on": "PÅ",
+			"off": "AV",
+			"cancel": "Avbryt",
+			"accept": "Bruk",
+			"yes": "Ja"
+		},
+		"tos": {
+			"title": "Vilkår for bruk"
+		},
+		"help": {
+			"title": "Hjelp"
+		},
+		"setup": {
+			"welcome": "Velkommen til Forhåndsvisningsprogrammet til Mirai",
+			"login": "Logg inn",
+			"register": "Meld deg inn",
+			"email": "E-post",
+			"password": "Passord",
+			"access": "Logg inn",
+			"divein": "Enter"
+		},
+		"show": {
+			"moreMenu": {
+				"report": "Rapporter feil",
+				"editentry": "Endre anime/manga"
+			},
+			"notavaliable": "Ikke tilgjengelig",
+			"playing": "Spiller nå",
+			"livestreamButton": "Livestream denne animen",
+			"chapters": "kapitler",
+			"volumes": "volumer",
+			"provider": "Informasjonen er servert fra AniList",
+			"episodeTooltip":
+				"Hos pågående anime eller manga kan det ta opp til 1 virkedag for at det skal komme tilgjengelig på Mirai",
+			"episodeWhen": "til Episode",
+			"arrives": "kommer",
+			"alsoKnownAs": "Også kjent som:",
+			"director": "Regissert av ",
+			"author": "og skrevet av",
+			"authorProper": "Skrevet av ",
+			"genres": "Sjangre",
+			"tags": "Emner",
+			"producers": "Produsenter",
+			"avgscore": "Gjennomsnittsmåling",
+			"meanscore": "Meningsmåling",
+			"episodes": "Episoder",
+			"progress": "Din fremgang",
+			"removelater": "Fjern fra senere",
+			"addlater": "Legg til senere",
+			"removefav": "Fjern fra favoritter",
+			"addfav": "Legg til i favoritter",
+			"reportModal": {
+				"title": "Rapporter ",
+				"errors": "for feil"
+			},
+			"airingstart": "Kringkasting start",
+			"airingended": "Kringkasting slutt",
+			"releasedate": "Lanseringsdato",
+			"publishstart": "Publiserings start",
+			"publishended": "Publiserings slutt",
+			"cast": "Skuespillere",
+			"char": "Karakterer",
+			"as": "som",
+			"staff": "Medvirkende",
+			"similar": "Ligner på denne"
+		}
+	}
+}

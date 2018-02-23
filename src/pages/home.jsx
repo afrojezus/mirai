@@ -1,44 +1,15 @@
-// TODO: Fix every single eslint-airbnb issue
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Typography from 'material-ui/Typography';
 import localForage from 'localforage';
 import Grid from 'material-ui/Grid';
-import Divider from 'material-ui/Divider';
-import Avatar from 'material-ui/Avatar';
-import MenuItem from 'material-ui/Menu/MenuItem';
-import Card, {
-	CardContent,
-	CardMedia,
-	CardHeader,
-	CardActions,
-} from 'material-ui/Card';
 import IconButton from 'material-ui/IconButton';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-
-import Dotdotdot from 'react-dotdotdot';
-
-import PlusOneIcon from 'material-ui-icons/PlusOne';
 import Button from 'material-ui/Button';
-import MoreVertIcon from 'material-ui-icons/MoreVert';
-import ShareIcon from 'material-ui-icons/Share';
-import { Menu } from 'material-ui';
-import ArrowForward from 'material-ui-icons/ArrowForward';
-import ArrowBack from 'material-ui-icons/ArrowBack';
-
-import { firebaseConnect, isEmpty, firebase } from 'react-redux-firebase';
+import checkLang from '../checklang';
+import strings from '../strings.json';
+import { firebaseConnect, isEmpty } from 'react-redux-firebase';
 
 import { blue, grey } from 'material-ui/colors';
-
-import Snackbar from 'material-ui/Snackbar';
-import CloseIcon from 'material-ui-icons/Close';
-
-import CircularProgress from 'material-ui/Progress/CircularProgress';
-
-import { push } from 'react-router-redux';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as Vibrant from 'node-vibrant';
 
@@ -51,12 +22,8 @@ import {
 	TitleHeader,
 } from '../components/layouts';
 import SuperTable from '../components/supertable';
-
-import Segoku from '../utils/segoku/segoku';
-
-import Twist from '../twist-api';
-import miraiIcon from '../assets/mirai-icon.png';
-import { history } from '../store';
+import Anilist from '../anilist-api';
+import { bigFuckingQuery, bigFuckingQueryM } from '../anilist-api/queries';
 
 const styles = theme => ({
 	root: {
@@ -364,9 +331,12 @@ class Home extends Component {
 		hue: '#111',
 		hueVib: '#111',
 		hueVibN: '#111',
+		lang: strings.enus,
 	};
 
-	componentWillMount = () => {};
+	componentWillMount = () => {
+		checkLang(this);
+	};
 
 	componentDidMount = () => {
 		this.feedsObserve();
@@ -430,14 +400,14 @@ class Home extends Component {
 	};
 
 	fetchOngoing = async () => {
-		const ongoing = await new Segoku().get({
+		const ongoing = await Anilist.get(bigFuckingQuery, {
 			page: 1,
 			isAdult: false,
 			sort: ['POPULARITY_DESC'],
 			status: 'RELEASING',
 		});
 
-		const ongoingM = await new Segoku().getM({
+		const ongoingM = await Anilist.get(bigFuckingQueryM, {
 			page: 1,
 			isAdult: false,
 			sort: ['POPULARITY_DESC'],
@@ -488,6 +458,7 @@ class Home extends Component {
 			hue,
 			hueVib,
 			hueVibN,
+			lang,
 		} = this.state;
 
 		const user = this.props.profile;
@@ -515,17 +486,17 @@ class Home extends Component {
 						color={hue !== '#111' ? hue : null}
 						title={
 							!isEmpty(this.props.profile)
-								? `Welcome back, ${this.props.profile.username}.`
-								: 'Mirai. Gateway to the future.'
+								? `${lang.home.welcomeuser}, ${this.props.profile.username}.`
+								: lang.home.welcomeanon
 						}
-						subtitle="Mirai Preview"
+						subtitle={lang.home.welcomeSubtitle}
 					/>
 					<Root>
 						<Container hasHeader spacing={16}>
 							<div style={{ width: '100%' }}>
 								<Grid item xs className={classes.itemContainer}>
 									<Typography variant="title" className={classes.headline}>
-										Updates
+										{lang.home.updates}
 									</Typography>
 									<Grid container spacing={16}>
 										{feeds ? (
@@ -554,11 +525,12 @@ class Home extends Component {
 										}}
 									>
 										<Typography variant="title" className={classes.headline}>
-											Your anime favorites
+											{lang.home.animefavTitle}
 										</Typography>
 										<div style={{ flex: 1 }} />
 										<Typography variant="title" className={classes.headline}>
-											{Object.values(user.favs.show).length} anime favourties
+											{Object.values(user.favs.show).length}{' '}
+											{lang.home.animefavEstimate}
 										</Typography>
 									</Grid>
 									<Grid
@@ -593,14 +565,15 @@ class Home extends Component {
 										}}
 									>
 										<Typography variant="title" className={classes.headline}>
-											{"Animes you've watched previously"}
+											{lang.home.animehistoryTitle}
 										</Typography>
 										<div style={{ flex: 1 }} />
 										<Typography variant="title" className={classes.headline}>
-											{Object.values(user.episodeProgress).length} animes seen
+											{Object.values(user.episodeProgress).length}{' '}
+											{lang.home.animehistoryEstimate}
 										</Typography>
 										<Button onClick={() => this.props.history.push('/history')}>
-											History
+											{lang.home.history}
 										</Button>
 									</Grid>
 									<Grid container className={classes.itemcontainer} spacing={0}>
@@ -632,7 +605,7 @@ class Home extends Component {
 									}}
 								>
 									<Typography variant="title" className={classes.headline}>
-										Collections
+										{lang.home.collections}
 									</Typography>
 									<div style={{ flex: 1 }} />
 								</Grid>
@@ -660,14 +633,14 @@ class Home extends Component {
 									}}
 								>
 									<Typography variant="title" className={classes.headline}>
-										Currently ongoing anime
+										{lang.home.ongoingAnimeTitle}
 									</Typography>
 									<div style={{ flex: 1 }} />
 									<Typography variant="title" className={classes.headline}>
 										{this.props.mir && this.props.mir.twist
 											? `${Object.values(this.props.mir.twist).filter(
 													s => s.ongoing === true
-												).length - 1} ongoing animes in database`
+												).length - 1} ${lang.home.ongoingAnimeEstimate}`
 											: null}
 									</Typography>
 								</Grid>
@@ -675,12 +648,13 @@ class Home extends Component {
 									{ongoing &&
 									ongoing.data &&
 									this.props.mir &&
-									this.props.mir.twist ? (
+									this.props.mir.twist &&
+									this.props.mir.twist.length > 0 ? (
 										<SuperTable
 											data={ongoing.data.Page.media
 												.filter(s => s.nextAiringEpisode)
 												.filter(d =>
-													Object.values(this.props.mir.twist).filter(s =>
+													this.props.mir.twist.filter(s =>
 														s.name.match(d.title.romaji)
 													)
 												)
@@ -701,7 +675,7 @@ class Home extends Component {
 							<div style={{ width: '100%' }}>
 								<Grid item xs className={classes.itemContainer}>
 									<Typography variant="title" className={classes.headline}>
-										Currently ongoing manga
+										{lang.home.ongoingMangaTitle}
 									</Typography>
 								</Grid>
 								<Grid container className={classes.itemcontainer} spacing={0}>

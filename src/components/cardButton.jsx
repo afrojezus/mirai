@@ -312,6 +312,7 @@ export const PeopleButton = withStyles(styles, { withTheme: true })(
 							onLoad: e => (e.currentTarget.style.opacity = null),
 						}}
 						onClick={props.onClick}
+						style={props.style}
 					/>
 					{actor ? (
 						<Avatar

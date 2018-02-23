@@ -55,8 +55,7 @@ const style = theme => ({
 		boxSizing: 'border-box',
 		background: 'transparent',
 		borderBottom: `1px solid rgba(255,255,255,.1)`,
-        flexFlow: 'row wrap'
-
+		flexFlow: 'row wrap',
 	},
 	commandoBarTop: {
 		width: '100%',
@@ -64,10 +63,9 @@ const style = theme => ({
 			marginTop: theme.spacing.unit * 7,
 		},
 		boxSizing: 'border-box',
-		background: 'rgba(0,0,0,.1)',
+		background: 'rgba(0,0,0,.18)',
 		marginTop: theme.spacing.unit * 8,
 		position: 'static',
-		borderBottom: `1px solid rgba(255,255,255,.1)`,
 		zIndex: 10,
 	},
 	commandoBarTopInner: {
@@ -78,7 +76,6 @@ const style = theme => ({
 		display: 'flex',
 		boxSizing: 'border-box',
 		background: 'transparent',
-		borderBottom: `1px solid rgba(255,255,255,.1)`,
 		zIndex: 10,
 	},
 	commandoText: {
@@ -156,6 +153,22 @@ const style = theme => ({
 	},
 	loadingBar: {
 		position: 'fixed',
+		left: '50%',
+		right: '50%',
+		transform: 'translate(-50%, -50%)',
+		margin: 'auto',
+		top: theme.spacing.unit * 4,
+		[theme.breakpoints.down('sm')]: {
+			left: 'initial',
+			right: 'initial',
+			transform: 'initial',
+			margin: 'auto',
+			top: 'initial',
+		},
+		zIndex: 2000,
+	},
+	loadingBarMobile: {
+		position: 'fixed',
 		top: theme.mixins.toolbar.minHeight,
 		left: 0,
 		width: '100%',
@@ -179,7 +192,7 @@ const style = theme => ({
 		display: 'flex',
 		zIndex: -1,
 		transition: theme.transitions.create(['all']),
-		opacity: 0
+		opacity: 0,
 	},
 	titleHeaderInner: {
 		paddingLeft: theme.spacing.unit * 5,
@@ -314,15 +327,6 @@ export const CommandoBarTop = withStyles(style)(
 	({ classes, title, children, ...props }) => (
 		<div className={classes.commandoBarTop} id="commandoBarMain">
 			<Toolbar className={classes.commandoBarTopInner} {...props}>
-				<div className={classes.commandoTextBox}>
-					<Typography
-						variant="title"
-						className={classes.commandoText}
-						style={{ marginRight: 24 }}
-					>
-						{title}
-					</Typography>
-				</div>
 				{children}
 			</Toolbar>
 		</div>
@@ -350,7 +354,10 @@ export const TitleHeader = withStyles(style, { withTheme: true })(
 			className={classes.titleheader}
 			style={
 				color
-					? { opacity: 1, background: `linear-gradient(to top, transparent, ${color})` }
+					? {
+							opacity: 1,
+							background: `linear-gradient(to top, transparent, ${color})`,
+						}
 					: null
 			}
 			{...props}
@@ -425,13 +432,23 @@ class HeaderRaw extends React.Component {
 
 export const Header = withStyles(style)(HeaderRaw);
 
-export const LoadingIndicator = withStyles(style)(({ classes, loading }) => (
-	<LinearProgress
-		className={classes.loadingBar}
-		classes={{ primaryColorBar: classes.loadingBarColor }}
-		style={!loading ? { opacity: 0 } : null}
-	/>
-));
+export const LoadingIndicator = withStyles(style)(({ classes, loading }) => {
+	if (window.mobilecheck())
+		return (
+			<LinearProgress
+				className={classes.loadingBarMobile}
+				classes={{ primaryColorBar: classes.loadingBarColor }}
+				style={!loading ? { opacity: 0 } : null}
+			/>
+		);
+	else
+		return (
+			<CircularProgress
+				className={classes.loadingBar}
+				style={!loading ? { opacity: 0 } : null}
+			/>
+		);
+});
 
 // Proptypes
 Container.propTypes = {

@@ -9,8 +9,10 @@ import blue from 'material-ui/colors/blue';
 import green from 'material-ui/colors/green';
 import { connect } from 'react-redux';
 import { firebaseConnect, firebase } from 'react-redux-firebase';
-import { TitleHeader, Header } from '../components/layouts';
+import { TitleHeader, Header, Column } from '../components/layouts';
 import { history } from '../store';
+
+import strings from '../strings.json';
 
 const style = theme => ({
 	root: {
@@ -131,10 +133,45 @@ class Settings extends Component {
 		bgLoading: false,
 		loading: true,
 		theme: 'Mirai',
+		langCode: 'en-us',
+		lang: strings.enus,
+		langVal: '',
+	};
+
+	componentWillMount = () => {
+		const lang = localStorage.getItem('language');
+		switch (lang) {
+			case 'en-us':
+				this.setState({ lang: strings.enus, langCode: 'en-us' });
+				break;
+
+			case 'nb-no':
+				this.setState({ lang: strings.nbno, langCode: 'nb-no' });
+				break;
+
+			case 'jp':
+				this.setState({ lang: strings.jp, langCode: 'jp' });
+				break;
+
+			default:
+				break;
+		}
 	};
 
 	componentDidMount = () =>
 		setTimeout(() => this.setState({ loading: false }), 300);
+
+	changeLangVal = event => {
+		this.setState({
+			langVal: event.target.value,
+			langCode: event.target.value,
+		});
+	};
+
+	changeLang = value =>
+		this.setState({ langCode: value, langVal: null }, () =>
+			localStorage.setItem('language', this.state.langCode)
+		);
 
 	handleAva = accept =>
 		accept.forEach(file => this.setState({ ava: file }, () => {}));
@@ -236,12 +273,12 @@ class Settings extends Component {
 
 	render() {
 		const { classes, theme } = this.props;
-		const { loading } = this.state;
+		const { loading, langCode, lang, langVal } = this.state;
 		const user = this.props.profile;
 		if (!user) return null;
 		return (
 			<div>
-				<TitleHeader title="Settings" color={'#000'} />
+				<TitleHeader title={lang.settings.settings} color={'#000'} />
 				<div className={classes.root}>
 					<M.Grid
 						container
@@ -250,12 +287,64 @@ class Settings extends Component {
 						className={classes.content}
 					>
 						<M.Typography variant="headline" className={classes.headline}>
-							Aesthetics
+							{lang.settings.aesthetics}
 						</M.Typography>
 						<M.ExpansionPanel className={classes.panel}>
 							<M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
 								<div className={classes.column}>
-									<M.Typography variant="title">Avatar</M.Typography>
+									<M.Typography variant="title">
+										{lang.settings.language}
+									</M.Typography>
+								</div>
+								<div className={classes.column}>
+									<M.Typography variant="body1">{langCode}</M.Typography>
+								</div>
+							</M.ExpansionPanelSummary>
+							<M.ExpansionPanelDetails>
+								<Column>
+									<M.Typography variant="body1">
+										{lang.settings.languageDesc}
+									</M.Typography>
+									<form>
+										<M.FormControl>
+											<M.Select value={langCode} onChange={this.changeLangVal}>
+												<M.MenuItem value="en-us">English</M.MenuItem>
+												<M.MenuItem value="nb-no">Norsk Bokmål</M.MenuItem>
+												<M.MenuItem value="jp">日本語</M.MenuItem>
+											</M.Select>
+										</M.FormControl>
+									</form>
+								</Column>
+							</M.ExpansionPanelDetails>
+							<M.ExpansionPanelActions>
+								{langVal ? (
+									<M.Button
+										onClick={() =>
+											this.setState({
+												langCode: localStorage.getItem('language'),
+												langVal: null,
+											})
+										}
+									>
+										{lang.settings.cancel}
+									</M.Button>
+								) : null}
+								{langVal ? (
+									<M.Button
+										onClick={() => this.changeLang(langVal)}
+										color="primary"
+									>
+										{lang.settings.accept}
+									</M.Button>
+								) : null}
+							</M.ExpansionPanelActions>
+						</M.ExpansionPanel>
+						<M.ExpansionPanel className={classes.panel}>
+							<M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
+								<div className={classes.column}>
+									<M.Typography variant="title">
+										{lang.settings.avatar}
+									</M.Typography>
 								</div>
 								<div className={classes.column}>
 									<M.Avatar
@@ -281,13 +370,13 @@ class Settings extends Component {
 							<M.ExpansionPanelActions>
 								{this.state.ava ? (
 									<M.Button onClick={() => this.setState({ ava: null })}>
-										Cancel
+										{lang.settings.cancel}
 									</M.Button>
 								) : null}
 								{this.state.ava ? (
 									<M.Button onClick={this.changeAva} color="primary">
 										{this.state.avaLoading ? <M.CircularProgress /> : null}
-										Use as avatar
+										{lang.settings.avaaccept}
 									</M.Button>
 								) : null}
 							</M.ExpansionPanelActions>
@@ -295,7 +384,9 @@ class Settings extends Component {
 						<M.ExpansionPanel className={classes.panel}>
 							<M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
 								<div className={classes.column}>
-									<M.Typography variant="title">Background</M.Typography>
+									<M.Typography variant="title">
+										{lang.settings.bg}
+									</M.Typography>
 								</div>
 								<div className={classes.column}>
 									<M.Avatar
@@ -307,8 +398,7 @@ class Settings extends Component {
 							</M.ExpansionPanelSummary>
 							<M.ExpansionPanelDetails style={{ display: 'block' }}>
 								<M.Typography variant="body1">
-									The background also changes the accent color of your
-									personalized home.
+									{lang.settings.bgdesc}
 								</M.Typography>
 								<Dropzone
 									className={classes.dropzoneBg}
@@ -325,13 +415,13 @@ class Settings extends Component {
 							<M.ExpansionPanelActions>
 								{this.state.bg ? (
 									<M.Button onClick={() => this.setState({ bg: null })}>
-										Cancel
+										{lang.settings.cancel}
 									</M.Button>
 								) : null}
 								{this.state.bg ? (
 									<M.Button onClick={this.changeBg} color="primary">
 										{this.state.bgLoading ? <M.CircularProgress /> : null}
-										Use as background
+										{lang.settings.bgaccept}
 									</M.Button>
 								) : null}
 							</M.ExpansionPanelActions>
@@ -339,7 +429,9 @@ class Settings extends Component {
 						<M.ExpansionPanel className={classes.panel}>
 							<M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
 								<div className={classes.column}>
-									<M.Typography variant="title">Nickname</M.Typography>
+									<M.Typography variant="title">
+										{lang.settings.nickname}
+									</M.Typography>
 								</div>
 								<div className={classes.column}>
 									<M.Typography className={classes.secondaryHeading}>
@@ -351,7 +443,7 @@ class Settings extends Component {
 								<M.TextField
 									value={this.state.nick}
 									onChange={e => this.setState({ nick: e.target.value })}
-									helperText="Pick a decent nick... can be anything!"
+									helperText={lang.settings.nickplaceholder}
 									fullWidth
 									margin="normal"
 								/>
@@ -359,12 +451,12 @@ class Settings extends Component {
 							<M.ExpansionPanelActions>
 								{this.state.nick !== '' ? (
 									<M.Button onClick={() => this.setState({ nick: '' })}>
-										Cancel
+										{lang.settings.cancel}
 									</M.Button>
 								) : null}
 								{this.state.nick !== '' ? (
 									<M.Button onClick={this.changeNick} color="primary">
-										Use as nickname
+										{lang.settings.nickaccept}
 									</M.Button>
 								) : null}
 							</M.ExpansionPanelActions>
@@ -372,7 +464,9 @@ class Settings extends Component {
 						<M.ExpansionPanel className={classes.panel}>
 							<M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
 								<div className={classes.column}>
-									<M.Typography variant="title">Username</M.Typography>
+									<M.Typography variant="title">
+										{lang.settings.username}
+									</M.Typography>
 								</div>
 								<div className={classes.column}>
 									<M.Typography className={classes.secondaryHeading}>
@@ -384,7 +478,7 @@ class Settings extends Component {
 								<M.TextField
 									value={this.state.user}
 									onChange={e => this.setState({ user: e.target.value })}
-									helperText="Change your username to something quite rememberable... this is your display name afterall!"
+									helperText={lang.settings.usernameplaceholder}
 									fullWidth
 									margin="normal"
 								/>
@@ -392,12 +486,12 @@ class Settings extends Component {
 							<M.ExpansionPanelActions>
 								{this.state.user !== '' ? (
 									<M.Button onClick={() => this.setState({ user: '' })}>
-										Cancel
+										{lang.settings.cancel}
 									</M.Button>
 								) : null}
 								{this.state.user !== '' ? (
 									<M.Button onClick={this.changeUsername} color="primary">
-										Use as username
+										{lang.settings.useraccept}
 									</M.Button>
 								) : null}
 							</M.ExpansionPanelActions>
@@ -405,7 +499,9 @@ class Settings extends Component {
 						<M.ExpansionPanel className={classes.panel}>
 							<M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
 								<div className={classes.column}>
-									<M.Typography variant="title">Motto</M.Typography>
+									<M.Typography variant="title">
+										{lang.settings.motto}
+									</M.Typography>
 								</div>
 								<div className={classes.column}>
 									<M.Typography className={classes.secondaryHeading}>
@@ -417,7 +513,7 @@ class Settings extends Component {
 								<M.TextField
 									value={this.state.motto}
 									onChange={e => this.setState({ motto: e.target.value })}
-									helperText="Change your motto, make it your own!"
+									helperText={lang.settings.mottoplaceholder}
 									fullWidth
 									margin="normal"
 								/>
@@ -425,90 +521,45 @@ class Settings extends Component {
 							<M.ExpansionPanelActions>
 								{this.state.motto !== '' ? (
 									<M.Button onClick={() => this.setState({ motto: '' })}>
-										Cancel
+										{lang.settings.cancel}
 									</M.Button>
 								) : null}
 								{this.state.motto !== '' ? (
 									<M.Button onClick={this.changeMotto} color="primary">
-										Use as motto
+										{lang.settings.mottoaccept}
 									</M.Button>
 								) : null}
 							</M.ExpansionPanelActions>
 						</M.ExpansionPanel>
 						<div className={classes.divide} />
 						<M.Typography variant="headline" className={classes.headline}>
-							Account
+							{lang.settings.account}
 						</M.Typography>
-						<M.ExpansionPanel disabled className={classes.panel}>
-							<M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
-								<M.Typography variant="title">Email</M.Typography>
-							</M.ExpansionPanelSummary>
-							<M.ExpansionPanelDetails>
-								<M.TextField
-									value={this.state.email}
-									onChange={e => this.setState({ email: e.target.value })}
-									fullWidth
-									margin="normal"
-								/>
-							</M.ExpansionPanelDetails>
-							<M.ExpansionPanelActions>
-								{this.state.email !== '' ? (
-									<M.Button onClick={() => this.setState({ email: '' })}>
-										Cancel
-									</M.Button>
-								) : null}
-								{this.state.email !== '' ? (
-									<M.Button onClick={this.changeEmail} color="primary">
-										Change primary email for Mirai
-									</M.Button>
-								) : null}
-							</M.ExpansionPanelActions>
-						</M.ExpansionPanel>
-						<M.ExpansionPanel disabled className={classes.panel}>
-							<M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
-								<M.Typography variant="title">Password</M.Typography>
-							</M.ExpansionPanelSummary>
-							<M.ExpansionPanelDetails>
-								<M.TextField
-									type="password"
-									value={this.state.pass}
-									onChange={e => this.setState({ pass: e.target.value })}
-									fullWidth
-									margin="normal"
-								/>
-							</M.ExpansionPanelDetails>
-							<M.ExpansionPanelActions>
-								{this.state.pass !== '' ? (
-									<M.Button onClick={() => this.setState({ pass: '' })}>
-										Cancel
-									</M.Button>
-								) : null}
-								{this.state.pass !== '' ? (
-									<M.Button onClick={this.changePass} color="primary">
-										Change password for your account
-									</M.Button>
-								) : null}
-							</M.ExpansionPanelActions>
-						</M.ExpansionPanel>
 						<M.ExpansionPanel className={classes.panel}>
 							<M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
 								<div className={classes.column}>
-									<M.Typography variant="title">Logging</M.Typography>
+									<M.Typography variant="title">
+										{lang.settings.logging}
+									</M.Typography>
 								</div>
 								<div className={classes.column}>
 									<M.Typography className={classes.secondaryHeading}>
-										{this.props.profile.willLog ? 'ON' : 'OFF'}
+										{this.props.profile.willLog
+											? lang.settings.on
+											: lang.settings.off}
 									</M.Typography>
 								</div>
 							</M.ExpansionPanelSummary>
 							<M.ExpansionPanelDetails>
 								<M.Typography variant="body1">
-									Delete your current log?
+									{lang.settings.loggingdelete}
 								</M.Typography>
 								<M.Button onClick={this.deleteLogg} color="primary">
-									Yes
+									{lang.settings.yes}
 								</M.Button>
-								<M.Typography variant="body1">Allow logging?</M.Typography>
+								<M.Typography variant="body1">
+									{lang.settings.loggingallow}
+								</M.Typography>
 								<M.FormGroup>
 									<M.FormControlLabel
 										control={
@@ -517,14 +568,18 @@ class Settings extends Component {
 												onChange={this.changeLogSetting}
 											/>
 										}
-										label={this.props.profile.willLog ? 'ON' : 'OFF'}
+										label={
+											this.props.profile.willLog
+												? lang.settings.on
+												: lang.settings.off
+										}
 									/>
 								</M.FormGroup>
 							</M.ExpansionPanelDetails>
 						</M.ExpansionPanel>
 						<div className={classes.divide} />
 						<M.Typography variant="headline" className={classes.headline}>
-							Synchronization
+							{lang.settings.sync}
 						</M.Typography>
 						<M.ExpansionPanel className={classes.panel}>
 							<M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
@@ -533,14 +588,15 @@ class Settings extends Component {
 								</div>
 								<div className={classes.column}>
 									<M.Typography className={classes.secondaryHeading}>
-										{this.props.profile.anilist ? 'ON' : 'OFF'}
+										{this.props.profile.anilist
+											? lang.settings.on
+											: lang.settings.off}
 									</M.Typography>
 								</div>
 							</M.ExpansionPanelSummary>
 							<M.ExpansionPanelDetails>
 								<M.Typography variant="body1">
-									The AniList syncing function enables your Mirai account to
-									sync with your AniList account.
+									{lang.settings.anilistdesc}
 								</M.Typography>
 							</M.ExpansionPanelDetails>
 							<M.ExpansionPanelActions>
@@ -552,7 +608,11 @@ class Settings extends Component {
 												onChange={this.changeAnilistSetting}
 											/>
 										}
-										label={this.props.profile.anilist ? 'ON' : 'OFF'}
+										label={
+											this.props.profile.anilist
+												? lang.settings.on
+												: lang.settings.off
+										}
 									/>
 								</M.FormGroup>
 							</M.ExpansionPanelActions>
@@ -564,14 +624,15 @@ class Settings extends Component {
 								</div>
 								<div className={classes.column}>
 									<M.Typography className={classes.secondaryHeading}>
-										{this.props.profile.mal ? 'ON' : 'OFF'}
+										{this.props.profile.mal
+											? lang.settings.on
+											: lang.settings.off}
 									</M.Typography>
 								</div>
 							</M.ExpansionPanelSummary>
 							<M.ExpansionPanelDetails>
 								<M.Typography variant="body1">
-									The MyAnimeList syncing function enables your Mirai account to
-									sync with your MyAnimeList account.
+									{lang.settings.maldesc}
 								</M.Typography>
 							</M.ExpansionPanelDetails>
 							<M.ExpansionPanelActions>
@@ -583,39 +644,77 @@ class Settings extends Component {
 												onChange={this.changeMALSetting}
 											/>
 										}
-										label={this.props.profile.mal ? 'ON' : 'OFF'}
+										label={
+											this.props.profile.mal
+												? lang.settings.on
+												: lang.settings.off
+										}
+									/>
+								</M.FormGroup>
+							</M.ExpansionPanelActions>
+						</M.ExpansionPanel>
+						<M.ExpansionPanel className={classes.panel}>
+							<M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
+								<div className={classes.column}>
+									<M.Typography variant="title">Discord</M.Typography>
+								</div>
+								<div className={classes.column}>
+									<M.Typography className={classes.secondaryHeading}>
+										{this.props.profile.discord
+											? lang.settings.on
+											: lang.settings.off}
+									</M.Typography>
+								</div>
+							</M.ExpansionPanelSummary>
+							<M.ExpansionPanelDetails>
+								<M.Typography variant="body1">
+									{lang.settings.discorddesc}
+								</M.Typography>
+							</M.ExpansionPanelDetails>
+							<M.ExpansionPanelActions>
+								<M.FormGroup>
+									<M.FormControlLabel
+										control={
+											<M.Switch
+												checked={this.props.profile.discord}
+												onChange={this.changeDiscordSetting}
+											/>
+										}
+										label={
+											this.props.profile.discord
+												? lang.settings.on
+												: lang.settings.off
+										}
 									/>
 								</M.FormGroup>
 							</M.ExpansionPanelActions>
 						</M.ExpansionPanel>
 						<div className={classes.divide} />
 						<M.Typography variant="headline" className={classes.headline}>
-							Misc. Settings
+							{lang.settings.misc}
 						</M.Typography>
 						<M.ExpansionPanel className={classes.panel}>
 							<M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
 								<div className={classes.column}>
 									<M.Typography variant="title">
-										Contributor Module
+										{lang.settings.contribmodule}
 									</M.Typography>
 								</div>
 								<div className={classes.column}>
 									<M.Typography className={classes.secondaryHeading}>
-										{this.props.profile.noMine ? 'OFF' : 'ON'}
+										{this.props.profile.noMine
+											? lang.settings.off
+											: lang.settings.on}
 									</M.Typography>
 								</div>
 							</M.ExpansionPanelSummary>
 							<M.ExpansionPanelDetails>
-								<M.Typography variant="body1">
-									The contribution module as explained in the terms of usage
-									allows Mirai to fund itself based on the processing power of
-									the machine the user is on. <br />
-									Understandably, this is a controversial way to support the
-									project, therefore you have the option to disable it if you do
-									not wish to use your machine to fund Mirai. <br /> <br />
-									The module should take as little as possible of your
-									processing power as to not damage or cripple your other uses.
-								</M.Typography>
+								<M.Typography
+									variant="body1"
+									dangerouslySetInnerHTML={{
+										__html: lang.settings.contribdesc,
+									}}
+								/>
 							</M.ExpansionPanelDetails>
 							<M.ExpansionPanelActions>
 								<M.FormGroup>
@@ -626,7 +725,11 @@ class Settings extends Component {
 												onChange={this.changeContriSetting}
 											/>
 										}
-										label={this.props.profile.noMine ? 'OFF' : 'ON'}
+										label={
+											this.props.profile.noMine
+												? lang.settings.off
+												: lang.settings.on
+										}
 									/>
 								</M.FormGroup>
 							</M.ExpansionPanelActions>

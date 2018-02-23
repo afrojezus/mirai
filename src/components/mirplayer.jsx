@@ -37,7 +37,6 @@ import { history } from '../store';
 import Aqua3 from '../assets/aqua3.gif';
 import Duration from '../components/yuplayer/Duration';
 import Twist from '../twist-api';
-import Segoku from '../utils/segoku/segoku';
 import corrector from '../utils/bigfuck';
 import hsfetcher from '../torrent';
 import { getState, loadEp, loadFile } from '../utils/mirfetch';

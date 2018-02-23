@@ -21,6 +21,19 @@ const theme = createMuiTheme({
 	typography: {
 		// Use the system font.
 		fontFamily: "BlinkMacSystemFont, -apple-system, 'SF Display'",
+		fontSize: 16,
+	},
+	overrides: {
+		MuiTypography: {
+			body1: {
+				fontSize: 16,
+			},
+		},
+		MuiTooltip: {
+			tooltipBottom: {
+				fontSize: 14,
+			},
+		},
 	},
 });
 // Expose the theme as a global variable so people can play with it.

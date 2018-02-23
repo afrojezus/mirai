@@ -1,5 +1,6 @@
 ![](/src/assets/mirai-icon-dark.png)
-#Mirai
+Mirai
+
 A ReactJS-based web application designed to work as a anime streaming platform and more.
 
 Utilizes ReactPlayer for `MirPlayer`, Material UI for styling foundation and several other modules.

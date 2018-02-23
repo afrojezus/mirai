@@ -33,6 +33,7 @@ import DevDB from './dev/db';
 */
 import Watch from './watch';
 import PageNotFound from './pnf';
+import Stream from '../components/mirstreamer';
 
 import withRoot from '../components/withRoot';
 
@@ -219,6 +220,7 @@ class Index extends Component {
 					<Route path="/later" exact component={Later} />
 					<Route path="/history" exact component={History} />
 					<Route path="/help" exact component={Help} />
+						<Route path="/stream" exact component={Stream} />
 					<Route path="/tou" exact component={Tos} />
                         {!isEmpty(this.props.firebase.profile) &&
                         this.props.firebase.profile.isDeveloper === true ? null : <Route exact component={PageNotFound} />}

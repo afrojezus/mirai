@@ -1,6 +1,8 @@
 // TODO: Fix every single eslint-airbnb issue
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import checklang from '../checklang';
+import strings from '../strings';
 import { withStyles } from 'material-ui/styles';
 import { connect } from 'react-redux';
 import { firebaseConnect, isEmpty, firebase } from 'react-redux-firebase';
@@ -35,6 +37,11 @@ const style = theme => ({
 class Later extends Component {
 	state = {
 		loading: true,
+		lang: strings.enus,
+	};
+
+	componentWillMount = () => {
+		checklang(this);
 	};
 
 	componentDidMount = () => this.setState({ loading: false });
@@ -63,14 +70,14 @@ class Later extends Component {
 		<div>
 			<LoadingIndicator loading={this.state.loading} />
 			<Root>
-				<TitleHeader title="Later" color={'#000'} />
+				<TitleHeader title={this.state.lang.later.later} color={'#000'} />
 				<Container hasHeader>
 					<div className={this.props.classes.column}>
 						<Typography
 							className={this.props.classes.categoryTitle}
 							variant="title"
 						>
-							Anime you want to check out later
+							{this.state.lang.later.animetitle}
 						</Typography>
 						{!isEmpty(this.props.profile) && this.userprops.userShows ? (
 							<Supertable
@@ -83,7 +90,7 @@ class Later extends Component {
 								className={this.props.classes.noneMessage}
 								variant="title"
 							>
-								It appears you got no anime to check out later...
+								{this.state.lang.later.animenone}
 							</Typography>
 						)}
 					</div>
@@ -92,7 +99,7 @@ class Later extends Component {
 							className={this.props.classes.categoryTitle}
 							variant="title"
 						>
-							Manga you want to check out later
+							{this.state.lang.later.mangatitle}
 						</Typography>
 						{!isEmpty(this.props.profile) && this.userprops.userManga ? (
 							<Supertable
@@ -105,7 +112,7 @@ class Later extends Component {
 								className={this.props.classes.noneMessage}
 								variant="title"
 							>
-								It appears you got no manga to check out later...
+								{this.state.lang.later.manganone}
 							</Typography>
 						)}
 					</div>
