@@ -10,6 +10,10 @@ import Tab from 'material-ui/Tabs/Tab';
 import Tabs from 'material-ui/Tabs/Tabs';
 import queryString from 'query-string';
 import moment from 'moment';
+import checklang from '../checklang';
+import strings from '../strings.json';
+import Grid from 'material-ui/Grid/Grid';
+import SuperTable from '../components/supertable';
 import {
 	Root,
 	CommandoBarTop,
@@ -18,6 +22,9 @@ import {
 	TitleHeader,
 	Header,
 	Column,
+	ItemContainer,
+	SectionSubTitle,
+	SectionTitle
 } from '../components/layouts';
 import Avatar from 'material-ui/Avatar/Avatar';
 import SuperComment from '../components/supercomment';
@@ -67,9 +74,16 @@ class Feeds extends Component {
 		feed: null,
 		publicFeeds: null,
 		friendFeeds: null,
+		lang: strings.enus
 	};
 
-	componentDidMount = () => {
+
+    componentWillMount = () => {
+    	checklang(this);
+    }
+
+
+    componentDidMount = () => {
 		if (this.props.history.location.search) {
 			const id = queryString.parse(this.props.history.location.search);
 			return this.props.firebase
@@ -91,7 +105,7 @@ class Feeds extends Component {
 
 	render() {
 		const { classes } = this.props;
-		const { index, feed } = this.state;
+		const { index, feed, publicFeeds, lang } = this.state;
 		return (
 			<div>
 				<TitleHeader color={grey.A700} />
@@ -152,6 +166,18 @@ class Feeds extends Component {
 								<Typography variant="display3" className={classes.feedTitle}>
 									What's up?
 								</Typography>
+                                <ItemContainer spacing={0}>
+                                    <SectionTitle title={lang.home.updates} />
+                                    <Container spacing={16}>
+										{publicFeeds ? (
+                                            <SuperTable
+                                                data={Object.values(publicFeeds).sort((a, b) => b.date - a.date)}
+                                                typeof="feeds"
+                                                type="f"
+                                            />
+                                        ) : null}
+									</Container>
+                                </ItemContainer>
 							</Column>
 						</Container>
 						<Container>

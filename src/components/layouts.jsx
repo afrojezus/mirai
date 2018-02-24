@@ -258,11 +258,29 @@ const style = theme => ({
 		flexDirection: 'column',
 		width: '100%',
 	},
+    itemcontainer: {
+        paddingBottom: theme.spacing.unit * 2,
+        marginLeft: theme.spacing.unit,
+        marginRight: theme.spacing.unit,
+    },
+    secTitle: {
+        padding: theme.spacing.unit,
+        fontWeight: 700,
+        fontSize: 22,
+        zIndex: 'inherit',
+        paddingBottom: theme.spacing.unit * 2,
+    },
 });
 
 export const Column = withStyles(style, { withTheme: true })(
 	({ classes, children }) => <div className={classes.column}>{children}</div>
 );
+
+export const ItemContainer = withStyles(style, { withTheme: true })(({classes, children, spacing, ...props}) => <Grid container className={classes.itemcontainer} style={props.style} spacing={spacing}>{children}</Grid>);
+
+export const SectionTitle = withStyles(style, { withTheme: true })(({classes, title, ...props}) => <Typography variant={'title'} className={classes.secTitle} style={props.style}>{title}</Typography>);
+
+export const SectionSubTitle = withStyles(style, { withTheme: true })(({classes, title, ...props}) => <Typography variant={'body1'} className={classes.secSubtitle} style={props.style}>{title}</Typography>);
 
 export const LoadingScreen = withStyles(style, { withTheme: true })(
 	({ classes }) => (

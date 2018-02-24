@@ -31,7 +31,9 @@
 				"title": "Notifications",
 				"signup": "Sign up for notifcations",
 				"empty": "No notifications for today!"
-			}
+			},
+			"user": "User",
+			"search": "Search"
 		},
 		"home": {
 			"welcomeuser": "Welcome back",
@@ -157,6 +159,38 @@
 			"as": "as",
 			"staff": "Staff",
 			"similar": "Similar to this one"
+		},
+		"user": {
+			"nouserfound": "In order to view others accounts, you need to log in.",
+          "bothfriends": "- You are both friends",
+          "feed": "Feed",
+          "animelist": "Anime list",
+          "mangalist": "Manga list",
+          "stats": "Stats",
+          "removefriend": "Remove friend",
+          "addfriend": "Add as friend",
+          "friends": "Friends",
+          "nofriends": "got no friends",
+          "yougotnofriends": "You got no friends",
+          "favorites": "Favorites",
+          "anime": "Anime",
+          "manga": "Manga",
+          "characters": "Characters",
+          "staff": "Staff & Actors",
+          "studio": "Studios",
+          "animeList": {
+            "recentlyWatched": "Recently watched",
+            "lastyura": "Last seen animes on yura",
+            "later": "Later",
+            "compl": "Completed",
+            "dropped": "Dropped"
+          },
+          "mangaList": {
+            "recentlyread": "Recently read",
+            "later": "Later",
+            "compl": "Completed",
+            "dropped": "Dropped"
+          }
 		}
 	},
 	"nbno": {
@@ -191,7 +225,9 @@
 				"title": "Varsler",
 				"signup": "Register deg for notifikasjoner!",
 				"empty": "Ingen varsler for i dag!"
-			}
+			},
+			"user": "Bruker",
+			"search": "Søk"
 		},
 		"home": {
 			"welcomeuser": "Velkommen tilbake",
@@ -315,6 +351,38 @@
 			"as": "som",
 			"staff": "Medvirkende",
 			"similar": "Ligner på denne"
-		}
+		},
+      "user": {
+        "nouserfound": "For å se andre sine brukere, må du registrere deg",
+        "bothfriends": "- Dere er begge venner",
+        "feed": "Status",
+        "animelist": "Anime liste",
+        "mangalist": "Manga liste",
+        "stats": "Statestikk",
+        "removefriend": "Fjern venn",
+        "addfriend": "Legg til som venn",
+        "friends": "Venner",
+        "nofriends": "har ingen venner",
+        "yougotnofriends": "Du har ingen venner",
+        "favorites": "Favoritter",
+        "anime": "Anime",
+        "manga": "Manga (tegneserier)",
+        "characters": "Karakterer",
+        "staff": "Medvirkende og skuespillere",
+        "studio": "Studioer",
+        "animeList": {
+          "recentlyWatched": "Sist sett",
+          "lastyura": "Sist sett på Yura",
+          "later": "Senere",
+          "compl": "Fullført",
+          "dropped": "Droppet"
+        },
+        "mangaList": {
+          "recentlyread": "Sist lest",
+          "later": "Senere",
+          "compl": "Fullført",
+          "dropped": "Droppet"
+        }
+      }
 	}
 }

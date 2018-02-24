@@ -9,6 +9,7 @@ import Tab from "material-ui/Tabs/Tab";
 import Tabs from "material-ui/Tabs/Tabs";
 import queryString from "query-string";
 import moment from "moment";
+import Hidden from 'material-ui/Hidden/Hidden'
 import {
   Root,
   CommandoBarTop,
@@ -56,7 +57,16 @@ const style = theme => ({
   },
   feedContext: {
     fontSize: theme.typography.pxToRem(16)
-  }
+  },
+    commandoText: {
+        margin: 'auto',
+        textAlign: 'center',
+    },
+    commandoTextBox: {
+        paddingLeft: theme.spacing.unit,
+        paddingRight: theme.spacing.unit,
+        margin: 'auto',
+    },
 });
 
 class History extends Component {
@@ -73,6 +83,11 @@ class History extends Component {
       <div>
         <TitleHeader color={blue.A200} />
         <CommandoBarTop title="History">
+          <Hidden smDown>
+          <div className={classes.commandoTextBox} style={{marginRight: 16, marginLeft: 16}}>
+            <Typography variant={'title'} className={classes.commandoText}>History</Typography>
+          </div>
+          </Hidden>
           <Tabs
             value={this.state.index}
             onChange={(e, val) => this.setState({ index: val })}
@@ -113,7 +128,7 @@ class History extends Component {
               classes={{
                 root: classes.tab,
                 label:
-                  this.state.index === 2
+                  this.state.index === 3
                     ? classes.tabLabelActive
                     : classes.tabLabel
               }}

@@ -1,4 +1,3 @@
-// TODO: Fix every single eslint-airbnb issue
 import React, { Component } from 'react';
 import { withStyles } from 'material-ui/styles';
 import { connect } from 'react-redux';
@@ -23,6 +22,9 @@ import {
 	Header,
 	CommandoBarTop,
 	Column,
+	SectionTitle,
+	SectionSubTitle,
+	ItemContainer
 } from '../components/layouts';
 
 const style = theme => ({
@@ -79,7 +81,7 @@ class Rankings extends Component {
 				.child('collections')
 				.child(id.c)
 				.on('value', val =>
-					this.setState({ collection: val.val(), index: 3, loading: false })
+					this.setState({ collection: val.val(), index: 5, loading: false })
 				);
 		}
 	};
@@ -166,10 +168,20 @@ class Rankings extends Component {
 						<Container>
 							<Column>
 								<Typography variant="display3" className={classes.feedTitle}>
-									What's ranked on top?
+									Overview
 								</Typography>
 							</Column>
 						</Container>
+						<Container>
+							<Column>
+								<Typography variant={'display3'} className={classes.feedTitle}>Popularity</Typography>
+							</Column>
+						</Container>
+                        <Container>
+                            <Column>
+                                <Typography variant={'display3'} className={classes.feedTitle}>Score</Typography>
+                            </Column>
+                        </Container>
 						<Container>
 							<Column>
 								<Typography variant="display3" className={classes.feedTitle}>

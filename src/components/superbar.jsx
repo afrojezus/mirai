@@ -496,34 +496,35 @@ class Superbar extends Component {
 	};
 
 	listenToHistory = this.props.history.listen(location => {
+		const { superbar } = this.state.lang;
 		switch (location.pathname) {
 			case '/':
-				this.setState({ currentPage: 'Home', tabVal: 0, watchIsOn: false });
+				this.setState({ currentPage: superbar.home, tabVal: 0, watchIsOn: false });
 				break;
 			case '/feeds':
-				this.setState({ currentPage: 'Feeds', tabVal: 1, watchIsOn: false });
+				this.setState({ currentPage: superbar.feeds, tabVal: 1, watchIsOn: false });
 				break;
 			case '/rankings':
-				this.setState({ currentPage: 'Rankings', tabVal: 2, watchIsOn: false });
+				this.setState({ currentPage: superbar.rankings, tabVal: 2, watchIsOn: false });
 				break;
 			case '/live':
-				this.setState({ currentPage: 'Live', tabVal: 3, watchIsOn: false });
+				this.setState({ currentPage: superbar.live, tabVal: 3, watchIsOn: false });
 				break;
 			case '/user':
-				this.setState({ currentPage: 'User', tabVal: 4, watchIsOn: false });
+				this.setState({ currentPage: superbar.user, tabVal: 4, watchIsOn: false });
 				break;
 			case '/history':
 				this.setState({
-					currentPage: 'History',
+					currentPage: superbar.history,
 					tabVal: 4,
 					watchIsOn: false,
 				});
 				break;
 			case '/later':
-				this.setState({ currentPage: 'Later', tabVal: 4, watchIsOn: false });
+				this.setState({ currentPage: superbar.later, tabVal: 4, watchIsOn: false });
 				break;
 			case '/help':
-				this.setState({ currentPage: 'Help', tabVal: 4, watchIsOn: false });
+				this.setState({ currentPage: superbar.help, tabVal: 4, watchIsOn: false });
 				break;
 			case '/studio':
 				this.setState({
@@ -548,7 +549,7 @@ class Superbar extends Component {
 				break;
 			case '/settings':
 				this.setState({
-					currentPage: 'Settings',
+					currentPage: superbar.usermenu.settings,
 					tabVal: 4,
 					watchIsOn: false,
 				});
@@ -567,7 +568,7 @@ class Superbar extends Component {
 				break;
 			case '/tou':
 				this.setState({
-					currentPage: 'Terms of Usage',
+					currentPage: superbar.termsofusage,
 					tabVal: 4,
 					watchIsOn: false,
 				});
@@ -576,7 +577,7 @@ class Superbar extends Component {
 				this.setState({ currentPage: 'Monika', tabVal: 4, watchIsOn: false });
 				break;
 			case '/search':
-				this.setState({ currentPage: 'Search', tabVal: 4, watchIsOn: false });
+				this.setState({ currentPage: superbar.search, tabVal: 4, watchIsOn: false });
 				break;
 			case '/dev/player':
 				this.setState({ currentPage: 'Developer', tabVaL: 4 });

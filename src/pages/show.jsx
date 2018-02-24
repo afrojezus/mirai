@@ -40,6 +40,8 @@ import {
 	Header,
 	LoadingIndicator,
 	TitleHeader,
+	SectionTitle,
+	ItemContainer
 } from '../components/layouts';
 import Twist from '../twist-api';
 
@@ -1809,15 +1811,13 @@ class Show extends Component {
 									<Grid item xs style={{ zIndex: 10 }}>
 										{data.Media.characters &&
 										data.Media.characters.edges.length > 0 ? (
-											<Typography variant="title" className={classes.secTitle}>
-												{data.Media.type.includes('ANIME')
-													? lang.show.cast
-													: lang.show.char}
-											</Typography>
+											<SectionTitle title={data.Media.type.includes('ANIME')
+                                                ? lang.show.cast
+                                                : lang.show.char} />
 										) : null}
 										{data.Media.characters &&
 										data.Media.characters.edges.length > 0 ? (
-											<Grid container className={classes.itemcontainer}>
+											<ItemContainer>
 												{data.Media.characters.edges.map(cast => (
 													<PeopleButton
 														key={cast.id}
@@ -1886,16 +1886,14 @@ class Show extends Component {
 														}
 													/>
 												))}
-											</Grid>
+											</ItemContainer>
 										) : null}
 										{data.Media.characters &&
 										data.Media.characters.edges.length > 0 ? (
 											<Divider className={classes.sectDivideDown} />
 										) : null}
-										<Typography variant="title" className={classes.secTitle}>
-											{lang.show.staff}
-										</Typography>
-										<Grid container className={classes.itemcontainer}>
+										<SectionTitle title={lang.show.staff} />
+										<ItemContainer>
 											{data.Media.staff &&
 												data.Media.staff.edges.map(staff => (
 													<PeopleButton
@@ -1911,12 +1909,10 @@ class Show extends Component {
 														}
 													/>
 												))}
-										</Grid>
+										</ItemContainer>
 										<Divider className={classes.sectDivideDown} />
-										<Typography variant="title" className={classes.secTitle}>
-											{lang.show.similar}
-										</Typography>
-										<Grid container className={classes.itemcontainer}>
+										<SectionTitle title={lang.show.similar} />
+										<ItemContainer>
 											{data.Media.relations &&
 												data.Media.relations.edges.map((anime, index) => (
 													<CardButton
@@ -1979,7 +1975,7 @@ class Show extends Component {
 															}
 														/>
 													))}
-										</Grid>
+										</ItemContainer>
 									</Grid>
 								</Container>
 							</MainCard>

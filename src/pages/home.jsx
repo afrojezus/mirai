@@ -20,6 +20,8 @@ import {
 	Header,
 	LoadingIndicator,
 	TitleHeader,
+	ItemContainer,
+	SectionTitle
 } from '../components/layouts';
 import SuperTable from '../components/supertable';
 import Anilist from '../anilist-api';
@@ -494,10 +496,8 @@ class Home extends Component {
 					<Root>
 						<Container hasHeader spacing={16}>
 							<div style={{ width: '100%' }}>
-								<Grid item xs className={classes.itemContainer}>
-									<Typography variant="title" className={classes.headline}>
-										{lang.home.updates}
-									</Typography>
+								<ItemContainer>
+									<SectionTitle title={lang.home.updates} />
 									<Grid container spacing={16}>
 										{feeds ? (
 											<SuperTable
@@ -507,7 +507,7 @@ class Home extends Component {
 											/>
 										) : null}
 									</Grid>
-								</Grid>
+								</ItemContainer>
 							</div>
 							{!isEmpty(user) &&
 							user.favs &&
@@ -524,18 +524,14 @@ class Home extends Component {
 											display: 'flex',
 										}}
 									>
-										<Typography variant="title" className={classes.headline}>
-											{lang.home.animefavTitle}
-										</Typography>
+                                        <SectionTitle title={lang.home.animefavTitle}/>
 										<div style={{ flex: 1 }} />
 										<Typography variant="title" className={classes.headline}>
 											{Object.values(user.favs.show).length}{' '}
 											{lang.home.animefavEstimate}
 										</Typography>
 									</Grid>
-									<Grid
-										container
-										className={classes.itemcontainer}
+									<ItemContainer
 										style={{ marginTop: 24 }}
 									>
 										{Object.values(user.favs.show)
@@ -550,7 +546,7 @@ class Home extends Component {
 													}
 												/>
 											))}
-									</Grid>
+									</ItemContainer>
 								</div>
 							) : null}
 							{!isEmpty(user) && user.episodeProgress ? (
@@ -564,9 +560,7 @@ class Home extends Component {
 											display: 'flex',
 										}}
 									>
-										<Typography variant="title" className={classes.headline}>
-											{lang.home.animehistoryTitle}
-										</Typography>
+										<SectionTitle title={lang.home.animehistoryTitle} />
 										<div style={{ flex: 1 }} />
 										<Typography variant="title" className={classes.headline}>
 											{Object.values(user.episodeProgress).length}{' '}
@@ -576,7 +570,7 @@ class Home extends Component {
 											{lang.home.history}
 										</Button>
 									</Grid>
-									<Grid container className={classes.itemcontainer} spacing={0}>
+									<ItemContainer spacing={0}>
 										{user.episodeProgress ? (
 											<SuperTable
 												data={Object.values(user.episodeProgress)
@@ -591,7 +585,7 @@ class Home extends Component {
 										) : (
 											<SuperTable loading />
 										)}
-									</Grid>
+									</ItemContainer>
 								</div>
 							) : null}
 							<div style={{ width: '100%' }}>
@@ -604,12 +598,10 @@ class Home extends Component {
 										display: 'flex',
 									}}
 								>
-									<Typography variant="title" className={classes.headline}>
-										{lang.home.collections}
-									</Typography>
+									<SectionTitle title={lang.home.collections} />
 									<div style={{ flex: 1 }} />
 								</Grid>
-								<Grid container className={classes.itemcontainer} spacing={0}>
+								<ItemContainer spacing={0}>
 									{rankingMentionable ? (
 										<SuperTable
 											data={Object.values(rankingMentionable)}
@@ -620,7 +612,7 @@ class Home extends Component {
 									) : (
 										<SuperTable loading />
 									)}
-								</Grid>
+								</ItemContainer>
 							</div>
 							<div style={{ width: '100%' }}>
 								<Grid
@@ -632,9 +624,7 @@ class Home extends Component {
 										display: 'flex',
 									}}
 								>
-									<Typography variant="title" className={classes.headline}>
-										{lang.home.ongoingAnimeTitle}
-									</Typography>
+									<SectionTitle title={lang.home.ongoingAnimeTitle} />
 									<div style={{ flex: 1 }} />
 									<Typography variant="title" className={classes.headline}>
 										{this.props.mir && this.props.mir.twist
@@ -644,7 +634,7 @@ class Home extends Component {
 											: null}
 									</Typography>
 								</Grid>
-								<Grid container className={classes.itemcontainer} spacing={0}>
+								<ItemContainer spacing={0}>
 									{ongoing &&
 									ongoing.data &&
 									this.props.mir &&
@@ -670,15 +660,13 @@ class Home extends Component {
 									) : (
 										<SuperTable loading />
 									)}
-								</Grid>
+								</ItemContainer>
 							</div>
 							<div style={{ width: '100%' }}>
 								<Grid item xs className={classes.itemContainer}>
-									<Typography variant="title" className={classes.headline}>
-										{lang.home.ongoingMangaTitle}
-									</Typography>
+									<SectionTitle title={lang.home.ongoingMangaTitle} />
 								</Grid>
-								<Grid container className={classes.itemcontainer} spacing={0}>
+								<ItemContainer spacing={0}>
 									{ongoingM && ongoingM.data ? (
 										<SuperTable
 											data={ongoingM.data.Page.media}
@@ -689,7 +677,7 @@ class Home extends Component {
 									) : (
 										<SuperTable loading />
 									)}
-								</Grid>
+                                </ItemContainer>
 							</div>
 						</Container>
 					</Root>

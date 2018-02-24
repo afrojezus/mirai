@@ -5,6 +5,8 @@ import localForage from 'localforage';
 import queryString from 'query-string';
 import * as Vibrant from 'node-vibrant';
 import SwipableViews from 'react-swipeable-views';
+import strings from '../strings.json';
+import checklang from '../checklang';
 // import { virtualize } from 'react-swipeable-views-utils';
 import Tilt from 'react-tilt';
 import moment from 'moment';
@@ -485,9 +487,11 @@ class User extends Component {
 		loading: true,
 		data: null,
 		tabVal: 0,
+		lang: strings.enus
 	};
 
 	componentWillMount = async () => {
+		checklang(this);
 		if (!isEmpty(this.props.profile)) return this.init();
 		return false;
 	};
@@ -628,11 +632,7 @@ class User extends Component {
 				pending: true,
 			});
 
-		if (theirnotif && theirreq) {
-			return true;
-		} else {
-			return false;
-		}
+		return !!(theirnotif && theirreq);
 	};
 
 	removeFriend = async () => {
@@ -670,13 +670,13 @@ class User extends Component {
 	render() {
 		const { classes } = this.props;
 		const user = this.props.profile;
-		const { loading, hue, hueVibN, data, tabVal } = this.state;
+		const { loading, hue, hueVibN, data, tabVal, lang } = this.state;
 		if (isEmpty(user))
 			return (
 				<div>
 					<TitleHeader
 						color={'#000'}
-						title={'In order to view others accounts, you need to log in.'}
+						title={lang.user.nouserfound}
 					/>
 				</div>
 			);
@@ -718,7 +718,7 @@ class User extends Component {
 									user.friends &&
 									data &&
 									user.friends[data.userID]
-										? '- You are both friends'
+										? lang.user.bothfriends
 										: null}
 								</M.Typography>
 								<M.Typography
@@ -749,7 +749,7 @@ class User extends Component {
 										}}
 									/>
 									<M.Tab
-										label="Feed"
+										label={lang.user.feed}
 										classes={{
 											root: classes.tab,
 											label:
@@ -759,7 +759,7 @@ class User extends Component {
 										}}
 									/>
 									<M.Tab
-										label="Anime list"
+										label={lang.user.animelist}
 										classes={{
 											root: classes.tab,
 											label:
@@ -769,7 +769,7 @@ class User extends Component {
 										}}
 									/>
 									<M.Tab
-										label="Manga list"
+										label={lang.user.mangalist}
 										classes={{
 											root: classes.tab,
 											label:
@@ -779,7 +779,7 @@ class User extends Component {
 										}}
 									/>
 									<M.Tab
-										label="Stats"
+										label={lang.user.stats}
 										classes={{
 											root: classes.tab,
 											label:
@@ -809,8 +809,8 @@ class User extends Component {
 											<Icon.PersonAdd style={{ marginRight: 12 }} />
 										)}
 										{!isEmpty(user) && user.friends && user.friends[data.userID]
-											? 'Remove friend'
-											: 'Add as friend'}
+											? lang.user.removefriend
+											: lang.user.addfriend}
 									</M.Button>
 								) : null}
 								<M.IconButton color="default">
@@ -824,7 +824,7 @@ class User extends Component {
 								<M.Grid container className={classes.container}>
 									<M.Grid item xs style={{ zIndex: 10 }}>
 										<M.Typography vairant="title" className={classes.secTitle}>
-											Friends
+                                            {lang.user.friends}
 										</M.Typography>
 										<M.Grid container className={classes.itemcontainer}>
 											{data ? (
@@ -843,7 +843,7 @@ class User extends Component {
 													))
 												) : (
 													<M.Typography variant="body1">
-														{`${data.username} got no friends`}
+														{`${data.username} ${lang.user.nofriends}`}
 													</M.Typography>
 												)
 											) : user.friends ? (
@@ -861,12 +861,12 @@ class User extends Component {
 												))
 											) : (
 												<M.Typography variant="body1">
-													You got no friends.
+                                                    {lang.user.yougotnofriends}
 												</M.Typography>
 											)}
 										</M.Grid>
 										<M.Typography variant="title" className={classes.secTitle}>
-											Feed
+                                            {lang.user.feed}
 										</M.Typography>
 										<M.Grid
 											container
@@ -924,13 +924,13 @@ class User extends Component {
 									</M.Grid>
 									<M.Grid item xs={5} style={{ zIndex: 10 }} id="favourites">
 										<M.Typography variant="title" className={classes.secTitle}>
-											Favorites
+                                            {lang.user.favorites}
 										</M.Typography>
 										<M.Typography
 											variant="title"
 											className={classes.secTitleSmall}
 										>
-											Anime
+                                            {lang.user.anime}
 										</M.Typography>
 										<M.Grid container className={classes.itemcontainer}>
 											{data ? (
@@ -974,7 +974,7 @@ class User extends Component {
 											variant="title"
 											className={classes.secTitleSmall}
 										>
-											Manga
+                                            {lang.user.manga}
 										</M.Typography>
 										<M.Grid container className={classes.itemcontainer}>
 											{data ? (
@@ -1016,7 +1016,7 @@ class User extends Component {
 											variant="title"
 											className={classes.secTitleSmall}
 										>
-											Characters
+                                            {lang.user.characters}
 										</M.Typography>
 										<M.Grid container className={classes.itemcontainer}>
 											{data ? (
@@ -1058,7 +1058,7 @@ class User extends Component {
 											variant="title"
 											className={classes.secTitleSmall}
 										>
-											Staff & Actors
+                                            {lang.user.staff}
 										</M.Typography>
 										<M.Grid container className={classes.itemcontainer}>
 											{data ? (
@@ -1103,7 +1103,7 @@ class User extends Component {
 											variant="title"
 											className={classes.secTitleSmall}
 										>
-											Studios
+                                            {lang.user.studio}
 										</M.Typography>
 										<M.Grid container className={classes.itemcontainer}>
 											{data ? (
@@ -1198,7 +1198,7 @@ class User extends Component {
 								<Container>
 									<Column>
 										<M.Typography variant="title" className={classes.secTitle}>
-											Recently watched
+                                            {lang.user.animeList.recentlyWatched}
 										</M.Typography>
 										<M.Grid container className={classes.itemcontainer}>
 											{data ? (
@@ -1254,7 +1254,7 @@ class User extends Component {
 											variant={'title'}
 											className={classes.secTitleSmall}
 										>
-											Last seen animes on yura
+                                            {lang.user.animeList.lastyura}
 										</M.Typography>
 										<M.Grid container className={classes.itemcontainer}>
 											{data ? (
@@ -1294,7 +1294,7 @@ class User extends Component {
 											)}
 										</M.Grid>
 										<M.Typography variant="title" className={classes.secTitle}>
-											Later
+                                            {lang.user.animeList.later}
 										</M.Typography>
 										<M.Grid container className={classes.itemcontainer}>
 											{data ? (
@@ -1343,11 +1343,11 @@ class User extends Component {
 											)}
 										</M.Grid>
 										<M.Typography vairant="title" className={classes.secTitle}>
-											Completed
+                                            {lang.user.animeList.compl}
 										</M.Typography>
 										<M.Grid container className={classes.itemcontainer} />
 										<M.Typography vairant="title" className={classes.secTitle}>
-											Dropped
+                                            {lang.user.animeList.dropped}
 										</M.Typography>
 										<M.Grid container className={classes.itemcontainer} />
 									</Column>
@@ -1355,19 +1355,19 @@ class User extends Component {
 								<Container>
 									<Column>
 										<M.Typography variant="title" className={classes.secTitle}>
-											Recently read
+                                            {lang.user.mangaList.recentlyread}
 										</M.Typography>
 										<M.Grid container className={classes.itemcontainer} />
 										<M.Typography variant="title" className={classes.secTitle}>
-											Later
+                                            {lang.user.mangaList.later}
 										</M.Typography>
 										<M.Grid container className={classes.itemcontainer} />
 										<M.Typography vairant="title" className={classes.secTitle}>
-											Completed
+                                            {lang.user.mangaList.compl}
 										</M.Typography>
 										<M.Grid container className={classes.itemcontainer} />
 										<M.Typography vairant="title" className={classes.secTitle}>
-											Dropped
+                                            {lang.user.mangaList.dropped}
 										</M.Typography>
 										<M.Grid container className={classes.itemcontainer} />
 									</Column>
