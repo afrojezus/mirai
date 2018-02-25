@@ -603,7 +603,7 @@ class Settings extends Component {
 								<M.FormGroup>
 									<M.FormControlLabel
 										control={
-											<M.Switch
+											<M.Switch disabled
 												checked={this.props.profile.anilist}
 												onChange={this.changeAnilistSetting}
 											/>
@@ -639,7 +639,7 @@ class Settings extends Component {
 								<M.FormGroup>
 									<M.FormControlLabel
 										control={
-											<M.Switch
+											<M.Switch disabled
 												checked={this.props.profile.mal}
 												onChange={this.changeMALSetting}
 											/>
@@ -673,9 +673,9 @@ class Settings extends Component {
 							</M.ExpansionPanelDetails>
 							<M.ExpansionPanelActions>
 								<M.FormGroup>
-									<M.FormControlLabel
+									<M.FormControlLabel	
 										control={
-											<M.Switch
+											<M.Switch disabled
 												checked={this.props.profile.discord}
 												onChange={this.changeDiscordSetting}
 											/>
