@@ -14,6 +14,8 @@ import classNames from "classnames";
 import Zoom from "material-ui/transitions/Zoom";
 import Fade from "material-ui/transitions/Fade";
 // import withTheme from 'material-ui/styles/withTheme';
+import Button from "material-ui/Button/Button";
+import Card, { CardActions, CardHeader, CardContent } from "material-ui/Card";
 
 const style = theme => ({
   compacMode: {
@@ -23,7 +25,8 @@ const style = theme => ({
     padding: theme.spacing.unit * 3,
     boxSizing: "border-box",
     [theme.breakpoints.down("sm")]: {
-      flexDirection: "column"
+      flexDirection: "column",
+      padding: theme.spacing.unit
     },
     background: "transparent !important",
     transition: theme.transitions.create(["all"]),
@@ -36,6 +39,7 @@ const style = theme => ({
     flexDirection: "row",
     background: "transparent !important",
     transition: theme.transitions.create(["all"]),
+
     animation: "load .5s ease"
   },
   root: {
@@ -113,7 +117,7 @@ const style = theme => ({
   header: {
     position: "absolute",
     zIndex: -1,
-    opacity: 0.3,
+    opacity: 0.28,
     top: 0,
     width: "100%",
     objectFit: "cover",
@@ -266,7 +270,12 @@ const style = theme => ({
   itemcontainer: {
     paddingBottom: theme.spacing.unit * 2,
     marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit
+    marginRight: theme.spacing.unit,
+    [theme.breakpoints.down("xs")]: {
+      width: "initial",
+      marginLeft: "auto",
+      marginRight: "auto"
+    }
   },
   secTitle: {
     padding: theme.spacing.unit,
@@ -277,7 +286,7 @@ const style = theme => ({
   },
   modalPaper: {
     margin: "auto",
-    padding: theme.spacing.unit * 2,
+    padding: theme.spacing.unit,
     boxSizing: "border-box",
     background: grey[900],
     outline: "none",
@@ -297,11 +306,11 @@ export const Column = withStyles(style, { withTheme: true })(
 );
 
 export const ItemContainer = withStyles(style, { withTheme: true })(
-  ({ classes, children, spacing, ...props }) => (
+  ({ classes, children, noMargin, spacing, ...props }) => (
     <Grid
       container
       className={classes.itemcontainer}
-      style={props.style}
+      style={{ margin: noMargin ? 0 : null, ...props.style }}
       spacing={spacing}
     >
       {children}
@@ -385,18 +394,40 @@ export const Root = withStyles(style, { withTheme: true })(
 );
 
 export const Dialogue = withStyles(style, { withTheme: true })(
-  ({ classes, theme, children, open, title, ...props }) => (
+  ({
+    classes,
+    theme,
+    children,
+    open,
+    title,
+    actions,
+    actionsSend,
+    ...props
+  }) => (
     <Modal open={open} {...props}>
       <Fade in={open}>
-        <Paper elevation={4} className={classes.modalPaper}>
-          <Typography
-            variant="title"
-            className={classNames(classes.modalTextColor, classes.modalTitle)}
-          >
-            {title}
-          </Typography>
-          {children}
-        </Paper>
+        <Card elevation={4} className={classes.modalPaper}>
+          <CardContent>
+            <Typography
+              variant="title"
+              className={classNames(classes.modalTextColor, classes.modalTitle)}
+            >
+              {title}
+            </Typography>
+            {children}
+          </CardContent>
+          {actions !== undefined ? (
+            <CardActions>
+              <div style={{ flex: 1 }} />
+              {actions.includes("send") ? (
+                <Button onClick={actionsSend}>SEND</Button>
+              ) : null}
+              {actions.includes("ok") ? (
+                <Button onClick={props.onClose}>OK</Button>
+              ) : null}
+            </CardActions>
+          ) : null}
+        </Card>
       </Fade>
     </Modal>
   )

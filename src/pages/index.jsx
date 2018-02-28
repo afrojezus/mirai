@@ -1,15 +1,11 @@
-import React, { Component } from 'react';
-import LoadableVisibility from 'react-loadable-visibility/react-loadable';
-import { Route, withRouter, Switch } from 'react-router-dom';
-import { CircularProgress } from 'material-ui/Progress';
-import { withStyles } from 'material-ui/styles';
-import {
-	firebaseConnect,
-	isLoaded,
-	isEmpty,
-} from 'react-redux-firebase';
-import { connect } from 'react-redux';
-import { MIR_PLAY_SHOW } from '../constants';
+import React, { Component } from "react";
+import LoadableVisibility from "react-loadable-visibility/react-loadable";
+import { Route, withRouter, Switch } from "react-router-dom";
+import { CircularProgress } from "material-ui/Progress";
+import { withStyles } from "material-ui/styles";
+import { firebaseConnect, isLoaded, isEmpty } from "react-redux-firebase";
+import { connect } from "react-redux";
+import { MIR_PLAY_SHOW } from "../constants";
 /* import Home from './home';
 import Setup from './setup';
 import Show from './show';
@@ -31,155 +27,173 @@ import Tos from './tos';
 import DevPlayer from './dev/player';
 import DevDB from './dev/db';
 */
-import Watch from './watch';
-import PageNotFound from './pnf';
-import Stream from '../components/mirstreamer';
+import Watch from "./watch";
+import PageNotFound from "./pnf";
+import Stream from "../components/mirstreamer";
 
-import withRoot from '../components/withRoot';
+import withRoot from "../components/withRoot";
 
-import Superbar from '../components/superbar';
-import { LoadingScreen } from '../components/layouts';
+import Superbar from "../components/superbar";
+import { LoadingScreen } from "../components/layouts";
 
-import { history } from '../store';
+import { history } from "../store";
 
 const styles = theme => ({
-	root: {},
-	welcomeMessage: {
-		margin: 'auto',
-		flex: 0,
-		marginBottom: -500,
-		color: 'white',
-		fontWeight: 700,
-		transition: theme.transitions.create(['all']),
-	},
+  root: {},
+  welcomeMessage: {
+    margin: "auto",
+    flex: 0,
+    marginBottom: -500,
+    color: "white",
+    fontWeight: 700,
+    transition: theme.transitions.create(["all"])
+  }
 });
 const Home = LoadableVisibility({
-	loader: () => import('./home.jsx'),
-	loading: LoadingScreen
+  loader: () => import("./home.jsx"),
+  loading: LoadingScreen
 });
 const Setup = LoadableVisibility({
-	loader: () => import('./setup.jsx'),
-	loading: LoadingScreen
+  loader: () => import("./setup.jsx"),
+  loading: LoadingScreen
 });
 const Show = LoadableVisibility({
-	loader: () => import('./show.jsx'),
-	loading: LoadingScreen
+  loader: () => import("./show.jsx"),
+  loading: LoadingScreen
 });
 const Wizard = LoadableVisibility({
-	loader: () => import('./wizard.jsx'),
-	loading: LoadingScreen
+  loader: () => import("./wizard.jsx"),
+  loading: LoadingScreen
 });
 const Later = LoadableVisibility({
-	loader: () => import('./later.jsx'),
-	loading: LoadingScreen
+  loader: () => import("./later.jsx"),
+  loading: LoadingScreen
 });
 const Live = LoadableVisibility({
-	loader: () => import('./live.jsx'),
-	loading: LoadingScreen
+  loader: () => import("./live.jsx"),
+  loading: LoadingScreen
 });
 const Monika = LoadableVisibility({
-	loader: () => import('./monika.jsx'),
-	loading: LoadingScreen
+  loader: () => import("./monika.jsx"),
+  loading: LoadingScreen
 });
 const Read = LoadableVisibility({
-	loader: () => import('./read.jsx'),
-	loading: LoadingScreen
+  loader: () => import("./read.jsx"),
+  loading: LoadingScreen
 });
 const Search = LoadableVisibility({
-	loader: () => import('./search.jsx'),
-	loading: LoadingScreen
+  loader: () => import("./search.jsx"),
+  loading: LoadingScreen
 });
 const History = LoadableVisibility({
-	loader: () => import('./history.jsx'),
-	loading: LoadingScreen
+  loader: () => import("./history.jsx"),
+  loading: LoadingScreen
 });
 const Rankings = LoadableVisibility({
-	loader: () => import('./rankings.jsx'),
-	loading: LoadingScreen
+  loader: () => import("./rankings.jsx"),
+  loading: LoadingScreen
 });
 const User = LoadableVisibility({
-	loader: () => import('./user.jsx'),
-	loading: LoadingScreen
+  loader: () => import("./user.jsx"),
+  loading: LoadingScreen
 });
 const Tos = LoadableVisibility({
-	loader: () => import('./tos.jsx'),
-	loading: LoadingScreen
+  loader: () => import("./tos.jsx"),
+  loading: LoadingScreen
 });
 const Tag = LoadableVisibility({
-	loader: () => import('./tag.jsx'),
-	loading: LoadingScreen
+  loader: () => import("./tag.jsx"),
+  loading: LoadingScreen
 });
 const Feeds = LoadableVisibility({
-	loader: () => import('./feeds.jsx'),
-	loading: LoadingScreen
+  loader: () => import("./feeds.jsx"),
+  loading: LoadingScreen
 });
 const Settings = LoadableVisibility({
-	loader: () => import('./settings.jsx'),
-	loading: LoadingScreen
+  loader: () => import("./settings.jsx"),
+  loading: LoadingScreen
 });
 const Fig = LoadableVisibility({
-	loader: () => import('./fig.jsx'),
-	loading: LoadingScreen
+  loader: () => import("./fig.jsx"),
+  loading: LoadingScreen
 });
 const Help = LoadableVisibility({
-	loader: () => import('./help.jsx'),
-	loading: LoadingScreen
+  loader: () => import("./help.jsx"),
+  loading: LoadingScreen
 });
 const DevDB = LoadableVisibility({
-	loader: () => import('./dev/db.jsx'),
-	loading: LoadingScreen
+  loader: () => import("./dev/db.jsx"),
+  loading: LoadingScreen
 });
 const DevPlayer = LoadableVisibility({
-	loader: () => import('./dev/player.jsx'),
-	loading: LoadingScreen
+  loader: () => import("./dev/player.jsx"),
+  loading: LoadingScreen
 });
 class Index extends Component {
-	state = {
-		loading: true,
-	};
+  state = {
+    loading: true
+  };
 
-	componentWillMount = () => {
-		this.props.removeDataFromMir(null);
-	};
+  componentWillMount = () => {
+    this.props.removeDataFromMir(null);
+  };
 
-	componentDidMount = async () => {
-		const { auth } = this.props.firebase;
-		if (isLoaded(auth)) {
-			if (isEmpty(auth)) {
-				// Logged off
-				this.setState({ loading: false });
-			} else {
-				// Logged in
-				this.setState({ loading: false });
-			}
-		}
-	};
+  componentDidMount = async () => {
+    const { auth, profile } = this.props.firebase;
+    if (isLoaded(auth) && isLoaded(profile)) {
+      if (isEmpty(auth)) {
+        // Logged off
+        return this.setState({ loading: false });
+      } else {
+        // Logged in
+        return this.setState({ loading: false });
+      }
+    } else {
+      return false;
+    }
+  };
 
-	componentWillReceiveProps = nextProps => {
-		if (
-			nextProps.mir !== undefined ||
-			((null && nextProps.mir.twist !== undefined) || null)
-		) {
-			this.setState({ loading: false });
-		}
+  componentWillReceiveProps = nextProps => {
+    if (
+      nextProps.mir !== undefined ||
+      ((null && nextProps.mir.twist !== undefined) || null)
+    ) {
+      this.setState({ loading: false });
+    }
 
-		if (this.props.firebase.auth !== nextProps.firebase.auth) {
-			this.setState({ loading: true }, () => this.setState({ loading: false }));
-		}
-	};
+    if (this.props.firebase.auth !== nextProps.firebase.auth) {
+      this.setState({ loading: true }, () => this.setState({ loading: false }));
+    }
+  };
 
-	handleTwist = async () => {
-		const database = this.props.firebase.ref('twist');
-		if (this.props.mir && this.props.mir.twist) {
-			const twist = this.props.mir.twist.filter(s => !s.ongoing);
-			if (twist) {
-				database.update(twist);
-			} else return null;
-		}
-		return false;
-	};
+  handleProfile = async () => {
+    const { auth, profile } = this.props.firebase;
+    if (profile.userID) {
+      if (profile.role !== undefined) return this.setState({ loading: false });
+      else
+        return this.props.firebase
+          .database()
+          .ref("/users")
+          .child(profile.userID)
+          .update({ role: "basic" })
+          .then(() => this.setState({ loading: false }));
+    } else {
+      return null;
+    }
+  };
 
-	/* componentWillUnmount = async () =>
+  handleTwist = async () => {
+    const database = this.props.firebase.ref("twist");
+    if (this.props.mir && this.props.mir.twist) {
+      const twist = this.props.mir.twist.filter(s => !s.ongoing);
+      if (twist) {
+        database.update(twist);
+      } else return null;
+    }
+    return false;
+  };
+
+  /* componentWillUnmount = async () =>
       this.state.user
         ? Database.ref("status")
             .child(this.state.user.userID)
@@ -191,67 +205,69 @@ class Index extends Component {
             )
         : null; */
 
-	render() {
-		if (this.state.loading)
-			return (
-				<div className={this.props.classes.loadingRoot}>
-					<CircularProgress className={this.props.classes.loadingCircle} />
-				</div>
-			);
-		return (
-			<div className={this.props.classes.root}>
-				<Superbar history={history}>
-					<Switch>
-					<Route path="/" exact component={Home} />
-					<Route path="/setup" exact component={Setup} />
-					<Route path="/show" exact component={Show} />
-					<Route path="/wizard" exact component={Wizard} />
-					<Route path="/user" exact component={User} />
-					<Route path="/feeds" exact component={Feeds} />
-					<Route path="/rankings" exact component={Rankings} />
-					<Route path="/live" exact component={Live} />
-					<Route path="/watch" exact component={Watch} />
-					<Route path="/monika" exact component={Monika} />
-					<Route path="/settings" exact component={Settings} />
-					<Route path="/search" exact component={Search} />
-					<Route path="/read" exact component={Read} />
-					<Route path="/fig" exact component={Fig} />
-					<Route path="/tag" exact component={Tag} />
-					<Route path="/later" exact component={Later} />
-					<Route path="/history" exact component={History} />
-					<Route path="/help" exact component={Help} />
-						<Route path="/stream" exact component={Stream} />
-					<Route path="/tou" exact component={Tos} />
-                        {!isEmpty(this.props.firebase.profile) &&
-                        this.props.firebase.profile.isDeveloper === true ? null : <Route exact component={PageNotFound} />}
-					{!isEmpty(this.props.firebase.profile) &&
-					this.props.firebase.profile.isDeveloper === true ? (
-						<Route path="/dev/db" exact component={DevDB} />
-					) : null}
-					{!isEmpty(this.props.firebase.profile) &&
-					this.props.firebase.profile.isDeveloper === true ? (
-						<Route path="/dev/player" exact component={DevPlayer} />
-					) : null}
-					</Switch>
-				</Superbar>
-			</div>
-		);
-	}
+  render() {
+    if (this.state.loading)
+      return (
+        <div className={this.props.classes.loadingRoot}>
+          <CircularProgress className={this.props.classes.loadingCircle} />
+        </div>
+      );
+    return (
+      <div className={this.props.classes.root}>
+        <Superbar history={history}>
+          <Switch>
+            <Route path="/" exact component={Home} />
+            <Route path="/setup" exact component={Setup} />
+            <Route path="/show" exact component={Show} />
+            <Route path="/wizard" exact component={Wizard} />
+            <Route path="/user" exact component={User} />
+            <Route path="/feeds" exact component={Feeds} />
+            <Route path="/rankings" exact component={Rankings} />
+            <Route path="/live" exact component={Live} />
+            <Route path="/watch" exact component={Watch} />
+            <Route path="/monika" exact component={Monika} />
+            <Route path="/settings" exact component={Settings} />
+            <Route path="/search" exact component={Search} />
+            <Route path="/read" exact component={Read} />
+            <Route path="/fig" exact component={Fig} />
+            <Route path="/tag" exact component={Tag} />
+            <Route path="/later" exact component={Later} />
+            <Route path="/history" exact component={History} />
+            <Route path="/help" exact component={Help} />
+            <Route path="/stream" exact component={Stream} />
+            <Route path="/tou" exact component={Tos} />
+            {!isEmpty(this.props.firebase.profile) &&
+            this.props.firebase.profile.isDeveloper === true ? null : (
+              <Route exact component={PageNotFound} />
+            )}
+            {!isEmpty(this.props.firebase.profile) &&
+            this.props.firebase.profile.isDeveloper === true ? (
+              <Route path="/dev/db" exact component={DevDB} />
+            ) : null}
+            {!isEmpty(this.props.firebase.profile) &&
+            this.props.firebase.profile.isDeveloper === true ? (
+              <Route path="/dev/player" exact component={DevPlayer} />
+            ) : null}
+          </Switch>
+        </Superbar>
+      </div>
+    );
+  }
 }
 
 export const loadPlayer = play => ({
-	type: MIR_PLAY_SHOW,
-	play,
+  type: MIR_PLAY_SHOW,
+  play
 });
 
 const mapPTS = dispatch => ({
-	removeDataFromMir: play => dispatch(loadPlayer(play)),
+  removeDataFromMir: play => dispatch(loadPlayer(play))
 });
 
 export default withRouter(
-	firebaseConnect()(
-		connect(state => state, mapPTS)(
-			withRoot(withStyles(styles, { withTheme: true })(Index))
-		)
-	)
+  firebaseConnect()(
+    connect(state => state, mapPTS)(
+      withRoot(withStyles(styles, { withTheme: true })(Index))
+    )
+  )
 );

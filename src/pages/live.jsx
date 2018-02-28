@@ -137,7 +137,10 @@ class Live extends Component {
           open={streamModal}
           onClose={() => this.setState({ streamModal: false })}
           title={lang.live.streamHelp.title}
-        />
+          actions={"ok"}
+        >
+          <Typography variant="body1">{lang.live.streamHelp.desc}</Typography>
+        </Dialogue>
         <CommandoBarTop title="Live">
           <Hidden smDown>
             <div style={{ flex: 1 }} />
@@ -150,7 +153,7 @@ class Live extends Component {
             fullWidth
           >
             <Tab
-              label="Streams"
+              label={lang.live.streams}
               classes={{
                 root: classes.tab,
                 label:
@@ -160,7 +163,7 @@ class Live extends Component {
               }}
             />
             <Tab
-              label="Friends"
+              label={lang.live.friends}
               classes={{
                 root: classes.tab,
                 label:
@@ -170,7 +173,7 @@ class Live extends Component {
               }}
             />
             <Tab
-              label="Live TV"
+              label={lang.live.livetv}
               classes={{
                 root: classes.tab,
                 label:
@@ -192,7 +195,7 @@ class Live extends Component {
             <Container>
               <Column>
                 <Typography variant="display3" className={classes.feedTitle}>
-                  Streams
+                  {lang.live.streams}
                 </Typography>
                 <Container>
                   {streams &&
@@ -215,14 +218,14 @@ class Live extends Component {
             <Container>
               <Column>
                 <Typography variant="display3" className={classes.feedTitle}>
-                  Friends streams
+                  {lang.live.friendsstream}
                 </Typography>
               </Column>
             </Container>
             <Container>
               <Column>
                 <Typography variant="display3" className={classes.feedTitle}>
-                  Live TV
+                  {lang.live.livetv}
                 </Typography>
               </Column>
             </Container>

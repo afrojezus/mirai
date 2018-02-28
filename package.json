@@ -67,6 +67,7 @@
 		"react-tilt": "^0.1.4",
 		"recompose": "latest",
 		"redux": "^3.7.2",
+		"redux-auth-wrapper": "^2.0.2",
 		"redux-thunk": "^2.2.0",
 		"remote-redux-devtools": "^0.5.12",
 		"request-promise": "^4.2.2",

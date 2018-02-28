@@ -17,6 +17,16 @@ import Twist from "./twist-api";
 
 const rrfConfig = {
   userProfile: "users",
+  profileParamsToPopulate: [
+    { child: "role", root: "roles" } // populates user's role with matching role object from roles
+  ],
+  profileFactory: user => ({
+    email: user.email || user.providerData[0].email,
+    role: "basic",
+    providerData: user.providerData
+  }),
+  presence: "presence", // where list of online users is stored in database
+  sessions: "sessions", // where list of user sessions is stored in database (presence must be enabled)
   enableLogging: false,
   fileMetadataFactory: uploadRes => {
     // upload response from Firebase's storage upload

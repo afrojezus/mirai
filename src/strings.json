@@ -36,8 +36,14 @@
       "search": "Search"
     },
     "live": {
+      "streams": "Streams",
+      "friendsstream": "Friends",
+      "livetv": "Live TV",
+      "friends": "Friends",
       "streamHelp": {
-        "title": "How to add a new stream!"
+        "title": "How to add a new stream!",
+        "desc":
+          "Adding a stream is simple. Simply find a anime you want to watch and select 'Livestream this anime'. It's just that simple."
       }
     },
     "home": {
@@ -236,8 +242,14 @@
       "search": "Søk"
     },
     "live": {
+      "streams": "Streamer",
+      "friendsstream": "Dette streamer vennene dine",
+      "friends": "Venner",
+      "livetv": "Direkte-TV",
       "streamHelp": {
-        "title": "Hvordan lager man en ny stream?"
+        "title": "Hvordan lager man en ny stream?",
+        "desc":
+          "Det er enkelt å legge til en direktestrømming! Bare velg 'Livestream denne animen' når du er inne på en anime. Så enkelt er det!"
       }
     },
     "home": {
@@ -276,7 +288,8 @@
       "bgdesc": "Bakgrunnen endrer også fargepalettet til hjemmesiden din.",
       "bgaccept": "Bruk som bakgrunn",
       "nickname": "Kallenavn",
-      "nickplaceholder": "Velg en god kallenavn... kan være hva som helst!",
+      "nickplaceholder":
+        "Velg et godt kallenavn... det kan være hva som helst!",
       "nickaccept": "Bruk som kallenavn",
       "username": "Brukernavn",
       "usernameplaceholder":
@@ -294,9 +307,9 @@
         "The MyAnimeList syncing function enables your Mirai account to sync with your MyAnimeList account.",
       "discorddesc":
         "Sync your Mirai activity onto your Discord as a game. Requires you having Discord linked.",
-      "contribmodule": "Kryptogruving modus",
+      "contribmodule": "Kryptomining modus",
       "contribdesc":
-        "Kyptogruving modus tilatter Mirai å ta nytte av ditt system for å støtte utviklingen av applikasjonen <br /> Dette burde som regel ikke påvirke ytelsen noe særlig for alt det andre du driver med på systemet.",
+        "Kyptomining modus tilatter Mirai å ta nytte av ditt system for å støtte utviklingen av applikasjonen <br /> Dette burde som regel ikke påvirke ytelsen noe særlig for alt det andre du driver med på systemet.",
       "on": "PÅ",
       "off": "AV",
       "cancel": "Avbryt",

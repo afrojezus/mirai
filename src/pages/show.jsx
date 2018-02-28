@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import * as Icon from "material-ui-icons";
 import moment from "moment";
 import queryString from "query-string";
-import * as Vibrant from "node-vibrant";
+
+import Colorizer from "../utils/colorizer";
 import FadeIn from "react-fade-in";
 import { connect } from "react-redux";
 import { firebaseConnect, isEmpty } from "react-redux-firebase";
@@ -154,6 +155,7 @@ const styles = theme => ({
       marginLeft: 0,
       paddingTop: `${theme.spacing.unit * 8}px !important`
     }
+
   },
   bigTitle: {
     fontWeight: 800,
@@ -774,22 +776,17 @@ class Show extends Component {
     }
 
     if (image)
-      Vibrant.from(`https://cors-anywhere.herokuapp.com/${image}`).getPalette(
-        (err, pal) => {
-          if (err) console.error(err);
-          if (pal) {
-            this.setState(
-              {
-                hue: pal.DarkMuted && pal.DarkMuted.getHex(),
-                hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
-                hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex(),
-                similars
-              },
-              () => {}
-            );
-          }
-        }
-      );
+      Colorizer(`https://cors-anywhere.herokuapp.com/${image}`).then(pal => {
+        return this.setState(
+          {
+            hue: pal.DarkMuted && pal.DarkMuted.getHex(),
+            hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
+            hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex(),
+            similars
+          },
+          () => {}
+        );
+      });
     if (similars) this.setState({ similars });
     if (data && data.tags && data.tags.length > 1) {
       const similars2 = data.type.includes("MANGA")
@@ -1013,17 +1010,11 @@ class Show extends Component {
 
   changerVal = e => this.setState({ rVal: e.target.value });
 
-	rSendMReport = () => {
+  rSendMReport = () => {};
 
-	}
+  rSendWReport = () => {};
 
-	rSendWReport  =  ()  =>  {
-		
-	}
-
-	rSendDReport  =  ()  =>  {
-		
-	}
+  rSendDReport = () => {};
 
   render() {
     const { classes, mir } = this.props;

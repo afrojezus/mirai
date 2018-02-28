@@ -387,7 +387,8 @@ class Superbar extends Component {
     hueVib: null,
     hueVibN: null,
     lang: strings.enus,
-    userMenuHover: false
+    userMenuHover: false,
+    onlineUsers: []
   };
 
   componentWillMount = () => {
@@ -412,6 +413,7 @@ class Superbar extends Component {
   componentDidMount = async () => {
     window.addEventListener("scroll", this.handleScroll);
     this.vibrance();
+    await this.getUsersOnline();
   };
 
   componentWillReceiveProps = nextProps => {
@@ -666,6 +668,14 @@ class Superbar extends Component {
   handleMenuOver = () =>
     this.setState({ userMenuHover: !this.state.userMenuHover });
 
+  getUsersOnline = () =>
+    this.props.firebase
+      .database()
+      .ref("presence")
+      .on("value", value =>
+        this.setState({ onlineUsers: Object.values(value.val()) })
+      );
+
   render() {
     const { classes } = this.props;
     const {
@@ -681,7 +691,8 @@ class Superbar extends Component {
       scrolling,
       commit,
       lang,
-      userMenuHover
+      userMenuHover,
+      onlineUsers
     } = this.state;
 
     const user = !isEmpty(this.props.profile) ? this.props.profile : null;
@@ -699,6 +710,8 @@ class Superbar extends Component {
       <div className={classes.metashit}>
         <Typography className={classes.footerCopy} variant="headline">
           Mirai preview 2
+          <br />
+          {onlineUsers.length} users online
           <br />
           {this.props.mir && this.props.mir.twist
             ? `${Object.keys(this.props.mir.twist).length -

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withStyles } from "material-ui/styles";
 import { connect } from "react-redux";
-import { firebaseConnect } from "react-redux-firebase";
+import { firebaseConnect, isEmpty } from "react-redux-firebase";
 import Typography from "material-ui/Typography/Typography";
 import blue from "material-ui/colors/blue";
 import SwipeableViews from "react-swipeable-views";
@@ -9,7 +9,8 @@ import Tab from "material-ui/Tabs/Tab";
 import Tabs from "material-ui/Tabs/Tabs";
 import queryString from "query-string";
 import moment from "moment";
-import Hidden from 'material-ui/Hidden/Hidden'
+import strings from "../strings.json";
+import Hidden from "material-ui/Hidden/Hidden";
 import {
   Root,
   CommandoBarTop,
@@ -17,10 +18,15 @@ import {
   LoadingIndicator,
   TitleHeader,
   Header,
-  Column
+  Column,
+  SectionTitle,
+  ItemContainer
 } from "../components/layouts";
+import SuperTable from "../components/supertable";
 import Avatar from "material-ui/Avatar/Avatar";
 import SuperComment from "../components/supercomment";
+import checklang from "../checklang";
+import Card, { CardContent } from "material-ui/Card";
 
 const style = theme => ({
   tabLabel: {
@@ -58,35 +64,46 @@ const style = theme => ({
   feedContext: {
     fontSize: theme.typography.pxToRem(16)
   },
-    commandoText: {
-        margin: 'auto',
-        textAlign: 'center',
-    },
-    commandoTextBox: {
-        paddingLeft: theme.spacing.unit,
-        paddingRight: theme.spacing.unit,
-        margin: 'auto',
-    },
+  commandoText: {
+    margin: "auto",
+    textAlign: "center"
+  },
+  commandoTextBox: {
+    paddingLeft: theme.spacing.unit,
+    paddingRight: theme.spacing.unit,
+    margin: "auto"
+  }
 });
 
 class History extends Component {
   state = {
-    index: 0
+    index: 0,
+    lang: strings.enus
+  };
+
+  componentWillMount = () => {
+    checklang(this);
   };
 
   componentDidMount = () => {};
 
   render() {
-    const { classes } = this.props;
-    const { index } = this.state;
+    const { classes, profile } = this.props;
+    const { index, lang } = this.state;
+    const user = isEmpty(profile) ? null : profile;
     return (
       <div>
         <TitleHeader color={blue.A200} />
         <CommandoBarTop title="History">
           <Hidden smDown>
-          <div className={classes.commandoTextBox} style={{marginRight: 16, marginLeft: 16}}>
-            <Typography variant={'title'} className={classes.commandoText}>History</Typography>
-          </div>
+            <div
+              className={classes.commandoTextBox}
+              style={{ marginRight: 16, marginLeft: 16 }}
+            >
+              <Typography variant={"title"} className={classes.commandoText}>
+                History
+              </Typography>
+            </div>
           </Hidden>
           <Tabs
             value={this.state.index}
@@ -146,6 +163,124 @@ class History extends Component {
                 <Typography variant="display3" className={classes.feedTitle}>
                   Overview
                 </Typography>
+                {user && user.episodeProgress ? (
+                  <div>
+                    <ItemContainer
+                      noMargin
+                      style={{
+                        flexDirection: "row",
+                        display: "flex"
+                      }}
+                    >
+                      <SectionTitle title={lang.home.animehistoryTitle} />
+                      <div style={{ flex: 1 }} />
+                      <Typography variant="title" className={classes.headline}>
+                        {Object.values(user.episodeProgress).length}{" "}
+                        {lang.home.animehistoryEstimate}
+                      </Typography>
+                    </ItemContainer>
+                    <Container spacing={16}>
+                      {user.episodeProgress ? (
+                        <SuperTable
+                          data={Object.values(user.episodeProgress)
+                            .filter(s => s.recentlyWatched)
+                            .sort(
+                              (a, b) => b.recentlyWatched - a.recentlyWatched
+                            )}
+                          limit={24}
+                          type="s"
+                          typeof="progress"
+                        />
+                      ) : (
+                        <SuperTable loading />
+                      )}
+                    </Container>
+                  </div>
+                ) : (
+                  <Typography
+                    variant="headline"
+                    style={{ color: "rgba(255,255,255, .5)" }}
+                  >
+                    No history of anime being seen found
+                  </Typography>
+                )}
+                {user && user.chapterProgress ? (
+                  <div>
+                    <ItemContainer
+                      noMargin
+                      style={{
+                        flexDirection: "row",
+                        display: "flex"
+                      }}
+                    >
+                      <SectionTitle title={lang.home.animehistoryTitle} />
+                      <div style={{ flex: 1 }} />
+                      <Typography variant="title" className={classes.headline}>
+                        {Object.values(user.episodeProgress).length}{" "}
+                        {lang.home.animehistoryEstimate}
+                      </Typography>
+                    </ItemContainer>
+                    <Container spacing={16}>
+                      {user.episodeProgress ? (
+                        <SuperTable
+                          data={Object.values(user.episodeProgress)
+                            .filter(s => s.recentlyWatched)
+                            .sort(
+                              (a, b) => b.recentlyWatched - a.recentlyWatched
+                            )}
+                          limit={24}
+                          type="s"
+                          typeof="progress"
+                        />
+                      ) : (
+                        <SuperTable loading />
+                      )}
+                    </Container>
+                  </div>
+                ) : (
+                  <Typography
+                    variant="headline"
+                    style={{ color: "rgba(255,255,255, .5)" }}
+                  >
+                    No history of manga being read found
+                  </Typography>
+                )}
+                {user && user.feed ? (
+                  <div style={{ width: "100%" }}>
+                    <ItemContainer
+                      noMargin
+                      style={{
+                        flexDirection: "row",
+                        display: "flex"
+                      }}
+                    >
+                      <SectionTitle title="Activity" />
+                      <div style={{ flex: 1 }} />
+                      <Typography variant="title" className={classes.headline}>
+                        {Object.values(user.feed).length} instances of activity
+                        found
+                      </Typography>
+                    </ItemContainer>
+                    <ItemContainer>
+                      {Object.values(user.feed)
+                        .sort((a, b) => b.date - a.date)
+                        .map((act, index) => (
+                          <Card key={index}>
+                            <CardContent>{act.activity}</CardContent>
+                          </Card>
+                        ))}
+                    </ItemContainer>
+                  </div>
+                ) : (
+                  <Typography
+                    variant="headline"
+                    style={{ color: "rgba(255,255,255, .5)" }}
+                  >
+                    {user && !user.willLog
+                      ? "Logging is disabled"
+                      : "No activites found"}
+                  </Typography>
+                )}
               </Column>
             </Container>
             <Container>

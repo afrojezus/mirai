@@ -8,10 +8,10 @@ import Button from "material-ui/Button";
 import checkLang from "../checklang";
 import strings from "../strings.json";
 import { firebaseConnect, isEmpty } from "react-redux-firebase";
-
+import Colorizer from "../utils/colorizer";
 import { blue, grey } from "material-ui/colors";
 import { connect } from "react-redux";
-import * as Vibrant from "node-vibrant";
+import Filter from "../utils/filter";
 
 import CardButton from "../components/cardButton";
 import {
@@ -354,26 +354,23 @@ class Home extends Component {
     const hues = await localForage.getItem("user-hue");
     if (!hues) {
       if (!isEmpty(this.props.profile) && this.props.profile.headers) {
-        Vibrant.from(
+        return Colorizer(
           `https://cors-anywhere.herokuapp.com/${this.props.profile.headers}`
-        ).getPalette((err, pal) => {
-          if (pal) {
-            return this.setState(
-              {
-                hue: pal.DarkMuted && pal.DarkMuted.getHex(),
-                hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
-                hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
-              },
-              async () => {
-                await localForage.setItem("user-hue", {
-                  hue: this.state.hue,
-                  vib: this.state.hueVib,
-                  vibn: this.state.hueVibN
-                });
-              }
-            );
-          }
-          return null;
+        ).then(pal => {
+          return this.setState(
+            {
+              hue: pal.DarkMuted && pal.DarkMuted.getHex(),
+              hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
+              hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
+            },
+            async () => {
+              await localForage.setItem("user-hue", {
+                hue: this.state.hue,
+                vib: this.state.hueVib,
+                vibn: this.state.hueVibN
+              });
+            }
+          );
         });
       } else {
         return this.setState({
@@ -639,13 +636,11 @@ class Home extends Component {
                   this.props.mir.twist &&
                   this.props.mir.twist.length > 0 ? (
                     <SuperTable
-                      data={ongoing.data.Page.media
+                      data={Filter(
+                        ongoing.data.Page.media,
+                        this.props.mir.twist
+                      )
                         .filter(s => s.nextAiringEpisode)
-                        .filter(d =>
-                          this.props.mir.twist.filter(s =>
-                            s.name.match(d.title.romaji)
-                          )
-                        )
                         .sort(
                           (a, b) =>
                             a.nextAiringEpisode.timeUntilAiring -
