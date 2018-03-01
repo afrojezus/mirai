@@ -24,7 +24,7 @@ import {
 	Column,
 	SectionTitle,
 	SectionSubTitle,
-	ItemContainer
+	ItemContainer,
 } from '../components/layouts';
 
 const style = theme => ({
@@ -170,18 +170,34 @@ class Rankings extends Component {
 								<Typography variant="display3" className={classes.feedTitle}>
 									Overview
 								</Typography>
+								<ItemContainer spacing={0}>
+									<SectionTitle title="Top rated anime" />
+									<Container spacing={16} />
+								</ItemContainer>
+								<ItemContainer spacing={0}>
+									<SectionTitle title="Top popular anime" />
+									<Container spacing={16} />
+								</ItemContainer>
+								<ItemContainer spacing={0}>
+									<SectionTitle title="Your ranks" />
+									<Container spacing={16} />
+								</ItemContainer>
 							</Column>
 						</Container>
 						<Container>
 							<Column>
-								<Typography variant={'display3'} className={classes.feedTitle}>Popularity</Typography>
+								<Typography variant={'display3'} className={classes.feedTitle}>
+									Popularity
+								</Typography>
 							</Column>
 						</Container>
-                        <Container>
-                            <Column>
-                                <Typography variant={'display3'} className={classes.feedTitle}>Score</Typography>
-                            </Column>
-                        </Container>
+						<Container>
+							<Column>
+								<Typography variant={'display3'} className={classes.feedTitle}>
+									Score
+								</Typography>
+							</Column>
+						</Container>
 						<Container>
 							<Column>
 								<Typography variant="display3" className={classes.feedTitle}>

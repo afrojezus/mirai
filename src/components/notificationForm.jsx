@@ -55,6 +55,7 @@ const Notification = firebaseConnect()(
 			class extends Component {
 				// Friend request functions
 				acceptFR = async () => {
+					try {
 					const userid = this.props.userid;
 					const username = this.props.username;
 					const avatar = this.props.avatar;
@@ -100,6 +101,9 @@ const Notification = firebaseConnect()(
 								userID: userid,
 							});
 					}
+				} catch (error) {
+					return console.log(error);
+				}
 				};
 
 				ignoreFR = async () => {
