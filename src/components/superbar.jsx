@@ -673,7 +673,10 @@ class Superbar extends Component {
       .database()
       .ref("presence")
       .on("value", value =>
-        this.setState({ onlineUsers: Object.values(value.val()) })
+        this.setState({
+          onlineUsers:
+            value.val() === undefined ? 0 : Object.values(value.val())
+        })
       );
 
   render() {
@@ -1115,11 +1118,17 @@ class Superbar extends Component {
                   horizontal: "right"
                 }}
                 open={open}
+                PaperProps={{
+                  style: {
+                    maxHeight: window.innerHeight / 1.05,
+                    overflowY: "scroll"
+                  }
+                }}
                 onClose={this.handleRequestClose}
                 PopoverClasses={{ paper: classes.menuPadding }}
               >
                 <div
-                  style={{ outline: "none" }}
+                  style={{ outline: "none", maxHeight: "inherit" }}
                   className={classes.profileCard}
                 >
                   <CardHeader
