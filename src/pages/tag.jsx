@@ -17,6 +17,7 @@ import {
 } from '../components/layouts';
 import Anilist from '../anilist-api';
 import CardButton from '../components/cardButton';
+import { scrollFix } from './../utils/scrollFix';
 
 const style = theme => ({
 	root: {
@@ -569,6 +570,10 @@ class Tag extends Component {
 		hueVibN: '#222',
 		fav: false,
 		title: '',
+	};
+
+	componentWillMount = () => {
+		scrollFix();
 	};
 
 	componentDidMount = () => {

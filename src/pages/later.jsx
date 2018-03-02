@@ -16,6 +16,7 @@ import {
 	TitleHeader,
 } from '../components/layouts';
 import Supertable from '../components/supertable';
+import { scrollFix } from '../utils/scrollFix';
 
 const style = theme => ({
 	column: {
@@ -42,6 +43,7 @@ class Later extends Component {
 
 	componentWillMount = () => {
 		checklang(this);
+		scrollFix();
 	};
 
 	componentDidMount = () => this.setState({ loading: false });

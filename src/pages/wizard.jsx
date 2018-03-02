@@ -5,7 +5,7 @@ import Grid from 'material-ui/Grid';
 import { withStyles } from 'material-ui/styles';
 import { connect } from 'react-redux';
 import Dropzone from 'react-dropzone';
-import { blue } from 'material-ui/colors'
+import { blue } from 'material-ui/colors';
 import { firebaseConnect, firebase } from 'react-redux-firebase';
 
 import { TitleHeader, Header, Root, Container } from '../components/layouts';
@@ -15,6 +15,7 @@ import Button from 'material-ui/Button/Button';
 import * as Icon from 'material-ui-icons';
 import Avatar from 'material-ui/Avatar/Avatar';
 import TextField from 'material-ui/TextField/TextField';
+import { scrollFix } from './../utils/scrollFix';
 
 const styles = theme => ({
 	column: {
@@ -56,6 +57,10 @@ class Wizard extends Component {
 		ava: null,
 		avaLoading: false,
 	};
+	componentWillMount = () => {
+		scrollFix();
+	};
+
 	componentDidMount = () => {};
 
 	handleAva = accept =>

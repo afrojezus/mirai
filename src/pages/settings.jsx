@@ -13,6 +13,7 @@ import { TitleHeader, Header, Column } from '../components/layouts';
 import { history } from '../store';
 
 import strings from '../strings.json';
+import { scrollFix } from './../utils/scrollFix';
 
 const style = theme => ({
 	root: {
@@ -139,6 +140,7 @@ class Settings extends Component {
 	};
 
 	componentWillMount = () => {
+		scrollFix();
 		const lang = localStorage.getItem('language');
 		switch (lang) {
 			case 'en-us':
@@ -310,7 +312,6 @@ class Settings extends Component {
 											<M.Select value={langCode} onChange={this.changeLangVal}>
 												<M.MenuItem value="en-us">English</M.MenuItem>
 												<M.MenuItem value="nb-no">Norsk Bokmål</M.MenuItem>
-												<M.MenuItem value="jp">日本語</M.MenuItem>
 											</M.Select>
 										</M.FormControl>
 									</form>
@@ -603,7 +604,8 @@ class Settings extends Component {
 								<M.FormGroup>
 									<M.FormControlLabel
 										control={
-											<M.Switch disabled
+											<M.Switch
+												disabled
 												checked={this.props.profile.anilist}
 												onChange={this.changeAnilistSetting}
 											/>
@@ -639,7 +641,8 @@ class Settings extends Component {
 								<M.FormGroup>
 									<M.FormControlLabel
 										control={
-											<M.Switch disabled
+											<M.Switch
+												disabled
 												checked={this.props.profile.mal}
 												onChange={this.changeMALSetting}
 											/>
@@ -673,9 +676,10 @@ class Settings extends Component {
 							</M.ExpansionPanelDetails>
 							<M.ExpansionPanelActions>
 								<M.FormGroup>
-									<M.FormControlLabel	
+									<M.FormControlLabel
 										control={
-											<M.Switch disabled
+											<M.Switch
+												disabled
 												checked={this.props.profile.discord}
 												onChange={this.changeDiscordSetting}
 											/>

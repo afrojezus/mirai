@@ -16,6 +16,7 @@ import { connect } from 'react-redux';
 import { firebaseConnect, firebase } from 'react-redux-firebase';
 import { history } from '../store';
 import miraiIcon from '../assets/mirai-icon.png';
+import { scrollFix } from './../utils/scrollFix';
 
 const styles = theme => ({
 	root: {
@@ -87,6 +88,7 @@ class Setup extends Component {
 
 	componentWillMount = () => {
 		checklang(this);
+		scrollFix();
 	};
 
 	toggleLoginMode = () =>

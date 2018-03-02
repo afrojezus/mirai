@@ -15,6 +15,7 @@ import {
 	LoadingIndicator,
 	TitleHeader,
 } from '../components/layouts';
+import { scrollFix } from './../utils/scrollFix';
 
 const style = theme => ({
 	column: {
@@ -46,6 +47,7 @@ class Tos extends Component {
 
 	componentWillMount = () => {
 		checklang(this);
+		scrollFix();
 	};
 
 	componentDidMount = () => {};

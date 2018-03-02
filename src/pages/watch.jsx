@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import withStyles from 'material-ui/styles/withStyles';
 import { connect } from 'react-redux';
 import { firebaseConnect } from 'react-redux-firebase';
+import { scrollFix } from './../utils/scrollFix';
 
 const style = theme => ({
 	root: {
@@ -10,20 +11,30 @@ const style = theme => ({
 		position: 'relative',
 		top: 0,
 		left: 0,
-		overflow: 'hidden'
+		overflow: 'hidden',
 	},
 });
 
 class Watch extends Component {
 	state = {};
 
-	componentWillMount = () => {};
+	componentWillMount = () => {
+		scrollFix();
+	};
 
 	componentDidMount = () => {};
 
-	componentWillReceiveProps = nextProps => {};
+	componentWillReceiveProps = nextProps => {
+		if (this.props.mir.play !== nextProps.mir.play) {
+			return (document.title = `Mirai - Watching ${
+				this.props.mir.play.meta.title.romaji
+			}`);
+		}
+	};
 
-	componentWillUnmount = () => {};
+	componentWillUnmount = () => {
+		document.title = `Mirai`;
+	};
 
 	render() {
 		const { classes } = this.props;

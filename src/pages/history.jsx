@@ -28,6 +28,9 @@ import SuperComment from '../components/supercomment';
 import checklang from '../checklang';
 import Card, { CardContent } from 'material-ui/Card';
 import Divider from 'material-ui/Divider';
+import { Feed } from '../components/feed';
+import { scrollFix } from './../utils/scrollFix';
+import CardButton from '../components/cardButton';
 
 const style = theme => ({
 	tabLabel: {
@@ -88,6 +91,7 @@ class History extends Component {
 
 	componentWillMount = () => {
 		checklang(this);
+		scrollFix();
 	};
 
 	componentDidMount = () => {};
@@ -98,7 +102,7 @@ class History extends Component {
 		const user = isEmpty(profile) ? null : profile;
 		return (
 			<div>
-				<TitleHeader color={blue.A200} />
+				<TitleHeader color={'#000'} />
 				<CommandoBarTop title="History">
 					<Hidden smDown>
 						<div
@@ -255,6 +259,7 @@ class History extends Component {
 								{user && user.feed ? (
 									<div>
 										<ItemContainer
+											topPad
 											noMargin
 											style={{
 												flexDirection: 'row',
@@ -272,9 +277,20 @@ class History extends Component {
 											{Object.values(user.feed)
 												.sort((a, b) => b.date - a.date)
 												.map((act, index) => (
-													<Card key={index}>
-														<CardContent>{act.activity}</CardContent>
-													</Card>
+													<Feed
+														title={'Activity'}
+														avatar={act.coverImg}
+														context={act.type}
+														noActions
+														id={index}
+														text={act.activity}
+														date={act.date}
+														key={index}
+														style={{
+															width: 450,
+															flexBasis: 'initial',
+														}}
+													/>
 												))}
 										</ItemContainer>
 									</div>
@@ -295,6 +311,37 @@ class History extends Component {
 								<Typography variant="display3" className={classes.feedTitle}>
 									Anime log
 								</Typography>
+								<ItemContainer>
+									{!isEmpty(user) && user.episodeProgress ? (
+										Object.values(user.episodeProgress)
+											.filter(s => s.recentlyWatched)
+											.sort((a, b) => b.recentlyWatched - a.recentlyWatched)
+											.map(show => (
+												<CardButton
+													key={show.showId}
+													onClick={() =>
+														this.props.history.push(`/show?s=${show.showId}`)
+													}
+													title={show.title}
+													image={show.showArtwork}
+													subtitle={
+														show.ep
+															? `Episode ${show.ep} | ${moment(
+																	show.recentlyWatched
+																).from(Date.now())}`
+															: null
+													}
+												/>
+											))
+									) : (
+										<Typography
+											variant="title"
+											style={{ color: 'rgba(255,255,255, .5)' }}
+										>
+											No history of anime being seen found
+										</Typography>
+									)}
+								</ItemContainer>
 							</Column>
 						</Container>
 						<Container>
@@ -302,6 +349,37 @@ class History extends Component {
 								<Typography variant="display3" className={classes.feedTitle}>
 									Manga log
 								</Typography>
+								<ItemContainer>
+									{!isEmpty(user) && user.chapterProgress ? (
+										Object.values(user.chapterProgress)
+											.filter(s => s.recentlyRead)
+											.sort((a, b) => b.recentlyRead - a.recentlyRead)
+											.map(show => (
+												<CardButton
+													key={show.showId}
+													onClick={() =>
+														this.props.history.push(`/show?m=${show.showId}`)
+													}
+													title={show.title}
+													image={show.showArtwork}
+													subtitle={
+														show.ep
+															? `Chapter ${show.ch} | ${moment(
+																	show.recentlyRead
+																).from(Date.now())}`
+															: null
+													}
+												/>
+											))
+									) : (
+										<Typography
+											variant="title"
+											style={{ color: 'rgba(255,255,255, .5)' }}
+										>
+											No history of manga being read found
+										</Typography>
+									)}
+								</ItemContainer>
 							</Column>
 						</Container>
 						<Container>
@@ -309,6 +387,37 @@ class History extends Component {
 								<Typography variant="display3" className={classes.feedTitle}>
 									User log
 								</Typography>
+								<ItemContainer>
+									{user && user.feed ? (
+										Object.values(user.feed)
+											.sort((a, b) => b.date - a.date)
+											.map((act, index) => (
+												<Feed
+													title={'Activity'}
+													avatar={act.coverImg}
+													context={act.type}
+													noActions
+													id={index}
+													text={act.activity}
+													date={act.date}
+													key={index}
+													style={{
+														width: 450,
+														flexBasis: 'initial',
+													}}
+												/>
+											))
+									) : (
+										<Typography
+											variant="title"
+											style={{ color: 'rgba(255,255,255, .5)' }}
+										>
+											{user && !user.willLog
+												? 'Logging is disabled'
+												: 'No activites found'}
+										</Typography>
+									)}
+								</ItemContainer>
 							</Column>
 						</Container>
 					</SwipeableViews>

@@ -9,6 +9,7 @@ import Typography from 'material-ui/Typography/Typography';
 import Divider from 'material-ui/Divider/Divider';
 import checklang from '../checklang';
 import strings from '../strings.json';
+import { scrollFix } from './../utils/scrollFix';
 import {
 	Root,
 	CommandoBar,
@@ -47,6 +48,7 @@ class Help extends Component {
 	};
 	componentWillMount = () => {
 		checklang(this);
+		scrollFix();
 	};
 
 	componentDidMount = () =>

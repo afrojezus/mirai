@@ -13,6 +13,7 @@ import Tabs from 'material-ui/Tabs/Tabs';
 import CardButton from '../components/cardButton';
 import SuperComment from '../components/supercomment';
 import Hidden from 'material-ui/Hidden/Hidden';
+import { scrollFix } from './../utils/scrollFix';
 import {
 	Root,
 	CommandoBar,
@@ -70,6 +71,10 @@ class Rankings extends Component {
 		loading: true,
 		index: 0,
 		collection: null,
+	};
+
+	componentWillMount = () => {
+		scrollFix();
 	};
 
 	componentDidMount = () => {
