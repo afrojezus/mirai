@@ -1201,9 +1201,9 @@ class Superbar extends Component {
                       </FormControl>
                     </form>
                     <Divider /> */}
-                  {(!isEmpty(this.props.profile) &&
-                    this.props.profile.role === "dev") ||
-                  "admin" ? (
+                  {isEmpty(this.props.profile) ? null : this.props.profile
+                    .role === "Normal" ? null : this.props.profile.role ===
+                    "dev" || "admin" ? (
                     <List
                       subheader={
                         <ListSubheader>
@@ -1216,7 +1216,8 @@ class Superbar extends Component {
                         onClick={() => {
                           this.handleRequestClose();
                           this.props.history.push("/dev/db");
-                        }}x
+                        }}
+                        x
                       >
                         <ListItemText
                           primary={lang.superbar.usermenu.developerDb}
