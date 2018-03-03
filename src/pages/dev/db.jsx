@@ -607,6 +607,7 @@ class DB extends Component {
 																	feedEditContext: e.target.value,
 																})
 															}
+															multiline
 															fullWidth
 														/>
 														<div

@@ -284,6 +284,9 @@ const style = theme => ({
     zIndex: "inherit",
     paddingBottom: theme.spacing.unit * 2
   },
+    lightersecTitle: {
+        fontWeight: 500,
+    },
   modalPaper: {
     margin: "auto",
     padding: theme.spacing.unit,
@@ -331,7 +334,7 @@ export const SectionTitle = withStyles(style, { withTheme: true })(
   ({ classes, title, lighter, ...props }) => (
     <Typography
       variant={"title"}
-      className={classes.secTitle}
+      className={classNames(classes.secTitle, lighter ? classes.lightersecTitle : null)}
       style={{ color: lighter ? "rgba(255,255,255,.5)" : null, ...props }}
     >
       {title}

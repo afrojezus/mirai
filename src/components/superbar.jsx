@@ -49,6 +49,7 @@ import miraiLogo from "../assets/mirai-icon.png";
 import NotificationForm from "./notificationForm";
 import { history } from "../store";
 import MirPlayer from "./mirplayer";
+import { Dialogue } from "./layouts";
 
 const drawerWidth = 240;
 
@@ -388,7 +389,8 @@ class Superbar extends Component {
     hueVibN: null,
     lang: strings.enus,
     userMenuHover: false,
-    onlineUsers: []
+    onlineUsers: [],
+      donateModal: false
   };
 
   componentWillMount = () => {
@@ -678,6 +680,8 @@ class Superbar extends Component {
         })
       );
 
+  openDonate = () => this.setState({donateModal: true, anchorEl: null });
+
   render() {
     const { classes } = this.props;
     const {
@@ -694,7 +698,8 @@ class Superbar extends Component {
       commit,
       lang,
       userMenuHover,
-      onlineUsers
+      onlineUsers,
+        donateModal
     } = this.state;
 
     const user = !isEmpty(this.props.profile) ? this.props.profile : null;
@@ -915,7 +920,7 @@ class Superbar extends Component {
           >
             <ListItemText primary="Monika" />
           </ListItem>
-          <ListItem button onClick={() => {}}>
+          <ListItem button onClick={this.openDonate}>
             <ListItemText primary={lang.superbar.donate} />
           </ListItem>
         </List>
@@ -1322,6 +1327,10 @@ class Superbar extends Component {
             {menuList}
           </Drawer>
         </Hidden>
+          <Dialogue open={donateModal} onClose={() => this.setState({ donateModal: false })}
+                    title={lang.superbar.donate}>
+              <Typography variant='body1'>Donate to the Mirai project to bettern the quality of the application and encourage newer features.</Typography>
+          </Dialogue>
         <div className={classes.content}>{this.props.children}</div>
         {/* <Hidden xlUp>
 					<BottomNavigation
