@@ -238,11 +238,12 @@ const style = theme => ({
 		flexFlow: 'column wrap',
 		zIndex: '3000',
 		position: 'absolute',
-		top: '50%',
-		left: '50%',
-		transform: 'translate(-50%,-50%)',
+		bottom: 0,
+		left: 0,
+		width: '100%',
 		transition: theme.transitions.create(['all']),
 		opacity: 0,
+		background: 'linear-gradient(to bottom, transparent, rgba(0,0,0,.95))',
 		[theme.breakpoints.down('sm')]: {
 			opacity: 1,
 		},
@@ -251,6 +252,8 @@ const style = theme => ({
 		[theme.breakpoints.down('sm')]: {
 			display: 'none',
 		},
+		margin: 'auto',
+		paddingLeft: theme.spacing.unit
 	},
 	controlpanelActions: {
 		margin: theme.spacing.unit,
@@ -697,14 +700,15 @@ class MirPlayer extends Component {
 						style={!loaded > 0 ? { opacity: 0 } : null}
 						id="pipcontrols"
 					>
-						<Typography
-							variant="title"
-							className={classes.piptitle}
-							style={{ textAlign: 'center' }}
-						>
-							{status} {loaded > 0 ? `EP ${ep}` : null}
-						</Typography>
-						<div style={{ display: 'flex', margin: 'auto' }}>
+						<div style={{ display: 'flex', padding: window.mobilecheck() ? 0 : 8 }}>
+                            <Typography
+                                variant="title"
+                                className={classes.piptitle}
+                                style={{ textAlign: 'left' }}
+                            >
+                                {status} {loaded > 0 ? `EP ${ep}` : null}
+                            </Typography>
+							<div style={{flex: 1}} />
 							{loaded > 0 ? (
 								<IconButton onClick={this.playPause}>
 									{playing ? <Icon.Pause /> : <Icon.PlayArrow />}
