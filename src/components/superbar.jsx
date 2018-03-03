@@ -390,7 +390,7 @@ class Superbar extends Component {
     lang: strings.enus,
     userMenuHover: false,
     onlineUsers: [],
-      donateModal: false
+    donateModal: false
   };
 
   componentWillMount = () => {
@@ -680,7 +680,7 @@ class Superbar extends Component {
         })
       );
 
-  openDonate = () => this.setState({donateModal: true, anchorEl: null });
+  openDonate = () => this.setState({ donateModal: true, anchorEl: null });
 
   render() {
     const { classes } = this.props;
@@ -699,7 +699,7 @@ class Superbar extends Component {
       lang,
       userMenuHover,
       onlineUsers,
-        donateModal
+      donateModal
     } = this.state;
 
     const user = !isEmpty(this.props.profile) ? this.props.profile : null;
@@ -1125,8 +1125,8 @@ class Superbar extends Component {
                 PaperProps={{
                   style: {
                     maxHeight: window.innerHeight / 1.05,
-					  overflowY: "auto",
-					zIndex: 2000
+                    overflowY: "auto",
+                    zIndex: 2000
                   }
                 }}
                 onClose={this.handleRequestClose}
@@ -1201,8 +1201,9 @@ class Superbar extends Component {
                       </FormControl>
                     </form>
                     <Divider /> */}
-                  {!isEmpty(this.props.profile) &&
-                  this.props.profile.isDeveloper === true ? (
+                  {(!isEmpty(this.props.profile) &&
+                    this.props.profile.role === "dev") ||
+                  "admin" ? (
                     <List
                       subheader={
                         <ListSubheader>
@@ -1215,21 +1216,10 @@ class Superbar extends Component {
                         onClick={() => {
                           this.handleRequestClose();
                           this.props.history.push("/dev/db");
-                        }}
+                        }}x
                       >
                         <ListItemText
                           primary={lang.superbar.usermenu.developerDb}
-                        />
-                      </ListItem>
-                      <ListItem
-                        button
-                        onClick={() => {
-                          this.handleRequestClose();
-                          this.props.history.push("/dev/player");
-                        }}
-                      >
-                        <ListItemText
-                          primary={lang.superbar.usermenu.developerMedia}
                         />
                       </ListItem>
                       <Divider />
@@ -1327,10 +1317,16 @@ class Superbar extends Component {
             {menuList}
           </Drawer>
         </Hidden>
-          <Dialogue open={donateModal} onClose={() => this.setState({ donateModal: false })}
-                    title={lang.superbar.donate}>
-              <Typography variant='body1'>Donate to the Mirai project to bettern the quality of the application and encourage newer features.</Typography>
-          </Dialogue>
+        <Dialogue
+          open={donateModal}
+          onClose={() => this.setState({ donateModal: false })}
+          title={lang.superbar.donate}
+        >
+          <Typography variant="body1">
+            Donate to the Mirai project to bettern the quality of the
+            application and encourage newer features.
+          </Typography>
+        </Dialogue>
         <div className={classes.content}>{this.props.children}</div>
         {/* <Hidden xlUp>
 					<BottomNavigation

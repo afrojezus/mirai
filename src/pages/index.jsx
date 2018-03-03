@@ -162,7 +162,7 @@ class Index extends Component {
     }
 
     if (this.props.firebase.auth !== nextProps.firebase.auth) {
-      this.setState({ loading: true }, () => this.setState({ loading: false }));
+      this.handleProfile().then(() => this.setState({ loading: false }));
     }
   };
 
@@ -175,7 +175,7 @@ class Index extends Component {
           .database()
           .ref("/users")
           .child(profile.userID)
-          .update({ role: "basic" })
+          .update({ role: "Normal" })
           .then(() => this.setState({ loading: false }));
     } else {
       return null;

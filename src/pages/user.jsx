@@ -485,6 +485,17 @@ const style = theme => ({
   },
   feed: {
     margin: theme.spacing.unit
+  },
+  roleTitle: {
+    fontSize: theme.typography.pxToRem(18),
+    borderRadius: 2,
+    border: "2px solid rgba(255,255,255,1)",
+    padding: theme.spacing.unit / 2,
+    boxSizing: "border-box",
+    textTransform: "uppercase",
+    color: "white",
+    fontWeight: 700,
+    float: "right"
   }
 });
 
@@ -494,7 +505,8 @@ class User extends Component {
     data: null,
     tabVal: 0,
     lang: strings.enus,
-    userFeeds: null
+    userFeeds: null,
+    menuEl: null
   };
 
   componentWillMount = async () => {
@@ -502,6 +514,25 @@ class User extends Component {
     scrollFix();
     if (!isEmpty(this.props.profile)) return this.init();
     return false;
+  };
+
+  componentDidMount = async () => {
+    await this.handleProfile();
+  };
+
+  handleProfile = async () => {
+    const profile = this.props.profile;
+    if (profile.userID) {
+      if (profile.role !== undefined) return null;
+      return this.props.firebase
+        .database()
+        .ref("/users")
+        .child(profile.userID)
+        .update({ role: "Normal" })
+        .then(() => this.setState({ loading: false }));
+    } else {
+      return null;
+    }
   };
 
   componentWillUnmount = () => {
@@ -682,10 +713,71 @@ class User extends Component {
     }
   };
 
+  banUser = async () => {
+    const { firebase } = this.props;
+    if (!this.state.data) {
+      return null;
+    } else if (this.state.data.role === "banned") {
+      return await firebase
+        .database()
+        .ref("/users")
+        .child(this.state.data.userID)
+        .update({ role: "Normal" });
+    } else {
+      return await firebase
+        .database()
+        .ref("/users")
+        .child(this.state.data.userID)
+        .update({ role: "banned" });
+    }
+  };
+
+  giveAdmin = async () => {
+    const { firebase } = this.props;
+    if (!this.state.data) {
+      return null;
+    } else if (this.state.data.role === "admin") {
+      return await firebase
+        .database()
+        .ref("/users")
+        .child(this.state.data.userID)
+        .update({ role: "Normal" });
+    } else {
+      return await firebase
+        .database()
+        .ref("/users")
+        .child(this.state.data.userID)
+        .update({ role: "admin" });
+    }
+  };
+
+  reportUser = async () => {
+    const { firebase } = this.props;
+    if (!this.state.data) {
+      return null;
+    }
+    return await firebase
+      .database()
+      .ref("/users")
+      .child(this.state.data.userID)
+      .child("reports")
+      .push({ reported: true });
+  };
+
   render() {
     const { classes } = this.props;
     const user = this.props.profile;
-    const { loading, hue, hueVibN, data, tabVal, lang, userFeeds } = this.state;
+    const {
+      loading,
+      hue,
+      hueVibN,
+      data,
+      tabVal,
+      lang,
+      userFeeds,
+      menuEl
+    } = this.state;
+    const openMenu = Boolean(menuEl);
     if (isEmpty(user))
       return (
         <div>
@@ -721,8 +813,11 @@ class User extends Component {
                 </Tilt>
               </M.Grid>
               <M.Grid item xs style={{ margin: "auto" }}>
+                <M.Typography className={classes.roleTitle} variant="display3">
+                  {data ? data.role : user.role}
+                </M.Typography>
                 <M.Typography className={classes.bigTitle} variant="display3">
-                  {data ? data.username : user.username}
+                  {data ? data.username : user.username}{" "}
                 </M.Typography>
                 <M.Typography variant="display1" className={classes.smallTitle}>
                   {data ? data.nick : user.nick}{" "}
@@ -815,9 +910,44 @@ class User extends Component {
                       : lang.user.addfriend}
                   </M.Button>
                 ) : null}
-                <M.IconButton color="default">
+                <M.IconButton
+                  color="default"
+                  aria-owns={openMenu ? "more-menu" : null}
+                  aria-haspopup="true"
+                  onClick={e => this.setState({ menuEl: e.currentTarget })}
+                >
                   <Icon.MoreVert />
                 </M.IconButton>
+                <M.Menu
+                  id="more-menu"
+                  anchorEl={menuEl}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "left"
+                  }}
+                  MenuListProps={{ style: { padding: 0 } }}
+                  PaperProps={{ style: { background: hue } }}
+                  open={openMenu}
+                  onClose={() => this.setState({ menuEl: null })}
+                >
+                  {!data ? null : (
+                    <M.MenuItem onClick={this.reportUser}>
+                      Report user
+                    </M.MenuItem>
+                  )}
+                  {!isEmpty(user) && user.role === "dev" ? (
+                    <M.MenuItem onClick={this.giveAdmin}>
+                      {data && data.role === "admin" && user.role === "dev"
+                        ? "Remove admin privileges"
+                        : "Make user admin"}
+                    </M.MenuItem>
+                  ) : null}
+                  {!isEmpty(user) &&
+                  user.role === "Normal" ? null : user.role === "dev" ||
+                  "Admin" ? (
+                    <M.MenuItem onClick={this.banUser}>Ban user</M.MenuItem>
+                  ) : null}
+                </M.Menu>
               </CommandoBar>
               <SwipableViews
                 index={tabVal}

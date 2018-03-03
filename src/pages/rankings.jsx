@@ -95,8 +95,13 @@ class Rankings extends Component {
   };
 
   getFriendsRecommend = async () => {
+    const you = this.props.profile;
     const db = this.props.firebase.database().ref("/users");
     try {
+      /*return db
+        .child(you.userID)
+        .child("friends")
+        .on("value", value => console.log(value.val()));*/
     } catch (error) {
       return console.error(error);
     }

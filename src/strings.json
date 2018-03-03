@@ -18,8 +18,8 @@
         "title": "Mirai",
         "subheader": "Sign in to access more features",
         "loginbutton": "Sign in",
-        "developer": "Dev",
-        "developerDb": "Developer Dashboard",
+        "developer": "Admin",
+        "developerDb": "Admin Dashboard",
         "developerMedia": "Media Player",
         "settings": "Settings",
         "signout": "Sign out"
@@ -233,8 +233,8 @@
         "title": "Mirai",
         "subheader": "Logg inn for å bruke flere funksjoner",
         "loginbutton": "Logg inn",
-        "developer": "Utvikler",
-        "developerDb": "Utvikler kontrollpanel",
+        "developer": "Admin",
+        "developerDb": "Administrativt kontrollpanel",
         "developerMedia": "Mediespiller",
         "settings": "Innstillinger",
         "signout": "Logg ut"
