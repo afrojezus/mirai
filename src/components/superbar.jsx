@@ -617,8 +617,8 @@ class Superbar extends Component {
       case "/dev/player":
         this.setState({ currentPage: "Developer", tabVaL: 4 });
         break;
-      case "/dev/db":
-        this.setState({ currentPage: "Developer", tabVaL: 4 });
+      case "/admin/db":
+        this.setState({ currentPage: "Admin", tabVaL: 4 });
         break;
       default:
         break;
@@ -1215,7 +1215,7 @@ class Superbar extends Component {
                         button
                         onClick={() => {
                           this.handleRequestClose();
-                          this.props.history.push("/dev/db");
+                          this.props.history.push("/admin/db");
                         }}
                         x
                       >

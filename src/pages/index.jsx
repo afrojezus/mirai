@@ -238,8 +238,8 @@ class Index extends Component {
             <Route path="/tou" exact component={Tos} />
             <Route exact component={PageNotFound} />
             {!isEmpty(this.props.firebase.profile) &&
-            !(this.props.firebase.profile.role === "admin" || "dev") ? (
-              <Route path="/dev/db" exact component={DevDB} />
+            this.props.firebase.profile.role === ("admin" || "dev") ? (
+              <Route path="/admin/db" exact component={DevDB} />
             ) : null}
             {!isEmpty(this.props.firebase.profile) &&
             this.props.firebase.profile.isDeveloper === true ? (

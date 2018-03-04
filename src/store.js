@@ -22,7 +22,7 @@ const rrfConfig = {
   ],
   profileFactory: user => ({
     email: user.email || user.providerData[0].email,
-    role: "basic",
+    role: "Normal",
     providerData: user.providerData
   }),
   presence: "presence", // where list of online users is stored in database
