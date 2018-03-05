@@ -45,7 +45,8 @@ import {
   SectionTitle,
   ItemContainer,
   Dialogue,
-  Column
+  Column,
+  CommandoBarTop
 } from "../components/layouts";
 import Twist from "../twist-api";
 
@@ -77,7 +78,7 @@ const styles = theme => ({
     animation: "load .3s ease",
     marginLeft: "auto",
     marginRight: "auto",
-    maxWidth: 1970
+    maxWidth: 1600
   },
   backToolbar: {
     marginTop: theme.spacing.unit * 8
@@ -240,7 +241,7 @@ const styles = theme => ({
     maxWidth: 300,
     height: 400,
     margin: "auto",
-    boxShadow: "0 3px 18px rgba(0,0,0,.5)",
+    boxShadow: "0 3px 18px rgba(0,0,0,.5)",
     transition: theme.transitions.create(["all"]),
     position: "relative",
     "& > img": {
@@ -650,7 +651,7 @@ class Show extends Component {
   unlisten = this.props.history.listen(location => {
     const id = queryString.parse(location.search);
     if (location.pathname === "/show")
-      if (id.s !== this.state.id) {
+      if ((id.s || id.m) !== this.state.id) {
         this.init();
       }
     return false;
@@ -672,7 +673,6 @@ class Show extends Component {
           const superBar = document.getElementById("superBar");
           if (superBar) superBar.style.background = null;
           const id = queryString.parse(this.props.history.location.search);
-          if (id) {
             const data = this.props.history.location.search.includes(
               "?s=99999999999"
             )
@@ -738,7 +738,6 @@ class Show extends Component {
                 setTimeout(() => this.setState({ error: "" }), 3000)
               );
             }
-          }
         }, 300)
     );
 
@@ -899,7 +898,7 @@ class Show extends Component {
 
   tabChange = (e, val) => this.setState({ tabVal: val });
 
-  play = (episode) => {
+  play = () => {
     window.scrollTo(0, 0);
     if (
       this.state.data.Media &&
@@ -915,7 +914,7 @@ class Show extends Component {
         .then(() => {
           // console.log(this.props);
           this.setState({ status: "active" });
-          return this.props.history.push(`/watch`, {skipToEp: episode ? episode : null});
+          return this.props.history.push(`/watch`);
         });
     } else
       this.props.history.push(
@@ -1091,7 +1090,7 @@ class Show extends Component {
   showEpisodes = (e) => this.setState({showEpisodes: !this.state.showEpisodes});
 
   render() {
-    const { classes, mir } = this.props;
+    const { classes, mir, theme } = this.props;
     const {
       data,
       loading,
@@ -1109,7 +1108,8 @@ class Show extends Component {
       lang,
       rVal,
       userlessREmail,
-      showEpisodes
+      showEpisodes,
+      error
     } = this.state;
     const openMenu = Boolean(menuEl);
 
@@ -1144,6 +1144,12 @@ class Show extends Component {
       </Menu>
     );
 
+    if (error) return (
+      <div className={classes.frame}>
+      <TitleHeader title='Well this is kinda awkward...' subtitle={error} color={hue} colortext={hueVib} />
+      </div>
+    )
+
     return (
       <div className={classes.frame}>
         <LoadingIndicator loading={loading} />
@@ -1155,7 +1161,6 @@ class Show extends Component {
             <div>
               <Header
                 image={data.Media.bannerImage ? data.Media.bannerImage : null}
-                color={hueVibN}
               />
               <div
                 id="fabShowButton"
@@ -1203,8 +1208,7 @@ class Show extends Component {
                 id="mainHeader"
                 style={{ background: hue }}
               >
-                <Grid item xs={2} className={classes.leftSide}>
-                 <Tooltip title={epError ? lang.show.unavaliable : data.Media.type.includes('MANGA') ? lang.show.playthisM : lang.show.playthis}>
+                <Grid item xs={3} style={{maxWidth: 300, margin: 'auto'}} className={classes.leftSide}>
                     <div
                       role="play-show"
                       aria-controls="button"
@@ -1257,6 +1261,7 @@ class Show extends Component {
                         ) : data.Media.type.includes("MANGA") ? (
                           <Button
                             variant={"fab"}
+                            style={{background: hue}}
                             className={classes.playArtworkButtonContainer}
                           >
                             <Icon.Book className={classes.playArtworkButton} />
@@ -1264,6 +1269,7 @@ class Show extends Component {
                         ) : eps ? (
                           <Button
                             variant={"fab"}
+                            style={{background: hue}}
                             className={classes.playArtworkButtonContainer}
                           >
                             <Icon.PlayArrow
@@ -1274,7 +1280,7 @@ class Show extends Component {
                           lang.show.notavaliable
                         ) : null}
                       </Typography>
-                    </div></Tooltip>
+                      </div>
                   {!isEmpty(user) &&
                   data.Media.type.includes("ANIME") &&
                   !data.Media.status.includes("NOT_YET_RELEASED") &&
@@ -1284,25 +1290,12 @@ class Show extends Component {
                       variant="raised"
                       color="primary"
                       className={classes.streamButton}
-                      style={{background: blue.A200}}
+                      style={{background: hue}}
                       onClick={this.stream}
                     >
                       {lang.show.livestreamButton}
                     </Button>
                   ) : null}
-                  {
-                    !data.Media.status.includes("NOT_YET_RELEASED") &&
-                    eps &&
-                    !epError ? (
-                      <Button
-                        variant="raised"
-                        color="default"
-                        className={classes.streamButton}
-                        onClick={this.showEpisodes}
-                      >
-                        {showEpisodes ? (data.Media.type.includes('MANGA') ? lang.show.hideChapters : lang.show.hideEpisodes) : (data.Media.type.includes('MANGA') ? lang.show.showChapters : lang.show.showEpisodes)}
-                      </Button>
-                    ) : null}
                 </Grid>
                 <Grid item xs className={classes.mainFrame}>
                   <div className={classes.smallTitlebar}>
@@ -2218,6 +2211,6 @@ const mapPTS = dispatch => ({
 
 export default firebaseConnect()(
   connect(({ firebase: { profile }, mir }) => ({ profile, mir }), mapPTS)(
-    withStyles(styles)(Show)
+    withStyles(styles, { withTheme: true })(Show)
   )
 );

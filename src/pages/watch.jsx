@@ -22,16 +22,14 @@ class Watch extends Component {
 		scrollFix();
 	};
 
-	componentDidMount = () => {};
-
-	componentWillReceiveProps = nextProps => {
-		if (this.props.mir.play !== nextProps.mir.play) {
-			return (document.title = `Mirai - Watching ${
-				this.props.mir.play.meta.title.romaji
-			}`);
+	componentDidMount = () => {
+		if (this.props.mir.play) {
+		document.title = `Mirai - Watching ${
+			this.props.mir.play.meta.title.romaji}`;
+		} else {
+			return this.props.history.goBack();
 		}
 	};
-
 	componentWillUnmount = () => {
 		document.title = `Mirai`;
 	};

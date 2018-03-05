@@ -56,8 +56,8 @@ const style = theme => ({
 		transition: theme.transitions.create(['all']),
 	},
 	rootSmol: {
-		minHeight: 280,
-		minWidth: 500,
+		minHeight: 140,
+		minWidth: 240,
 		position: 'fixed',
 		right: theme.spacing.unit * 3,
 		bottom: theme.spacing.unit * 3,
@@ -179,6 +179,7 @@ const style = theme => ({
 		margin: 'auto',
 		transition: theme.transitions.create(['all']),
 		color: 'white',
+		pointerEvents: 'none'
 	},
 	showInfo: {
 		margin: 'auto',
@@ -253,6 +254,7 @@ const style = theme => ({
 			display: 'none',
 		},
 		margin: 'auto',
+		fontSize: theme.typography.pxToRem(12),
 		paddingLeft: theme.spacing.unit
 	},
 	controlpanelActions: {
@@ -763,7 +765,7 @@ class MirPlayer extends Component {
 				<div
 					style={
 						!fullSize && !window.mobilecheck()
-							? { position: 'relative', height: 280, width: '100%' }
+							? { position: 'relative', height: 140, width: '100%' }
 							: !fullSize && window.mobilecheck()
 								? { position: 'relative', height: 80, width: '100%' }
 								: null
@@ -788,9 +790,6 @@ class MirPlayer extends Component {
 					>
 						<Icon.ArrowBack />
 					</IconButton>
-					{!playing && !source ? (
-						<Typography variant="title">{title}</Typography>
-					) : null}
 				</Toolbar>
 				<div onClick={this.playPause}>
 					<ReactPlayer

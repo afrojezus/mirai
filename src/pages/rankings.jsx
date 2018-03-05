@@ -137,7 +137,7 @@ class Rankings extends Component {
               }}
             />
             <Tab
-              label="Popularity"
+              label="Most recommended"
               classes={{
                 root: classes.tab,
                 label:
@@ -147,7 +147,7 @@ class Rankings extends Component {
               }}
             />
             <Tab
-              label="Score"
+              label=""
               classes={{
                 root: classes.tab,
                 label:
@@ -210,6 +210,7 @@ class Rankings extends Component {
                 <Typography variant={"display3"} className={classes.feedTitle}>
                   Popularity
                 </Typography>
+                <SectionTitle title='Something must have happened' lighter />
               </Column>
             </Container>
             <Container>
@@ -217,6 +218,7 @@ class Rankings extends Component {
                 <Typography variant={"display3"} className={classes.feedTitle}>
                   Score
                 </Typography>
+                <SectionTitle title='Something must have happened' lighter />
               </Column>
             </Container>
             <Container>
@@ -224,6 +226,7 @@ class Rankings extends Component {
                 <Typography variant="display3" className={classes.feedTitle}>
                   Collections
                 </Typography>
+                <SectionTitle title='The editors have been slacking off again...' lighter />
               </Column>
             </Container>
             <Container>

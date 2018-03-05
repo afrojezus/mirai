@@ -145,13 +145,11 @@ class Index extends Component {
     } else if (mir) {
       return this.setState({ loading: false });
     } else {
-      console.info("User not detected, Mir loading...");
       return this.setState({ loading: true });
     }
   };
 
   handleProfile = async profile => {
-    console.info("User detected, handling profile...");
     if (profile.userID) {
       if (profile.role !== undefined) return this.setState({ loading: false });
       else
@@ -169,9 +167,7 @@ class Index extends Component {
   render() {
     if (this.state.loading)
       return (
-        <div className={this.props.classes.loadingRoot}>
-          <CircularProgress className={this.props.classes.loadingCircle} />
-        </div>
+        <LoadingScreen />
       );
     return (
       <div className={this.props.classes.root}>

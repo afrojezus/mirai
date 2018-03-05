@@ -372,6 +372,15 @@ ul::-webkit-scrollbar {
 	}
 }
 
+@keyframes loadInH {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 0.28;
+	}
+}
+
 @keyframes playerLoad {
 	from {
 		opacity: 0;

@@ -39,7 +39,7 @@ const style = theme => ({
 		marginLeft: 'auto',
 		marginRight: 'auto',
 		padding: 24,
-		maxWidth: 1970,
+		maxWidth: 1600,
 		paddingTop: theme.spacing.unit * 12,
 		display: 'flex',
 		flexDirection: 'column',

@@ -152,9 +152,9 @@ const getSource = async (parent, data) => {
 			// console.log(data.eps);
 			console.info('Episodes found from cache!');
 			parent.setState({ eps: data.eps, status: 'Loading...' }, async () => {
-				if (parent.props.history.location.state.skipToEp) {
+				/*if (parent.props.history.location.state.skipToEp) {
 					return loadEp(parent, parent.state.eps[parent.props.history.location.state.skipToEp - 1], null);
-				}
+				}*/
 				localForage
 					.getItem('player-state')
 					.then(a => {

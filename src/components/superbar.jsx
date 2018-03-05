@@ -61,7 +61,7 @@ const styles = theme => ({
     paddingRight: "env(safe-area-inset-right)"
   },
   mainToolbar: {
-    maxWidth: "1970px",
+    maxWidth: 1600,
     marginLeft: "auto",
     width: "100%",
     marginRight: "auto"
@@ -74,11 +74,11 @@ const styles = theme => ({
     background: "linear-gradient(to top, transparent, rgba(0,0,0,1))"
   },
   appBar: {
-    background: theme.palette.background.appBar
+    background: 'rgba(0,0,0,.98)',
     // borderBottom: `1px solid rgba(255,255,255,0)`,
   },
   appBarTop: {
-    background: "rgba(0,0,0,.18)",
+    background: "rgba(0,0,0,0)",
     boxShadow: "none",
     // borderBottom: `1px solid rgba(255,255,255,.16)`,
     backdropFilter: "blur(10px)"

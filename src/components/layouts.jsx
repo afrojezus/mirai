@@ -48,7 +48,7 @@ const style = theme => ({
     animation: "load .3s ease",
     marginLeft: "auto",
     marginRight: "auto",
-    maxWidth: 1970,
+    maxWidth: 1600,
     paddingLeft: theme.spacing.unit * 2,
     paddingRight: theme.spacing.unit * 2,
     [theme.breakpoints.down("sm")]: {
@@ -70,8 +70,9 @@ const style = theme => ({
     [theme.breakpoints.down("sm")]: {
       marginTop: theme.spacing.unit * 7
     },
+    borderBottom: '1px solid rgba(255,255,255,.1)',
     boxSizing: "border-box",
-    background: "rgba(0,0,0,.18)",
+    background: "rgba(0,0,0,0)",
     marginTop: theme.spacing.unit * 8,
     position: "static",
     zIndex: 10,
@@ -211,7 +212,7 @@ const style = theme => ({
     boxSizing: "border-box",
     display: "flex",
     width: "100%",
-    maxWidth: 1970,
+    maxWidth: 1600,
     [theme.breakpoints.down("sm")]: {
       paddingLeft: theme.spacing.unit * 3,
       paddingRight: theme.spacing.unit * 3,
@@ -327,7 +328,7 @@ export const ItemContainer = withStyles(style, { withTheme: true })(
 );
 
 ItemContainer.defaultProps = {
-  spacing: 16,
+  spacing: 8,
   noMargin: true
 };
 
@@ -372,10 +373,18 @@ export const Container = withStyles(style, { withTheme: true })(
     special,
     row,
     hasHeader,
+    direction,
+    justify,
+    alignContent,
+    alignItems,
     ...props
   }) => (
     <Grid
       container
+      direction={direction}
+      justify={justify}
+      alignContent={alignContent}
+      alignItems={alignItems}
       style={
         hasHeader
           ? {
@@ -549,7 +558,9 @@ class HeaderRaw extends React.Component {
         <img
           id="header"
           style={{ opacity: 0 }}
-          onLoad={e => (e.currentTarget.style.opacity = null)}
+          onLoad={e => {
+            e.currentTarget.style.animation = 'loadInH 1s ease'
+            e.currentTarget.style.opacity = null}}
           className={classes.header}
           src={image}
           alt=""
