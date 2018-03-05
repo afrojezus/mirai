@@ -1,4 +1,3 @@
-import { get } from "lodash";
 import locationHelperBuilder from "redux-auth-wrapper/history4/locationHelper";
 import { UserAuthWrapper } from "redux-auth-wrapper";
 import { history } from "../store";

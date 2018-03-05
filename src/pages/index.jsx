@@ -139,36 +139,19 @@ class Index extends Component {
     this.props.removeDataFromMir(null);
   };
 
-  componentDidMount = async () => {
-    const { auth, profile } = this.props.firebase;
-    if (isLoaded(auth) && isLoaded(profile)) {
-      if (isEmpty(auth)) {
-        // Logged off
-        return this.setState({ loading: false });
-      } else {
-        // Logged in
-        return mirLoader(this.props.firebase).then(() => this.setState({ loading: false }));
-      }
+  componentWillReceiveProps = async ({ authExists, mir, profile }) => {
+    if (authExists && mir) {
+      return await this.handleProfile(profile);
+    } else if (mir) {
+      return this.setState({ loading: false });
     } else {
-      return false;
+      console.info("User not detected, Mir loading...");
+      return this.setState({ loading: true });
     }
   };
 
-  componentWillReceiveProps = nextProps => {
-    if (
-      nextProps.mir !== undefined ||
-      ((null && nextProps.mir.twist !== undefined) || null)
-    ) {
-      this.setState({ loading: false });
-    }
-
-    if (this.props.firebase.auth !== nextProps.firebase.auth) {
-      this.handleProfile().then(() => this.setState({ loading: false }));
-    }
-  };
-
-  handleProfile = async () => {
-    const { profile } = this.props.firebase;
+  handleProfile = async profile => {
+    console.info("User detected, handling profile...");
     if (profile.userID) {
       if (profile.role !== undefined) return this.setState({ loading: false });
       else
@@ -179,32 +162,9 @@ class Index extends Component {
           .update({ role: "Normal" })
           .then(() => this.setState({ loading: false }));
     } else {
-      return null;
+      return this.setState({ loading: true });
     }
   };
-
-  handleTwist = async () => {
-    const database = this.props.firebase.ref("twist");
-    if (this.props.mir && this.props.mir.twist) {
-      const twist = this.props.mir.twist.filter(s => !s.ongoing);
-      if (twist) {
-        database.update(twist);
-      } else return null;
-    }
-    return false;
-  };
-
-  /* componentWillUnmount = async () =>
-      this.state.user
-        ? Database.ref("status")
-            .child(this.state.user.userID)
-            .remove()
-            .then(async () =>
-              Database.ref("users")
-                .child(Auth.currentUser.uid)
-                .update({ status: "Offline" })
-            )
-        : null; */
 
   render() {
     if (this.state.loading)
@@ -264,8 +224,14 @@ const mapPTS = dispatch => ({
 
 export default withRouter(
   firebaseConnect()(
-    connect(state => state, mapPTS)(
-      withRoot(withStyles(styles, { withTheme: true })(Index))
-    )
+    connect(
+      ({ firebase: { auth, profile }, mir, routing }) => ({
+        authExists: !!auth && !!auth.uid && !!profile,
+        mir,
+        routing,
+        profile
+      }),
+      mapPTS
+    )(withRoot(withStyles(styles, { withTheme: true })(Index)))
   )
 );
