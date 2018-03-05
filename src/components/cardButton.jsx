@@ -7,7 +7,6 @@ import Typography from 'material-ui/Typography/Typography';
 import CardMedia from 'material-ui/Card/CardMedia';
 import { blue } from 'material-ui/colors';
 import Avatar from 'material-ui/Avatar/Avatar';
-import Tilt from 'react-tilt';
 
 const styles = theme => ({
 	entityCard: {
@@ -170,8 +169,8 @@ const styles = theme => ({
 			boxShadow: '0 3px 16px rgba(0,0,0,.5)',
 			transform: 'scale(1.2) translateZ(30px)',
 		},
-		right: theme.spacing.unit * 1,
-		bottom: 0,
+		right: theme.spacing.unit * 2,
+		bottom: theme.spacing.unit * 8,
 		transform: 'translateZ(40px)',
 	},
 	peopleTitle: {
@@ -299,10 +298,7 @@ export const PeopleButton = withStyles(styles, { withTheme: true })(
 					boxShadow: 'none',
 				}}
 			>
-				<Tilt
-					style={{ transformStyle: 'preserve-3d' }}
-					options={{ scale: 1, max: window.safari ? 2 : 35 }}
-				>
+				<div>
 					<Avatar
 						className={classes.peopleImage}
 						classes={{ img: classes.fillImg }}
@@ -326,7 +322,7 @@ export const PeopleButton = withStyles(styles, { withTheme: true })(
 							onClick={charOnClick}
 						/>
 					) : null}
-				</Tilt>
+				</div>
 				<Typography variant="headline" className={classes.peopleTitle}>
 					{nameSwapper(first, last)}
 				</Typography>
@@ -413,9 +409,7 @@ const CardButton = withStyles(styles, { withTheme: true })(
 				}}
 				onClick={props.onClick}
 			>
-				<Tilt
-					style={{ transformStyle: 'preserve-3d' }}
-					options={{ scale: 1, max: window.safari ? 2 : 35 }}
+				<div
 				>
 					<Avatar
 						className={classes.cardImage}
@@ -426,7 +420,7 @@ const CardButton = withStyles(styles, { withTheme: true })(
 							onLoad: e => (e.currentTarget.style.opacity = null),
 						}}
 					/>
-				</Tilt>
+				</div>
 				<Typography variant="headline" className={classes.peopleTitle}>
 					{title}
 				</Typography>

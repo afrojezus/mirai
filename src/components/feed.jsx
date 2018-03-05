@@ -103,8 +103,21 @@ export const FeedMaker = firebaseConnect()(
           }
         };
 
-        setImage = async () => {};
+        setImage = e => {
+          return this.imageInput.click();
+        };
 
+        getImage = async e => {
+          console.log(this.imageInput.files);
+          const reader = new FileReader();
+          if (this.imageInput.files.length === 0) {
+            return false;
+          }
+
+          reader.readAsDataURL(this.imageInput.files[0]);
+          return reader.onload = (image) => this.setState({image: image.target.result});
+        }
+ 
         postFeed = async () => {
           const you = this.props.profile;
           const db = this.props.firebase
@@ -113,6 +126,9 @@ export const FeedMaker = firebaseConnect()(
             .child("byusers");
           const { title, context, text, image, date } = this.state;
           try {
+            if (text === "" || null) {
+              return new Error("You didn't write anything...")
+            }
             const id = guid();
             return await db
               .child(id)
@@ -166,6 +182,7 @@ export const FeedMaker = firebaseConnect()(
                     />
                   </FadeIn>
                 ) : null}
+                {image !== '' ? <CardMedia src={image} /> : null}
                 <CardContent className={classes.cardcontent}>
                   <TextField
                     className={classnames(
@@ -185,11 +202,14 @@ export const FeedMaker = firebaseConnect()(
                 </CardContent>
                 <Divider />
                 <CardActions className={classes.cardactions}>
-                  <IconButton onClick={this.setImage}>
+                <label>
+                  <input accept="image/*" type='file' onChange={this.getImage} className='hiddenfileinput' ref={imageInput => this.imageInput = imageInput} />
+                  <IconButton  type='button' onClick={this.setImage}>
                     <ICON.Image />
                   </IconButton>
+                  </label>
                   <div style={{ flex: 1 }} />
-                  <Button onClick={this.postFeed}>Post</Button>
+                  {text ? <Button onClick={this.postFeed}>Post</Button> : null}
                 </CardActions>
               </Card>
             </Grid>

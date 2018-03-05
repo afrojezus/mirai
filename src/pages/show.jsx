@@ -20,10 +20,10 @@ import IconButton from "material-ui/IconButton/IconButton";
 import Paper from "material-ui/Paper/Paper";
 import Modal from "material-ui/Modal/Modal";
 import blue from "material-ui/colors/blue";
+import classnames from 'classnames'
 import grey from "material-ui/colors/grey";
 import checklang from "../checklang";
 import strings from "../strings.json";
-import Tilt from "react-tilt";
 import Menu, { MenuItem } from "material-ui/Menu";
 import withStyles from "material-ui/styles/withStyles";
 import { timeFormatter } from "../components/supertable";
@@ -55,6 +55,7 @@ import { MIR_SET_TITLE, MIR_PLAY_SHOW } from "../constants";
 import { FormControl, FormHelperText } from "material-ui/Form";
 import Select from "material-ui/Select";
 import { scrollFix } from "./../utils/scrollFix";
+import List, { ListItem, ListItemText} from "material-ui/List";
 
 const styles = theme => ({
   loading: {
@@ -569,7 +570,31 @@ const styles = theme => ({
   streamButton: {
     width: "100%",
     marginTop: theme.spacing.unit,
-    background: blue.A200
+    animation: 'loadIn .5s ease'
+  },
+  epList: {
+    maxHeight: 500,
+    overflowY: 'auto'
+  },
+  epCard: {
+    width: 48,
+    borderRadius: '50%',
+    boxSizing: 'border-box',
+    height: 48,
+    border: '2px solid transparent',
+    fontWeight: 700,
+    fontSize: theme.typography.pxToRem(18),
+    boxShadow: theme.shadows[2]
+  },
+  epCardActive: {
+    border: '2px solid white'
+  },
+  activeEpDot: {
+    height: 2,
+    width: 2,
+    borderRadius: '50%',
+    boxShadow: theme.shadows[3],
+    background: 'white'
   }
 });
 
@@ -592,7 +617,8 @@ class Show extends Component {
     status: "",
     lang: strings.enus,
     rVal: "",
-    userlessREmail: ""
+    userlessREmail: "",
+    showEpisodes: false
   };
 
   componentWillMount = () => {
@@ -873,7 +899,7 @@ class Show extends Component {
 
   tabChange = (e, val) => this.setState({ tabVal: val });
 
-  play = () => {
+  play = (episode) => {
     window.scrollTo(0, 0);
     if (
       this.state.data.Media &&
@@ -889,7 +915,7 @@ class Show extends Component {
         .then(() => {
           // console.log(this.props);
           this.setState({ status: "active" });
-          return this.props.history.push(`/watch`);
+          return this.props.history.push(`/watch`, {skipToEp: episode ? episode : null});
         });
     } else
       this.props.history.push(
@@ -1062,6 +1088,8 @@ class Show extends Component {
 
   rSendDReport = () => {};
 
+  showEpisodes = (e) => this.setState({showEpisodes: !this.state.showEpisodes});
+
   render() {
     const { classes, mir } = this.props;
     const {
@@ -1080,9 +1108,9 @@ class Show extends Component {
       status,
       lang,
       rVal,
-      userlessREmail
+      userlessREmail,
+      showEpisodes
     } = this.state;
-
     const openMenu = Boolean(menuEl);
 
     const user = this.props.profile;
@@ -1176,10 +1204,7 @@ class Show extends Component {
                 style={{ background: hue }}
               >
                 <Grid item xs={2} className={classes.leftSide}>
-                  <Tilt
-                    style={{ transformStyle: "preserve-3d" }}
-                    options={{ scale: 1 }}
-                  >
+                 <Tooltip title={epError ? lang.show.unavaliable : data.Media.type.includes('MANGA') ? lang.show.playthisM : lang.show.playthis}>
                     <div
                       role="play-show"
                       aria-controls="button"
@@ -1249,8 +1274,7 @@ class Show extends Component {
                           lang.show.notavaliable
                         ) : null}
                       </Typography>
-                    </div>
-                  </Tilt>
+                    </div></Tooltip>
                   {!isEmpty(user) &&
                   data.Media.type.includes("ANIME") &&
                   !data.Media.status.includes("NOT_YET_RELEASED") &&
@@ -1260,11 +1284,25 @@ class Show extends Component {
                       variant="raised"
                       color="primary"
                       className={classes.streamButton}
+                      style={{background: blue.A200}}
                       onClick={this.stream}
                     >
                       {lang.show.livestreamButton}
                     </Button>
                   ) : null}
+                  {
+                    !data.Media.status.includes("NOT_YET_RELEASED") &&
+                    eps &&
+                    !epError ? (
+                      <Button
+                        variant="raised"
+                        color="default"
+                        className={classes.streamButton}
+                        onClick={this.showEpisodes}
+                      >
+                        {showEpisodes ? (data.Media.type.includes('MANGA') ? lang.show.hideChapters : lang.show.hideEpisodes) : (data.Media.type.includes('MANGA') ? lang.show.showChapters : lang.show.showEpisodes)}
+                      </Button>
+                    ) : null}
                 </Grid>
                 <Grid item xs className={classes.mainFrame}>
                   <div className={classes.smallTitlebar}>
@@ -1482,6 +1520,11 @@ class Show extends Component {
                 </Grid>
               </Container>
               <MainCard>
+                {showEpisodes ? <FadeIn><Container style={{maxHeight: showEpisodes ? 500 : 0, opacity: showEpisodes ? 1 : 0, padding: showEpisodes ? 24 : 0}}><Column><Divider style={{marginBottom: 8}} /><SectionTitle style={{opacity: showEpisodes ? 1 : 0}} title={lang.show.episodes} />
+                <ItemContainer style={{opacity: showEpisodes ? 1 : 0}}>
+                {eps && eps.map((ep, index) => <Grid item><Chip onClick={() => this.play(ep.ep)} style={{background: hue}} className={classnames(classes.epCard, ep.ep === !isEmpty(user) && user.episodeProgress && user.episodeProgress[data.Media.id] && user.episodeProgress[data.Media.id].ep ? classes.epCardActive : null)} key={index} label={ep.ep}></Chip></Grid>)}
+                </ItemContainer>
+                </Column></Container></FadeIn> : null}
                 <CommandoBar
                   style={{
                     borderTop: "1px solid rgba(255,255,255,.1",

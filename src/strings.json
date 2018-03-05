@@ -53,12 +53,12 @@
       "updates": "Updates",
       "animefavTitle": "Your anime favorites",
       "animefavEstimate": "anime favourites",
-      "animehistoryTitle": "Animes you've watched previously",
-      "animehistoryEstimate": "animes seen",
+      "animehistoryTitle": "Anime you've watched previously",
+      "animehistoryEstimate": "anime seen",
       "history": "History",
       "collections": "Collections",
       "ongoingAnimeTitle": "Currently ongoing anime",
-      "ongoingAnimeEstimate": "ongoing animes in database",
+      "ongoingAnimeEstimate": "ongoing anime in database",
       "ongoingMangaTitle": "Currently ongoing manga"
     },
     "later": {
@@ -172,7 +172,14 @@
       "staff": "Staff",
       "similar": "Similar to this one",
       "recommend": "Recommend this anime",
-      "nonrecommend": "Don't recommend this anime"
+      "nonrecommend": "Don't recommend this anime",
+      "playthis": "Play this anime from the beginning (or where you last left it at)",
+      "playthisM": "Read this manga from the beginning (or where you last left it at)",
+      "unavaliable": "Sadly this anime/manga is not avaliable to watch/read on Mirai yet, report this to the developer if you want it to eventually appear avaliable here in the near future.",
+      "showEpisodes": "Show episodes",
+      "showChapters": "Show chapters",
+      "hideEpisodes": "Hide episodes",
+      "hideChapters": "Hide chapters"
     },
     "user": {
       "nouserfound": "In order to view others accounts, you need to log in.",
@@ -201,7 +208,7 @@
       "recommenddatamanga": "Manga they recommend",
       "animeList": {
         "recentlyWatched": "Recently watched",
-        "lastyura": "Last seen animes on yura",
+        "lastyura": "Last seen anime on yura",
         "later": "Later",
         "compl": "Completed",
         "dropped": "Dropped"
@@ -386,7 +393,14 @@
       "staff": "Medvirkende",
       "similar": "Ligner på denne",
       "recommend": "Anbefal denne animen",
-      "nonrecommend": "Ikke anbefal denne animen"
+      "nonrecommend": "Ikke anbefal denne animen",
+      "playthis": "Spill denne animen fra begynnelsen (eller hvor du sist sluttet)",
+      "playthisM": "Les denne mangaen fra begynnelsen (eller hvor du sist sluttet)",
+      "showEpisodes": "Vis episoder",
+      "showChapters": "Vis kapitler",
+      "hideEpisodes": "Skjul episoder",
+      "hideChapters": "Skjul kapitler",
+      "unavaliable": "Beklageligvis er ikke denne animen/mangaen tilgjengelig på Mirai, rapporter utilgjengeligheten til hovedutvikleren hvis du vil at den skal dukke opp tilgjengelig i nær fremtid."
     },
     "user": {
       "nouserfound": "For å se andre sine brukere, må du registrere deg",

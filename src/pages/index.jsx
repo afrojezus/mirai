@@ -37,6 +37,7 @@ import Superbar from "../components/superbar";
 import { LoadingScreen } from "../components/layouts";
 
 import { history } from "../store";
+import { mirLoader } from "../utils/mirLoader";
 
 const styles = theme => ({
   root: {},
@@ -146,7 +147,7 @@ class Index extends Component {
         return this.setState({ loading: false });
       } else {
         // Logged in
-        return this.setState({ loading: false });
+        return mirLoader(this.props.firebase).then(() => this.setState({ loading: false }));
       }
     } else {
       return false;
@@ -167,7 +168,7 @@ class Index extends Component {
   };
 
   handleProfile = async () => {
-    const { auth, profile } = this.props.firebase;
+    const { profile } = this.props.firebase;
     if (profile.userID) {
       if (profile.role !== undefined) return this.setState({ loading: false });
       else

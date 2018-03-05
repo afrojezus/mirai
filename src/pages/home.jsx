@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { withStyles } from 'material-ui/styles';
+import * as ICON from 'material-ui-icons';
 import Typography from 'material-ui/Typography';
 import localForage from 'localforage';
 import Grid from 'material-ui/Grid';
 import IconButton from 'material-ui/IconButton';
-import Button from 'material-ui/Button';
 import checkLang from '../checklang';
 import strings from '../strings.json';
 import { firebaseConnect, isEmpty } from 'react-redux-firebase';
@@ -397,7 +397,6 @@ class Home extends Component {
 				});
 			}
 		}
-		return null;
 	};
 
 	fetchOngoing = async () => {
@@ -447,24 +446,19 @@ class Home extends Component {
 
 	easterEggOne = () => this.setState({ es: !this.state.es });
 	render() {
-		const { classes, status } = this.props;
+		const { classes  } = this.props;
 		const {
 			feeds,
-			anchorEl,
-			es,
 			loading,
 			ongoing,
 			ongoingM,
 			rankingMentionable,
 			hue,
-			hueVib,
 			hueVibN,
 			lang,
 		} = this.state;
 
 		const user = this.props.profile;
-
-		const openFeed = Boolean(anchorEl);
 		return (
 			<div>
 				<LoadingIndicator loading={loading} />
@@ -563,9 +557,9 @@ class Home extends Component {
 											{Object.values(user.episodeProgress).length}{' '}
 											{lang.home.animehistoryEstimate}
 										</Typography>
-										<Button onClick={() => this.props.history.push('/history')}>
-											{lang.home.history}
-										</Button>
+										<IconButton onClick={() => this.props.history.push('/history')}>
+											<ICON.History />
+										</IconButton>
 									</Grid>
 									<Container spacing={16}>
 										{user.episodeProgress ? (
@@ -624,7 +618,7 @@ class Home extends Component {
 									<SectionTitle title={lang.home.ongoingAnimeTitle} />
 									<div style={{ flex: 1 }} />
 									<Typography variant="title" className={classes.headline}>
-										{this.props.mir && this.props.mir.twist
+										{this.props.mir && this.props.mir.twist && this.props.mir.twist.length > 0
 											? `${Object.values(this.props.mir.twist).filter(
 													s => s.ongoing === true
 												).length - 1} ${lang.home.ongoingAnimeEstimate}`

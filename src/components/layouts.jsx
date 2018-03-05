@@ -167,6 +167,7 @@ const style = theme => ({
     transform: "translate(-50%, -50%)",
     margin: "auto",
     top: theme.spacing.unit * 4,
+    pointerEvents: 'none',
     [theme.breakpoints.down("sm")]: {
       left: "initial",
       right: "initial",

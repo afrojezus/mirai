@@ -564,7 +564,8 @@ query($id: Int) {
                         medium
                     }
                     description(asHtml: true)
-                    type
+					type
+					format
                 }
                 id
                 relationType
@@ -760,10 +761,9 @@ class Fig extends Component {
 						<Grid container spacing={0}>
 							<M.Grid container spacing={0} className={classes.container}>
 								<M.Grid item className={classes.artworkContainer} xs>
-									<Tilt
+									<div
 										className={classes.artworkTilt}
-										style={{ transformStyle: 'preserve-3d' }}
-										options={{ scale: 1 }}
+										
 									>
 										<div className={classes.artwork}>
 											<img
@@ -776,7 +776,7 @@ class Fig extends Component {
 												className={classes.artworkimg}
 											/>
 										</div>
-									</Tilt>
+									</div>
 								</M.Grid>
 								<M.Grid item xs className={classes.topBar}>
 									<M.Typography className={classes.bigTitle} variant="display3">
@@ -922,7 +922,7 @@ class Fig extends Component {
 																}=${anime.node.id}`
 															)
 														}
-														role={anime.characterRole}
+														role={anime.node.format}
 													/>
 												))}
 											</M.Grid>

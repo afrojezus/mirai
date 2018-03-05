@@ -28,7 +28,7 @@ const style = theme => ({
       transition: theme.transitions.create(["all"]),
       position: "relative",
       overflow: "hidden",
-      cursor: "default",
+      cursor: "pointer",
       "&:hover": {
         background: `rgba(0,55,230,.3)`
       },
@@ -110,14 +110,14 @@ const style = theme => ({
     fontSize: 32,
     textShadow: "0 3px 20px rgba(0,0,0,.87)",
     userSelect: "none",
-    cursor: "default"
+    cursor: 'pointer'
   },
   bigCardText: {
     display: "flex",
     flexDirection: "column",
     margin: "auto 0",
     userSelect: "none",
-    cursor: "default"
+    cursor: 'pointer'
   },
   bigCardTextFlex: {
     display: "flex",
@@ -125,7 +125,7 @@ const style = theme => ({
     margin: "auto",
     width: "100%",
     userSelect: "none",
-    cursor: "default",
+    cursor: 'pointer',
     marginLeft: theme.spacing.unit * 3,
     zIndex: 3
   },
@@ -138,7 +138,7 @@ const style = theme => ({
     fontSize: 18,
     textShadow: "0 3px 20px rgba(0,0,0,.7)",
     userSelect: "none",
-    cursor: "default"
+    cursor: 'pointer'
   },
   bigCardVerySmallTitle: {
     zIndex: 3,
@@ -149,7 +149,7 @@ const style = theme => ({
     marginBottom: theme.spacing.unit,
     textTransform: "uppercase",
     userSelect: "none",
-    cursor: "default"
+    cursor: 'pointer'
   },
   bigCardVerySmallTitleFlex: {
     zIndex: 3,
@@ -161,7 +161,7 @@ const style = theme => ({
     marginBottom: theme.spacing.unit,
     textTransform: "uppercase",
     userSelect: "none",
-    cursor: "default"
+    cursor: 'pointer'
   },
   dotdot: {
     overflow: "initial !important"
@@ -197,7 +197,8 @@ const style = theme => ({
     zIndex: "5",
     opacity: 0,
     transition: theme.transitions.create(["all"]),
-    background: "white"
+    background: "white",
+    cursor: 'pointer'
   },
   forA: {
     position: "absolute",
@@ -207,7 +208,8 @@ const style = theme => ({
     zIndex: "5",
     opacity: 0,
     transition: theme.transitions.create(["all"]),
-    background: "white"
+    background: "white",
+    cursor: 'pointer'
   },
   bigCardSmallIcon: {
     width: 32,

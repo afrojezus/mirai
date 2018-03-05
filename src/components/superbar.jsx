@@ -716,13 +716,13 @@ class Superbar extends Component {
     const metaShit = (
       <div className={classes.metashit}>
         <Typography className={classes.footerCopy} variant="headline">
-          Mirai preview 2
+          Mirai preview 3
           <br />
           {onlineUsers ? Object.values(onlineUsers).length : 0} users online
           <br />
           {this.props.mir && this.props.mir.twist
             ? `${Object.keys(this.props.mir.twist).length -
-                1} animes in database`
+                1} anime in database`
             : null}
           <br />2018 thor "afrojezus"
         </Typography>
@@ -1029,7 +1029,7 @@ class Superbar extends Component {
             <Hidden smDown>
               <IconButton
                 className={classes.logoButton}
-                onClick={() => window.scroll({ top: 0, behavior: "smooth" })}
+                onClick={() => window.scrollY === 0 ? this.props.history.push('/') : window.scroll({ top: 0, behavior: "smooth" })}
               >
                 <img src={miraiLogo} alt="" className={classes.logoImg} />
               </IconButton>

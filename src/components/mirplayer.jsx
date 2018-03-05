@@ -324,6 +324,8 @@ class MirPlayer extends Component {
 
 	componentWillUnmount = async () => {
 		if (!isEmpty(this.props.profile) && this.state.loaded > 0) {
+			
+		await this.props.firebase.updateProfile({status: `Oozing`});
 			const episodePro = this.props.firebase
 				.database()
 				.ref('users')
@@ -340,6 +342,8 @@ class MirPlayer extends Component {
 
 		if (this.state.torrent && this.state.torrentFile)
 			hsfetcher.destroyClient(this.state.torrentFile);
+
+		await this.props.firebase.updateProfile({status: `Oozing`});
 
 		this.props.removeDataFromMir(null);
 	};
@@ -369,6 +373,7 @@ class MirPlayer extends Component {
 					videoQuality: this.player.getInternalPlayer().videoHeight,
 					recentlyWatched: Date.now(),
 				});
+				await this.props.firebase.updateProfile({status: `Watching ${this.state.title} Episode ${this.state.ep}`});
 				switch (this.player.getInternalPlayer().networkState) {
 					case 1:
 						this.setState({ buffering: false });
@@ -634,8 +639,9 @@ class MirPlayer extends Component {
 			}
 		});
 
-	logTheWatch = () => {
+	logTheWatch = async () => {
 		if (!isEmpty(this.props.profile) && this.state.loaded > 0) {
+			await this.props.firebase.updateProfile({status: `Watching ${this.state.title} Episode ${this.state.ep}`});
 			const episodePro = this.props.firebase
 				.database()
 				.ref('users')

@@ -36,6 +36,7 @@ const styles = theme => ({
 		margin: 'auto',
 		'&:hover': {
 			background: 'rgba(255,255,255,.3)',
+			cursor: 'pointer'
 		},
 		zIndex: 1000,
 		border: '2px solid white',

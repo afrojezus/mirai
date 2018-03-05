@@ -3,7 +3,6 @@ import { withStyles } from "material-ui/styles";
 import { connect } from "react-redux";
 import { firebaseConnect } from "react-redux-firebase";
 import Typography from "material-ui/Typography/Typography";
-import blue from "material-ui/colors/blue";
 import grey from "material-ui/colors/grey";
 import SwipeableViews from "react-swipeable-views";
 import Tab from "material-ui/Tabs/Tab";
@@ -12,18 +11,15 @@ import queryString from "query-string";
 import moment from "moment";
 import checklang from "../checklang";
 import strings from "../strings.json";
-import Grid from "material-ui/Grid/Grid";
 import SuperTable from "../components/supertable";
 import {
   Root,
   CommandoBarTop,
   Container,
-  LoadingIndicator,
   TitleHeader,
   Header,
   Column,
   ItemContainer,
-  SectionSubTitle,
   SectionTitle
 } from "../components/layouts";
 import { FeedMaker, Feed } from "../components/feed";
@@ -299,10 +295,10 @@ class Feeds extends Component {
                 {profile.friends &&
                 friendFeeds &&
                 Object.values(friendFeeds)
-                  .filter(s => s.user.id.match(profile.friends[s.user.id]))
+                  .filter(s => s.user.id.includes(profile.friends[s.user.id]))
                   .filter(s => s.user.id !== profile.userID).length > 0 ? (
                   Object.values(friendFeeds)
-                    .filter(s => s.user.id.match(profile.friends[s.user.id]))
+                    .filter(s => s.user.id.includes(profile.friends[s.user.id]))
                     .filter(s => s.user.id !== profile.userID)
                     .sort((a, b) => b.date - a.date)
                     .map((feed, index) => (

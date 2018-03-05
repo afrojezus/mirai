@@ -441,3 +441,7 @@ ul::-webkit-scrollbar {
 	outline: none;
 	user-select: none;
 }
+
+.hiddenfileinput {
+	display: none;
+}

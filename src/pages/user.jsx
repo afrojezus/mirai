@@ -8,14 +8,9 @@ import SwipableViews from "react-swipeable-views";
 import strings from "../strings.json";
 import checklang from "../checklang";
 // import { virtualize } from 'react-swipeable-views-utils';
-import Tilt from "react-tilt";
 import moment from "moment";
 import { connect } from "react-redux";
 import { firebaseConnect, isEmpty } from "react-redux-firebase";
-import {
-  timeFormatToReadable,
-  timeFormatToReadableTime
-} from "../components/supertable";
 import CardButton, { PeopleButton } from "../components/cardButton";
 import {
   CommandoBar,
@@ -27,8 +22,7 @@ import {
   MainCard,
   Column,
   ItemContainer,
-  SectionTitle,
-  SectionSubTitle
+  SectionTitle
 } from "../components/layouts";
 import { Feed } from "../components/feed";
 import Hidden from "material-ui/Hidden";
@@ -797,9 +791,7 @@ class User extends Component {
                 style={{ width: 400, flexGrow: 0, marginRight: 24 }}
                 xs
               >
-                <Tilt
-                  style={{ transformStyle: "preserve-3d" }}
-                  options={{ scale: 1 }}
+                <div
                 >
                   <M.Avatar
                     src={data ? data.avatar : user.avatar}
@@ -810,7 +802,7 @@ class User extends Component {
                       onLoad: e => (e.currentTarget.style.opacity = null)
                     }}
                   />
-                </Tilt>
+                </div>
               </M.Grid>
               <M.Grid item xs style={{ margin: "auto" }}>
                 <M.Typography className={classes.roleTitle} variant="display3">
@@ -910,14 +902,14 @@ class User extends Component {
                       : lang.user.addfriend}
                   </M.Button>
                 ) : null}
-                <M.IconButton
+                {!data && !isEmpty(user) && user.role === 'Normal' ? null : <M.IconButton
                   color="default"
                   aria-owns={openMenu ? "more-menu" : null}
                   aria-haspopup="true"
                   onClick={e => this.setState({ menuEl: e.currentTarget })}
                 >
                   <Icon.MoreVert />
-                </M.IconButton>
+                </M.IconButton>}
                 <M.Menu
                   id="more-menu"
                   anchorEl={menuEl}
@@ -1350,6 +1342,10 @@ class User extends Component {
                         Object.values(userFeeds)
                           .filter(
                             u => (u.user.id === data ? data.id : user.userID)
+                          ).length > 0 ?
+                          Object.values(userFeeds)
+                          .filter(
+                            u => (u.user.id === data ? data.id : user.userID)
                           )
                           .sort((a, b) => b.date - a.date)
                           .map((feed, index) => (
@@ -1368,7 +1364,7 @@ class User extends Component {
                                 flexBasis: "initial"
                               }}
                             />
-                          ))}
+                          )) : <SectionTitle title='No feeds to be found... antisocial?' lighter />}
                     </ItemContainer>
                   </Hidden>
                 </Container>
@@ -1600,7 +1596,7 @@ class User extends Component {
                           ))
                       ) : (
                         <SectionTitle
-                          title="You've not recommended any animes yet"
+                          title="You've not recommended any anime yet"
                           lighter
                         />
                       )}
@@ -1621,7 +1617,7 @@ class User extends Component {
                               <CardButton
                                 key={show.id}
                                 onClick={() =>
-                                  this.props.history.push(`/show?s=${show.id}`)
+                                  this.props.history.push(`/show?m=${show.id}`)
                                 }
                                 title={show.name}
                                 image={show.image}
@@ -1643,7 +1639,7 @@ class User extends Component {
                             <CardButton
                               key={show.id}
                               onClick={() =>
-                                this.props.history.push(`/show?s=${show.id}`)
+                                this.props.history.push(`/show?m=${show.id}`)
                               }
                               title={show.name}
                               image={show.image}
