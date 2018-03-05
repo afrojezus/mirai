@@ -9,7 +9,7 @@ import blue from 'material-ui/colors/blue';
 import green from 'material-ui/colors/green';
 import { connect } from 'react-redux';
 import { firebaseConnect, firebase } from 'react-redux-firebase';
-import { TitleHeader, Header, Column } from '../components/layouts';
+import { TitleHeader, Header, Column, Row } from '../components/layouts';
 import { history } from '../store';
 
 import strings from '../strings.json';
@@ -103,9 +103,10 @@ const style = theme => ({
 	},
 	dropzoneBg: {
 		height: 256,
-		width: 520,
+		width: 480,
 		position: 'relative',
 		margin: 'auto',
+		border: '2px solid white',
 		'&:hover': {
 			background: 'rgba(255,255,255,.3)',
 		},
@@ -356,6 +357,7 @@ class Settings extends Component {
 								</div>
 							</M.ExpansionPanelSummary>
 							<M.ExpansionPanelDetails>
+							<Column>
 								<Dropzone
 									className={classes.dropzone}
 									multiple={false}
@@ -367,6 +369,7 @@ class Settings extends Component {
 										src={this.state.ava ? this.state.ava.preview : user.avatar}
 									/>
 								</Dropzone>
+								</Column>
 							</M.ExpansionPanelDetails>
 							<M.ExpansionPanelActions>
 								{this.state.ava ? (
@@ -441,6 +444,8 @@ class Settings extends Component {
 								</div>
 							</M.ExpansionPanelSummary>
 							<M.ExpansionPanelDetails>
+							<Column>
+							<M.Typography variant='body1'>{lang.settings.nickdesc}</M.Typography>
 								<M.TextField
 									value={this.state.nick}
 									onChange={e => this.setState({ nick: e.target.value })}
@@ -448,6 +453,7 @@ class Settings extends Component {
 									fullWidth
 									margin="normal"
 								/>
+								</Column>
 							</M.ExpansionPanelDetails>
 							<M.ExpansionPanelActions>
 								{this.state.nick !== '' ? (
@@ -476,6 +482,8 @@ class Settings extends Component {
 								</div>
 							</M.ExpansionPanelSummary>
 							<M.ExpansionPanelDetails>
+							<Column>
+							<M.Typography variant='body1'>{lang.settings.userdesc}</M.Typography>
 								<M.TextField
 									value={this.state.user}
 									onChange={e => this.setState({ user: e.target.value })}
@@ -483,6 +491,7 @@ class Settings extends Component {
 									fullWidth
 									margin="normal"
 								/>
+								</Column>
 							</M.ExpansionPanelDetails>
 							<M.ExpansionPanelActions>
 								{this.state.user !== '' ? (
@@ -552,12 +561,15 @@ class Settings extends Component {
 								</div>
 							</M.ExpansionPanelSummary>
 							<M.ExpansionPanelDetails>
+							<Column>
+							<Row>
 								<M.Typography variant="body1">
 									{lang.settings.loggingdelete}
 								</M.Typography>
 								<M.Button onClick={this.deleteLogg} color="primary">
 									{lang.settings.yes}
 								</M.Button>
+								</Row>
 								<M.Typography variant="body1">
 									{lang.settings.loggingallow}
 								</M.Typography>
@@ -576,6 +588,7 @@ class Settings extends Component {
 										}
 									/>
 								</M.FormGroup>
+								</Column>
 							</M.ExpansionPanelDetails>
 						</M.ExpansionPanel>
 						<div className={classes.divide} />

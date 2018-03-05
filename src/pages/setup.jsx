@@ -17,6 +17,7 @@ import { firebaseConnect, firebase } from 'react-redux-firebase';
 import { history } from '../store';
 import miraiIcon from '../assets/mirai-icon.png';
 import { scrollFix } from './../utils/scrollFix';
+import Switch from 'material-ui/Switch';
 
 const styles = theme => ({
 	root: {

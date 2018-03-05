@@ -269,6 +269,11 @@ const style = theme => ({
     flexDirection: "column",
     width: "100%"
   },
+  row: {
+    display: "flex",
+    flexDirection: "row",
+    width: "100%"
+  },
   itemcontainer: {
     paddingBottom: theme.spacing.unit * 2,
     marginLeft: theme.spacing.unit,
@@ -308,6 +313,10 @@ const style = theme => ({
 
 export const Column = withStyles(style, { withTheme: true })(
   ({ classes, children }) => <div className={classes.column}>{children}</div>
+);
+
+export const Row = withStyles(style, { withTheme: true })(
+  ({ classes, children }) => <div className={classes.row}>{children}</div>
 );
 
 export const ItemContainer = withStyles(style, { withTheme: true })(
