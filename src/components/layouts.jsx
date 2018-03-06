@@ -48,7 +48,7 @@ const style = theme => ({
     animation: "load .3s ease",
     marginLeft: "auto",
     marginRight: "auto",
-    maxWidth: 1600,
+    maxWidth: 1500,
     paddingLeft: theme.spacing.unit * 2,
     paddingRight: theme.spacing.unit * 2,
     [theme.breakpoints.down("sm")]: {
@@ -70,7 +70,7 @@ const style = theme => ({
     [theme.breakpoints.down("sm")]: {
       marginTop: theme.spacing.unit * 7
     },
-    borderBottom: '1px solid rgba(255,255,255,.1)',
+    borderBottom: "1px solid rgba(255,255,255,.1)",
     boxSizing: "border-box",
     background: "rgba(0,0,0,0)",
     marginTop: theme.spacing.unit * 8,
@@ -168,7 +168,7 @@ const style = theme => ({
     transform: "translate(-50%, -50%)",
     margin: "auto",
     top: theme.spacing.unit * 4,
-    pointerEvents: 'none',
+    pointerEvents: "none",
     [theme.breakpoints.down("sm")]: {
       left: "initial",
       right: "initial",
@@ -212,7 +212,7 @@ const style = theme => ({
     boxSizing: "border-box",
     display: "flex",
     width: "100%",
-    maxWidth: 1600,
+    maxWidth: 1500,
     [theme.breakpoints.down("sm")]: {
       paddingLeft: theme.spacing.unit * 3,
       paddingRight: theme.spacing.unit * 3,
@@ -291,9 +291,9 @@ const style = theme => ({
     zIndex: "inherit",
     paddingBottom: theme.spacing.unit * 2
   },
-    lightersecTitle: {
-        fontWeight: 500,
-    },
+  lightersecTitle: {
+    fontWeight: 500
+  },
   modalPaper: {
     margin: "auto",
     padding: theme.spacing.unit,
@@ -345,7 +345,10 @@ export const SectionTitle = withStyles(style, { withTheme: true })(
   ({ classes, title, lighter, ...props }) => (
     <Typography
       variant={"title"}
-      className={classNames(classes.secTitle, lighter ? classes.lightersecTitle : null)}
+      className={classNames(
+        classes.secTitle,
+        lighter ? classes.lightersecTitle : null
+      )}
       style={{ color: lighter ? "rgba(255,255,255,.5)" : null, ...props }}
     >
       {title}
@@ -568,8 +571,9 @@ class HeaderRaw extends React.Component {
           id="header"
           style={{ opacity: 0 }}
           onLoad={e => {
-            e.currentTarget.style.animation = 'loadInH 1s ease'
-            e.currentTarget.style.opacity = null}}
+            e.currentTarget.style.animation = "loadInH 1s ease";
+            e.currentTarget.style.opacity = null;
+          }}
           className={classes.header}
           src={image}
           alt=""

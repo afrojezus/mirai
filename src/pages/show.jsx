@@ -78,7 +78,7 @@ const styles = theme => ({
     animation: "load .3s ease",
     marginLeft: "auto",
     marginRight: "auto",
-    maxWidth: 1600
+    maxWidth: 1500
   },
   backToolbar: {
     marginTop: theme.spacing.unit * 8

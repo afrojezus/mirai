@@ -137,7 +137,7 @@ class Rankings extends Component {
               }}
             />
             <Tab
-              label="Most recommended"
+              label="Recommendations"
               classes={{
                 root: classes.tab,
                 label:
@@ -147,7 +147,7 @@ class Rankings extends Component {
               }}
             />
             <Tab
-              label=""
+              label="Zones"
               classes={{
                 root: classes.tab,
                 label:
@@ -208,17 +208,20 @@ class Rankings extends Component {
             <Container>
               <Column>
                 <Typography variant={"display3"} className={classes.feedTitle}>
-                  Popularity
+                  Recommendations
                 </Typography>
-                <SectionTitle title='Something must have happened' lighter />
+                <SectionTitle title="Something must have happened" lighter />
               </Column>
             </Container>
             <Container>
               <Column>
                 <Typography variant={"display3"} className={classes.feedTitle}>
-                  Score
+                  Zones
                 </Typography>
-                <SectionTitle title='Something must have happened' lighter />
+                <SectionTitle
+                  title="A preview of this feature will come later this summer"
+                  lighter
+                />
               </Column>
             </Container>
             <Container>
@@ -226,7 +229,10 @@ class Rankings extends Component {
                 <Typography variant="display3" className={classes.feedTitle}>
                   Collections
                 </Typography>
-                <SectionTitle title='The editors have been slacking off again...' lighter />
+                <SectionTitle
+                  title="The editors have been slacking off again..."
+                  lighter
+                />
               </Column>
             </Container>
             <Container>

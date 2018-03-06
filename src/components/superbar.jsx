@@ -29,6 +29,7 @@ import BellIcon from "material-ui-icons/Notifications";
 import BellOffIcon from "material-ui-icons/NotificationsNone";
 import StarIcon from "material-ui-icons/Star";
 import Avatar from "material-ui/Avatar";
+import CompassIcon from "material-ui-icons/Explore";
 import ArrowBackIcon from "material-ui-icons/ArrowBack";
 import MoreVert from "material-ui-icons/MoreVert";
 import CloseIcon from "material-ui-icons/Close";
@@ -61,7 +62,7 @@ const styles = theme => ({
     paddingRight: "env(safe-area-inset-right)"
   },
   mainToolbar: {
-    maxWidth: 1600,
+    //maxWidth: 1500,
     marginLeft: "auto",
     width: "100%",
     marginRight: "auto"
@@ -74,13 +75,13 @@ const styles = theme => ({
     background: "linear-gradient(to top, transparent, rgba(0,0,0,1))"
   },
   appBar: {
-    background: 'rgba(0,0,0,.98)',
-    // borderBottom: `1px solid rgba(255,255,255,0)`,
+    background: "rgba(0,0,0,.98)",
+    borderBottom: `1px solid rgba(255,255,255,0)`
   },
   appBarTop: {
     background: "rgba(0,0,0,0)",
     boxShadow: "none",
-    // borderBottom: `1px solid rgba(255,255,255,.16)`,
+    borderBottom: `1px solid rgba(255,255,255,.16)`,
     backdropFilter: "blur(10px)"
   },
   appFrame: {
@@ -484,12 +485,9 @@ class Superbar extends Component {
           this.props.history.push("/");
           break;
         case 1:
-          this.props.history.push("/feeds");
-          break;
-        case 2:
           this.props.history.push("/rankings");
           break;
-        case 3:
+        case 2:
           this.props.history.push("/live");
           break;
         default:
@@ -508,24 +506,24 @@ class Superbar extends Component {
           watchIsOn: false
         });
         break;
-      case "/feeds":
+      /*case "/feeds":
         this.setState({
           currentPage: superbar.feeds,
           tabVal: 1,
           watchIsOn: false
         });
-        break;
+        break;*/
       case "/rankings":
         this.setState({
           currentPage: superbar.rankings,
-          tabVal: 2,
+          tabVal: 1,
           watchIsOn: false
         });
         break;
       case "/live":
         this.setState({
           currentPage: superbar.live,
-          tabVal: 3,
+          tabVal: 2,
           watchIsOn: false
         });
         break;
@@ -789,7 +787,7 @@ class Superbar extends Component {
               </ListItemIcon>
               <ListItemText primary={lang.superbar.home} />
             </ListItem>
-            <ListItem
+            {/* <ListItem
               button
               onClick={() => {
                 this.toggleDrawer();
@@ -800,16 +798,16 @@ class Superbar extends Component {
                 <DashboardIcon />
               </ListItemIcon>
               <ListItemText primary={lang.superbar.feeds} />
-            </ListItem>
+            </ListItem>*/}
             <ListItem
               button
               onClick={() => {
                 this.toggleDrawer();
-                this.tabChange(null, 2);
+                this.tabChange(null, 1);
               }}
             >
               <ListItemIcon>
-                <StarIcon />
+                <CompassIcon />
               </ListItemIcon>
               <ListItemText primary={lang.superbar.rankings} />
             </ListItem>
@@ -817,7 +815,7 @@ class Superbar extends Component {
               button
               onClick={() => {
                 this.toggleDrawer();
-                this.tabChange(null, 3);
+                this.tabChange(null, 2);
               }}
             >
               <ListItemIcon>
@@ -983,7 +981,7 @@ class Superbar extends Component {
                 icon={<HomeIcon />}
                 label={lang.superbar.home}
               />
-              <Tab
+              {/*<Tab
                 icon={<DashboardIcon />}
                 classes={{
                   root: classes.tab,
@@ -993,13 +991,13 @@ class Superbar extends Component {
                   labelContainer: classes.tablabelcontainer
                 }}
                 label={lang.superbar.feeds}
-              />
+              />*/}
               <Tab
-                icon={<StarIcon />}
+                icon={<CompassIcon />}
                 classes={{
                   root: classes.tab,
                   label:
-                    tabVal === 2 ? classes.tabLabelActive : classes.tabLabel,
+                    tabVal === 1 ? classes.tabLabelActive : classes.tabLabel,
                   wrapper: classes.tabwrapper,
                   labelContainer: classes.tablabelcontainer
                 }}
@@ -1010,7 +1008,7 @@ class Superbar extends Component {
                 classes={{
                   root: classes.tab,
                   label:
-                    tabVal === 3 ? classes.tabLabelActive : classes.tabLabel,
+                    tabVal === 2 ? classes.tabLabelActive : classes.tabLabel,
                   wrapper: classes.tabwrapper,
                   labelContainer: classes.tablabelcontainer
                 }}
@@ -1029,7 +1027,11 @@ class Superbar extends Component {
             <Hidden smDown>
               <IconButton
                 className={classes.logoButton}
-                onClick={() => window.scrollY === 0 ? this.props.history.push('/') : window.scroll({ top: 0, behavior: "smooth" })}
+                onClick={() =>
+                  window.scrollY === 0
+                    ? this.props.history.push("/")
+                    : window.scroll({ top: 0, behavior: "smooth" })
+                }
               >
                 <img src={miraiLogo} alt="" className={classes.logoImg} />
               </IconButton>

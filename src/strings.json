@@ -3,7 +3,7 @@
     "superbar": {
       "home": "Home",
       "feeds": "Feeds",
-      "rankings": "Rankings",
+      "rankings": "Explore",
       "live": "Live",
       "you": "You",
       "history": "History",
@@ -110,8 +110,10 @@
       "cancel": "Cancel",
       "accept": "Use",
       "yes": "Yes",
-      "userdesc": "Your username is your 'real' name on Mirai, treat it fairly.",
-      "nickdesc": "Your nickname explains more about you without having to be your display name!"
+      "userdesc":
+        "Your username is your 'real' name on Mirai, treat it fairly.",
+      "nickdesc":
+        "Your nickname explains more about you without having to be your display name!"
     },
     "help": {
       "title": "Help"
@@ -175,9 +177,12 @@
       "similar": "Similar to this one",
       "recommend": "Recommend this anime",
       "nonrecommend": "Don't recommend this anime",
-      "playthis": "Play this anime from the beginning (or where you last left it at)",
-      "playthisM": "Read this manga from the beginning (or where you last left it at)",
-      "unavaliable": "Sadly this anime/manga is not avaliable to watch/read on Mirai yet, report this to the developer if you want it to eventually appear avaliable here in the near future.",
+      "playthis":
+        "Play this anime from the beginning (or where you last left it at)",
+      "playthisM":
+        "Read this manga from the beginning (or where you last left it at)",
+      "unavaliable":
+        "Sadly this anime/manga is not avaliable to watch/read on Mirai yet, report this to the developer if you want it to eventually appear avaliable here in the near future.",
       "showEpisodes": "Show episodes",
       "showChapters": "Show chapters",
       "hideEpisodes": "Hide episodes",
@@ -227,7 +232,7 @@
     "superbar": {
       "home": "Hjem",
       "feeds": "Status",
-      "rankings": "Listing",
+      "rankings": "Utforsk",
       "live": "Live",
       "you": "Du",
       "history": "Logg",
@@ -333,8 +338,10 @@
       "cancel": "Avbryt",
       "accept": "Bruk",
       "yes": "Ja",
-      "userdesc": "Ditt brukernavn er ditt 'ekte' navn på Mirai, la den være ordentlig.",
-      "nickdesc": "Ditt kallenavn kan være hva som helst som du synes forteller litt om deg selv uten at det trenger å være ditt brukernavn!"
+      "userdesc":
+        "Ditt brukernavn er ditt 'ekte' navn på Mirai, la den være ordentlig.",
+      "nickdesc":
+        "Ditt kallenavn kan være hva som helst som du synes forteller litt om deg selv uten at det trenger å være ditt brukernavn!"
     },
     "tos": {
       "title": "Vilkår for bruk"
@@ -398,13 +405,16 @@
       "similar": "Ligner på denne",
       "recommend": "Anbefal denne animen",
       "nonrecommend": "Ikke anbefal denne animen",
-      "playthis": "Spill denne animen fra begynnelsen (eller hvor du sist sluttet)",
-      "playthisM": "Les denne mangaen fra begynnelsen (eller hvor du sist sluttet)",
+      "playthis":
+        "Spill denne animen fra begynnelsen (eller hvor du sist sluttet)",
+      "playthisM":
+        "Les denne mangaen fra begynnelsen (eller hvor du sist sluttet)",
       "showEpisodes": "Vis episoder",
       "showChapters": "Vis kapitler",
       "hideEpisodes": "Skjul episoder",
       "hideChapters": "Skjul kapitler",
-      "unavaliable": "Beklageligvis er ikke denne animen/mangaen tilgjengelig på Mirai, rapporter utilgjengeligheten til hovedutvikleren hvis du vil at den skal dukke opp tilgjengelig i nær fremtid."
+      "unavaliable":
+        "Beklageligvis er ikke denne animen/mangaen tilgjengelig på Mirai, rapporter utilgjengeligheten til hovedutvikleren hvis du vil at den skal dukke opp tilgjengelig i nær fremtid."
     },
     "user": {
       "nouserfound": "For å se andre sine brukere, må du registrere deg",
