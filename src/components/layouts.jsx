@@ -223,7 +223,7 @@ const style = theme => ({
     margin: "auto 0",
     position: "relative",
     marginTop: theme.spacing.unit * 14,
-    fontWeight: 800,
+    fontWeight: 700,
     textShadow: "0 2px 24px rgba(0,0,0,.07)",
     whiteSpace: "nowrap",
     flex: 1,
@@ -284,10 +284,19 @@ const style = theme => ({
   },
   secTitle: {
     padding: theme.spacing.unit,
+    paddingLeft: 0,
     fontWeight: 700,
     fontSize: 22,
     zIndex: "inherit",
     paddingBottom: theme.spacing.unit * 2
+  },
+  secSubtitle: {
+    padding: theme.spacing.unit,
+    paddingLeft: 0,
+    fontWeight: 500,
+    fontSize: 16,
+    zIndex: "inherit",
+    color: "rgba(255,255,255,.7)"
   },
   lightersecTitle: {
     fontWeight: 500
@@ -347,7 +356,11 @@ export const SectionTitle = withStyles(style, { withTheme: true })(
         classes.secTitle,
         lighter ? classes.lightersecTitle : null
       )}
-      style={{ color: lighter ? "rgba(255,255,255,.5)" : null, paddingBottom: noPad ? 0 : null, ...props }}
+      style={{
+        color: lighter ? "rgba(255,255,255,.5)" : null,
+        paddingBottom: noPad ? 0 : null,
+        ...props
+      }}
     >
       {title}
     </Typography>

@@ -5,18 +5,40 @@ import { MuiThemeProvider, createMuiTheme } from "material-ui/styles";
 import Reboot from "material-ui/Reboot";
 import { blue } from "material-ui/colors/index";
 
+// If the user has opted a background, apply the hues as accent color etc.
+const getColors = () => {
+  const hue = localStorage.getItem("user-hue");
+  if (hue) {
+    let hues = JSON.parse(hue);
+    return {
+      hue: hues.hue,
+      hueVib: hues.hueVib,
+      hueVibN: hues.hueVibN
+    };
+  } else {
+    return null;
+  }
+};
+
 // Apply some reset
 const theme = createMuiTheme({
   palette: {
-    primary: blue,
+    primary: getColors()
+      ? {
+          main: getColors().hueVib
+            ? getColors().hueVib
+            : getColors().hue ? getColors().hue : blue
+        }
+      : blue,
     secondary: blue,
     type: "dark",
     background: {
-      default: "#111",
-      paper: "#111",
-      appBar: "#111",
+      default: getColors() && getColors().hue ? getColors().hue : "#111",
+      paper: getColors() && getColors().hue ? getColors().hue : "#111",
+      appBar: getColors() && getColors().hue ? getColors().hue : "#111",
       contentFrame: "#eeeeee"
-    }
+    },
+    contrastThreshold: 1
   },
   typography: {
     // Use the system font.

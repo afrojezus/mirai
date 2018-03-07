@@ -165,12 +165,12 @@ class Index extends Component {
   };
 
   render() {
-    if (this.state.loading)
-      return (
-        <LoadingScreen />
-      );
+    if (this.state.loading) return <LoadingScreen />;
     return (
-      <div className={this.props.classes.root}>
+      <div
+        className={this.props.classes.root}
+        style={{ opacity: this.state.loading && !this.props.mir.twist ? 0 : 1 }}
+      >
         <Superbar history={history}>
           <Switch>
             <Route path="/" exact component={Home} />
@@ -194,9 +194,8 @@ class Index extends Component {
             <Route path="/stream" exact component={Stream} />
             <Route path="/tou" exact component={Tos} />
             <Route exact component={PageNotFound} />
-            {isEmpty(this.props.profile) ? null : this.props.profile
-              .role === "Normal" ? null : this.props.profile.role ===
-              "dev" || "admin" ? (
+            {isEmpty(this.props.profile) ? null : this.props.profile.role ===
+            "Normal" ? null : this.props.profile.role === "dev" || "admin" ? (
               <Route path="/admin/db" exact component={DevDB} />
             ) : null}
             {!isEmpty(this.props.profile) &&

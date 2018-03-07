@@ -224,7 +224,7 @@ const styles = theme => ({
     "&:hover": {
       overflow: "initial",
       boxShadow: `0 2px 14px rgba(0,0,0,.3)`,
-      background: blue.A200
+      background: theme.palette.primary.main
     },
     "&:hover > .artworktitle": {
       transform: "translate(-50%,-50%) scale(1.2) translateZ(30%)"
@@ -796,6 +796,7 @@ class Show extends Component {
         .child(id).update({
           date: Date.now(),
           id, 
+          showId: data.id,
           type: "SHOW",
           activity: `Checked out ${data.title.romaji}`,
           bgImg: data.bannerImage && data.bannerImage,

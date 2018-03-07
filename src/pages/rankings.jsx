@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import { withStyles } from "material-ui/styles";
 import { connect } from "react-redux";
-import { firebaseConnect } from "react-redux-firebase";
+import { firebaseConnect, isEmpty } from "react-redux-firebase";
 import Typography from "material-ui/Typography/Typography";
 import orange from "material-ui/colors/orange";
+import Grid from "material-ui/Grid";
 import grey from "material-ui/colors/grey";
-import Supertable from "../components/supertable";
+import SuperTable from "../components/supertable";
 import SwipeableViews from "react-swipeable-views";
 import queryString from "query-string";
 import Tab from "material-ui/Tabs/Tab";
@@ -15,6 +16,8 @@ import SuperComment from "../components/supercomment";
 import Hidden from "material-ui/Hidden/Hidden";
 import { scrollFix } from "./../utils/scrollFix";
 import moment from "moment";
+import strings from "../strings.json";
+import Filter from "../utils/filter";
 import {
   Root,
   CommandoBar,
@@ -28,6 +31,11 @@ import {
   SectionSubTitle,
   ItemContainer
 } from "../components/layouts";
+import checklang from "../checklang";
+import Anilist from "../anilist-api";
+import { bigFuckingQueryM, bigFuckingQuery } from "../anilist-api/queries";
+import Divider from "material-ui/Divider";
+import localforage from "localforage";
 
 const style = theme => ({
   tabLabel: {
@@ -52,7 +60,7 @@ const style = theme => ({
     height: 64
   },
   feedTitle: {
-    fontWeight: 800,
+    fontWeight: 700,
     textShadow: "0 2px 24px rgba(0,0,0,.07)",
     marginBottom: theme.spacing.unit * 3,
     zIndex: 20,
@@ -64,6 +72,9 @@ const style = theme => ({
   },
   feedContext: {
     fontSize: theme.typography.pxToRem(16)
+  },
+  divider: {
+    margin: "8px 0"
   }
 });
 
@@ -72,15 +83,35 @@ class Rankings extends Component {
     loading: true,
     index: 0,
     collection: null,
-    friendRecommends: {}
+    friendRecommends: {},
+    rankingMentionable: null,
+    lang: strings.enus
   };
 
   componentWillMount = () => {
+    checklang(this);
+    this.getColors();
     scrollFix();
+  };
+
+  getColors = () => {
+    const hue = localStorage.getItem("user-hue");
+    if (hue) {
+      let hues = JSON.parse(hue);
+      return this.setState({
+        hue: hues.hue,
+        hueVib: hues.hueVib,
+        hueVibN: hues.hueVibN
+      });
+    } else {
+      return null;
+    }
   };
 
   componentDidMount = async () => {
     await this.getFriendsRecommend();
+    this.getCollections();
+    this.fetchOngoing();
     if (this.props.history.location.search) {
       const id = queryString.parse(this.props.history.location.search);
       this.props.firebase
@@ -93,6 +124,44 @@ class Rankings extends Component {
         );
     }
   };
+
+  fetchOngoing = async () => {
+    const ongoing = await Anilist.get(bigFuckingQuery, {
+      page: 1,
+      isAdult: false,
+      sort: ["POPULARITY_DESC"],
+      status: "RELEASING"
+    });
+
+    const ongoingM = await Anilist.get(bigFuckingQueryM, {
+      page: 1,
+      isAdult: false,
+      sort: ["POPULARITY_DESC"],
+      status: "RELEASING"
+    });
+
+    try {
+      if (ongoing && ongoingM)
+        return this.setState({
+          ongoing,
+          ongoingM,
+          loading: false
+        });
+    } catch (error) {
+      console.error(error);
+    }
+    return null;
+  };
+
+  getCollections = () =>
+    this.props.firebase
+      .ref("rankings")
+      .child("collections")
+      .on("value", mentionables =>
+        this.setState({
+          rankingMentionable: Object.values(mentionables.val())
+        })
+      );
 
   getFriendsRecommend = async () => {
     const you = this.props.profile;
@@ -109,12 +178,25 @@ class Rankings extends Component {
 
   render() {
     const { classes } = this.props;
-    const { index, collection, friendRecommends } = this.state;
+    const {
+      index,
+      collection,
+      friendRecommends,
+      rankingMentionable,
+      lang,
+      ongoing,
+      ongoingM,
+      topScore,
+      topPopularity,
+      hue
+    } = this.state;
     return (
       <div>
         <LoadingIndicator loading={this.state.loading} />
-        <TitleHeader color={grey.A700} />
-        <Header color={grey[900]} image={collection ? collection.bg : null} />
+        {hue ? <TitleHeader color={hue} /> : null}
+        {hue ? (
+          <Header color={hue} image={collection ? collection.bg : null} />
+        ) : null}
         <CommandoBarTop title="Rankings">
           <Hidden smDown>
             <div style={{ flex: 1 }} />
@@ -147,7 +229,8 @@ class Rankings extends Component {
               }}
             />
             <Tab
-              label="Zones"
+              disabled
+              label="H Corner"
               classes={{
                 root: classes.tab,
                 label:
@@ -167,6 +250,7 @@ class Rankings extends Component {
               }}
             />
             <Tab
+              disabled={isEmpty(this.props.profile)}
               label="Friends"
               classes={{
                 root: classes.tab,
@@ -191,18 +275,56 @@ class Rankings extends Component {
                 <Typography variant="display3" className={classes.feedTitle}>
                   Overview
                 </Typography>
-                <ItemContainer spacing={0}>
-                  <SectionTitle title="Top rated anime" />
-                  <Container spacing={16} />
-                </ItemContainer>
-                <ItemContainer spacing={0}>
-                  <SectionTitle title="Top popular anime" />
-                  <Container spacing={16} />
-                </ItemContainer>
-                <ItemContainer spacing={0}>
-                  <SectionTitle title="Your ranks" />
-                  <Container spacing={16} />
-                </ItemContainer>
+                <SectionTitle noPad title="Top rated anime" />
+                <SectionSubTitle title="The 'best' anime as decided by the community of AniList" />
+                <Divider className={classes.divider} />
+                <SectionTitle noPad title="Top popular anime" />
+                <SectionSubTitle title="The most popular anime of all time" />
+                <Divider className={classes.divider} />
+                <SectionTitle noPad title={lang.home.ongoingAnimeTitle} />
+                <SectionSubTitle
+                  title={
+                    this.props.mir &&
+                    this.props.mir.twist &&
+                    this.props.mir.twist.length > 0
+                      ? `${Object.values(this.props.mir.twist).filter(
+                          s => s.ongoing === true
+                        ).length - 1} ${lang.home.ongoingAnimeEstimate}`
+                      : null
+                  }
+                />
+                {ongoing &&
+                ongoing.data &&
+                this.props.mir &&
+                this.props.mir.twist &&
+                this.props.mir.twist.length > 0 ? (
+                  <SuperTable
+                    data={Filter(ongoing.data.Page.media, this.props.mir.twist)
+                      .filter(s => s.nextAiringEpisode)
+                      .sort(
+                        (a, b) =>
+                          a.nextAiringEpisode.timeUntilAiring -
+                          b.nextAiringEpisode.timeUntilAiring
+                      )}
+                    type="s"
+                    typeof="ongoing"
+                    limit={12}
+                  />
+                ) : (
+                  <SuperTable loading />
+                )}
+                <Divider className={classes.divider} />
+                <SectionTitle noPad title={lang.home.ongoingMangaTitle} />
+                {ongoingM && ongoingM.data ? (
+                  <SuperTable
+                    data={ongoingM.data.Page.media}
+                    type="m"
+                    typeof="ongoing"
+                    limit={12}
+                  />
+                ) : (
+                  <SuperTable loading />
+                )}
               </Column>
             </Container>
             <Container>
@@ -229,10 +351,16 @@ class Rankings extends Component {
                 <Typography variant="display3" className={classes.feedTitle}>
                   Collections
                 </Typography>
-                <SectionTitle
-                  title="The editors have been slacking off again..."
-                  lighter
-                />
+                {rankingMentionable ? (
+                  <SuperTable
+                    data={Object.values(rankingMentionable)}
+                    type="c"
+                    typeof="ranking"
+                    limit={12}
+                  />
+                ) : (
+                  <SuperTable loading />
+                )}
               </Column>
             </Container>
             <Container>
@@ -309,7 +437,7 @@ class Rankings extends Component {
 }
 
 export default firebaseConnect()(
-  connect(({ firebase: { profile } }) => ({ profile }))(
+  connect(({ firebase: { profile }, mir }) => ({ profile, mir }))(
     withStyles(style)(Rankings)
   )
 );

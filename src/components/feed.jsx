@@ -23,8 +23,10 @@ import FadeIn from "react-fade-in";
 import IconButton from "material-ui/IconButton";
 import { guid } from "../utils/uuid";
 import Tooltip from "material-ui/Tooltip/Tooltip";
+import CircularProgress from "material-ui/Progress/CircularProgress";
+import { history } from "../store";
 
-const feedWidth = '100%';
+const feedWidth = "100%";
 const feedHeight = 60;
 
 const style = theme => ({
@@ -39,14 +41,13 @@ const style = theme => ({
   card: {
     boxSizing: "border-box",
     // background: '#fafafa',
-    border: '1px solid rgba(255,255,255,.1)'
+    border: "1px solid rgba(255,255,255,.1)"
   },
   cardcontent: {
-    boxSizing: "border-box",    
+    boxSizing: "border-box",
     padding: theme.spacing.unit * 2
   },
-  cardheader: {
-  },
+  cardheader: {},
   feedMaker: {
     maxWidth: feedWidth,
     padding: theme.spacing.unit,
@@ -80,13 +81,13 @@ const style = theme => ({
     bottom: 0,
     boxSizing: "border-box",
     maxHeight: 0,
-    transition: theme.transitions.create(['all']),
+    transition: theme.transitions.create(["all"]),
     opacity: 0
   },
   cardactionsActive: {
     maxHeight: 64,
     padding: theme.spacing.unit,
-    transition: theme.transitions.create(['all']),
+    transition: theme.transitions.create(["all"]),
     opacity: 1
   },
   cardactionsF: {
@@ -96,40 +97,42 @@ const style = theme => ({
     boxSizing: "border-box",
     opacity: 1
   },
+  headerAva: {
+    cursor: "pointer"
+  },
   media: {
-    transition: theme.transitions.create(['all']),
-    minHeight: 200,
-    '&:hover': {
-      minHeight: 500
-    }
+    transition: theme.transitions.create(["all"]),
+    minHeight: 300,
+    maxHeight: 700
   },
   mediaF: {
-    transition: theme.transitions.create(['all']),
+    transition: theme.transitions.create(["all"]),
     height: 200,
-    width: '100%',
-    objectFit: 'cover'
+    width: "100%",
+    objectFit: "cover"
   },
   cardaction: {
-   margin: 'auto'
+    margin: "auto"
   },
   text: {
-   // color: '#111'
+    // color: '#111'
   },
   divider: {
-   // background: 'rgba(0,0,0,.1)'
+    // background: 'rgba(0,0,0,.1)'
   },
   headerTitle: {
-   // color: '#111'
+    // color: '#111'
   },
   subheader: {
-   // color: 'rgba(0,0,0,.7)'
+    // color: 'rgba(0,0,0,.7)'
   },
   activityImage: {
     width: 60,
     maxHeight: 80,
-    objectFit: 'cover',
+    objectFit: "cover",
     borderBottomLeftRadius: 1,
     borderTopLeftRadius: 1,
+    cursor: "pointer"
   }
 });
 
@@ -147,7 +150,9 @@ export const FeedMaker = firebaseConnect()(
           title: "",
           image: "",
           date: Date.now(),
-          avatar: ""
+          avatar: "",
+          uploadingImage: false,
+          error: false
         };
 
         componentDidMount = () => {
@@ -167,16 +172,33 @@ export const FeedMaker = firebaseConnect()(
           return this.imageInput.click();
         };
 
-        getImage = async e => {
-          console.log(this.imageInput.files);
-          const reader = new FileReader();
+        getImage = e => {
+          const form = new FormData();
           if (this.imageInput.files.length === 0) {
             return false;
           }
-          reader.onload = (image) => this.setState({image: image.target.result}, () => this.image.src === image);
-          return reader.readAsDataURL(this.imageInput.files[0]);
-        }
- 
+
+          form.append("files[]", this.imageInput.files[0]);
+          return this.setState({ uploadingImage: true }, async () => {
+            try {
+              const loli = await fetch("https://mixtape.moe/upload.php", {
+                method: "POST",
+                body: form
+              });
+              const loliJson = await loli.json();
+              return this.setState({
+                image: loliJson.files[0].url,
+                uploadingImage: false
+              });
+            } catch (error) {
+              console.error(error);
+              return this.setState({ error: true }, () =>
+                setTimeout(() => this.setState({ error: false }), 3000)
+              );
+            }
+          });
+        };
+
         postFeed = async () => {
           const you = this.props.profile;
           const db = this.props.firebase
@@ -186,7 +208,7 @@ export const FeedMaker = firebaseConnect()(
           const { title, context, text, image, date } = this.state;
           try {
             if (text === "" || null) {
-              return new Error("You didn't write anything...")
+              return new Error("You didn't write anything...");
             }
             const id = guid();
             return await db
@@ -205,7 +227,7 @@ export const FeedMaker = firebaseConnect()(
                 id,
                 repost: false
               })
-              .then(() => this.setState({ text: "" }));
+              .then(() => this.setState({ text: "", image: "" }));
           } catch (error) {
             return console.error(error);
           }
@@ -213,7 +235,15 @@ export const FeedMaker = firebaseConnect()(
 
         render() {
           const { classes, profile, theme, color } = this.props;
-          const { text, context, title, image, date, avatar } = this.state;
+          const {
+            text,
+            context,
+            title,
+            image,
+            date,
+            avatar,
+            uploadingImage
+          } = this.state;
           if (isEmpty(profile)) return null;
           return (
             <Grid
@@ -224,7 +254,14 @@ export const FeedMaker = firebaseConnect()(
                 text ? classes.feedMakerActive : null
               )}
             >
-              <Card className={classes.card} style={{ minHeight: "inherit", background: color ? color : null }} elevation={3}>
+              <Card
+                className={classes.card}
+                style={{
+                  minHeight: "inherit",
+                  background: color ? color : null
+                }}
+                elevation={3}
+              >
                 {text ? (
                   <FadeIn>
                     <CardHeader
@@ -242,7 +279,15 @@ export const FeedMaker = firebaseConnect()(
                   </FadeIn>
                 ) : null}
                 {text ? <Divider className={classes.divider} /> : null}
-                {image !== '' ? <img className={classes.mediaF} alt='' style={{minHeight: 200}} ref={image => this.image = image} src={image} /> : null}
+                {image !== "" ? (
+                  <img
+                    className={classes.mediaF}
+                    alt=""
+                    style={{ minHeight: 200 }}
+                    ref={image => (this.image = image)}
+                    src={image}
+                  />
+                ) : null}
                 <CardContent className={classes.cardcontent}>
                   <TextField
                     className={classnames(
@@ -259,21 +304,71 @@ export const FeedMaker = firebaseConnect()(
                     fullWidth
                     onChange={e => {
                       let val = e.target.value;
-                      this.setState({ text: val }, () => val === '' ? this.setState({image: ''}) : null)
+                      this.setState(
+                        { text: val },
+                        () => (val === "" ? this.setState({ image: "" }) : null)
+                      );
                     }}
                   />
                 </CardContent>
                 {text ? <Divider className={classes.divider} /> : null}
-                <CardActions className={classnames(classes.cardactions, text ? classes.cardactionsActive : null)}>
-                <label>
-                  <input accept="image/*" type='file' onChange={this.getImage} className='hiddenfileinput' ref={imageInput => this.imageInput = imageInput} />
-                  <IconButton classes={{label: classes.text}} type='button' onClick={this.setImage}>
-                    <ICON.Image />
-                  </IconButton>
-                  </label>
-                  {image ? <Button classes={{label: classes.text}} onClick={() => this.setState({image: ''})}>Remove image</Button> : null}
+                <CardActions
+                  className={classnames(
+                    classes.cardactions,
+                    text ? classes.cardactionsActive : null
+                  )}
+                >
+                  <form>
+                    <label>
+                      <input
+                        accept="image/*"
+                        type="file"
+                        name="files[]"
+                        onChange={e => this.getImage(e)}
+                        className="hiddenfileinput"
+                        ref={imageInput => (this.imageInput = imageInput)}
+                      />
+                      <Tooltip
+                        title={
+                          window.safari
+                            ? "Currently issues with image upload on Safari, sorry."
+                            : "Upload an image"
+                        }
+                      >
+                        <div>
+                          <IconButton
+                            disabled={window.safari ? true : uploadingImage}
+                            classes={{ label: classes.text }}
+                            type="button"
+                            onClick={this.setImage}
+                          >
+                            {uploadingImage ? (
+                              <CircularProgress />
+                            ) : (
+                              <ICON.Image />
+                            )}
+                          </IconButton>
+                        </div>
+                      </Tooltip>
+                    </label>
+                  </form>
+                  {image ? (
+                    <Button
+                      classes={{ label: classes.text }}
+                      onClick={() => this.setState({ image: "" })}
+                    >
+                      Remove image
+                    </Button>
+                  ) : null}
                   <div style={{ flex: 1 }} />
-                  {text ? <Button classes={{label: classes.text}} onClick={this.postFeed}>Post</Button> : null}
+                  {text ? (
+                    <Button
+                      classes={{ label: classes.text }}
+                      onClick={this.postFeed}
+                    >
+                      Post
+                    </Button>
+                  ) : null}
                 </CardActions>
               </Card>
             </Grid>
@@ -339,17 +434,17 @@ export const Feed = firebaseConnect()(
 
         deleteOwnActivity = async () => {
           const db = this.props.firebase
-          .database()
-          .ref("/users")
-          .child(this.props.user.id)
-          .child("feed")
-          .child(this.props.id);
+            .database()
+            .ref("/users")
+            .child(this.props.user.id)
+            .child("feed")
+            .child(this.props.id);
           try {
             return await db.remove();
           } catch (error) {
             return console.error(error);
           }
-        }
+        };
 
         render() {
           const {
@@ -372,80 +467,159 @@ export const Feed = firebaseConnect()(
             date,
             avatar,
             user,
+            showId,
             ...props
           } = this.props;
           return (
             <Grid item xs className={classes.root} {...props}>
               <FadeIn>
-                <Card style={{background: color ? color : null}} className={classes.card}>
-                <div style={{display: activity ? 'flex' : null}}>
-                {activity ? <img src={image} alt='' className={classes.activityImage} /> : null}
-                <div style={{flex: activity ? 1 : null}}>
-                  {noHeader ? null : (
-                    <CardHeader
-                      title={activity ? ftitle + " | " + moment(date).from(Date.now()) : ftitle}
-                      avatar={<Avatar src={avatar} />}
-                      subheader={
-                       activity ? context : context + " | " + moment(date).from(Date.now())
-                      }
-                      className={classes.cardheader}
-                      classes={{
-                        avatar: classes.headerAva,
-                        title: classes.headerTitle,
-                        subheader: classes.subheader,
-                        action: classes.cardaction
-                      }}
-                      action={isEmpty(profile) ? null : mirUpdate ? null : noDelete ? null :
-                        (user && user.id === profile.userID) ||
-                        (profile.role === "admin" ||
-                        "dev" && !activity) ? (
-                          <IconButton classes={{label: classes.text}} onClick={activity ? this.deleteOwnActivity : this.deleteOwnFeed}>
-                            <ICON.Close />
-                          </IconButton>
-                        ) : null
-                      }
-                    />
-                  )}
-                  {activity ? null : <Divider className={classes.divider} />}
-                  {activity ? null : image ? <CardMedia className={classes.media} image={image} /> : null}
-                  {activity ? null : <CardContent className={classes.cardcontent}>
-                    <Typography
-                      className={classes.text}
-                      variant="body1"
-                      dangerouslySetInnerHTML={{ __html: text }}
-                    />
-                  </CardContent>}
-                  
-                  {noActions ? null : <Divider className={classes.divider} />}
-                  {noActions ? null : (
-                    <CardActions className={classes.cardactionsF}>
-                      <div style={{ flex: 1 }} />
-                      <Tooltip title={isEmpty(profile) ? 'You need to login to mood posts' : 'Mood'} placement="bottom">
-                      <div>
-                        <IconButton disabled={isEmpty(profile) ? true : false} classes={{label: classes.text}} onMouseOver={this.showMoods}>
-                          <ICON.Face />
-                        </IconButton>
-                        </div>
-                      </Tooltip>
-                      <Tooltip title={isEmpty(profile) ? 'You need to login to comment posts' : 'Comment'} placement="bottom">
-                      <div>
-                        <IconButton disabled={isEmpty(profile) ? true : false} classes={{label: classes.text}} onClick={commentClick}>
-                          <ICON.Comment />
-                        </IconButton>
-                        </div>
-                      </Tooltip>
-                      {user && user.id === profile.userID ? null : (
-                        <Tooltip title={isEmpty(profile) ? 'You need to login to repost posts' : 'Repost this'} placement="bottom">
-                        <div>
-                          <IconButton disabled={isEmpty(profile) ? true : false} classes={{label: classes.text}} onClick={this.repostFeed}>
-                            <ICON.Share />
-                          </IconButton>
-                          </div>
-                        </Tooltip>
+                <Card
+                  style={{ background: color ? color : null }}
+                  className={classes.card}
+                >
+                  <div style={{ display: activity ? "flex" : null }}>
+                    {activity ? (
+                      <img
+                        onClick={() =>
+                          activity ? history.push(`/show?s=${showId}`) : null
+                        }
+                        src={image}
+                        alt=""
+                        className={classes.activityImage}
+                      />
+                    ) : null}
+                    <div style={{ flex: activity ? 1 : null }}>
+                      {noHeader ? null : (
+                        <CardHeader
+                          title={
+                            activity
+                              ? ftitle + " | " + moment(date).from(Date.now())
+                              : ftitle
+                          }
+                          avatar={
+                            <Avatar
+                              onClick={() =>
+                                !mirUpdate || !context.includes("INTRO")
+                                  ? history.push(`/user?u=${user.id}`)
+                                  : null
+                              }
+                              src={avatar}
+                            />
+                          }
+                          subheader={
+                            activity
+                              ? context
+                              : context + " | " + moment(date).from(Date.now())
+                          }
+                          className={classes.cardheader}
+                          classes={{
+                            avatar: classes.headerAva,
+                            title: classes.headerTitle,
+                            subheader: classes.subheader,
+                            action: classes.cardaction
+                          }}
+                          action={
+                            isEmpty(
+                              profile
+                            ) ? null : mirUpdate ? null : noDelete ? null : (user &&
+                              user.id === profile.userID) ||
+                            (profile.role === "admin" ||
+                              ("dev" && !activity)) ? (
+                              <IconButton
+                                classes={{ label: classes.text }}
+                                onClick={
+                                  activity
+                                    ? this.deleteOwnActivity
+                                    : this.deleteOwnFeed
+                                }
+                              >
+                                <ICON.Close />
+                              </IconButton>
+                            ) : null
+                          }
+                        />
                       )}
-                    </CardActions>
-                  )}
-                  </div>
+                      {activity ? null : (
+                        <Divider className={classes.divider} />
+                      )}
+                      {activity ? null : image ? (
+                        <CardMedia className={classes.media} image={image} />
+                      ) : null}
+                      {activity ? null : (
+                        <CardContent className={classes.cardcontent}>
+                          <Typography
+                            className={classes.text}
+                            variant="body1"
+                            dangerouslySetInnerHTML={{ __html: text }}
+                          />
+                        </CardContent>
+                      )}
+
+                      {noActions ? null : (
+                        <Divider className={classes.divider} />
+                      )}
+                      {noActions ? null : (
+                        <CardActions className={classes.cardactionsF}>
+                          <div style={{ flex: 1 }} />
+                          <Tooltip
+                            title={
+                              isEmpty(profile)
+                                ? "You need to login to mood posts"
+                                : "Mood"
+                            }
+                            placement="bottom"
+                          >
+                            <div>
+                              <IconButton
+                                disabled={isEmpty(profile) ? true : false}
+                                classes={{ label: classes.text }}
+                                onMouseOver={this.showMoods}
+                              >
+                                <ICON.Face />
+                              </IconButton>
+                            </div>
+                          </Tooltip>
+                          <Tooltip
+                            title={
+                              isEmpty(profile)
+                                ? "You need to login to comment posts"
+                                : "Comment"
+                            }
+                            placement="bottom"
+                          >
+                            <div>
+                              <IconButton
+                                disabled={isEmpty(profile) ? true : false}
+                                classes={{ label: classes.text }}
+                                onClick={commentClick}
+                              >
+                                <ICON.Comment />
+                              </IconButton>
+                            </div>
+                          </Tooltip>
+                          {user && user.id === profile.userID ? null : (
+                            <Tooltip
+                              title={
+                                isEmpty(profile)
+                                  ? "You need to login to repost posts"
+                                  : "Repost this"
+                              }
+                              placement="bottom"
+                            >
+                              <div>
+                                <IconButton
+                                  disabled={isEmpty(profile) ? true : false}
+                                  classes={{ label: classes.text }}
+                                  onClick={this.repostFeed}
+                                >
+                                  <ICON.Share />
+                                </IconButton>
+                              </div>
+                            </Tooltip>
+                          )}
+                        </CardActions>
+                      )}
+                    </div>
                   </div>
                 </Card>
               </FadeIn>

@@ -14,6 +14,7 @@ import { history } from "../store";
 
 import strings from "../strings.json";
 import { scrollFix } from "./../utils/scrollFix";
+import colorizer from "../utils/colorizer";
 
 const style = theme => ({
   root: {
@@ -142,6 +143,7 @@ class Settings extends Component {
 
   componentWillMount = () => {
     scrollFix();
+    this.getColors();
     const lang = localStorage.getItem("language");
     switch (lang) {
       case "en-us":
@@ -158,6 +160,20 @@ class Settings extends Component {
 
       default:
         break;
+    }
+  };
+
+  getColors = () => {
+    const hue = localStorage.getItem("user-hue");
+    if (hue) {
+      let hues = JSON.parse(hue);
+      return this.setState({
+        hue: hues.hue,
+        hueVib: hues.hueVib,
+        hueVibN: hues.hueVibN
+      });
+    } else {
+      return null;
     }
   };
 
@@ -228,7 +244,17 @@ class Settings extends Component {
             .updateProfile({ headers: bg.snapshot.downloadURL })
             .then(() => {
               console.info("Background updated.");
-              this.setState({ bgLoading: false, bg: null });
+              this.setState({ bg: null }, () => {
+                colorizer(this.props.profile.headers).then(pal => {
+                  let hues = {
+                    hue: pal.DarkMuted && pal.DarkMuted.getHex(),
+                    hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
+                    hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
+                  };
+                  localStorage.setItem("user-hue", JSON.stringify(hues));
+                  return this.setState({ bgLoading: false });
+                });
+              });
             });
         }
       );
@@ -276,12 +302,16 @@ class Settings extends Component {
 
   render() {
     const { classes, theme } = this.props;
-    const { loading, langCode, lang, langVal } = this.state;
+    const { loading, langCode, lang, langVal, hue } = this.state;
     const user = this.props.profile;
     if (!user) return null;
     return (
       <div>
-        <TitleHeader title={lang.settings.settings} color={"#000"} />
+        <TitleHeader
+          title={lang.settings.settings}
+          color={hue ? hue : "#000"}
+        />
+        <Header color={hue ? hue : null} />
         <div className={classes.root}>
           <M.Grid
             container
@@ -292,7 +322,10 @@ class Settings extends Component {
             <M.Typography variant="headline" className={classes.headline}>
               {lang.settings.aesthetics}
             </M.Typography>
-            <M.ExpansionPanel className={classes.panel}>
+            <M.ExpansionPanel
+              style={{ background: hue ? hue : null }}
+              className={classes.panel}
+            >
               <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
                 <div className={classes.column}>
                   <M.Typography variant="title">
@@ -341,7 +374,10 @@ class Settings extends Component {
                 ) : null}
               </M.ExpansionPanelActions>
             </M.ExpansionPanel>
-            <M.ExpansionPanel className={classes.panel}>
+            <M.ExpansionPanel
+              style={{ background: hue ? hue : null }}
+              className={classes.panel}
+            >
               <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
                 <div className={classes.column}>
                   <M.Typography variant="title">
@@ -387,7 +423,10 @@ class Settings extends Component {
                 ) : null}
               </M.ExpansionPanelActions>
             </M.ExpansionPanel>
-            <M.ExpansionPanel className={classes.panel}>
+            <M.ExpansionPanel
+              style={{ background: hue ? hue : null }}
+              className={classes.panel}
+            >
               <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
                 <div className={classes.column}>
                   <M.Typography variant="title">
@@ -432,7 +471,10 @@ class Settings extends Component {
                 ) : null}
               </M.ExpansionPanelActions>
             </M.ExpansionPanel>
-            <M.ExpansionPanel className={classes.panel}>
+            <M.ExpansionPanel
+              style={{ background: hue ? hue : null }}
+              className={classes.panel}
+            >
               <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
                 <div className={classes.column}>
                   <M.Typography variant="title">
@@ -472,7 +514,10 @@ class Settings extends Component {
                 ) : null}
               </M.ExpansionPanelActions>
             </M.ExpansionPanel>
-            <M.ExpansionPanel className={classes.panel}>
+            <M.ExpansionPanel
+              style={{ background: hue ? hue : null }}
+              className={classes.panel}
+            >
               <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
                 <div className={classes.column}>
                   <M.Typography variant="title">
@@ -512,7 +557,10 @@ class Settings extends Component {
                 ) : null}
               </M.ExpansionPanelActions>
             </M.ExpansionPanel>
-            <M.ExpansionPanel className={classes.panel}>
+            <M.ExpansionPanel
+              style={{ background: hue ? hue : null }}
+              className={classes.panel}
+            >
               <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
                 <div className={classes.column}>
                   <M.Typography variant="title">
@@ -551,7 +599,10 @@ class Settings extends Component {
             <M.Typography variant="headline" className={classes.headline}>
               {lang.settings.account}
             </M.Typography>
-            <M.ExpansionPanel className={classes.panel}>
+            <M.ExpansionPanel
+              style={{ background: hue ? hue : null }}
+              className={classes.panel}
+            >
               <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
                 <div className={classes.column}>
                   <M.Typography variant="title">
@@ -601,7 +652,10 @@ class Settings extends Component {
             <M.Typography variant="headline" className={classes.headline}>
               {lang.settings.sync}
             </M.Typography>
-            <M.ExpansionPanel className={classes.panel}>
+            <M.ExpansionPanel
+              style={{ background: hue ? hue : null }}
+              className={classes.panel}
+            >
               <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
                 <div className={classes.column}>
                   <M.Typography variant="title">AniList</M.Typography>
@@ -638,7 +692,10 @@ class Settings extends Component {
                 </M.FormGroup>
               </M.ExpansionPanelActions>
             </M.ExpansionPanel>
-            <M.ExpansionPanel className={classes.panel}>
+            <M.ExpansionPanel
+              style={{ background: hue ? hue : null }}
+              className={classes.panel}
+            >
               <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
                 <div className={classes.column}>
                   <M.Typography variant="title">MyAnimeList</M.Typography>
@@ -675,7 +732,10 @@ class Settings extends Component {
                 </M.FormGroup>
               </M.ExpansionPanelActions>
             </M.ExpansionPanel>
-            <M.ExpansionPanel className={classes.panel}>
+            <M.ExpansionPanel
+              style={{ background: hue ? hue : null }}
+              className={classes.panel}
+            >
               <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
                 <div className={classes.column}>
                   <M.Typography variant="title">Discord</M.Typography>
@@ -716,7 +776,10 @@ class Settings extends Component {
             <M.Typography variant="headline" className={classes.headline}>
               {lang.settings.misc}
             </M.Typography>
-            <M.ExpansionPanel className={classes.panel}>
+            <M.ExpansionPanel
+              style={{ background: hue ? hue : null }}
+              className={classes.panel}
+            >
               <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
                 <div className={classes.column}>
                   <M.Typography variant="title">

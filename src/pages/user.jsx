@@ -500,7 +500,10 @@ class User extends Component {
     tabVal: 0,
     lang: strings.enus,
     userFeeds: null,
-    menuEl: null
+    menuEl: null,
+    hue: "#111",
+    hueVib: "#111",
+    hueVibN: "#111"
   };
 
   componentWillMount = async () => {
@@ -574,59 +577,24 @@ class User extends Component {
           ? this.props.profile.headers
           : this.props.profile.avatar
         : null;
-    const hues = await localForage.getItem("user-hue");
     await this.getFeeds(
       this.state.data ? this.state.data.userID : this.props.profile.userID
     );
-    if (image && !hues)
-      Colorizer(`https://cors-anywhere.herokuapp.com/${image}`).then(pal => {
-        return this.setState(
-          {
-            hue: pal.DarkMuted && pal.DarkMuted.getHex(),
-            hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
-            hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
-          },
-          async () => {
-            if (!this.state.data) {
-              await localForage.setItem("user-hue", {
-                hue: this.state.hue,
-                vib: this.state.hueVib,
-                vibn: this.state.hueVibN,
-                image
-              });
-            }
-          }
-        );
-      });
-    else if (image && hues && hues.image !== image)
-      Colorizer(`https://cors-anywhere.herokuapp.com/${image}`).then(pal => {
-        return this.setState(
-          {
-            hue: pal.DarkMuted && pal.DarkMuted.getHex(),
-            hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
-            hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
-          },
-          async () => {
-            // let superBar = document.getElementById('superBar');
-            // if (superBar) superBar.style.background = this.state.hue;
-            if (!this.state.data) {
-              await localForage.setItem("user-hue", {
-                hue: this.state.hue,
-                vib: this.state.hueVib,
-                vibn: this.state.hueVibN,
-                image
-              });
-            }
-          }
-        );
-      });
-    else if (image && hues)
+    return this.getColors();
+  };
+
+  getColors = () => {
+    const hue = localStorage.getItem("user-hue");
+    if (hue) {
+      let hues = JSON.parse(hue);
       return this.setState({
         hue: hues.hue,
-        hueVib: hues.vib,
-        hueVibN: hues.vibn
+        hueVib: hues.hueVib,
+        hueVibN: hues.hueVibN
       });
-    return null;
+    } else {
+      return null;
+    }
   };
 
   getFeeds = async id => {
@@ -641,16 +609,17 @@ class User extends Component {
         }
         const v = allVal.val();
 
-        const thisUser = this.state.data ? this.state.data.userID : !isEmpty(this.props.profile) ? this.props.profile.userID : null;
+        const thisUser = this.state.data
+          ? this.state.data.userID
+          : !isEmpty(this.props.profile) ? this.props.profile.userID : null;
 
         if (!thisUser) {
           return;
         } else {
-         let userFeeds = Object.values(v).filter(s => s.user.id === thisUser);
-         this.setState({userFeeds});
+          let userFeeds = Object.values(v).filter(s => s.user.id === thisUser);
+          this.setState({ userFeeds });
         }
-      }
-      );
+      });
     } catch (error) {
       return console.error(error);
     }
@@ -804,8 +773,7 @@ class User extends Component {
                 style={{ width: 400, flexGrow: 0, marginRight: 24 }}
                 xs
               >
-                <div
-                >
+                <div>
                   <M.Avatar
                     src={data ? data.avatar : user.avatar}
                     className={classes.artwork}
@@ -915,14 +883,16 @@ class User extends Component {
                       : lang.user.addfriend}
                   </M.Button>
                 ) : null}
-                {!data && !isEmpty(user) && user.role === 'Normal' ? null : <M.IconButton
-                  color="default"
-                  aria-owns={openMenu ? "more-menu" : null}
-                  aria-haspopup="true"
-                  onClick={e => this.setState({ menuEl: e.currentTarget })}
-                >
-                  <Icon.MoreVert />
-                </M.IconButton>}
+                {!data && !isEmpty(user) && user.role === "Normal" ? null : (
+                  <M.IconButton
+                    color="default"
+                    aria-owns={openMenu ? "more-menu" : null}
+                    aria-haspopup="true"
+                    onClick={e => this.setState({ menuEl: e.currentTarget })}
+                  >
+                    <Icon.MoreVert />
+                  </M.IconButton>
+                )}
                 <M.Menu
                   id="more-menu"
                   anchorEl={menuEl}
@@ -1033,62 +1003,82 @@ class User extends Component {
                               {lang.user.noact}
                             </M.Typography>
                           )
-                        ) : !isEmpty(user) && user.feed ? Object.values(user.feed).sort((a,b) => b.date - a.date).map((feed, index) => {
-                            if (feed.user.username === undefined) // It's an update.
-                              return <Feed
-                              key={index}
-                              ftitle={feed.name}
-                              context={'MIRAI UPDATE'}
-                              text={feed.context}
-                              date={feed.date}
-                              avatar={feed.user.image}
-                              id={feed.id}
-                              user={feed.user}
-                              mirUpdate
-                              noActions
-                              color={hue}
-                            />
-                            else if (feed.context === 'INTRO') // It's an intro feed
-                            return <Feed
-                              key={index}
-                              ftitle={feed.user.username}
-                              context={feed.context}
-                              text={feed.text}
-                              date={feed.date}
-                              avatar={feed.user.avatar}
-                              image={feed.image}
-                              id={feed.id}
-                              user={feed.user}
-                              noDelete
-                              noActions
-                              color={hue}
-                            />
-                            else if (feed.type) // It's an activity feed
-                            return <Feed
-                            key={index}
-                            ftitle={feed.user.username}
-                            context={feed.activity}
-                            date={feed.date}
-                            avatar={feed.user.avatar}
-                            id={feed.id}
-                            image={feed.coverImg}
-                            user={{avatar: feed.user.avatar, id: feed.user.userID, username: feed.user.username}}
-                            color={hue}
-                            activity
-                            noActions />
-                            else // It's an user-made feed
-                              return <Feed
-                              key={index}
-                              ftitle={feed.user.username}
-                              context={feed.context}
-                              text={feed.text}
-                              date={feed.date}
-                              avatar={feed.user.avatar}
-                              image={feed.image}
-                              id={feed.id}
-                              user={feed.user}
-                              color={hue}
-                            />}
+                        ) : !isEmpty(user) && user.feed ? (
+                          Object.values(user.feed)
+                            .sort((a, b) => b.date - a.date)
+                            .map((feed, index) => {
+                              if (feed.user.username === undefined)
+                                // It's an update.
+                                return (
+                                  <Feed
+                                    key={index}
+                                    ftitle={feed.name}
+                                    context={"MIRAI UPDATE"}
+                                    text={feed.context}
+                                    date={feed.date}
+                                    avatar={feed.user.image}
+                                    id={feed.id}
+                                    user={feed.user}
+                                    mirUpdate
+                                    noActions
+                                    color={hue}
+                                  />
+                                );
+                              else if (feed.context === "INTRO")
+                                // It's an intro feed
+                                return (
+                                  <Feed
+                                    key={index}
+                                    ftitle={feed.user.username}
+                                    context={feed.context}
+                                    text={feed.text}
+                                    date={feed.date}
+                                    avatar={feed.user.avatar}
+                                    image={feed.image}
+                                    id={feed.id}
+                                    user={feed.user}
+                                    noDelete
+                                    noActions
+                                    color={hue}
+                                  />
+                                );
+                              else if (feed.type)
+                                // It's an activity feed
+                                return (
+                                  <Feed
+                                    key={index}
+                                    ftitle={feed.user.username}
+                                    context={feed.activity}
+                                    date={feed.date}
+                                    avatar={feed.user.avatar}
+                                    id={feed.id}
+                                    image={feed.coverImg}
+                                    user={{
+                                      avatar: feed.user.avatar,
+                                      id: feed.user.userID,
+                                      username: feed.user.username
+                                    }}
+                                    color={hue}
+                                    activity
+                                    noActions
+                                  />
+                                ); // It's an user-made feed
+                              else
+                                return (
+                                  <Feed
+                                    key={index}
+                                    ftitle={feed.user.username}
+                                    context={feed.context}
+                                    text={feed.text}
+                                    date={feed.date}
+                                    avatar={feed.user.avatar}
+                                    image={feed.image}
+                                    id={feed.id}
+                                    user={feed.user}
+                                    color={hue}
+                                  />
+                                );
+                            })
                         ) : (
                           <M.Typography variant="body1">
                             {lang.user.noact}
@@ -1366,32 +1356,37 @@ class User extends Component {
                   </M.Grid>
                 </M.Grid>
                 <Container>
-                    <ItemContainer>
-                      {userFeeds &&
-                        Object.values(userFeeds)
-                          .filter(
-                            u => (u.user.id === data ? data.id : user.userID)
-                          ).length > 0 ?
-                          Object.values(userFeeds)
-                          .filter(
-                            u => (u.user.id === data ? data.id : user.userID)
-                          )
-                          .sort((a, b) => b.date - a.date)
-                          .map((feed, index) => (
-                            <Feed
+                  <ItemContainer>
+                    {userFeeds &&
+                    Object.values(userFeeds).filter(
+                      u => (u.user.id === data ? data.id : user.userID)
+                    ).length > 0 ? (
+                      Object.values(userFeeds)
+                        .filter(
+                          u => (u.user.id === data ? data.id : user.userID)
+                        )
+                        .sort((a, b) => b.date - a.date)
+                        .map((feed, index) => (
+                          <Feed
                             color={hue}
-                              key={index}
-                              ftitle={feed.user.username}
-                              context={feed.context}
-                              text={feed.text}
-                              date={feed.date}
-                              avatar={feed.user.avatar}
-                              image={feed.image}
-                              id={feed.id}
-                              user={feed.user}
-                            />
-                          )) : <SectionTitle title='No feeds to be found... antisocial?' lighter />}
-                    </ItemContainer>
+                            key={index}
+                            ftitle={feed.user.username}
+                            context={feed.context}
+                            text={feed.text}
+                            date={feed.date}
+                            avatar={feed.user.avatar}
+                            image={feed.image}
+                            id={feed.id}
+                            user={feed.user}
+                          />
+                        ))
+                    ) : (
+                      <SectionTitle
+                        title="No feeds to be found... antisocial?"
+                        lighter
+                      />
+                    )}
+                  </ItemContainer>
                 </Container>
                 <Container>
                   <Column>
@@ -1543,7 +1538,7 @@ class User extends Component {
                     <M.Typography vairant="title" className={classes.secTitle}>
                       {lang.user.animeList.compl}
                     </M.Typography>
-                     <M.Grid container className={classes.itemcontainer}>
+                    <M.Grid container className={classes.itemcontainer}>
                       {data ? (
                         data.episodeProgress ? (
                           Object.values(data.episodeProgress)
@@ -1555,17 +1550,17 @@ class User extends Component {
                             )
                             .map(show => (
                               <CardButton
-                              key={show.showId}
-                              onClick={() =>
-                                this.props.history.push(
-                                  `/show?s=${show.showId}`
-                                )
-                              }
-                              title={show.title}
-                              image={show.showArtwork}
-                              subtitle={`Completed ${moment(show.recentlyWatched).from(
-                                Date.now()
-                              )}`}
+                                key={show.showId}
+                                onClick={() =>
+                                  this.props.history.push(
+                                    `/show?s=${show.showId}`
+                                  )
+                                }
+                                title={show.title}
+                                image={show.showArtwork}
+                                subtitle={`Completed ${moment(
+                                  show.recentlyWatched
+                                ).from(Date.now())}`}
                               />
                             ))
                         ) : (
@@ -1578,22 +1573,20 @@ class User extends Component {
                           .filter(s => s.recentlyWatched)
                           .filter(u => !u.isOngoing)
                           .filter(x => x.ep === x.eps.length - 1)
-                          .sort(
-                            (a, b) => b.recentlyWatched - a.recentlyWatched
-                          )
+                          .sort((a, b) => b.recentlyWatched - a.recentlyWatched)
                           .map(show => (
                             <CardButton
-                            key={show.showId}
-                            onClick={() =>
-                              this.props.history.push(
-                                `/show?s=${show.showId}`
-                              )
-                            }
-                            title={show.title}
-                            image={show.showArtwork}
-                            subtitle={`Completed ${moment(show.recentlyWatched).from(
-                              Date.now()
-                            )}`}
+                              key={show.showId}
+                              onClick={() =>
+                                this.props.history.push(
+                                  `/show?s=${show.showId}`
+                                )
+                              }
+                              title={show.title}
+                              image={show.showArtwork}
+                              subtitle={`Completed ${moment(
+                                show.recentlyWatched
+                              ).from(Date.now())}`}
                             />
                           ))
                       ) : (

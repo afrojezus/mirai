@@ -143,16 +143,7 @@ const styles = theme => ({
   drawerToolbar: theme.mixins.toolbar,
   drawer: {
     width: drawerWidth,
-    height: "100%",
-    background:
-      window.safari && window.navigator.userAgent.indexOf("Edge") > -1
-        ? "rgba(0,0,0,.1)"
-        : "#111",
-    backdropFilter: "blur(10px)",
-    boxShadow:
-      window.safari && window.navigator.userAgent.indexOf("Edge") > -1
-        ? "none"
-        : null
+    height: "100%"
   },
   drawerBg: {},
   drawerDocked: {
@@ -241,7 +232,7 @@ const styles = theme => ({
     fontWeight: 700,
     padding: theme.spacing.unit * 3,
     fontSize: theme.typography.pxToRem(12),
-    color: grey[800],
+    color: "rgba(255,255,255, .7)",
     [theme.breakpoints.up("md")]: {
       padding: theme.spacing.unit * 2
     }
@@ -415,7 +406,6 @@ class Superbar extends Component {
 
   componentDidMount = async () => {
     window.addEventListener("scroll", this.handleScroll);
-    this.vibrance();
     await this.getUsersOnline();
   };
 
@@ -431,6 +421,20 @@ class Superbar extends Component {
   componentWillUnmount = () => {
     window.removeEventListener("scroll", this.handleScroll);
     this.listenToHistory();
+  };
+
+  getColors = () => {
+    const hue = localStorage.getItem("user-hue");
+    if (hue) {
+      let hues = JSON.parse(hue);
+      return this.setState({
+        hue: hues.hue,
+        hueVib: hues.hueVib,
+        hueVibN: hues.hueVibN
+      });
+    } else {
+      return null;
+    }
   };
 
   handleScroll = event => {
@@ -623,47 +627,21 @@ class Superbar extends Component {
     }
   });
 
+  shouldComponentUpdate = (nextProps, nextState) => {
+    if (this.state !== nextState) {
+      return true;
+    }
+
+    if (this.props !== nextProps) {
+      return true;
+    }
+
+    return false;
+  };
+
   revealBar = () => document.getElementById("superBar").style.opacity === 1;
 
   hideBar = () => document.getElementById("superBar").style.opacity === 0;
-
-  vibrance = async () => {
-    const image = this.props.profile ? this.props.profile.avatar : null;
-    const hues = await localForage.getItem("user-hue");
-
-    if (image && !hues)
-      Vibrant.from(`https://cors-anywhere.herokuapp.com/${image}`).getPalette(
-        (err, pal) => {
-          if (pal) {
-            this.setState({
-              hue: pal.DarkMuted && pal.DarkMuted.getHex(),
-              hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
-              hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
-            });
-          }
-        }
-      );
-    else if (image && hues && hues.image !== image)
-      Vibrant.from(`https://cors-anywhere.herokuapp.com/${image}`).getPalette(
-        (err, pal) => {
-          if (pal) {
-            this.setState({
-              hue: pal.DarkMuted && pal.DarkMuted.getHex(),
-              hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
-              hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
-            });
-          }
-        }
-      );
-    else if (image && hues)
-      this.setState({
-        hue: hues.hue,
-        hueVib: hues.vib,
-        hueVibN: hues.vibn
-      });
-
-    setTimeout(() => this.setState({ loading: false }), 200);
-  };
 
   handleMenuOver = () =>
     this.setState({ userMenuHover: !this.state.userMenuHover });
@@ -813,6 +791,7 @@ class Superbar extends Component {
             </ListItem>
             <ListItem
               button
+              disabled={!user}
               onClick={() => {
                 this.toggleDrawer();
                 this.tabChange(null, 2);
@@ -933,15 +912,14 @@ class Superbar extends Component {
           id="superBar"
           classes={{ root: classes.root }}
           className={
-            scrolling &&
-            !window.safari
-              ? classes.appBar
-              : classes.appBarTop
+            scrolling && !window.safari ? classes.appBar : classes.appBarTop
           }
           style={
             watchIsOn
               ? { display: "none" }
-              : { transform: "translate3d(0,0,0)" }
+              : scrolling && !window.safari
+                ? { background: hue ? hue : null }
+                : null
           }
         >
           {window.safari ? null : (
@@ -1002,6 +980,7 @@ class Superbar extends Component {
                 label={lang.superbar.rankings}
               />
               <Tab
+                disabled={!user}
                 icon={<LiveTvIcon />}
                 classes={{
                   root: classes.tab,
@@ -1126,7 +1105,8 @@ class Superbar extends Component {
                   style: {
                     maxHeight: window.innerHeight / 1.05,
                     overflowY: "auto",
-                    zIndex: 2000
+                    zIndex: 2000,
+                    background: hue ? hue : null
                   }
                 }}
                 onClose={this.handleRequestClose}
@@ -1138,7 +1118,7 @@ class Superbar extends Component {
                 >
                   <CardHeader
                     className={classes.profileCardHeader}
-                    style={{cursor: user ? 'pointer' : null}}
+                    style={{ cursor: user ? "pointer" : null }}
                     onClick={() => {
                       if (user) {
                         this.handleRequestClose();
@@ -1157,7 +1137,7 @@ class Superbar extends Component {
                           classes={{ img: classes.avatarImg }}
                           className={classes.avatar}
                           imgProps={{
-                            style: { opacity: 0 },
+                            style: { opacity: 0, borderRadius: "50%" },
                             onLoad: e => (e.currentTarget.style.opacity = null)
                           }}
                         />
@@ -1224,18 +1204,20 @@ class Superbar extends Component {
                           primary={lang.superbar.usermenu.developerDb}
                         />
                       </ListItem>
-                      {this.props.profile.isDeveloper ? <ListItem
-                      button
-                      onClick={() => {
-                        this.handleRequestClose();
-                        this.props.history.push("/dev/player");
-                      }}
-                      x
-                    >
-                      <ListItemText
-                        primary={lang.superbar.usermenu.developerMedia}
-                      />
-                    </ListItem> : null}
+                      {this.props.profile.isDeveloper ? (
+                        <ListItem
+                          button
+                          onClick={() => {
+                            this.handleRequestClose();
+                            this.props.history.push("/dev/player");
+                          }}
+                          x
+                        >
+                          <ListItemText
+                            primary={lang.superbar.usermenu.developerMedia}
+                          />
+                        </ListItem>
+                      ) : null}
                       <Divider />
                     </List>
                   ) : null}
@@ -1263,6 +1245,7 @@ class Superbar extends Component {
                             .then(async () =>
                               localForage.removeItem("user", async () => {
                                 this.tabChange(null, 3);
+                                localStorage.removeItem("user-hue");
                                 this.props.history.push("/setup");
                                 await localForage.removeItem("player-state");
                               })

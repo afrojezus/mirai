@@ -28,8 +28,8 @@ import Anilist from "../anilist-api";
 import { bigFuckingQuery, bigFuckingQueryM } from "../anilist-api/queries";
 import Hidden from "material-ui/Hidden";
 import { FeedMaker, Feed } from "../components/feed";
-import Select from 'material-ui/Select';
-import {MenuItem } from 'material-ui/Menu'
+import Select from "material-ui/Select";
+import { MenuItem } from "material-ui/Menu";
 
 const styles = theme => ({
   root: {
@@ -349,105 +349,28 @@ class Home extends Component {
 
   componentDidMount = () => {
     this.feedsObserve();
-    this.rankingsObserve();
-    return this.getColors()
-      .then(() => this.fetchOngoing())
-      .then(() => this.setState({ loading: false }))
-      .catch(error => console.error(error));
+    this.getColors();
+    this.setState({ loading: false });
   };
   componentWillUnmount = () => {};
 
-  getColors = async () => {
-    const hues = await localForage.getItem("user-hue");
-    if (!hues) {
-      if (!isEmpty(this.props.profile) && this.props.profile.headers) {
-        return Colorizer(
-          `https://cors-anywhere.herokuapp.com/${this.props.profile.headers}`
-        ).then(pal => {
-          return this.setState(
-            {
-              hue: pal.DarkMuted && pal.DarkMuted.getHex(),
-              hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
-              hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
-            },
-            async () => {
-              await localForage.setItem("user-hue", {
-                hue: this.state.hue,
-                vib: this.state.hueVib,
-                vibn: this.state.hueVibN
-              });
-            }
-          );
-        });
-      } else {
-        return this.setState({
-          hue: "#002656",
-          hueVib: "#1ba0e1",
-          hueVibN: "#000b17"
-        });
-      }
+  getColors = () => {
+    const hue = localStorage.getItem("user-hue");
+    if (hue) {
+      let hues = JSON.parse(hue);
+      return this.setState({
+        hue: hues.hue,
+        hueVib: hues.hueVib,
+        hueVibN: hues.hueVibN
+      });
     } else {
-      if (!isEmpty(this.props.profile)) {
-        return this.setState({
-          hue: hues.hue,
-          hueVib: hues.vib,
-          hueVibN: hues.vibn
-        });
-      } else {
-        await localForage.removeItem("user-hue");
-        return this.setState({
-          hue: "#002656",
-          hueVib: "#1ba0e1",
-          hueVibN: "#000b17"
-        });
-      }
+      return null;
     }
   };
-
-  fetchOngoing = async () => {
-    const ongoing = await Anilist.get(bigFuckingQuery, {
-      page: 1,
-      isAdult: false,
-      sort: ["POPULARITY_DESC"],
-      status: "RELEASING"
-    });
-
-    const ongoingM = await Anilist.get(bigFuckingQueryM, {
-      page: 1,
-      isAdult: false,
-      sort: ["POPULARITY_DESC"],
-      status: "RELEASING"
-    });
-
-    try {
-      if (ongoing && ongoingM)
-        return this.setState({
-          ongoing,
-          ongoingM
-        });
-    } catch (error) {
-      console.error(error);
-    }
-    return null;
-  };
-
-  rankingsObserve = () =>
-    this.props.firebase
-      .ref("rankings")
-      .child("collections")
-      .on("value", mentionables =>
-        this.setState({
-          rankingMentionable: Object.values(mentionables.val())
-        })
-      );
 
   feedsObserve = () => {
-    return this.props.firebase
-      .ref("social")
-      .on("value", feed => {
-      return this.props.firebase
-      .ref("users")
-      .on("value", usersR => {
+    return this.props.firebase.ref("social").on("value", feed => {
+      return this.props.firebase.ref("users").on("value", usersR => {
         if (!feed) {
           return null;
         }
@@ -457,31 +380,40 @@ class Home extends Component {
         // Get users
         const usersync = usersR.val();
         // Get activity feed from users
-        const users = Object.values(usersync).filter(x => x.feed).map((f) => f.feed);
-        const userFeedArray = users.map((s) => Object.values(s));
+        const users = Object.values(usersync)
+          .filter(x => x.feed)
+          .map(f => f.feed);
+        const userFeedArray = users.map(s => Object.values(s));
         // THIS SHIT IS GIVING ME HEADACHES.
         let userFeeds = [];
         userFeedArray.map(a => a.map(s => userFeeds.push(s)));
         // Make sure there ain't duplicates
-        const activities = Object.values(userFeeds).filter((a) => userFeeds.map(s => !s.activity));
+        const activities = Object.values(userFeeds).filter(a =>
+          userFeeds.map(s => !s.activity)
+        );
 
         // Group them together in one fuckfeed
-        let feeds = [...Object.values(feedsync.byusers), ...feedsync.public_feed, ...activities];
+        let feeds = [
+          ...Object.values(feedsync.byusers),
+          ...feedsync.public_feed,
+          ...activities
+        ];
 
         feeds.sort((a, b) => b.date - a.date);
 
-        return this.setState({feeds: feeds});
-      })});
-  }
+        return this.setState({ feeds: feeds });
+      });
+    });
+  };
 
   openEntity = link => this.props.changePage(link);
 
   easterEggOne = () => this.setState({ es: !this.state.es });
 
-  filterFeed = (e) => this.setState({filterFeedVal: e.target.value});
+  filterFeed = e => this.setState({ filterFeedVal: e.target.value });
 
   componentDidCatch(error, info) {
-    console.log(error, info)
+    console.log(error, info);
   }
 
   render() {
@@ -503,104 +435,128 @@ class Home extends Component {
       <div>
         <LoadingIndicator loading={loading} />
         {!isEmpty(user) && user.headers ? (
-          <Header image={user.headers} color={hueVibN} />
+          <Header image={user.headers} color={hue} />
         ) : null}
         <div className={classes.frame}>
-          {/* <div className={classes.topHeaderBig}>
-            <Grid container spacing={16} className={classes.container}>
-              <Grid item xs className={classes.itemContainer}>
-                <Typography type="title" className={classes.headlineTitle}>
-                  {user && user.username
-                    ? "Welcome to the Mirai Preview Program, " + user.username
-                    : "What once started with Y now starts with M."}
-                </Typography>
-              </Grid>
-            </Grid>
-          </div> */}
           <TitleHeader
-            color={hue !== "#111" ? hue : null}
-            title={
-              !isEmpty(this.props.profile)
-                ? `${lang.home.welcomeuser}, ${this.props.profile.username}.`
-                : lang.home.welcomeanon
-            }
-            subtitle={lang.home.welcomeSubtitle}
+            title={!isEmpty(user) ? null : lang.home.welcomeanon}
+            color={hue !== "#111" ? hue : "#111"}
           />
           <Root>
-            <Container hasHeader spacing={16}>
-            <Hidden mdDown><Grid item xs={3}>
-            <SectionTitle title='Sample text' />
-            </Grid></Hidden>
+            <Container hasHeader={!isEmpty(user) ? false : true} spacing={16}>
+              <Hidden mdDown>
+                <Grid item xs={3}>
+                  <SectionTitle title="Sample text" />
+                </Grid>
+              </Hidden>
               <Grid item xs>
                 <FeedMaker color={hue} />
-                <Container style={{padding: 8}}>
-                <SectionTitle title={lang.home.feeds} noPad />
-                  <div style={{flex: 1}} />
+                <Container style={{ padding: 8 }}>
+                  <SectionTitle title={lang.home.feeds} noPad />
+                  <div style={{ flex: 1 }} />
                   <form>
-                  <Select value={filterFeedVal} onChange={this.filterFeed}>
-                  <MenuItem value={0}>All</MenuItem>
-                  <MenuItem value={1}>Only posts</MenuItem>
-                  <MenuItem value={2}>Only activities</MenuItem>
-                  </Select>
+                    <Select value={filterFeedVal} onChange={this.filterFeed}>
+                      <MenuItem value={0}>All</MenuItem>
+                      <MenuItem value={1}>Only posts</MenuItem>
+                      <MenuItem value={2}>Only activities</MenuItem>
+                    </Select>
                   </form>
                 </Container>
-                {feeds ? feeds.map((feed, index) => {
-                  if (feed.user.username === undefined) // It's an update.
-                    return <Feed
-                    key={index}
-                    ftitle={feed.name}
-                    context={'MIRAI UPDATE'}
-                    text={feed.context}
-                    date={feed.date}
-                    avatar={feed.user.image}
-                    id={feed.id}
-                    user={feed.user}
-                    mirUpdate
-                    noActions
-                    color={hue}
-                  />
-                  else if (feed.context === 'INTRO') // It's an intro feed
-                  return <Feed
-                    key={index}
-                    ftitle={feed.user.username}
-                    context={feed.context}
-                    text={feed.text}
-                    date={feed.date}
-                    avatar={feed.user.avatar}
-                    image={feed.image}
-                    id={feed.id}
-                    user={feed.user}
-                    noDelete
-                    noActions
-                    color={hue}
-                  />
-                  else if (feed.type) // It's an activity feed
-                  return <Feed
-                  key={index}
-                  ftitle={feed.user.username}
-                  context={feed.activity}
-                  date={feed.date}
-                  avatar={feed.user.avatar}
-                  id={feed.id}
-                  image={feed.coverImg}
-                  user={{avatar: feed.user.avatar, id: feed.user.userID, username: feed.user.username}}
-                  color={hue}
-                  activity
-                  noActions />
-                  else // It's an user-made feed
-                    return <Feed
-                    key={index}
-                    ftitle={feed.user.username}
-                    context={feed.context}
-                    text={feed.text}
-                    date={feed.date}
-                    avatar={feed.user.avatar}
-                    image={feed.image}
-                    id={feed.id}
-                    user={feed.user}
-                    color={hue}
-                  />
-                }) : <SectionTitle title='Nobody has said anything...' lighter />}
+                {feeds &&
+                feeds.filter(
+                  o =>
+                    filterFeedVal === 0
+                      ? o
+                      : filterFeedVal === 1
+                        ? !o.type
+                        : filterFeedVal === 2 ? o.type : null
+                ).length > 0 ? (
+                  feeds
+                    .filter(
+                      o =>
+                        filterFeedVal === 0
+                          ? o
+                          : filterFeedVal === 1
+                            ? !o.type
+                            : filterFeedVal === 2 ? o.type : null
+                    )
+                    .map((feed, index) => {
+                      if (feed.user.username === undefined)
+                        // It's an update.
+                        return (
+                          <Feed
+                            key={index}
+                            ftitle={feed.name}
+                            context={"MIRAI UPDATE"}
+                            text={feed.context}
+                            date={feed.date}
+                            avatar={feed.user.image}
+                            id={feed.id}
+                            user={feed.user}
+                            mirUpdate
+                            noActions
+                            color={hue}
+                          />
+                        );
+                      else if (feed.context === "INTRO")
+                        // It's an intro feed
+                        return (
+                          <Feed
+                            key={index}
+                            ftitle={feed.user.username}
+                            context={feed.context}
+                            text={feed.text}
+                            date={feed.date}
+                            avatar={feed.user.avatar}
+                            image={feed.image}
+                            id={feed.id}
+                            user={feed.user}
+                            noDelete
+                            noActions
+                            color={hue}
+                          />
+                        );
+                      else if (feed.type)
+                        // It's an activity feed
+                        return (
+                          <Feed
+                            key={index}
+                            ftitle={feed.user.username}
+                            context={feed.activity}
+                            date={feed.date}
+                            avatar={feed.user.avatar}
+                            showId={feed.showId}
+                            id={feed.id}
+                            image={feed.coverImg}
+                            user={{
+                              avatar: feed.user.avatar,
+                              id: feed.user.userID,
+                              username: feed.user.username
+                            }}
+                            color={hue}
+                            activity
+                            noActions
+                          />
+                        ); // It's an user-made feed
+                      else
+                        return (
+                          <Feed
+                            key={index}
+                            ftitle={feed.user.username}
+                            context={feed.context}
+                            text={feed.text}
+                            date={feed.date}
+                            avatar={feed.user.avatar}
+                            image={feed.image}
+                            id={feed.id}
+                            user={feed.user}
+                            color={hue}
+                          />
+                        );
+                    })
+                ) : (
+                  <SectionTitle title="Nobody has said anything..." lighter />
+                )}
               </Grid>
               <Grid item xs={3}>
                 {!isEmpty(user) &&

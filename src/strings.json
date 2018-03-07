@@ -81,8 +81,7 @@
       "avatar": "Avatar",
       "avaaccept": "Use as avatar",
       "bg": "Background",
-      "bgdesc":
-        "The background also changes the accent color of your personalized home.",
+      "bgdesc": "The background also changes the accent color of the UI",
       "bgaccept": "Use as background",
       "nickname": "Nickname",
       "nickplaceholder": "Pick a decent nick... can be anything!",
@@ -310,7 +309,7 @@
       "avatar": "Avatar",
       "avaaccept": "Bruk som avatar",
       "bg": "Bakgrunn",
-      "bgdesc": "Bakgrunnen endrer også fargepalettet til hjemmesiden din.",
+      "bgdesc": "Bakgrunnen endrer også fargepalettet til brukergrensesnittet",
       "bgaccept": "Bruk som bakgrunn",
       "nickname": "Kallenavn",
       "nickplaceholder":
