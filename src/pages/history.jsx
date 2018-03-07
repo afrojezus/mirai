@@ -276,21 +276,18 @@ class History extends Component {
 										<ItemContainer>
 											{Object.values(user.feed)
 												.sort((a, b) => b.date - a.date)
-												.map((act, index) => (
+												.map((feed, index) => (
 													<Feed
-														title={'Activity'}
-														avatar={act.coverImg}
-														context={act.type}
-														noActions
-														id={index}
-														text={act.activity}
-														date={act.date}
-														key={index}
-														style={{
-															width: 450,
-															flexBasis: 'initial',
-														}}
-													/>
+                  key={index}
+                  ftitle={feed.user.username}
+                  context={feed.activity}
+                  date={feed.date}
+                  avatar={feed.user.avatar}
+                  id={feed.id}
+                  image={feed.coverImg}
+                  user={{avatar: feed.user.avatar, id: feed.user.userID, username: feed.user.username}}
+                  activity
+                  noActions />
 												))}
 										</ItemContainer>
 									</div>

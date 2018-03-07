@@ -27,7 +27,9 @@ import SuperTable from "../components/supertable";
 import Anilist from "../anilist-api";
 import { bigFuckingQuery, bigFuckingQueryM } from "../anilist-api/queries";
 import Hidden from "material-ui/Hidden";
-import { FeedMaker } from "../components/feed";
+import { FeedMaker, Feed } from "../components/feed";
+import Select from 'material-ui/Select';
+import {MenuItem } from 'material-ui/Menu'
 
 const styles = theme => ({
   root: {
@@ -336,7 +338,8 @@ class Home extends Component {
     hue: "#111",
     hueVib: "#111",
     hueVibN: "#111",
-    lang: strings.enus
+    lang: strings.enus,
+    filterFeedVal: 0
   };
 
   componentWillMount = () => {
@@ -438,15 +441,49 @@ class Home extends Component {
         })
       );
 
-  feedsObserve = () =>
-    this.props.firebase
+  feedsObserve = () => {
+    return this.props.firebase
       .ref("social")
-      .child("public_feed")
-      .on("value", feed => this.setState({ feeds: Object.values(feed.val()) }));
+      .on("value", feed => {
+      return this.props.firebase
+      .ref("users")
+      .on("value", usersR => {
+        if (!feed) {
+          return null;
+        }
+
+        // Get all 'social' feeds
+        const feedsync = feed.val();
+        // Get users
+        const usersync = usersR.val();
+        // Get activity feed from users
+        const users = Object.values(usersync).filter(x => x.feed).map((f) => f.feed);
+        const userFeedArray = users.map((s) => Object.values(s));
+        // THIS SHIT IS GIVING ME HEADACHES.
+        let userFeeds = [];
+        userFeedArray.map(a => a.map(s => userFeeds.push(s)));
+        // Make sure there ain't duplicates
+        const activities = Object.values(userFeeds).filter((a) => userFeeds.map(s => !s.activity));
+
+        // Group them together in one fuckfeed
+        let feeds = [...Object.values(feedsync.byusers), ...feedsync.public_feed, ...activities];
+
+        feeds.sort((a, b) => b.date - a.date);
+
+        return this.setState({feeds: feeds});
+      })});
+  }
 
   openEntity = link => this.props.changePage(link);
 
   easterEggOne = () => this.setState({ es: !this.state.es });
+
+  filterFeed = (e) => this.setState({filterFeedVal: e.target.value});
+
+  componentDidCatch(error, info) {
+    console.log(error, info)
+  }
+
   render() {
     const { classes } = this.props;
     const {
@@ -457,7 +494,8 @@ class Home extends Component {
       rankingMentionable,
       hue,
       hueVibN,
-      lang
+      lang,
+      filterFeedVal
     } = this.state;
 
     const user = this.props.profile;
@@ -490,156 +528,79 @@ class Home extends Component {
           />
           <Root>
             <Container hasHeader spacing={16}>
+            <Hidden mdDown><Grid item xs={3}>
+            <SectionTitle title='Sample text' />
+            </Grid></Hidden>
               <Grid item xs>
-                <FeedMaker />
-                <Hidden smUp>
-                  <div style={{ width: "100%" }}>
-                    <ItemContainer spacing={0}>
-                      <SectionTitle title={lang.home.updates} />
-                      <Container spacing={16}>
-                        {feeds ? (
-                          <SuperTable
-                            data={feeds.sort((a, b) => b.date - a.date)}
-                            typeof="feeds"
-                            type="f"
-                          />
-                        ) : null}
-                      </Container>
-                    </ItemContainer>
-                  </div>
-                </Hidden>
-                {!isEmpty(user) && user.episodeProgress ? (
-                  <div style={{ width: "100%" }}>
-                    <Grid
-                      item
-                      xs
-                      className={classes.itemContainer}
-                      style={{
-                        flexDirection: "row",
-                        display: "flex"
-                      }}
-                    >
-                      <SectionTitle title={lang.home.animehistoryTitle} />
-                      <div style={{ flex: 1 }} />
-                      <Typography variant="title" className={classes.headline}>
-                        {Object.values(user.episodeProgress).length}{" "}
-                        {lang.home.animehistoryEstimate}
-                      </Typography>
-                      <IconButton
-                        onClick={() => this.props.history.push("/history")}
-                      >
-                        <ICON.History />
-                      </IconButton>
-                    </Grid>
-                    <Container spacing={16}>
-                      {user.episodeProgress ? (
-                        <SuperTable
-                          data={Object.values(user.episodeProgress)
-                            .filter(s => s.recentlyWatched)
-                            .sort(
-                              (a, b) => b.recentlyWatched - a.recentlyWatched
-                            )}
-                          limit={24}
-                          type="s"
-                          typeof="progress"
-                        />
-                      ) : (
-                        <SuperTable loading />
-                      )}
-                    </Container>
-                  </div>
-                ) : null}
-                <div style={{ width: "100%" }}>
-                  <Grid
-                    item
-                    xs
-                    className={classes.itemContainer}
-                    style={{
-                      flexDirection: "row",
-                      display: "flex"
-                    }}
-                  >
-                    <SectionTitle title={lang.home.collections} />
-                    <div style={{ flex: 1 }} />
-                  </Grid>
-                  <Container spacing={16}>
-                    {rankingMentionable ? (
-                      <SuperTable
-                        data={Object.values(rankingMentionable)}
-                        type="c"
-                        typeof="ranking"
-                        limit={12}
-                      />
-                    ) : (
-                      <SuperTable loading />
-                    )}
-                  </Container>
-                </div>
-                <div style={{ width: "100%" }}>
-                  <Grid
-                    item
-                    xs
-                    className={classes.itemContainer}
-                    style={{
-                      flexDirection: "row",
-                      display: "flex"
-                    }}
-                  >
-                    <SectionTitle title={lang.home.ongoingAnimeTitle} />
-                    <div style={{ flex: 1 }} />
-                    <Typography variant="title" className={classes.headline}>
-                      {this.props.mir &&
-                      this.props.mir.twist &&
-                      this.props.mir.twist.length > 0
-                        ? `${Object.values(this.props.mir.twist).filter(
-                            s => s.ongoing === true
-                          ).length - 1} ${lang.home.ongoingAnimeEstimate}`
-                        : null}
-                    </Typography>
-                  </Grid>
-                  <Container spacing={16}>
-                    {ongoing &&
-                    ongoing.data &&
-                    this.props.mir &&
-                    this.props.mir.twist &&
-                    this.props.mir.twist.length > 0 ? (
-                      <SuperTable
-                        data={Filter(
-                          ongoing.data.Page.media,
-                          this.props.mir.twist
-                        )
-                          .filter(s => s.nextAiringEpisode)
-                          .sort(
-                            (a, b) =>
-                              a.nextAiringEpisode.timeUntilAiring -
-                              b.nextAiringEpisode.timeUntilAiring
-                          )}
-                        type="s"
-                        typeof="ongoing"
-                        limit={12}
-                      />
-                    ) : (
-                      <SuperTable loading />
-                    )}
-                  </Container>
-                </div>
-                <div style={{ width: "100%" }}>
-                  <Grid item xs className={classes.itemContainer}>
-                    <SectionTitle title={lang.home.ongoingMangaTitle} />
-                  </Grid>
-                  <Container spacing={16}>
-                    {ongoingM && ongoingM.data ? (
-                      <SuperTable
-                        data={ongoingM.data.Page.media}
-                        type="m"
-                        typeof="ongoing"
-                        limit={12}
-                      />
-                    ) : (
-                      <SuperTable loading />
-                    )}
-                  </Container>
-                </div>
+                <FeedMaker color={hue} />
+                <Container style={{padding: 8}}>
+                <SectionTitle title={lang.home.feeds} noPad />
+                  <div style={{flex: 1}} />
+                  <form>
+                  <Select value={filterFeedVal} onChange={this.filterFeed}>
+                  <MenuItem value={0}>All</MenuItem>
+                  <MenuItem value={1}>Only posts</MenuItem>
+                  <MenuItem value={2}>Only activities</MenuItem>
+                  </Select>
+                  </form>
+                </Container>
+                {feeds ? feeds.map((feed, index) => {
+                  if (feed.user.username === undefined) // It's an update.
+                    return <Feed
+                    key={index}
+                    ftitle={feed.name}
+                    context={'MIRAI UPDATE'}
+                    text={feed.context}
+                    date={feed.date}
+                    avatar={feed.user.image}
+                    id={feed.id}
+                    user={feed.user}
+                    mirUpdate
+                    noActions
+                    color={hue}
+                  />
+                  else if (feed.context === 'INTRO') // It's an intro feed
+                  return <Feed
+                    key={index}
+                    ftitle={feed.user.username}
+                    context={feed.context}
+                    text={feed.text}
+                    date={feed.date}
+                    avatar={feed.user.avatar}
+                    image={feed.image}
+                    id={feed.id}
+                    user={feed.user}
+                    noDelete
+                    noActions
+                    color={hue}
+                  />
+                  else if (feed.type) // It's an activity feed
+                  return <Feed
+                  key={index}
+                  ftitle={feed.user.username}
+                  context={feed.activity}
+                  date={feed.date}
+                  avatar={feed.user.avatar}
+                  id={feed.id}
+                  image={feed.coverImg}
+                  user={{avatar: feed.user.avatar, id: feed.user.userID, username: feed.user.username}}
+                  color={hue}
+                  activity
+                  noActions />
+                  else // It's an user-made feed
+                    return <Feed
+                    key={index}
+                    ftitle={feed.user.username}
+                    context={feed.context}
+                    text={feed.text}
+                    date={feed.date}
+                    avatar={feed.user.avatar}
+                    image={feed.image}
+                    id={feed.id}
+                    user={feed.user}
+                    color={hue}
+                  />
+                }) : <SectionTitle title='Nobody has said anything...' lighter />}
               </Grid>
               <Grid item xs={3}>
                 {!isEmpty(user) &&

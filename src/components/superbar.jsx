@@ -31,7 +31,7 @@ import StarIcon from "material-ui-icons/Star";
 import Avatar from "material-ui/Avatar";
 import CompassIcon from "material-ui-icons/Explore";
 import ArrowBackIcon from "material-ui-icons/ArrowBack";
-import MoreVert from "material-ui-icons/MoreVert";
+import MoreVert from "material-ui-icons/MoreHoriz";
 import CloseIcon from "material-ui-icons/Close";
 import AppsIcon from "material-ui-icons/Apps";
 import strings from "../strings.json";
@@ -398,7 +398,7 @@ class Superbar extends Component {
     if (this.props.history.location.pathname === "/")
       this.setState({ tabVal: 0, currentPage: "Mirai" });
     else {
-      this.setState({ tabVal: 4 });
+      this.setState({ tabVal: 3 });
     }
 
     if (
@@ -530,93 +530,93 @@ class Superbar extends Component {
       case "/user":
         this.setState({
           currentPage: superbar.user,
-          tabVal: 4,
+          tabVal: 3,
           watchIsOn: false
         });
         break;
       case "/history":
         this.setState({
           currentPage: superbar.history,
-          tabVal: 4,
+          tabVal: 3,
           watchIsOn: false
         });
         break;
       case "/later":
         this.setState({
           currentPage: superbar.later,
-          tabVal: 4,
+          tabVal: 3,
           watchIsOn: false
         });
         break;
       case "/help":
         this.setState({
           currentPage: superbar.help,
-          tabVal: 4,
+          tabVal: 3,
           watchIsOn: false
         });
         break;
       case "/studio":
         this.setState({
           currentPage: "",
-          tabVal: 4,
+          tabVal: 3,
           watchIsOn: false
         });
         break;
       case "/fig":
         this.setState({
           currentPage: "",
-          tabVal: 4,
+          tabVal: 3,
           watchIsOn: false
         });
         break;
       case "/show":
         this.setState({
           currentPage: "",
-          tabVal: 4,
+          tabVal: 3,
           watchIsOn: false
         });
         break;
       case "/settings":
         this.setState({
           currentPage: superbar.usermenu.settings,
-          tabVal: 4,
+          tabVal: 3,
           watchIsOn: false
         });
         break;
       case "/setup":
-        this.setState({ currentPage: "Setup", tabVal: 4, watchIsOn: false });
+        this.setState({ currentPage: "Setup", tabVal: 3, watchIsOn: false });
         break;
       case "/wizard":
-        this.setState({ currentPage: "Wizard", tabVal: 4, watchIsOn: false });
+        this.setState({ currentPage: "Wizard", tabVal: 3, watchIsOn: false });
         break;
       case "/watch":
-        this.setState({ currentPage: "", tabVaL: 4, watchIsOn: true });
+        this.setState({ currentPage: "", tabVaL: 3, watchIsOn: true });
         break;
       case "/tag":
-        this.setState({ currentPage: "", tabVal: 4, watchIsOn: false });
+        this.setState({ currentPage: "", tabVal: 3, watchIsOn: false });
         break;
       case "/tou":
         this.setState({
           currentPage: superbar.termsofusage,
-          tabVal: 4,
+          tabVal: 3,
           watchIsOn: false
         });
         break;
       case "/monika":
-        this.setState({ currentPage: "Monika", tabVal: 4, watchIsOn: false });
+        this.setState({ currentPage: "Monika", tabVal: 3, watchIsOn: false });
         break;
       case "/search":
         this.setState({
           currentPage: superbar.search,
-          tabVal: 4,
+          tabVal: 3,
           watchIsOn: false
         });
         break;
       case "/dev/player":
-        this.setState({ currentPage: "Developer", tabVaL: 4 });
+        this.setState({ currentPage: "Developer", tabVaL: 3 });
         break;
       case "/admin/db":
-        this.setState({ currentPage: "Admin", tabVaL: 4 });
+        this.setState({ currentPage: "Admin", tabVaL: 3 });
         break;
       default:
         break;
@@ -714,7 +714,7 @@ class Superbar extends Component {
     const metaShit = (
       <div className={classes.metashit}>
         <Typography className={classes.footerCopy} variant="headline">
-          Mirai preview 3
+          Mirai p2 revo1
           <br />
           {onlineUsers ? Object.values(onlineUsers).length : 0} users online
           <br />
@@ -842,7 +842,7 @@ class Superbar extends Component {
                 onClick={() => {
                   this.handleRequestClose();
                   this.toggleDrawer();
-                  this.tabChange(null, 4);
+                  this.tabChange(null, 3);
                   this.props.history.push("/history");
                 }}
               >
@@ -853,7 +853,7 @@ class Superbar extends Component {
                 onClick={() => {
                   this.handleRequestClose();
                   this.toggleDrawer();
-                  this.tabChange(null, 4);
+                  this.tabChange(null, 3);
                   this.props.history.push("/later");
                 }}
               >
@@ -864,7 +864,7 @@ class Superbar extends Component {
                 onClick={() => {
                   this.handleRequestClose();
                   this.toggleDrawer();
-                  this.tabChange(null, 4);
+                  this.tabChange(null, 3);
                   this.props.history.push("/user#favorites");
                 }}
               >
@@ -880,7 +880,7 @@ class Superbar extends Component {
             onClick={() => {
               this.handleRequestClose();
               this.toggleDrawer();
-              this.tabChange(null, 4);
+              this.tabChange(null, 3);
               this.props.history.push("/help");
             }}
           >
@@ -901,7 +901,7 @@ class Superbar extends Component {
             onClick={() => {
               this.handleRequestClose();
               this.toggleDrawer();
-              this.tabChange(null, 4);
+              this.tabChange(null, 3);
               this.props.history.push("/tou");
             }}
           >
@@ -912,7 +912,7 @@ class Superbar extends Component {
             onClick={() => {
               this.handleRequestClose();
               this.toggleDrawer();
-              this.tabChange(null, 4);
+              this.tabChange(null, 3);
               this.props.history.push("/monika");
             }}
           >
@@ -934,7 +934,6 @@ class Superbar extends Component {
           classes={{ root: classes.root }}
           className={
             scrolling &&
-            !(window.navigator.userAgent.indexOf("Edge") > -1) &&
             !window.safari
               ? classes.appBar
               : classes.appBarTop
@@ -945,8 +944,7 @@ class Superbar extends Component {
               : { transform: "translate3d(0,0,0)" }
           }
         >
-          {window.safari &&
-          window.navigator.userAgent.indexOf("Edge") > -1 ? null : (
+          {window.safari ? null : (
             <div
               className={classes.gd}
               style={scrolling ? { opacity: 0 } : { opacity: 0.2 }}
@@ -1140,10 +1138,11 @@ class Superbar extends Component {
                 >
                   <CardHeader
                     className={classes.profileCardHeader}
+                    style={{cursor: user ? 'pointer' : null}}
                     onClick={() => {
                       if (user) {
                         this.handleRequestClose();
-                        this.tabChange(null, 4);
+                        this.tabChange(null, 3);
                         this.props.history.push("/user");
                       }
                       return null;
@@ -1173,7 +1172,7 @@ class Superbar extends Component {
                         <Button
                           onClick={() => {
                             this.handleRequestClose();
-                            this.tabChange(null, 4);
+                            this.tabChange(null, 3);
                             this.props.history.push("/setup");
                           }}
                         >
@@ -1225,6 +1224,18 @@ class Superbar extends Component {
                           primary={lang.superbar.usermenu.developerDb}
                         />
                       </ListItem>
+                      {this.props.profile.isDeveloper ? <ListItem
+                      button
+                      onClick={() => {
+                        this.handleRequestClose();
+                        this.props.history.push("/dev/player");
+                      }}
+                      x
+                    >
+                      <ListItemText
+                        primary={lang.superbar.usermenu.developerMedia}
+                      />
+                    </ListItem> : null}
                       <Divider />
                     </List>
                   ) : null}
@@ -1235,7 +1246,7 @@ class Superbar extends Component {
                         button
                         onClick={() => {
                           this.handleRequestClose();
-                          this.tabChange(null, 4);
+                          this.tabChange(null, 3);
                           this.props.history.push("/settings");
                         }}
                       >
@@ -1251,7 +1262,7 @@ class Superbar extends Component {
                             .logout()
                             .then(async () =>
                               localForage.removeItem("user", async () => {
-                                this.tabChange(null, 4);
+                                this.tabChange(null, 3);
                                 this.props.history.push("/setup");
                                 await localForage.removeItem("player-state");
                               })

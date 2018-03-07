@@ -141,12 +141,13 @@ const getSource = async (parent, data) => {
 		showDesc: data.meta.description,
 		showHeaders: data.meta.bannerImage
 			? data.meta.bannerImage
-			: data.meta.coverImage.large,
+			: data.meta.coverImage.large
 	});
 	const correctedtitle = data.meta.title.romaji.toLowerCase();
 	const meta = Object.values(parent.props.mir.twist).filter(s =>
 		s.name.toLowerCase().match(`${correctedtitle}`)
 	);
+	parent.setState({isOngoing: meta && meta[0].ongoing});
 	try {
 		if (data.eps) {
 			// console.log(data.eps);

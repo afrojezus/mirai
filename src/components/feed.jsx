@@ -24,7 +24,7 @@ import IconButton from "material-ui/IconButton";
 import { guid } from "../utils/uuid";
 import Tooltip from "material-ui/Tooltip/Tooltip";
 
-const feedWidth = 450;
+const feedWidth = '100%';
 const feedHeight = 60;
 
 const style = theme => ({
@@ -38,7 +38,14 @@ const style = theme => ({
   },
   card: {
     boxSizing: "border-box",
-    padding: theme.spacing.unit
+    // background: '#fafafa',
+    border: '1px solid rgba(255,255,255,.1)'
+  },
+  cardcontent: {
+    boxSizing: "border-box",    
+    padding: theme.spacing.unit * 2
+  },
+  cardheader: {
   },
   feedMaker: {
     maxWidth: feedWidth,
@@ -68,8 +75,61 @@ const style = theme => ({
     flex: 1
   },
   cardactions: {
+    padding: 0,
     position: "relative",
-    bottom: 0
+    bottom: 0,
+    boxSizing: "border-box",
+    maxHeight: 0,
+    transition: theme.transitions.create(['all']),
+    opacity: 0
+  },
+  cardactionsActive: {
+    maxHeight: 64,
+    padding: theme.spacing.unit,
+    transition: theme.transitions.create(['all']),
+    opacity: 1
+  },
+  cardactionsF: {
+    padding: theme.spacing.unit,
+    position: "relative",
+    bottom: 0,
+    boxSizing: "border-box",
+    opacity: 1
+  },
+  media: {
+    transition: theme.transitions.create(['all']),
+    minHeight: 200,
+    '&:hover': {
+      minHeight: 500
+    }
+  },
+  mediaF: {
+    transition: theme.transitions.create(['all']),
+    height: 200,
+    width: '100%',
+    objectFit: 'cover'
+  },
+  cardaction: {
+   margin: 'auto'
+  },
+  text: {
+   // color: '#111'
+  },
+  divider: {
+   // background: 'rgba(0,0,0,.1)'
+  },
+  headerTitle: {
+   // color: '#111'
+  },
+  subheader: {
+   // color: 'rgba(0,0,0,.7)'
+  },
+  activityImage: {
+    width: 60,
+    maxHeight: 80,
+    objectFit: 'cover',
+    borderBottomLeftRadius: 1,
+    borderTopLeftRadius: 1,
   }
 });
 
@@ -113,9 +173,8 @@ export const FeedMaker = firebaseConnect()(
           if (this.imageInput.files.length === 0) {
             return false;
           }
-
-          reader.readAsDataURL(this.imageInput.files[0]);
-          return reader.onload = (image) => this.setState({image: image.target.result});
+          reader.onload = (image) => this.setState({image: image.target.result}, () => this.image.src === image);
+          return reader.readAsDataURL(this.imageInput.files[0]);
         }
  
         postFeed = async () => {
@@ -153,7 +212,7 @@ export const FeedMaker = firebaseConnect()(
         };
 
         render() {
-          const { classes, profile, theme } = this.props;
+          const { classes, profile, theme, color } = this.props;
           const { text, context, title, image, date, avatar } = this.state;
           if (isEmpty(profile)) return null;
           return (
@@ -165,7 +224,7 @@ export const FeedMaker = firebaseConnect()(
                 text ? classes.feedMakerActive : null
               )}
             >
-              <Card style={{ minHeight: "inherit" }} elevation={3}>
+              <Card className={classes.card} style={{ minHeight: "inherit", background: color ? color : null }} elevation={3}>
                 {text ? (
                   <FadeIn>
                     <CardHeader
@@ -182,7 +241,8 @@ export const FeedMaker = firebaseConnect()(
                     />
                   </FadeIn>
                 ) : null}
-                {image !== '' ? <CardMedia src={image} /> : null}
+                {text ? <Divider className={classes.divider} /> : null}
+                {image !== '' ? <img className={classes.mediaF} alt='' style={{minHeight: 200}} ref={image => this.image = image} src={image} /> : null}
                 <CardContent className={classes.cardcontent}>
                   <TextField
                     className={classnames(
@@ -197,19 +257,23 @@ export const FeedMaker = firebaseConnect()(
                     }}
                     placeholder="What's on your mind today?"
                     fullWidth
-                    onChange={e => this.setState({ text: e.target.value })}
+                    onChange={e => {
+                      let val = e.target.value;
+                      this.setState({ text: val }, () => val === '' ? this.setState({image: ''}) : null)
+                    }}
                   />
                 </CardContent>
-                <Divider />
-                <CardActions className={classes.cardactions}>
+                {text ? <Divider className={classes.divider} /> : null}
+                <CardActions className={classnames(classes.cardactions, text ? classes.cardactionsActive : null)}>
                 <label>
                   <input accept="image/*" type='file' onChange={this.getImage} className='hiddenfileinput' ref={imageInput => this.imageInput = imageInput} />
-                  <IconButton  type='button' onClick={this.setImage}>
+                  <IconButton classes={{label: classes.text}} type='button' onClick={this.setImage}>
                     <ICON.Image />
                   </IconButton>
                   </label>
+                  {image ? <Button classes={{label: classes.text}} onClick={() => this.setState({image: ''})}>Remove image</Button> : null}
                   <div style={{ flex: 1 }} />
-                  {text ? <Button onClick={this.postFeed}>Post</Button> : null}
+                  {text ? <Button classes={{label: classes.text}} onClick={this.postFeed}>Post</Button> : null}
                 </CardActions>
               </Card>
             </Grid>
@@ -227,7 +291,7 @@ export const Feed = firebaseConnect()(
         static propTypes = {
           classes: PropTypes.object.isRequired,
           theme: PropTypes.object.isRequired,
-          title: PropTypes.string,
+          ftitle: PropTypes.string,
           context: PropTypes.string,
           id: PropTypes.string.isRequired,
           text: PropTypes.string,
@@ -238,7 +302,7 @@ export const Feed = firebaseConnect()(
         };
 
         static defaultProps = {
-          title: "Feed",
+          ftitle: "Feed",
           context: "Feed context",
           text: "Feed text",
           image: "",
@@ -249,7 +313,7 @@ export const Feed = firebaseConnect()(
 
         state = {
           id: this.props.id,
-          title: this.props.title,
+          ftitle: this.props.ftitle,
           context: this.props.context,
           text: this.props.text,
           image: this.props.image,
@@ -260,94 +324,32 @@ export const Feed = firebaseConnect()(
 
         componentWillMount = () => {};
 
-        componentDidMount = () => {
-          const {
-            title,
-            context,
-            id,
-            text,
-            image,
-            date,
-            avatar,
-            user
-          } = this.props;
-          if (title) {
-            return this.setState({ title });
-          }
-          if (context) {
-            return this.setState({ context });
-          }
-          if (id) {
-            return this.setState({ id });
-          }
-          if (text) {
-            return this.setState({ text });
-          }
-          if (image) {
-            return this.setState({ image });
-          }
-          if (date) {
-            return this.setState({ date });
-          }
-          if (avatar) {
-            return this.setState({ avatar });
-          }
-          if (user) {
-            return this.setState({ user });
-          }
-          return null;
-        };
-
-        componentWillReceiveProps = nextProps => {
-          const {
-            title,
-            context,
-            id,
-            text,
-            image,
-            date,
-            avatar,
-            user
-          } = nextProps;
-          if (title) {
-            return this.setState({ title });
-          }
-          if (context) {
-            return this.setState({ context });
-          }
-          if (id) {
-            return this.setState({ id });
-          }
-          if (text) {
-            return this.setState({ text });
-          }
-          if (image) {
-            return this.setState({ image });
-          }
-          if (date) {
-            return this.setState({ date });
-          }
-          if (avatar) {
-            return this.setState({ avatar });
-          }
-          if (user) {
-            return this.setState({ user });
-          }
-          return null;
-        };
-
         deleteOwnFeed = async () => {
           const db = this.props.firebase
             .database()
             .ref("/social")
             .child("byusers")
-            .child(this.state.id);
+            .child(this.props.id);
           try {
             return await db.remove();
           } catch (error) {
             return console.error(error);
           }
         };
+
+        deleteOwnActivity = async () => {
+          const db = this.props.firebase
+          .database()
+          .ref("/users")
+          .child(this.props.user.id)
+          .child("feed")
+          .child(this.props.id);
+          try {
+            return await db.remove();
+          } catch (error) {
+            return console.error(error);
+          }
+        }
 
         render() {
           const {
@@ -358,75 +360,93 @@ export const Feed = firebaseConnect()(
             commentClick,
             noActions,
             noHeader,
-            ...props
-          } = this.props;
-          const {
-            title,
+            noDelete,
+            mirUpdate,
+            color,
+            activity,
+            ftitle,
             id,
             context,
             text,
             image,
             date,
             avatar,
-            user
-          } = this.state;
+            user,
+            ...props
+          } = this.props;
           return (
             <Grid item xs className={classes.root} {...props}>
               <FadeIn>
-                <Card className={classes.card}>
+                <Card style={{background: color ? color : null}} className={classes.card}>
+                <div style={{display: activity ? 'flex' : null}}>
+                {activity ? <img src={image} alt='' className={classes.activityImage} /> : null}
+                <div style={{flex: activity ? 1 : null}}>
                   {noHeader ? null : (
                     <CardHeader
-                      title={title}
+                      title={activity ? ftitle + " | " + moment(date).from(Date.now()) : ftitle}
                       avatar={<Avatar src={avatar} />}
                       subheader={
-                        context + " | " + moment(date).from(Date.now())
+                       activity ? context : context + " | " + moment(date).from(Date.now())
                       }
+                      className={classes.cardheader}
                       classes={{
                         avatar: classes.headerAva,
                         title: classes.headerTitle,
-                        subheader: classes.subheader
+                        subheader: classes.subheader,
+                        action: classes.cardaction
                       }}
-                      action={
+                      action={isEmpty(profile) ? null : mirUpdate ? null : noDelete ? null :
                         (user && user.id === profile.userID) ||
-                        profile.role === "admin" ||
-                        "dev" ? (
-                          <IconButton onClick={this.deleteOwnFeed}>
+                        (profile.role === "admin" ||
+                        "dev" && !activity) ? (
+                          <IconButton classes={{label: classes.text}} onClick={activity ? this.deleteOwnActivity : this.deleteOwnFeed}>
                             <ICON.Close />
                           </IconButton>
                         ) : null
                       }
                     />
                   )}
-                  {image ? <CardMedia image={image} /> : null}
-                  <CardContent className={classes.cardcontent}>
+                  {activity ? null : <Divider className={classes.divider} />}
+                  {activity ? null : image ? <CardMedia className={classes.media} image={image} /> : null}
+                  {activity ? null : <CardContent className={classes.cardcontent}>
                     <Typography
                       className={classes.text}
                       variant="body1"
                       dangerouslySetInnerHTML={{ __html: text }}
                     />
-                  </CardContent>
+                  </CardContent>}
+                  
+                  {noActions ? null : <Divider className={classes.divider} />}
                   {noActions ? null : (
-                    <CardActions className={classes.cardactions}>
+                    <CardActions className={classes.cardactionsF}>
                       <div style={{ flex: 1 }} />
-                      <Tooltip title="Mood" placement="bottom">
-                        <IconButton onMouseOver={this.showMoods}>
+                      <Tooltip title={isEmpty(profile) ? 'You need to login to mood posts' : 'Mood'} placement="bottom">
+                      <div>
+                        <IconButton disabled={isEmpty(profile) ? true : false} classes={{label: classes.text}} onMouseOver={this.showMoods}>
                           <ICON.Face />
                         </IconButton>
+                        </div>
                       </Tooltip>
-                      <Tooltip title="Comments" placement="bottom">
-                        <IconButton onClick={commentClick}>
+                      <Tooltip title={isEmpty(profile) ? 'You need to login to comment posts' : 'Comment'} placement="bottom">
+                      <div>
+                        <IconButton disabled={isEmpty(profile) ? true : false} classes={{label: classes.text}} onClick={commentClick}>
                           <ICON.Comment />
                         </IconButton>
+                        </div>
                       </Tooltip>
                       {user && user.id === profile.userID ? null : (
-                        <Tooltip title="Repost this" placement="bottom">
-                          <IconButton onClick={this.repostFeed}>
+                        <Tooltip title={isEmpty(profile) ? 'You need to login to repost posts' : 'Repost this'} placement="bottom">
+                        <div>
+                          <IconButton disabled={isEmpty(profile) ? true : false} classes={{label: classes.text}} onClick={this.repostFeed}>
                             <ICON.Share />
                           </IconButton>
+                          </div>
                         </Tooltip>
                       )}
                     </CardActions>
                   )}
+                  </div>
+                  </div>
                 </Card>
               </FadeIn>
             </Grid>

@@ -57,6 +57,7 @@ import { FormControl, FormHelperText } from "material-ui/Form";
 import Select from "material-ui/Select";
 import { scrollFix } from "./../utils/scrollFix";
 import List, { ListItem, ListItemText} from "material-ui/List";
+import {guid} from '../utils/uuid';
 
 const styles = theme => ({
   loading: {
@@ -785,11 +786,16 @@ class Show extends Component {
       data &&
       !isEmpty(this.props.profile) &&
       this.props.profile.username &&
-      this.props.profile.willLog
+      this.props.profile.willLog && !(this.props.mir && this.props.mir.play &&
+      this.props.mir.play.eps &&
+      this.props.mir.play.meta &&
+      this.props.mir.play.meta.id === this.state.id)
     ) {
-      this.props.firebase
-        .push(`users/${this.props.profile.userID}/feed`, {
+      const id = guid();
+      this.props.firebase.ref('/users').child(this.props.profile.userID).child('feed')
+        .child(id).update({
           date: Date.now(),
+          id, 
           type: "SHOW",
           activity: `Checked out ${data.title.romaji}`,
           bgImg: data.bannerImage && data.bannerImage,

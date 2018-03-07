@@ -59,7 +59,8 @@
       "collections": "Collections",
       "ongoingAnimeTitle": "Currently ongoing anime",
       "ongoingAnimeEstimate": "ongoing anime in database",
-      "ongoingMangaTitle": "Currently ongoing manga"
+      "ongoingMangaTitle": "Currently ongoing manga",
+      "feeds": "Feed"
     },
     "later": {
       "later": "Later",
@@ -218,13 +219,13 @@
         "lastyura": "Last seen anime on yura",
         "later": "Later",
         "compl": "Completed",
-        "dropped": "Dropped"
+        "dropped": "Dropped (anime you haven't seen for more than 2 weeks)"
       },
       "mangaList": {
         "recentlyread": "Recently read",
         "later": "Later",
         "compl": "Completed",
-        "dropped": "Dropped"
+        "dropped": "Dropped (manga you haven't read for more than 2 weeks)"
       }
     }
   },
@@ -288,7 +289,8 @@
       "collections": "Artikler",
       "ongoingAnimeTitle": "Pågående anime",
       "ongoingAnimeEstimate": "animer som pågår i databasen",
-      "ongoingMangaTitle": "Pågående manga (tegneserier)"
+      "ongoingMangaTitle": "Pågående manga (tegneserier)",
+      "feeds": "Aktiviteter"
     },
     "later": {
       "later": "Senere",
@@ -446,13 +448,13 @@
         "lastyura": "Sist sett på Yura",
         "later": "Senere",
         "compl": "Fullført",
-        "dropped": "Droppet"
+        "dropped": "Droppet (anime du ikke har forsettet på i mer enn 2 uker)"
       },
       "mangaList": {
         "recentlyread": "Sist lest",
         "later": "Senere",
         "compl": "Fullført",
-        "dropped": "Droppet"
+        "dropped": "Droppet (manga du ikke har forsettet på i mer enn 2 uker)"
       }
     }
   }

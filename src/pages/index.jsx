@@ -145,7 +145,7 @@ class Index extends Component {
     } else if (mir) {
       return this.setState({ loading: false });
     } else {
-      return this.setState({ loading: true });
+      return this.setState({ loading: false });
     }
   };
 
@@ -194,12 +194,13 @@ class Index extends Component {
             <Route path="/stream" exact component={Stream} />
             <Route path="/tou" exact component={Tos} />
             <Route exact component={PageNotFound} />
-            {!isEmpty(this.props.firebase.profile) &&
-            this.props.firebase.profile.role === ("admin" || "dev") ? (
+            {isEmpty(this.props.profile) ? null : this.props.profile
+              .role === "Normal" ? null : this.props.profile.role ===
+              "dev" || "admin" ? (
               <Route path="/admin/db" exact component={DevDB} />
             ) : null}
-            {!isEmpty(this.props.firebase.profile) &&
-            this.props.firebase.profile.isDeveloper === true ? (
+            {!isEmpty(this.props.profile) &&
+            this.props.profile.isDeveloper === true ? (
               <Route path="/dev/player" exact component={DevPlayer} />
             ) : null}
           </Switch>

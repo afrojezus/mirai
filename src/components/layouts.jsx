@@ -130,9 +130,7 @@ const style = theme => ({
     height: "100vh",
     maskImage: "linear-gradient(rgba(0, 0, 0, 1.0), transparent)",
     transformStyle: "preserve-3d",
-    backfaceVisibility: "hidden",
-    filter:
-      window.navigator.userAgent.indexOf("Edge") > -1 ? "blur(10px)" : null
+    backfaceVisibility: "hidden"
   },
   headerD: {
     position: "fixed",
@@ -342,14 +340,14 @@ ItemContainer.defaultProps = {
 };
 
 export const SectionTitle = withStyles(style, { withTheme: true })(
-  ({ classes, title, lighter, ...props }) => (
+  ({ classes, title, lighter, noPad, ...props }) => (
     <Typography
       variant={"title"}
       className={classNames(
         classes.secTitle,
         lighter ? classes.lightersecTitle : null
       )}
-      style={{ color: lighter ? "rgba(255,255,255,.5)" : null, ...props }}
+      style={{ color: lighter ? "rgba(255,255,255,.5)" : null, paddingBottom: noPad ? 0 : null, ...props }}
     >
       {title}
     </Typography>

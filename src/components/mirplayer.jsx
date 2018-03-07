@@ -41,6 +41,7 @@ import corrector from '../utils/bigfuck';
 import hsfetcher from '../torrent';
 import { getState, loadEp, loadFile } from '../utils/mirfetch';
 import { MIR_PLAY_SHOW } from '../constants';
+import {guid} from '../utils/uuid';
 
 const style = theme => ({
 	root: {
@@ -324,10 +325,28 @@ class MirPlayer extends Component {
 		return false;
 	};
 
+	logToActivity = () => {
+		const id = guid();
+		if (isEmpty(this.props.profile)) {
+			return null;
+		}
+      return this.props.firebase.ref('/users').child(this.props.profile.userID).child('feed')
+	  .child(id).update({
+          date: Date.now(),
+          id, 
+          type: "WATCH",
+          activity: `Watched Episode ${this.state.ep} of ${this.state.title}`,
+          coverImg: this.state.showArtwork,
+          user: {
+            username: this.props.profile.username,
+            avatar: this.props.profile.avatar,
+            userID: this.props.profile.userID
+          }
+        })
+	}
+
 	componentWillUnmount = async () => {
 		if (!isEmpty(this.props.profile) && this.state.loaded > 0) {
-			
-		await this.props.firebase.updateProfile({status: `Oozing`});
 			const episodePro = this.props.firebase
 				.database()
 				.ref('users')
@@ -345,6 +364,7 @@ class MirPlayer extends Component {
 		if (this.state.torrent && this.state.torrentFile)
 			hsfetcher.destroyClient(this.state.torrentFile);
 
+						
 		await this.props.firebase.updateProfile({status: `Oozing`});
 
 		this.props.removeDataFromMir(null);
@@ -642,7 +662,7 @@ class MirPlayer extends Component {
 		});
 
 	logTheWatch = async () => {
-		if (!isEmpty(this.props.profile) && this.state.loaded > 0) {
+		if (!isEmpty(this.props.profile) && this.state.loaded > 0 && !this.state.seeking) {
 			await this.props.firebase.updateProfile({status: `Watching ${this.state.title} Episode ${this.state.ep}`});
 			const episodePro = this.props.firebase
 				.database()
@@ -729,6 +749,7 @@ class MirPlayer extends Component {
 								onClick={() => {
 									this.props.removeDataFromMir(null);
 									this.logTheWatch();
+									this.logToActivity();
 									this.setState({
 										playing: false,
 										buffering: true,
