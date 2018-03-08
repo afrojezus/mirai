@@ -386,14 +386,6 @@ export const Feed = firebaseConnect()(
         static propTypes = {
           classes: PropTypes.object.isRequired,
           theme: PropTypes.object.isRequired,
-          ftitle: PropTypes.string,
-          context: PropTypes.string,
-          id: PropTypes.string.isRequired,
-          text: PropTypes.string,
-          image: PropTypes.string,
-          date: PropTypes.number,
-          avatar: PropTypes.string,
-          user: PropTypes.object
         };
 
         static defaultProps = {

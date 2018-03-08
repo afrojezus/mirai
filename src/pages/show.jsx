@@ -27,7 +27,10 @@ import strings from "../strings.json";
 import Menu, { MenuItem } from "material-ui/Menu";
 import withStyles from "material-ui/styles/withStyles";
 import { timeFormatter } from "../components/supertable";
+import bigfuck from '../utils/bigfuck';
+import TwistFilter from '../utils/filter';
 import Anilist from "../anilist-api";
+import Kitsu from '../kitsu-api';
 import {
   bigFuckingQueryS,
   entryQuery,
@@ -636,7 +639,7 @@ class Show extends Component {
     if (
       this.props.mir !== nextProps.mir &&
       this.state.data &&
-      this.state.data.Media
+      this.state.data.Media && this.state.data.Media.type.includes('ANIME')
     )
       await this.executeTwist();
   };
@@ -664,8 +667,8 @@ class Show extends Component {
         data: null,
         loading: true,
         hue: "#111",
-        hueVib: blue.A200,
-        hueVibN: grey.A700,
+        hueVib: window.theme.palette.primary.main,
+        hueVibN: window.theme.palette.primary.main,
         eps: null,
         epError: false
       },
@@ -782,7 +785,7 @@ class Show extends Component {
             }
         } */
 
-    if (
+    /*if (
       data &&
       !isEmpty(this.props.profile) &&
       this.props.profile.username &&
@@ -808,7 +811,7 @@ class Show extends Component {
           }
         })
         .then(() => console.info("Logged!"));
-    }
+    }*/
 
     if (image)
       Colorizer(`https://cors-anywhere.herokuapp.com/${image}`).then(pal => {
@@ -857,10 +860,12 @@ class Show extends Component {
     const dbval = await db.once("value");
     if (dbval && Object(dbval.val())[this.state.id]) {
       const eps = await db.child(this.state.id).once("value");
-      if (eps)
-        this.setState({ eps: Object.values(eps.val()) }, () =>
-          console.info("loaded from database")
-        );
+      if (eps) {
+        return Kitsu.addKitsuMetadata(this.state.data.Media.title.romaji,eps.val(), this.state.data.Media.format).then((km) => this.setState({ eps: km }, () =>
+        console.info("[mirai] Loaded from database")
+      ))
+      .catch(kmN => this.setState({eps: kmN}));
+      }
       else throw new Error("owo");
     } else if (this.props.mir && this.props.mir.twist) {
       if (
@@ -872,25 +877,30 @@ class Show extends Component {
       ) {
         return this.setState({ eps: this.props.mir.play.eps });
       }
-      const correctedtitle = this.state.data.Media.title.romaji
-        .toLowerCase()
-        .replace("(tv)", "")
-        .replace(".", "")
-        .replace("macross frontier", "macross f");
+      const correctedtitle = bigfuck(this.state.data.Media.title.romaji
+        .toLowerCase())
       const meta = Object.values(this.props.mir.twist).filter(s =>
         s.name.toLowerCase().match(`${correctedtitle}`)
       );
       // console.log(meta);
       if (meta.length > 0) {
-        const eps = await Twist.get(meta[0].link);
+        const eps = await Twist.get(meta[0].link, meta[0].ongoing);
         try {
           if (eps)
-            return this.setState({ eps }, async () => {
+            return Kitsu.addKitsuMetadata(this.state.data.Media.title.romaji, eps, this.state.data.Media.format).then(finishedEps => this.setState({ eps: finishedEps }, async () => {
               if (meta[0].ongoing === false) {
                 const dbtwist = this.props.firebase.ref("anime").child("twist");
-                await dbtwist.child(this.state.id).update(eps);
+                await dbtwist.child(this.state.id).update(finishedEps);
+                return console.info("[mirai] Uploaded to database")
               }
-            });
+            }))
+            .catch(kmN => this.setState({eps: kmN}, async () => {
+              if (meta[0].ongoing === false) {
+                const dbtwist = this.props.firebase.ref("anime").child("twist");
+                await dbtwist.child(this.state.id).update(kmN);
+                return console.info("[mirai] Uploaded to database")
+              }
+            }));;
         } catch (error) {
           return this.setState({ epError: true });
         }
@@ -1021,6 +1031,7 @@ class Show extends Component {
               : this.state.hue ? this.state.hue : null,
             avgScore: data.averageScore,
             meanScore: data.meanScore,
+            date: Date.now(),
             rank:
               data.rankings && data.rankings.length > 0
                 ? data.rankings[0]
@@ -1744,9 +1755,9 @@ class Show extends Component {
                           ) : (
                             <Icon.SentimentNeutral/>
                           )
-                        ) : user.later &&
-                        user.later.manga &&
-                        user.later.manga[this.state.id] ? (
+                        ) : user.recommends &&
+                        user.recommends.manga &&
+                        user.recommends.manga[this.state.id] ? (
                           <Icon.SentimentVerySatisfied />
                         ) : (
                           <Icon.SentimentNeutral />
@@ -2150,7 +2161,8 @@ class Show extends Component {
                         data.Media.tags.length > 0 &&
                         similars &&
                         similars.data &&
-                        similars.data.Page.media
+                        similars.data.Page.media &&
+                        TwistFilter(similars.data.Page.media, this.props.mir.twist)
                           .filter(a => a.id !== data.Media.id)
                           .splice(0, 8)
                           .map((anime, index) => (
@@ -2172,7 +2184,8 @@ class Show extends Component {
                         data.Media.tags.length > 1 &&
                         similars2 &&
                         similars2.data &&
-                        similars2.data.Page.media
+                        similars2.data.Page.media &&
+                        TwistFilter(similars2.data.Page.media, this.props.mir.twist)
                           .filter(a => a.id !== data.Media.id)
                           .splice(0, 8)
                           .map((anime, index) => (

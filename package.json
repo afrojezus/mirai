@@ -27,6 +27,7 @@
 		"jquery": "^3.3.1",
 		"jss": "^8.1.0",
 		"jss-preset-default": "^3.0.0",
+		"kitsu": "^5.0.5",
 		"localforage": "^1.5.5",
 		"localforage-observable": "^1.4.0",
 		"material-auto-rotating-carousel": "^1.7.0",

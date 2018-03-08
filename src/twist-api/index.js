@@ -49,7 +49,7 @@ const load = async () => {
 /**
  * Twist.get ( query ) - Uses query to get an anime from the database of Anime Twist
  */
-const get = async query => {
+const get = async (query, ongoing) => {
 	const output = [];
 	const data = {
 		uri: Proxy2 + query,
@@ -76,7 +76,8 @@ const get = async query => {
 					name,
 					link,
 					ep,
-					provider
+					provider,
+					ongoing
 				});
 			});
 		if (que) return output;

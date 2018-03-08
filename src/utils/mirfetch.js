@@ -5,6 +5,7 @@ import Twist from '../twist-api';
 import Anilist from '../anilist-api';
 import hsfetcher from '../torrent';
 import { entryQuery } from '../anilist-api/queries';
+import bigfuck from './bigfuck';
 
 export const loadEp = (parent, ep, resume) =>
 	parent.setState(
@@ -143,11 +144,13 @@ const getSource = async (parent, data) => {
 			? data.meta.bannerImage
 			: data.meta.coverImage.large
 	});
-	const correctedtitle = data.meta.title.romaji.toLowerCase();
+	const correctedtitle = bigfuck(data.meta.title.romaji.toLowerCase())
+	;
 	const meta = Object.values(parent.props.mir.twist).filter(s =>
 		s.name.toLowerCase().match(`${correctedtitle}`)
 	);
-	parent.setState({isOngoing: meta && meta[0].ongoing});
+	parent.setState({isOngoing: meta && meta[0].ongoing ? meta[0].ongoing : false});
+	// console.log(meta)
 	try {
 		if (data.eps) {
 			// console.log(data.eps);
@@ -189,10 +192,9 @@ const getSource = async (parent, data) => {
 			});
 		} else if (meta && meta[0].link) {
 			console.info('Episodes not found from cache! Scratching...');
-			const eps = await Twist.get(meta[0].link);
+			// console.log(meta)
+			const eps = await Twist.get(meta[0].link, meta[0].ongoing);
 			if (eps) {
-				// console.log(eps);
-
 				parent.setState({ eps, status: 'Loading...' }, async () => {
 					localForage
 						.getItem('player-state')

@@ -243,18 +243,16 @@ class Settings extends Component {
           this.props.firebase
             .updateProfile({ headers: bg.snapshot.downloadURL })
             .then(() => {
-              console.info("Background updated.");
-              this.setState({ bg: null }, () => {
                 colorizer(this.props.profile.headers).then(pal => {
                   let hues = {
                     hue: pal.DarkMuted && pal.DarkMuted.getHex(),
                     hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
                     hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
                   };
+                  console.info("Background updated.");
                   localStorage.setItem("user-hue", JSON.stringify(hues));
-                  return this.setState({ bgLoading: false });
+                  return this.setState({ bgLoading: false, bg: null });
                 });
-              });
             });
         }
       );

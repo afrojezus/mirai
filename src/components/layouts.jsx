@@ -305,7 +305,7 @@ const style = theme => ({
     margin: "auto",
     padding: theme.spacing.unit,
     boxSizing: "border-box",
-    background: grey[900],
+    background: theme.palette.background.paper,
     outline: "none",
     minHeight: 120,
     minWidth: 500

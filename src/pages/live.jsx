@@ -220,6 +220,8 @@ class Live extends Component {
                 <Container>
                   {streams &&
                     Object.values(streams)
+                      .filter(u => u.id !== "example").length > 0 ?
+                      Object.values(streams)
                       .filter(u => u.id !== "example")
                       .map((stream, index) => (
                         <CardButton
@@ -231,7 +233,7 @@ class Live extends Component {
                           title={stream.title}
                           subtitle={stream.hoster + "'s stream"}
                         />
-                      ))}
+                      )) : <SectionTitle title='No streams today!' lighter />}
                 </Container>
               </Column>
             </Container>

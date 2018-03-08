@@ -191,13 +191,13 @@ const style = theme => ({
   },
   bakA: {
     position: "absolute",
-    left: "0",
+    left: theme.spacing.unit,
     top: "calc(50% + 8px)",
     transform: "translate(-50%,-50%)",
     zIndex: "5",
     opacity: 0,
     transition: theme.transitions.create(["all"]),
-    background: "white",
+    background: theme.palette.primary.main,
     cursor: 'pointer'
   },
   forA: {
@@ -208,7 +208,7 @@ const style = theme => ({
     zIndex: "5",
     opacity: 0,
     transition: theme.transitions.create(["all"]),
-    background: "white",
+    background: theme.palette.primary.main,
     cursor: 'pointer'
   },
   bigCardSmallIcon: {

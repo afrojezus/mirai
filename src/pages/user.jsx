@@ -431,8 +431,8 @@ const style = theme => ({
     zIndex: -1
   },
   artwork: {
-    width: 400,
-    height: 400,
+    width: 250,
+    height: 250,
     overflow: "hidden",
     margin: "auto",
     transition: theme.transitions.create(["all"]),
@@ -975,12 +975,6 @@ class User extends Component {
                       )}
                     </M.Grid>
                     <SectionTitle title={lang.user.activity} />
-                    <M.Grid
-                      container
-                      className={classes.itemcontainer}
-                      style={{ flexDirection: "column" }}
-                    >
-                      <ItemContainer topPad>
                         {data ? (
                           data.feed ? (
                             Object.values(data.feed)
@@ -1084,8 +1078,6 @@ class User extends Component {
                             {lang.user.noact}
                           </M.Typography>
                         )}
-                      </ItemContainer>
-                    </M.Grid>
                   </M.Grid>
                   <M.Grid item xs={5} style={{ zIndex: 10 }} id="favourites">
                     <SectionTitle title={lang.user.favorites} />

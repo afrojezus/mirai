@@ -75,7 +75,7 @@ const styles = theme => ({
     background: "linear-gradient(to top, transparent, rgba(0,0,0,1))"
   },
   appBar: {
-    background: "rgba(0,0,0,.98)",
+    background: theme.palette.background.appBar,
     borderBottom: `1px solid rgba(255,255,255,0)`
   },
   appBarTop: {
@@ -244,13 +244,15 @@ const styles = theme => ({
   },
   tabLabel: {
     opacity: 0.5,
+    color: 'white',
     fontSize: theme.typography.pxToRem(14),
     textTransform: "initial"
   },
   tabLabelActive: {
     fontWeight: 700,
     fontSize: theme.typography.pxToRem(14),
-    textTransform: "initial"
+    textTransform: "initial",
+    color: 'white',
   },
   tabLine: {
     filter: "drop-shadow(0 1px 12px rgba(0,0,255,.2))",
@@ -326,7 +328,11 @@ const styles = theme => ({
     paddingLeft: theme.spacing.unit * 2,
     paddingRight: theme.spacing.unit * 2,
     margin: "auto 0",
-    width: "auto"
+    width: "auto",
+    color: 'white'
+  },
+  white: {
+    color: 'white'
   },
   barTitle: {
     fontFamily: "'Fugaz One', cursive"
@@ -692,7 +698,7 @@ class Superbar extends Component {
     const metaShit = (
       <div className={classes.metashit}>
         <Typography className={classes.footerCopy} variant="headline">
-          Mirai p2 revo1
+          Mirai alpha
           <br />
           {onlineUsers ? Object.values(onlineUsers).length : 0} users online
           <br />
@@ -909,6 +915,7 @@ class Superbar extends Component {
     return (
       <div className={classes.appFrame}>
         <AppBar
+          color={'default'}
           id="superBar"
           classes={{ root: classes.root }}
           className={
@@ -917,15 +924,13 @@ class Superbar extends Component {
           style={
             watchIsOn
               ? { display: "none" }
-              : scrolling && !window.safari
-                ? { background: hue ? hue : null }
-                : null
+              : null
           }
         >
           {window.safari ? null : (
             <div
               className={classes.gd}
-              style={scrolling ? { opacity: 0 } : { opacity: 0.2 }}
+              style={scrolling ? { opacity: 0 } : { opacity: 0.5 }}
             />
           )}
           <Toolbar className={classes.mainToolbar}>
@@ -954,7 +959,7 @@ class Superbar extends Component {
                   wrapper: classes.tabwrapper,
                   labelContainer: classes.tablabelcontainer
                 }}
-                icon={<HomeIcon />}
+                icon={<HomeIcon className={classes.white} />}
                 label={lang.superbar.home}
               />
               {/*<Tab
@@ -969,7 +974,7 @@ class Superbar extends Component {
                 label={lang.superbar.feeds}
               />*/}
               <Tab
-                icon={<CompassIcon />}
+                icon={<CompassIcon className={classes.white} />}
                 classes={{
                   root: classes.tab,
                   label:
@@ -981,7 +986,7 @@ class Superbar extends Component {
               />
               <Tab
                 disabled={!user}
-                icon={<LiveTvIcon />}
+                icon={<LiveTvIcon className={classes.white} />}
                 classes={{
                   root: classes.tab,
                   label:
@@ -1105,8 +1110,7 @@ class Superbar extends Component {
                   style: {
                     maxHeight: window.innerHeight / 1.05,
                     overflowY: "auto",
-                    zIndex: 2000,
-                    background: hue ? hue : null
+                    zIndex: 2000
                   }
                 }}
                 onClose={this.handleRequestClose}

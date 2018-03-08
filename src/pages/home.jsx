@@ -555,7 +555,7 @@ class Home extends Component {
                         );
                     })
                 ) : (
-                  <SectionTitle title="Nobody has said anything..." lighter />
+                  <Container style={{ padding: 8 }}><SectionTitle title="Nobody has said anything..." lighter /></Container>
                 )}
               </Grid>
               <Grid item xs={3}>

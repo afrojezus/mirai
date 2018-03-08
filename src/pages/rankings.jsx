@@ -88,6 +88,20 @@ class Rankings extends Component {
     lang: strings.enus
   };
 
+  unlisten = this.props.history.listen((location, action) => {
+    const id = queryString.parse(location.search);
+    if (id.c !== this.state.id && id.c !== undefined)
+    return this.props.firebase
+    .database()
+    .ref("/rankings")
+    .child("collections")
+    .child(id.c)
+    .on("value", val =>
+      this.setState({ collection: val.val(), index: 5, loading: false })
+    );
+    return false;
+  });
+
   componentWillMount = () => {
     checklang(this);
     this.getColors();
@@ -273,7 +287,7 @@ class Rankings extends Component {
             <Container>
               <Column>
                 <Typography variant="display3" className={classes.feedTitle}>
-                  Overview
+                  Explore
                 </Typography>
                 <SectionTitle noPad title="Top rated anime" />
                 <SectionSubTitle title="The 'best' anime as decided by the community of AniList" />

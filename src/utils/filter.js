@@ -2,6 +2,11 @@
  *  AniList to Twist filterizer
  */
 
+import bigfuck from './bigfuck'
+
 export default (aniAL, twistData) => {
-  return aniAL.filter(d => twistData.filter(s => s.name.match(d.title.romaji)));
+  const twistnames = twistData.map(s => {
+   return s.name.toLowerCase()
+  })
+  return aniAL.filter(d => twistnames.includes(bigfuck(d.title.romaji.toLowerCase())));
 };

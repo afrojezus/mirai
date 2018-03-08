@@ -438,8 +438,8 @@ const style = theme => ({
 		borderRadius: '50%',
 	},
 	artwork: {
-		width: 400,
-		height: 400,
+		width: 250,
+		height: 250,
 		borderRadius: '50%',
 		overflow: 'hidden',
 		margin: 'auto',

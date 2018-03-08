@@ -17,6 +17,7 @@ import { LoadingIndicator, TitleHeader, Header } from "../components/layouts";
 import CardButton, { PeopleButton } from "../components/cardButton";
 import Anilist from "../anilist-api";
 import { scrollFix } from "./../utils/scrollFix";
+import TwistFilter from './../utils/filter'
 
 const style = theme => ({
   container: {
@@ -532,12 +533,7 @@ class Search extends Component {
                   </M.Typography>
                   <M.Grid container className={classes.itemcontainer}>
                     {anime
-                      ? anime
-                          .filter(d =>
-                            this.props.mir.twist.filter(s =>
-                              s.name.match(d.title.romaji)
-                            )
-                          )
+                      ? TwistFilter(anime, this.props.mir.twist)
                           .map(show => (
                             <CardButton
                               key={show.id}

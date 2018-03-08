@@ -260,6 +260,17 @@ const style = theme => ({
   },
   controlpanelActions: {
     margin: theme.spacing.unit
+  },
+  episodeName: {
+    fontSize: '.6em',
+    opacity: .5
+  },
+  episodeCount: {
+    fontSize: '1em'
+  },
+  episodeThumb: {
+    width: 60,
+    objectFit: 'cover',
   }
 });
 
@@ -330,6 +341,9 @@ class MirPlayer extends Component {
     if (isEmpty(this.props.profile)) {
       return null;
     }
+    if (this.state.loaded < 0) {
+      return null;
+    }
     return this.props.firebase
       .ref("/users")
       .child(this.props.profile.userID)
@@ -340,7 +354,7 @@ class MirPlayer extends Component {
         id,
         type: "WATCH",
         showId: this.state.showId,
-        activity: `Watched Episode ${this.state.ep} of ${this.state.title}`,
+        activity: `Watched ${this.state.eps.length > 1 ? 'Episode ' + this.state.ep + ' of' : ''} ${this.state.title}`,
         coverImg: this.state.showArtwork,
         user: {
           username: this.props.profile.username,
@@ -396,12 +410,15 @@ class MirPlayer extends Component {
     if (!this.state.seeking)
       this.setState(state, async () => {
         this.setState({
-          videoQuality: this.player.getInternalPlayer().videoHeight,
+          videoQuality: this.player ? this.player.getInternalPlayer().videoHeight : null,
           recentlyWatched: Date.now()
         });
+        if (!isEmpty(this.props.profile)) {
         await this.props.firebase.updateProfile({
           status: `Watching ${this.state.title} Episode ${this.state.ep}`
         });
+      }
+        if (this.player !== null) {
         switch (this.player.getInternalPlayer().networkState) {
           case 1:
             this.setState({ buffering: false });
@@ -412,6 +429,7 @@ class MirPlayer extends Component {
           default:
             break;
         }
+      }
 
         if (this.state.resume) {
           const { resume } = this.state;
@@ -483,11 +501,15 @@ class MirPlayer extends Component {
     const controls = document.getElementById("controls");
     const pcontrols = document.getElementById("pipcontrols");
     const player = document.getElementById("player");
+    const epMenu = this.state.menuEl;
+    const volMenu = this.state.volEl;
     if (back && (controls || pcontrols) && player) {
       back.style.opacity = 1;
       if (controls) controls.style.opacity = 1;
       if (pcontrols) pcontrols.style.opacity = 1;
       player.style.cursor = "initial";
+      if (epMenu) epMenu.style.opacity = 1;
+      if (volMenu) volMenu.style.opacity = 1;
       this.mouseResetDelay();
     }
   };
@@ -497,6 +519,8 @@ class MirPlayer extends Component {
     const controls = document.getElementById("controls");
     const pcontrols = document.getElementById("pipcontrols");
     const player = document.getElementById("player");
+    const epMenu = this.state.menuEl;
+    const volMenu = this.state.volEl;
     if (
       back &&
       (controls || pcontrols) &&
@@ -506,6 +530,8 @@ class MirPlayer extends Component {
     ) {
       player.style.cursor = "none";
       back.style.opacity = 0;
+      if (epMenu) epMenu.style.opacity = 0;
+      if (volMenu) volMenu.style.opacity = 0;
       if (controls) controls.style.opacity = 0;
       if (pcontrols && window.mobilecheck() === false)
         pcontrols.style.opacity = 0;
@@ -674,7 +700,7 @@ class MirPlayer extends Component {
       !this.state.seeking
     ) {
       await this.props.firebase.updateProfile({
-        status: `Watching ${this.state.title} Episode ${this.state.ep}`
+        status: `Watching ${this.state.title} ${this.state.eps.length > 1 ? 'Episode ' + this.state.ep : null}`
       });
       const episodePro = this.props.firebase
         .database()
@@ -1087,8 +1113,7 @@ class MirPlayer extends Component {
                   style: {
                     outline: "none",
                     background: grey[800]
-                  },
-                  onMouseLeave: () => this.setState({ volEl: null })
+                  }
                 }}
                 MenuListProps={{
                   style: {
@@ -1139,7 +1164,7 @@ class MirPlayer extends Component {
               </IconButton>
               <div>
                 <IconButton
-                  disabled={!(eps.length > 0)}
+                  disabled={eps.length < 1 ? true : !(eps.length > 0)}
                   aria-owns={menu ? "ep-menu" : null}
                   aria-haspopup="true"
                   onClick={e => this.setState({ menuEl: e.currentTarget })}
@@ -1165,12 +1190,11 @@ class MirPlayer extends Component {
                   onClose={this.closeMenu}
                   PaperProps={{
                     style: {
-                      width: 300,
+                      width: 420,
                       padding: 0,
                       outline: "none",
                       background: grey[800]
-                    },
-                    onMouseLeave: () => this.setState({ menuEl: null })
+                    }
                   }}
                   MenuListProps={{
                     style: {
@@ -1198,7 +1222,11 @@ class MirPlayer extends Component {
                             selected={e.ep === ep}
                             className={classes.epListItem}
                           >
-                            Episode {e.ep}
+                          {e.thumb ? <img alt='' className={classes.episodeThumb} src={e.thumb.original} /> : null}
+                          <div style={{display: 'flex', flexFlow: 'column nowrap', paddingLeft: 8}}>
+                            <Typography variant='title' className={classes.episodeCount}>Episode {e.ep}</Typography>
+                            {e.canon ? <Typography variant='body1' className={classes.episodeName}>{e.canon}</Typography> : null}
+                            </div>
                             <div style={{ flex: 1 }} />
                             {e.ep === ep ? <Icon.PlayArrow /> : null}
                           </MenuItem>

@@ -38,7 +38,7 @@ const theme = createMuiTheme({
       appBar: getColors() && getColors().hue ? getColors().hue : "#111",
       contentFrame: "#eeeeee"
     },
-    contrastThreshold: 1
+    contrastThreshold: 1.7
   },
   typography: {
     // Use the system font.
