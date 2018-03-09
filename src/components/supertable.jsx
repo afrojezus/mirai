@@ -110,14 +110,14 @@ const style = theme => ({
     fontSize: 32,
     textShadow: "0 3px 20px rgba(0,0,0,.87)",
     userSelect: "none",
-    cursor: 'pointer'
+    cursor: "pointer"
   },
   bigCardText: {
     display: "flex",
     flexDirection: "column",
     margin: "auto 0",
     userSelect: "none",
-    cursor: 'pointer'
+    cursor: "pointer"
   },
   bigCardTextFlex: {
     display: "flex",
@@ -125,7 +125,7 @@ const style = theme => ({
     margin: "auto",
     width: "100%",
     userSelect: "none",
-    cursor: 'pointer',
+    cursor: "pointer",
     marginLeft: theme.spacing.unit * 3,
     zIndex: 3
   },
@@ -138,7 +138,7 @@ const style = theme => ({
     fontSize: 18,
     textShadow: "0 3px 20px rgba(0,0,0,.7)",
     userSelect: "none",
-    cursor: 'pointer'
+    cursor: "pointer"
   },
   bigCardVerySmallTitle: {
     zIndex: 3,
@@ -149,7 +149,7 @@ const style = theme => ({
     marginBottom: theme.spacing.unit,
     textTransform: "uppercase",
     userSelect: "none",
-    cursor: 'pointer'
+    cursor: "pointer"
   },
   bigCardVerySmallTitleFlex: {
     zIndex: 3,
@@ -161,7 +161,7 @@ const style = theme => ({
     marginBottom: theme.spacing.unit,
     textTransform: "uppercase",
     userSelect: "none",
-    cursor: 'pointer'
+    cursor: "pointer"
   },
   dotdot: {
     overflow: "initial !important"
@@ -198,7 +198,7 @@ const style = theme => ({
     opacity: 0,
     transition: theme.transitions.create(["all"]),
     background: theme.palette.primary.main,
-    cursor: 'pointer'
+    cursor: "pointer"
   },
   forA: {
     position: "absolute",
@@ -209,7 +209,7 @@ const style = theme => ({
     opacity: 0,
     transition: theme.transitions.create(["all"]),
     background: theme.palette.primary.main,
-    cursor: 'pointer'
+    cursor: "pointer"
   },
   bigCardSmallIcon: {
     width: 32,
@@ -311,6 +311,12 @@ const SuperTable = class extends React.Component {
     }
     if (props.typeof === "ranking") {
       return props.type.includes("c") ? "collectionlist" : "rankinglist";
+    }
+    if (props.typeof === "animeP") {
+      return props.type.includes("m") ? "mangaPlist" : "animePlist";
+    }
+    if (props.typeof === "animeS") {
+      return props.type.includes("m") ? "mangaSlist" : "animeSlist";
     }
     if (props.typeof === "ongoing") {
       return props.type.includes("m") ? "mangaongoinglist" : "animeongoinglist";
@@ -653,6 +659,168 @@ const SuperTable = class extends React.Component {
           </GridList>
         </div>
       );
+    } else if (props.typeof === "animeS") {
+      return (
+        <div className={classes.listContainer}>
+          {backArrow}
+          {forwardArrow}
+          <GridList
+            id={props.type.includes("m") ? "mangaSlist" : "animeSlist"}
+            className={classes.list}
+            cols={calculateWidth}
+            cellHeight={300}
+          >
+            {data.splice(0, props.limit).map(anime => (
+              <GridListTile
+                className={classes.bigCard}
+                key={anime.id}
+                onClick={() =>
+                  props.changePage(`/show?${props.type}=${anime.id}`)
+                }
+              >
+                <div className={classes.bigCardImage}>
+                  <img
+                    src={
+                      anime.bannerImage
+                        ? anime.bannerImage
+                        : anime.coverImage.large
+                    }
+                    alt=""
+                    className={classes.bigCardImageImg}
+                  />
+                </div>
+                <div className={classes.bigCardRow}>
+                  <img
+                    src={anime.coverImage.large}
+                    alt=""
+                    className={classes.bigCardIcon}
+                  />
+                  <div className={classes.bigCardText}>
+                    <Typography
+                      variant="display2"
+                      className={classes.bigCardVerySmallTitle}
+                    >
+                      {anime.averageScore
+                        ? `Score ${anime.averageScore}% •`
+                        : null}{" "}
+                      {anime.rankings
+                        ? `#${`${anime.rankings[0].rank} ${
+                            anime.rankings[0].context
+                          } ${anime.rankings[0].format} ${
+                            anime.rankings[0].allTime
+                              ? ""
+                              : `${
+                                  anime.rankings[0].season
+                                    ? anime.rankings[0].season
+                                    : ""
+                                } ${anime.rankings[0].year}`
+                          }`}`
+                        : null}
+                    </Typography>
+                    <Dotdotdot clamp={2} className={classes.dotdot}>
+                      <Typography
+                        variant="display2"
+                        className={classes.bigCardTitle}
+                      >
+                        {anime.title.romaji}
+                      </Typography>
+                    </Dotdotdot>
+                    <Dotdotdot clamp={3}>
+                      <Typography
+                        variant="display2"
+                        className={classes.bigCardSmallTitle}
+                      >
+                        {}
+                      </Typography>
+                    </Dotdotdot>
+                  </div>
+                </div>
+              </GridListTile>
+            ))}
+          </GridList>
+        </div>
+      );
+    } else if (props.typeof === "animeP") {
+      return (
+        <div className={classes.listContainer}>
+          {backArrow}
+          {forwardArrow}
+          <GridList
+            id={props.type.includes("m") ? "mangaPlist" : "animePlist"}
+            className={classes.list}
+            cols={calculateWidth}
+            cellHeight={300}
+          >
+            {data.splice(0, props.limit).map(anime => (
+              <GridListTile
+                className={classes.bigCard}
+                key={anime.id}
+                onClick={() =>
+                  props.changePage(`/show?${props.type}=${anime.id}`)
+                }
+              >
+                <div className={classes.bigCardImage}>
+                  <img
+                    src={
+                      anime.bannerImage
+                        ? anime.bannerImage
+                        : anime.coverImage.large
+                    }
+                    alt=""
+                    className={classes.bigCardImageImg}
+                  />
+                </div>
+                <div className={classes.bigCardRow}>
+                  <img
+                    src={anime.coverImage.large}
+                    alt=""
+                    className={classes.bigCardIcon}
+                  />
+                  <div className={classes.bigCardText}>
+                    <Typography
+                      variant="display2"
+                      className={classes.bigCardVerySmallTitle}
+                    >
+                      {anime.averageScore
+                        ? `Score ${anime.averageScore}% •`
+                        : null}{" "}
+                      {anime.rankings
+                        ? `#${`${anime.rankings[0].rank} ${
+                            anime.rankings[0].context
+                          } ${anime.rankings[0].format} ${
+                            anime.rankings[0].allTime
+                              ? ""
+                              : `${
+                                  anime.rankings[0].season
+                                    ? anime.rankings[0].season
+                                    : ""
+                                } ${anime.rankings[0].year}`
+                          }`}`
+                        : null}
+                    </Typography>
+                    <Dotdotdot clamp={2} className={classes.dotdot}>
+                      <Typography
+                        variant="display2"
+                        className={classes.bigCardTitle}
+                      >
+                        {anime.title.romaji}
+                      </Typography>
+                    </Dotdotdot>
+                    <Dotdotdot clamp={3}>
+                      <Typography
+                        variant="display2"
+                        className={classes.bigCardSmallTitle}
+                      >
+                        {}
+                      </Typography>
+                    </Dotdotdot>
+                  </div>
+                </div>
+              </GridListTile>
+            ))}
+          </GridList>
+        </div>
+      );
     } else if (props.typeof === "ongoing") {
       return (
         <div className={classes.listContainer}>
@@ -723,21 +891,25 @@ const SuperTable = class extends React.Component {
                       className={classes.bigCardVerySmallTitle}
                     >
                       {anime.averageScore
-                        ? `Score ${anime.averageScore}% •`
+                        ? `Score ${anime.averageScore}% ${
+                            props.type.includes("m") ? "" : "•"
+                          }`
                         : null}{" "}
-                      {anime.rankings
-                        ? `#${`${anime.rankings[0].rank} ${
-                            anime.rankings[0].context
-                          } ${anime.rankings[0].format} ${
-                            anime.rankings[0].allTime
-                              ? ""
-                              : `${
-                                  anime.rankings[0].season
-                                    ? anime.rankings[0].season
-                                    : ""
-                                } ${anime.rankings[0].year}`
-                          }`}`
-                        : null}
+                      {props.type.includes("m")
+                        ? ""
+                        : anime.rankings
+                          ? `#${`${anime.rankings[0].rank} ${
+                              anime.rankings[0].context
+                            } ${anime.rankings[0].format} ${
+                              anime.rankings[0].allTime
+                                ? ""
+                                : `${
+                                    anime.rankings[0].season
+                                      ? anime.rankings[0].season
+                                      : ""
+                                  } ${anime.rankings[0].year}`
+                            }`}`
+                          : null}
                     </Typography>
                     <Dotdotdot clamp={2} className={classes.dotdot}>
                       <Typography

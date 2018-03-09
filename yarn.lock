@@ -681,13 +681,6 @@ axios@^0.17.1:
     follow-redirects "^1.2.5"
     is-buffer "^1.1.5"
 
-axios@^0.18.0:
-  version "0.18.0"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.18.0.tgz#32d53e4851efdc0a11993b6cd000789d70c05102"
-  dependencies:
-    follow-redirects "^1.3.0"
-    is-buffer "^1.1.5"
-
 axobject-query@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/axobject-query/-/axobject-query-0.1.0.tgz#62f59dbc59c9f9242759ca349960e7a2fe3c36c0"
@@ -3674,7 +3667,7 @@ follow-redirects@1.0.0:
   dependencies:
     debug "^2.2.0"
 
-follow-redirects@^1.2.5, follow-redirects@^1.3.0:
+follow-redirects@^1.2.5:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.4.1.tgz#d8120f4518190f55aac65bb6fc7b85fcd666d6aa"
   dependencies:
@@ -5457,21 +5450,6 @@ kind-of@^5.0.0:
 kind-of@^6.0.0, kind-of@^6.0.2:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-6.0.2.tgz#01146b36a6218e64e58f3a8d66de5d7fc6f6d051"
-
-kitsu-core@^5.0.6:
-  version "5.0.6"
-  resolved "https://registry.yarnpkg.com/kitsu-core/-/kitsu-core-5.0.6.tgz#7deef5c001d1fb185ca1e8bb57b682d2b6f90c9f"
-  dependencies:
-    babel-runtime "^6.26.0"
-
-kitsu@^5.0.5:
-  version "5.0.6"
-  resolved "https://registry.yarnpkg.com/kitsu/-/kitsu-5.0.6.tgz#9ff0e3a85e62b693af6efdc80e3b90010880b6e4"
-  dependencies:
-    axios "^0.18.0"
-    babel-runtime "^6.26.0"
-    kitsu-core "^5.0.6"
-    pluralize "^7.0.0"
 
 klaw@^1.0.0:
   version "1.3.1"

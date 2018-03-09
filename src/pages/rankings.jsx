@@ -91,20 +91,18 @@ class Rankings extends Component {
   unlisten = this.props.history.listen((location, action) => {
     const id = queryString.parse(location.search);
     if (id.c !== this.state.id && id.c !== undefined)
-    return this.props.firebase
-    .database()
-    .ref("/rankings")
-    .child("collections")
-    .child(id.c)
-    .on("value", val =>
-      this.setState({ collection: val.val(), index: 3 })
-    );
-    return this.setState({collection: null});
+      return this.props.firebase
+        .database()
+        .ref("/rankings")
+        .child("collections")
+        .child(id.c)
+        .on("value", val => this.setState({ collection: val.val(), index: 3 }));
+    return this.setState({ collection: null });
   });
 
   componentWillUnmount = () => {
-    this.unlisten()
-  }
+    this.unlisten();
+  };
 
   componentWillMount = () => {
     checklang(this);
@@ -144,6 +142,18 @@ class Rankings extends Component {
   };
 
   fetchOngoing = async () => {
+    const topScore = await Anilist.get(bigFuckingQuery, {
+      page: 1,
+      isAdult: false,
+      sort: ["SCORE_DESC"]
+    });
+
+    const topPopularity = await Anilist.get(bigFuckingQuery, {
+      page: 1,
+      isAdult: false,
+      sort: ["POPULARITY_DESC"]
+    });
+
     const ongoing = await Anilist.get(bigFuckingQuery, {
       page: 1,
       isAdult: false,
@@ -159,10 +169,12 @@ class Rankings extends Component {
     });
 
     try {
-      if (ongoing && ongoingM)
+      if (ongoing && ongoingM && topPopularity && topScore)
         return this.setState({
           ongoing,
           ongoingM,
+          topPopularity,
+          topScore,
           loading: false
         });
     } catch (error) {
@@ -212,14 +224,19 @@ class Rankings extends Component {
       <div>
         <LoadingIndicator loading={this.state.loading} />
         {hue ? <TitleHeader color={hue} /> : null}
-          <Header color={hue ? hue : '#111'} image={collection && index === 5 ? collection.bg : null} />
+        <Header
+          color={hue ? hue : "#111"}
+          image={collection && index === 5 ? collection.bg : null}
+        />
         <CommandoBarTop title="Rankings">
           <Hidden smDown>
             <div style={{ flex: 1 }} />
           </Hidden>
           <Tabs
             value={this.state.index}
-            onChange={(e, val) => this.setState({ index: val, collection: null })}
+            onChange={(e, val) =>
+              this.setState({ index: val, collection: null })
+            }
             indicatorClassName={classes.tabLine}
             centered
             fullWidth
@@ -282,16 +299,51 @@ class Rankings extends Component {
           </Hidden>
         </CommandoBarTop>
         <Root hasTab>
-            {index === 0 ? <Container>
+          {index === 0 ? (
+            <Container>
               <Column>
                 <Typography variant="display3" className={classes.feedTitle}>
                   Explore
                 </Typography>
                 <SectionTitle noPad title="Top rated anime" />
                 <SectionSubTitle title="The 'best' anime as decided by the community of AniList" />
+                {topScore &&
+                topScore.data &&
+                this.props.mir &&
+                this.props.mir.twist &&
+                this.props.mir.twist.length > 0 ? (
+                  <SuperTable
+                    data={Filter(
+                      topScore.data.Page.media,
+                      this.props.mir.twist
+                    )}
+                    type="s"
+                    typeof="animeS"
+                    limit={12}
+                  />
+                ) : (
+                  <SuperTable loading />
+                )}
                 <Divider className={classes.divider} />
                 <SectionTitle noPad title="Top popular anime" />
                 <SectionSubTitle title="The most popular anime of all time" />
+                {topPopularity &&
+                topPopularity.data &&
+                this.props.mir &&
+                this.props.mir.twist &&
+                this.props.mir.twist.length > 0 ? (
+                  <SuperTable
+                    data={Filter(
+                      topPopularity.data.Page.media,
+                      this.props.mir.twist
+                    )}
+                    type="s"
+                    typeof="animeP"
+                    limit={12}
+                  />
+                ) : (
+                  <SuperTable loading />
+                )}
                 <Divider className={classes.divider} />
                 <SectionTitle noPad title={lang.home.ongoingAnimeTitle} />
                 <SectionSubTitle
@@ -338,16 +390,20 @@ class Rankings extends Component {
                   <SuperTable loading />
                 )}
               </Column>
-            </Container> : null}
-            {index === 1 ?<Container>
+            </Container>
+          ) : null}
+          {index === 1 ? (
+            <Container>
               <Column>
                 <Typography variant={"display3"} className={classes.feedTitle}>
                   Recommendations
                 </Typography>
                 <SectionTitle title="Something must have happened" lighter />
               </Column>
-            </Container> : null}
-            {index === 2 ?<Container>
+            </Container>
+          ) : null}
+          {index === 2 ? (
+            <Container>
               <Column>
                 <Typography variant={"display3"} className={classes.feedTitle}>
                   Zones
@@ -357,9 +413,11 @@ class Rankings extends Component {
                   lighter
                 />
               </Column>
-            </Container> : null}
-            {index === 3 ?
-              collection ? (<Container>
+            </Container>
+          ) : null}
+          {index === 3 ? (
+            collection ? (
+              <Container>
                 <Column>
                   <Typography variant="display3" className={classes.feedTitle}>
                     {collection.name}
@@ -395,24 +453,29 @@ class Rankings extends Component {
                     }}
                   />
                 </Column>
-                </Container>) : (<Container>
-              <Column>
-                <Typography variant="display3" className={classes.feedTitle}>
-                  Collections
-                </Typography>
-                {rankingMentionable ? (
-                  <SuperTable
-                    data={Object.values(rankingMentionable)}
-                    type="c"
-                    typeof="ranking"
-                    limit={12}
-                  />
-                ) : (
-                  <SuperTable loading />
-                )}
-              </Column>
-            </Container>) : null}
-            {index === 4 ?<Container>
+              </Container>
+            ) : (
+              <Container>
+                <Column>
+                  <Typography variant="display3" className={classes.feedTitle}>
+                    Collections
+                  </Typography>
+                  {rankingMentionable ? (
+                    <SuperTable
+                      data={Object.values(rankingMentionable)}
+                      type="c"
+                      typeof="ranking"
+                      limit={12}
+                    />
+                  ) : (
+                    <SuperTable loading />
+                  )}
+                </Column>
+              </Container>
+            )
+          ) : null}
+          {index === 4 ? (
+            <Container>
               <Column>
                 <Typography variant="display3" className={classes.feedTitle}>
                   Recommended by friends
@@ -438,7 +501,8 @@ class Rankings extends Component {
                   />
                 )}
               </Column>
-            </Container> : null}
+            </Container>
+          ) : null}
         </Root>
       </div>
     );

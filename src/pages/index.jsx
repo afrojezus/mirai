@@ -5,7 +5,7 @@ import { CircularProgress } from "material-ui/Progress";
 import { withStyles } from "material-ui/styles";
 import { firebaseConnect, isLoaded, isEmpty } from "react-redux-firebase";
 import { connect } from "react-redux";
-import colorizer from '../utils/colorizer';
+import colorizer from "../utils/colorizer";
 import { MIR_PLAY_SHOW } from "../constants";
 /* import Home from './home';
 import Setup from './setup';
@@ -130,7 +130,7 @@ const DevPlayer = LoadableVisibility({
 class Index extends Component {
   state = {
     loading: true,
-    log: 'Please wait'
+    log: "Please wait"
   };
 
   componentWillMount = () => {
@@ -146,41 +146,55 @@ class Index extends Component {
     }
   };
 
-  handleColors = profile => this.setState({}, async () => {
-    if (profile.headers) {
-    const hues = localStorage.getItem('user-hue');
-      if (!hues) {
-        return this.setState({log: 'Applying coloring...'}, () => colorizer(profile.headers).then(pal => {
-          let hues = {
-            hue: pal.DarkMuted && pal.DarkMuted.getHex(),
-            hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
-            hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
-          };
-          localStorage.setItem("user-hue", JSON.stringify(hues));
-          return this.timedLoad("[mirai] Coloring applied.");
-        }));
+  handleColors = profile =>
+    this.setState({}, async () => {
+      if (profile.headers) {
+        const hues = localStorage.getItem("user-hue");
+        if (!hues) {
+          return this.setState({ log: "Applying coloring..." }, () =>
+            colorizer(profile.headers).then(pal => {
+              let hues = {
+                hue: pal.DarkMuted && pal.DarkMuted.getHex(),
+                hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
+                hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
+              };
+              localStorage.setItem("user-hue", JSON.stringify(hues));
+              return this.timedLoad("[mirai] Coloring applied.");
+            })
+          );
+        } else {
+          return this.timedLoad();
+        }
       } else {
         return this.timedLoad();
       }
-    } else {
-      return this.timedLoad();
-    }
-  });
+    });
 
-  timedLoad = (message) => setTimeout(() => this.setState({loading: false}, () => message ? console.info(message) : null), 1000);
+  timedLoad = message =>
+    setTimeout(
+      () =>
+        this.setState(
+          { loading: false },
+          () => (message ? console.info(message) : null)
+        ),
+      1000
+    );
 
-  handleProfile = profile => this.setState({log: 'Getting user info...'}, async () => {
-    if (profile.userID) {
-      if (profile.role !== undefined) return null;
-      else 
-        return this.setState({log: 'Adding role...'}, () => this.props.firebase
-          .database()
-          .ref("/users")
-          .child(profile.userID)
-          .update({ role: "Normal" }))
-    }
-    return null;
-  });
+  handleProfile = profile =>
+    this.setState({ log: "Getting user info..." }, async () => {
+      if (profile.userID) {
+        if (profile.role !== undefined) return null;
+        else
+          return this.setState({ log: "Adding role..." }, () =>
+            this.props.firebase
+              .database()
+              .ref("/users")
+              .child(profile.userID)
+              .update({ role: "Normal" })
+          );
+      }
+      return null;
+    });
 
   render() {
     if (this.state.loading) return <LoadingScreen log={this.state.log} />;
@@ -211,14 +225,8 @@ class Index extends Component {
             <Route path="/stream" exact component={Stream} />
             <Route path="/tou" exact component={Tos} />
             <Route exact component={PageNotFound} />
-            {isEmpty(this.props.profile) ? null : this.props.profile.role ===
-            "Normal" ? null : this.props.profile.role === "dev" || "admin" ? (
-              <Route path="/admin/db" exact component={DevDB} />
-            ) : null}
-            {!isEmpty(this.props.profile) &&
-            this.props.profile.isDeveloper === true ? (
-              <Route path="/dev/player" exact component={DevPlayer} />
-            ) : null}
+            <Route path="/admin/db" exact component={DevDB} />
+            <Route path="/dev/player" exact component={DevPlayer} />
           </Switch>
         </Superbar>
       </div>

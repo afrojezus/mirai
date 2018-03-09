@@ -87,16 +87,14 @@ const style = theme => ({
     position: "fixed",
     bottom: 0,
     width: "100%",
-    background: window.safari
-      ? "rgba(0,0,0,.2)"
-      : "linear-gradient(to top, rgba(0,0,0,.75), rgba(0,0,0,.1))",
-    transition: theme.transitions.create(["all"]),
-    backdropFilter: "blur(10px)"
+    background: "linear-gradient(to top, rgba(0,0,0,.75), rgba(0,0,0,.1))",
+    transition: theme.transitions.create(["all"])
   },
   backToolbar: {
     zIndex: 10,
     transition: theme.transitions.create(["all"]),
-    '-webkitAppRegion': 'drag'
+    "-webkitAppRegion": "drag",
+    background: "linear-gradient(to top, rgba(0,0,0,.1), rgba(0,0,0,.75))"
   },
   indicator: {
     flexDirection: "row",
@@ -263,15 +261,15 @@ const style = theme => ({
     margin: theme.spacing.unit
   },
   episodeName: {
-    fontSize: '.6em',
-    opacity: .5
+    fontSize: ".6em",
+    opacity: 0.5
   },
   episodeCount: {
-    fontSize: '1em'
+    fontSize: "1em"
   },
   episodeThumb: {
     width: 60,
-    objectFit: 'cover',
+    objectFit: "cover"
   }
 });
 
@@ -355,7 +353,9 @@ class MirPlayer extends Component {
         id,
         type: "WATCH",
         showId: this.state.showId,
-        activity: `Watched ${this.state.eps.length > 1 ? 'Episode ' + this.state.ep + ' of' : ''} ${this.state.title}`,
+        activity: `Watched ${
+          this.state.eps.length > 1 ? "Episode " + this.state.ep + " of" : ""
+        } ${this.state.title}`,
         coverImg: this.state.showArtwork,
         user: {
           username: this.props.profile.username,
@@ -410,26 +410,28 @@ class MirPlayer extends Component {
     if (!this.state.seeking)
       this.setState(state, async () => {
         this.setState({
-          videoQuality: this.player ? this.player.getInternalPlayer().videoHeight : null,
+          videoQuality: this.player
+            ? this.player.getInternalPlayer().videoHeight
+            : null,
           recentlyWatched: Date.now()
         });
         if (!isEmpty(this.props.profile)) {
-        await this.props.firebase.updateProfile({
-          status: `Watching ${this.state.title} Episode ${this.state.ep}`
-        });
-      }
-        if (this.player !== null) {
-        switch (this.player.getInternalPlayer().networkState) {
-          case 1:
-            this.setState({ buffering: false });
-            break;
-          case 2:
-            this.setState({ buffering: false });
-            break;
-          default:
-            break;
+          await this.props.firebase.updateProfile({
+            status: `Watching ${this.state.title} Episode ${this.state.ep}`
+          });
         }
-      }
+        if (this.player !== null) {
+          switch (this.player.getInternalPlayer().networkState) {
+            case 1:
+              this.setState({ buffering: false });
+              break;
+            case 2:
+              this.setState({ buffering: false });
+              break;
+            default:
+              break;
+          }
+        }
 
         if (this.state.resume) {
           const { resume } = this.state;
@@ -700,7 +702,9 @@ class MirPlayer extends Component {
       !this.state.seeking
     ) {
       await this.props.firebase.updateProfile({
-        status: `Watching ${this.state.title} ${this.state.eps.length > 1 ? 'Episode ' + this.state.ep : null}`
+        status: `Watching ${this.state.title} ${
+          this.state.eps.length > 1 ? "Episode " + this.state.ep : null
+        }`
       });
       const episodePro = this.props.firebase
         .database()
@@ -756,7 +760,9 @@ class MirPlayer extends Component {
         id="frame"
         style={!mir.play ? { display: "none" } : null}
         className={!fullSize ? classes.rootSmol : classes.root}
-        onMouseLeave={played === 1 ? null : this.hide}
+        onMouseLeave={
+          played === 1 ? null : menu || volumeMenu ? null : this.hide
+        }
         onMouseMove={this.reveal}
         onTouchMove={this.reveal}
       >
@@ -1222,10 +1228,34 @@ class MirPlayer extends Component {
                             selected={e.ep === ep}
                             className={classes.epListItem}
                           >
-                          {e.thumb ? <img alt='' className={classes.episodeThumb} src={e.thumb.original} /> : null}
-                          <div style={{display: 'flex', flexFlow: 'column nowrap', paddingLeft: 8}}>
-                            <Typography variant='title' className={classes.episodeCount}>Episode {e.ep}</Typography>
-                            {e.canon ? <Typography variant='body1' className={classes.episodeName}>{e.canon}</Typography> : null}
+                            {e.thumb ? (
+                              <img
+                                alt=""
+                                className={classes.episodeThumb}
+                                src={e.thumb.original}
+                              />
+                            ) : null}
+                            <div
+                              style={{
+                                display: "flex",
+                                flexFlow: "column nowrap",
+                                paddingLeft: 8
+                              }}
+                            >
+                              <Typography
+                                variant="title"
+                                className={classes.episodeCount}
+                              >
+                                Episode {e.ep}
+                              </Typography>
+                              {e.canon ? (
+                                <Typography
+                                  variant="body1"
+                                  className={classes.episodeName}
+                                >
+                                  {e.canon}
+                                </Typography>
+                              ) : null}
                             </div>
                             <div style={{ flex: 1 }} />
                             {e.ep === ep ? <Icon.PlayArrow /> : null}
@@ -1268,67 +1298,91 @@ class MirPlayer extends Component {
               <Icon.ViewList />
             </IconButton>
             <Menu
-            id="ep-menu"
-            anchorEl={menuEl}
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "right"
-            }}
-            transformOrigin={{
-              vertical: "center",
-              horizontal: "right"
-            }}
-            open={menu}
-            classes={{
-              paper: classes.menuPaper
-            }}
-            onClose={this.closeMenu}
-            PaperProps={{
-              style: {
-                width: 420,
-                padding: 0,
-                outline: "none",
-                background: grey[800]
-              }
-            }}
-            MenuListProps={{
-              style: {
-                padding: 0,
-                outline: "none"
-              }
-            }}
-          >
-            <Card style={{ background: grey[800] }}>
-              <CardHeader
-                style={{ background: grey[900] }}
-                title="Episodes"
-              />
-              <Divider />
-              <CardContent className={classes.epListCont}>
-                {eps &&
-                  eps.map(e => (
-                    <MenuItem
-                      onClick={() => {
-                        this.setState({ ep: e.ep }, async () =>
-                          loadEp(this, e, null)
-                        );
-                      }}
-                      key={e.ep}
-                      selected={e.ep === ep}
-                      className={classes.epListItem}
-                    >
-                    {e.thumb ? <img alt='' className={classes.episodeThumb} src={e.thumb.original} /> : null}
-                    <div style={{display: 'flex', flexFlow: 'column nowrap', paddingLeft: 8}}>
-                      <Typography variant='title' className={classes.episodeCount}>Episode {e.ep}</Typography>
-                      {e.canon ? <Typography variant='body1' className={classes.episodeName}>{e.canon}</Typography> : null}
-                      </div>
-                      <div style={{ flex: 1 }} />
-                      {e.ep === ep ? <Icon.PlayArrow /> : null}
-                    </MenuItem>
-                  ))}
-              </CardContent>
-            </Card>
-          </Menu>
+              id="ep-menu"
+              anchorEl={menuEl}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right"
+              }}
+              transformOrigin={{
+                vertical: "center",
+                horizontal: "right"
+              }}
+              open={menu}
+              classes={{
+                paper: classes.menuPaper
+              }}
+              onClose={this.closeMenu}
+              PaperProps={{
+                style: {
+                  width: 420,
+                  padding: 0,
+                  outline: "none",
+                  background: grey[800]
+                }
+              }}
+              MenuListProps={{
+                style: {
+                  padding: 0,
+                  outline: "none"
+                }
+              }}
+            >
+              <Card style={{ background: grey[800] }}>
+                <CardHeader
+                  style={{ background: grey[900] }}
+                  title="Episodes"
+                />
+                <Divider />
+                <CardContent className={classes.epListCont}>
+                  {eps &&
+                    eps.map(e => (
+                      <MenuItem
+                        onClick={() => {
+                          this.setState({ ep: e.ep }, async () =>
+                            loadEp(this, e, null)
+                          );
+                        }}
+                        key={e.ep}
+                        selected={e.ep === ep}
+                        className={classes.epListItem}
+                      >
+                        {e.thumb ? (
+                          <img
+                            alt=""
+                            className={classes.episodeThumb}
+                            src={e.thumb.original}
+                          />
+                        ) : null}
+                        <div
+                          style={{
+                            display: "flex",
+                            flexFlow: "column nowrap",
+                            paddingLeft: 8
+                          }}
+                        >
+                          <Typography
+                            variant="title"
+                            className={classes.episodeCount}
+                          >
+                            Episode {e.ep}
+                          </Typography>
+                          {e.canon ? (
+                            <Typography
+                              variant="body1"
+                              className={classes.episodeName}
+                            >
+                              {e.canon}
+                            </Typography>
+                          ) : null}
+                        </div>
+                        <div style={{ flex: 1 }} />
+                        {e.ep === ep ? <Icon.PlayArrow /> : null}
+                      </MenuItem>
+                    ))}
+                </CardContent>
+              </Card>
+            </Menu>
           </div>
         )}
       </div>

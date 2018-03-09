@@ -1270,47 +1270,6 @@ class Show extends Component {
               <Header
                 image={data.Media.bannerImage ? data.Media.bannerImage : null}
               />
-              <div
-                id="fabShowButton"
-                style={
-                  mir && mir.play && mir.play.meta.id === data.Media.id
-                    ? { display: "none" }
-                    : window.safari ? { opacity: 1 } : null
-                }
-                className={classes.fabContainer}
-              >
-                <Button
-                  color="primary"
-                  disabled={
-                    mir && mir.play && mir.play.meta.id === data.Media.id
-                      ? true
-                      : data.Media.type.includes("MANGA")
-                        ? false
-                        : !!(
-                            data.Media.status.includes("NOT_YET_RELEASED") ||
-                            !eps
-                          )
-                  }
-                  className={classes.fabPlayButton}
-                  variant={"fab"}
-                  style={{ background: hue }}
-                  onClick={this.play}
-                >
-                  {data.Media.type.includes("MANGA") ? (
-                    <Icon.Book />
-                  ) : epError ? (
-                    <Icon.ErrorOutline />
-                  ) : data.Media.status.includes("NOT_YET_RELEASED") || !eps ? (
-                    <CircularProgress
-                      size={24}
-                      style={{ color: hueVib }}
-                      className={classes.fabProgress}
-                    />
-                  ) : (
-                    <Icon.PlayArrow />
-                  )}
-                </Button>
-              </div>
               <Container
                 spacing={16}
                 id="mainHeader"
@@ -1318,7 +1277,6 @@ class Show extends Component {
               >
                 <Grid item xs={3} style={{maxWidth: 300, margin: 'auto'}} className={classes.leftSide}>
                     <div
-                      role="play-show"
                       aria-controls="button"
                       className={
                         mir && mir.play && mir.play.meta.id === data.Media.id
