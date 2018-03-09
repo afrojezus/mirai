@@ -9,6 +9,7 @@ import { grey } from "material-ui/colors";
 import Divider from "material-ui/Divider";
 import TextField from "material-ui/TextField";
 import Button from "material-ui/Button";
+import colorizer from '../utils/colorizer'
 import Tilt from "react-tilt";
 import checklang from "../checklang";
 import strings from "../strings.json";
@@ -101,15 +102,8 @@ class Setup extends Component {
   login = () =>
     this.props.firebase
       .login({ email: this.state.email, password: this.state.password })
-      .then(() => {
-        // temporary fix for LOGIN after SET_PROFILE issue
-        if (this.props.profile.isEmpty) {
-          document.body.style.opacity = 0;
-          setTimeout(() => {
-            history.push("/");
-            window.location.reload();
-          }, 500);
-        }
+      .then((e) => {
+        history.push("/");
       })
       .catch(error =>
         this.setState({ error: error.message }, () =>
@@ -145,14 +139,7 @@ class Setup extends Component {
             willLog: false
           })
           .then(() => {
-            document.body.style.opacity = 0;
-            // temporary fix for LOGIN after SET_PROFILE issue
-            if (this.props.profile.isEmpty) {
-              return setTimeout(() => {
                 history.push("/wizard");
-                window.location.reload();
-              }, 500);
-            }
           });
       })
       .catch(error =>
@@ -172,7 +159,7 @@ class Setup extends Component {
         <Grid container spacing={0} className={classes.container}>
           <img src={miraiIcon} className="floatingIconMirai" alt="" />
           <Typography variant="title" className={classes.title}>
-            {mode.includes("login") ? "Mirai." : lang.setup.welcome}
+            {mode.includes("login") ? "Mirai" : lang.setup.welcome}
           </Typography>
           <Card
             className={classes.loginForm}

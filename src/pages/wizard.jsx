@@ -126,7 +126,7 @@ class Wizard extends Component {
 			<div>
 				<Header color="#0f20aa" />
 				<TitleHeader
-					title="Welcome to the Mirai Preview Program"
+					title="Welcome to Mirai!"
 					subtitle="Wizard"
 					color={blue.A200}
 				/>
@@ -140,7 +140,7 @@ class Wizard extends Component {
 								Before you get started
 							</Typography>
 							<Typography variant="body1">
-								Check with the terms of usage on the left side of the app. Mirai
+								Check with the terms of usage on the menu of the app. Mirai
 								is currently in a work-in-progress phase and a lot of changes is
 								expected to occur; feedback is greatly appreciated.<br />
 								Once that's done, you are ready to dive in. You may want to
@@ -148,7 +148,7 @@ class Wizard extends Component {
 								options are listen below.<br />
 								<br />If you need any help or got more questions, a FAQ is added
 								in the Help section of the app, which is also avaliable on the
-								left side of the app.
+								menu of the app.
 							</Typography>
 							<Divider style={{ margin: '16px 0' }} />
 							<Typography

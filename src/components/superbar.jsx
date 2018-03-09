@@ -11,12 +11,17 @@ import AccountCircle from "material-ui-icons/AccountCircle";
 import { grey } from "material-ui/colors";
 import Drawer from "material-ui/Drawer";
 import checklang from "../checklang";
+import Close from 'material-ui-icons/Close';
+import Minimize from 'material-ui-icons/Remove';
+import Maximize from 'material-ui-icons/Fullscreen'
+import UnMaximize from 'material-ui-icons/FullscreenExit'
 import List, {
   ListItem,
   ListItemIcon,
   ListItemText,
   ListSubheader
 } from "material-ui/List";
+import isElectron from '../utils/electron.js'
 import AtIcon from "material-ui-icons/Email";
 import Hidden from "material-ui/Hidden";
 import Divider from "material-ui/Divider";
@@ -65,7 +70,8 @@ const styles = theme => ({
     //maxWidth: 1500,
     marginLeft: "auto",
     width: "100%",
-    marginRight: "auto"
+    marginRight: "auto",
+    paddingRight: isElectron() ? theme.spacing.unit : null
   },
   gd: {
     width: "100%",
@@ -76,13 +82,15 @@ const styles = theme => ({
   },
   appBar: {
     background: theme.palette.background.appBar,
-    borderBottom: `1px solid rgba(255,255,255,0)`
+    borderBottom: `1px solid rgba(255,255,255,0)`,
+    '-webkitAppRegion': 'drag'
   },
   appBarTop: {
     background: "rgba(0,0,0,0)",
     boxShadow: "none",
     borderBottom: `1px solid rgba(255,255,255,.16)`,
-    backdropFilter: "blur(10px)"
+    backdropFilter: "blur(10px)",
+    '-webkitAppRegion': 'drag'
   },
   appFrame: {
     position: "relative",
@@ -95,7 +103,8 @@ const styles = theme => ({
   },
   menuButton: {
     marginLeft: -12,
-    marginRight: 20
+    marginRight: 20,
+    '-webkitAppRegion': 'no-drag'
   },
   logoButton: {
     position: "absolute",
@@ -664,6 +673,23 @@ class Superbar extends Component {
 
   openDonate = () => this.setState({ donateModal: true, anchorEl: null });
 
+  // Electron functions
+  eMaximize = () => {
+    const electron = window.require('electron').remote.getCurrentWindow();
+    if (electron.isMaximized()) return electron.unmaximize();
+    else return electron.maximize();
+  }    
+
+  eMinimize = () => {
+    const electron = window.require('electron').remote.getCurrentWindow();
+    return electron.minimize()
+  }    
+
+  eClose = () => {
+    const electron = window.require('electron').remote.getCurrentWindow();
+    return electron.close()
+  }
+
   render() {
     const { classes } = this.props;
     const {
@@ -933,7 +959,7 @@ class Superbar extends Component {
               style={scrolling ? { opacity: 0 } : { opacity: 0.5 }}
             />
           )}
-          <Toolbar className={classes.mainToolbar}>
+          <Toolbar className={classes.mainToolbar} disableGutters={isElectron()}>
             <Hidden mdUp>
               <IconButton
                 className={classes.menuButton}
@@ -1021,7 +1047,16 @@ class Superbar extends Component {
             <Hidden mdUp>
               <div className={classes.flex} />
             </Hidden>
-            <Hidden smDown>
+            {!user && tabVal === 0 ? null : !user ?  <Hidden smDown>
+            <SearchBox
+              mir={this.props.mir}
+              history={history}
+              classes={{
+                searchBar: classes.searchBar,
+                searchInput: classes.searchInput,
+                searchIcon: classes.searchIcon
+              }}
+            /></Hidden> : <Hidden smDown>
               <SearchBox
                 mir={this.props.mir}
                 history={history}
@@ -1031,15 +1066,22 @@ class Superbar extends Component {
                   searchIcon: classes.searchIcon
                 }}
               />
-            </Hidden>
-            <Hidden mdUp>
+            </Hidden>}
+            {!user && tabVal === 0  ? null : !user ? <Hidden mdUp>
+            <IconButton
+              onClick={() => this.props.history.push("/search")}
+              contrast={"default"}
+            >
+              <SearchIcon />
+            </IconButton>
+          </Hidden> : <Hidden mdUp>
               <IconButton
                 onClick={() => this.props.history.push("/search")}
                 contrast={"default"}
               >
                 <SearchIcon />
               </IconButton>
-            </Hidden>
+            </Hidden>}
             <div>
               <IconButton
                 disabled={!user}
@@ -1267,6 +1309,9 @@ class Superbar extends Component {
                 </div>
               </Menu>
             </div>
+            {isElectron() ? <IconButton onClick={this.eMinimize}><Minimize /></IconButton> : null}
+            {isElectron() ? <IconButton onClick={this.eMaximize}>{window.require('electron').remote.getCurrentWindow().isMaximized() ? <UnMaximize /> : <Maximize />}</IconButton> : null}
+            {isElectron() ? <IconButton onClick={this.eClose}><Close /></IconButton> : null}
           </Toolbar>
         </AppBar>
         {/* <Hidden lgDown>
@@ -1349,7 +1394,7 @@ class Superbar extends Component {
   }
 }
 
-class SearchBox extends Component {
+export class SearchBox extends Component {
   state = {
     value: "",
     suggestionList: null,
@@ -1363,32 +1408,34 @@ class SearchBox extends Component {
   onChange = e =>
     this.setState({ value: e.currentTarget.value }, () => {
       if (this.props.mir !== null && this.props.mir.twist !== null) {
+        const search = this.state.value;
         this.setState({
           suggestionList: this.props.mir.twist.filter(s =>
-            s.name.toLowerCase().match(this.state.value.toLowerCase())
+            s.name.toLowerCase().match(search.toLowerCase())
           )
-        });
+        }); 
       }
     });
 
   onSubmit = e => {
     e.preventDefault();
-    if (this.state.value.length > 2 && this.state.value !== "") {
+    const search = this.state.value;
+    if (search.length > 2 && search.value !== "") {
       if (
-        this.state.value.match("cory in the house") ||
-        this.state.value.match("Cory in the house") ||
-        this.state.value.match("Cory In The House")
+        search.match("cory in the house") ||
+        search.match("Cory in the house") ||
+        search.match("Cory In The House")
       ) {
         return this.props.history.push(`/show?s=99999999999`);
       } else {
-        return this.props.history.push(`/search?q=${this.state.value}`);
+        return this.props.history.push(`/search?q=${search}`);
       }
     }
   };
 
   render() {
     const { value, suggestionList, lang } = this.state;
-    const { classes } = this.props;
+    const { classes, main } = this.props;
     return (
       <div>
         <Paper className={classes.searchBar}>
@@ -1399,7 +1446,7 @@ class SearchBox extends Component {
               onChange={this.onChange}
               fullWidth
               value={value}
-              placeholder={lang.superbar.searchbox.placeholder}
+              placeholder={main ? 'Search anime' : lang.superbar.searchbox.placeholder}
               InputProps={{
                 className: classes.searchInput,
                 disableUnderline: true,

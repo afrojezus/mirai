@@ -97,10 +97,14 @@ class Rankings extends Component {
     .child("collections")
     .child(id.c)
     .on("value", val =>
-      this.setState({ collection: val.val(), index: 5, loading: false })
+      this.setState({ collection: val.val(), index: 3 })
     );
-    return false;
+    return this.setState({collection: null});
   });
+
+  componentWillUnmount = () => {
+    this.unlisten()
+  }
 
   componentWillMount = () => {
     checklang(this);
@@ -134,7 +138,7 @@ class Rankings extends Component {
         .child("collections")
         .child(id.c)
         .on("value", val =>
-          this.setState({ collection: val.val(), index: 5, loading: false })
+          this.setState({ collection: val.val(), index: 3, loading: false })
         );
     }
   };
@@ -208,16 +212,14 @@ class Rankings extends Component {
       <div>
         <LoadingIndicator loading={this.state.loading} />
         {hue ? <TitleHeader color={hue} /> : null}
-        {hue ? (
-          <Header color={hue} image={collection ? collection.bg : null} />
-        ) : null}
+          <Header color={hue ? hue : '#111'} image={collection && index === 5 ? collection.bg : null} />
         <CommandoBarTop title="Rankings">
           <Hidden smDown>
             <div style={{ flex: 1 }} />
           </Hidden>
           <Tabs
             value={this.state.index}
-            onChange={(e, val) => this.setState({ index: val })}
+            onChange={(e, val) => this.setState({ index: val, collection: null })}
             indicatorClassName={classes.tabLine}
             centered
             fullWidth
@@ -280,11 +282,7 @@ class Rankings extends Component {
           </Hidden>
         </CommandoBarTop>
         <Root hasTab>
-          <SwipeableViews
-            index={index}
-            onChangeIndex={index => this.setState({ index })}
-          >
-            <Container>
+            {index === 0 ? <Container>
               <Column>
                 <Typography variant="display3" className={classes.feedTitle}>
                   Explore
@@ -340,16 +338,16 @@ class Rankings extends Component {
                   <SuperTable loading />
                 )}
               </Column>
-            </Container>
-            <Container>
+            </Container> : null}
+            {index === 1 ?<Container>
               <Column>
                 <Typography variant={"display3"} className={classes.feedTitle}>
                   Recommendations
                 </Typography>
                 <SectionTitle title="Something must have happened" lighter />
               </Column>
-            </Container>
-            <Container>
+            </Container> : null}
+            {index === 2 ?<Container>
               <Column>
                 <Typography variant={"display3"} className={classes.feedTitle}>
                   Zones
@@ -359,53 +357,9 @@ class Rankings extends Component {
                   lighter
                 />
               </Column>
-            </Container>
-            <Container>
-              <Column>
-                <Typography variant="display3" className={classes.feedTitle}>
-                  Collections
-                </Typography>
-                {rankingMentionable ? (
-                  <SuperTable
-                    data={Object.values(rankingMentionable)}
-                    type="c"
-                    typeof="ranking"
-                    limit={12}
-                  />
-                ) : (
-                  <SuperTable loading />
-                )}
-              </Column>
-            </Container>
-            <Container>
-              <Column>
-                <Typography variant="display3" className={classes.feedTitle}>
-                  Recommended by friends
-                </Typography>
-                {friendRecommends && friendRecommends.show ? (
-                  Object.values(friendRecommends)
-                    .sort((a, b) => b.date - a.date)
-                    .map(show => (
-                      <CardButton
-                        key={show.id}
-                        onClick={() =>
-                          this.props.history.push(`/show?s=${show.id}`)
-                        }
-                        title={show.name}
-                        image={show.image}
-                        subtitle={`Added ${moment(show.date).from(Date.now())}`}
-                      />
-                    ))
-                ) : (
-                  <SectionTitle
-                    title="Your friends haven't recommend any animes yet"
-                    lighter
-                  />
-                )}
-              </Column>
-            </Container>
-            <Container>
-              {collection && (
+            </Container> : null}
+            {index === 3 ?
+              collection ? (<Container>
                 <Column>
                   <Typography variant="display3" className={classes.feedTitle}>
                     {collection.name}
@@ -441,9 +395,50 @@ class Rankings extends Component {
                     }}
                   />
                 </Column>
-              )}
-            </Container>
-          </SwipeableViews>
+                </Container>) : (<Container>
+              <Column>
+                <Typography variant="display3" className={classes.feedTitle}>
+                  Collections
+                </Typography>
+                {rankingMentionable ? (
+                  <SuperTable
+                    data={Object.values(rankingMentionable)}
+                    type="c"
+                    typeof="ranking"
+                    limit={12}
+                  />
+                ) : (
+                  <SuperTable loading />
+                )}
+              </Column>
+            </Container>) : null}
+            {index === 4 ?<Container>
+              <Column>
+                <Typography variant="display3" className={classes.feedTitle}>
+                  Recommended by friends
+                </Typography>
+                {friendRecommends && friendRecommends.show ? (
+                  Object.values(friendRecommends)
+                    .sort((a, b) => b.date - a.date)
+                    .map(show => (
+                      <CardButton
+                        key={show.id}
+                        onClick={() =>
+                          this.props.history.push(`/show?s=${show.id}`)
+                        }
+                        title={show.name}
+                        image={show.image}
+                        subtitle={`Added ${moment(show.date).from(Date.now())}`}
+                      />
+                    ))
+                ) : (
+                  <SectionTitle
+                    title="Your friends haven't recommend any animes yet"
+                    lighter
+                  />
+                )}
+              </Column>
+            </Container> : null}
         </Root>
       </div>
     );

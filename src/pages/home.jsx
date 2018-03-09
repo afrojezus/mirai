@@ -30,6 +30,7 @@ import Hidden from "material-ui/Hidden";
 import { FeedMaker, Feed } from "../components/feed";
 import Select from "material-ui/Select";
 import { MenuItem } from "material-ui/Menu";
+import { SearchBox } from '../components/superbar';
 
 const styles = theme => ({
   root: {
@@ -324,7 +325,38 @@ const styles = theme => ({
     textShadow: "0 3px 20px rgba(0,0,0,.7)",
     marginBottom: theme.spacing.unit,
     textTransform: "uppercase"
-  }
+  },
+  searchBar: {
+    background: "rgba(255,255,255,.05)",
+    border: "1px solid rgba(255,255,255,.1)",
+    boxShadow: "none",
+    maxWidth: 1970,
+    minWidth: 300,
+    display: "flex",
+    transition: theme.transitions.create(["all"]),
+    "&:hover": {
+      background: "rgba(255,255,255,.08)",
+      border: "1px solid rgba(255,255,255,.15)"
+    },
+    "&:focus": {
+      background: "rgba(255,255,255,.08)",
+      border: "1px solid rgba(255,255,255,.15)"
+    },
+    margin: "auto",
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit
+  },
+  searchInput: {
+    boxSizing: "border-box",
+    padding: theme.spacing.unit
+  },
+  searchIcon: {
+    paddingLeft: theme.spacing.unit * 2,
+    paddingRight: theme.spacing.unit * 2,
+    margin: "auto 0",
+    width: "auto",
+    color: 'white'
+  },
 });
 
 class Home extends Component {
@@ -380,7 +412,7 @@ class Home extends Component {
         // Get users
         const usersync = usersR.val();
         // Get activity feed from users
-        const users = Object.values(usersync)
+        const users = Object.values(usersync).filter(a => !a.privateLog)
           .filter(x => x.feed)
           .map(f => f.feed);
         const userFeedArray = users.map(s => Object.values(s));
@@ -427,7 +459,9 @@ class Home extends Component {
       hue,
       hueVibN,
       lang,
-      filterFeedVal
+      filterFeedVal,
+      searchVal,
+      searchResult
     } = this.state;
 
     const user = this.props.profile;
@@ -439,18 +473,29 @@ class Home extends Component {
         ) : null}
         <div className={classes.frame}>
           <TitleHeader
-            title={!isEmpty(user) ? null : lang.home.welcomeanon}
+            title={null}
+            miraiLogo={!isEmpty(user) ? false : true}
             color={hue !== "#111" ? hue : "#111"}
           />
           <Root>
-            <Container hasHeader={!isEmpty(user) ? false : true} spacing={16}>
-              <Hidden mdDown>
+            <Container hasHeader={!isEmpty(user) ? false : window.mobilecheck() ? false : true} spacing={16}>
+              {!isEmpty(user) ? <Hidden mdDown>
                 <Grid item xs={3}>
-                  <SectionTitle title="Sample text" />
+                  <SectionTitle title="Hahaha... nothing to see here... yet" />
                 </Grid>
-              </Hidden>
+              </Hidden> : <Grid item xs={3} />}
               <Grid item xs>
-                <FeedMaker color={hue} />
+                {!isEmpty(user) ? <FeedMaker color={hue} /> : 
+                <SearchBox
+                mir={this.props.mir}
+                history={this.props.history}
+                main
+                classes={{
+                  searchBar: classes.searchBar,
+                  searchInput: classes.searchInput,
+                  searchIcon: classes.searchIcon
+                }}
+              />}
                 <Container style={{ padding: 8 }}>
                   <SectionTitle title={lang.home.feeds} noPad />
                   <div style={{ flex: 1 }} />
@@ -551,6 +596,7 @@ class Home extends Component {
                             id={feed.id}
                             user={feed.user}
                             color={hue}
+                            likes={feed.likes}
                           />
                         );
                     })
@@ -558,29 +604,14 @@ class Home extends Component {
                   <Container style={{ padding: 8 }}><SectionTitle title="Nobody has said anything..." lighter /></Container>
                 )}
               </Grid>
-              <Grid item xs={3}>
+              {!isEmpty(user) ? <Grid item xs={3}>
                 {!isEmpty(user) &&
                 user.favs &&
                 user.favs.show &&
                 user.favs.show ? (
                   <div style={{ width: "100%" }}>
-                    <Grid
-                      item
-                      xs
-                      className={classes.itemContainer}
-                      style={{
-                        marginBottom: 0,
-                        flexDirection: "row",
-                        display: "flex"
-                      }}
-                    >
                       <SectionTitle title={lang.home.animefavTitle} />
                       <div style={{ flex: 1 }} />
-                      <Typography variant="title" className={classes.headline}>
-                        {Object.values(user.favs.show).length}{" "}
-                        {lang.home.animefavEstimate}
-                      </Typography>
-                    </Grid>
                     <ItemContainer style={{ marginTop: 24 }}>
                       {Object.values(user.favs.show)
                         .sort((a, b) => a.name - b.name)
@@ -597,7 +628,7 @@ class Home extends Component {
                     </ItemContainer>
                   </div>
                 ) : null}
-              </Grid>
+              </Grid> : <Grid item xs={3} />}
             </Container>
           </Root>
         </div>

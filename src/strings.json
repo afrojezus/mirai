@@ -96,6 +96,7 @@
       "logging": "Logging",
       "loggingdelete": "Delete your current log?",
       "loggingallow": "Allow logging?",
+      "loggingprivate": "Do you want your logs to be private?",
       "anilistdesc":
         "The AniList syncing function enables your Mirai account to sync with your AniList account.",
       "maldesc":
@@ -122,7 +123,7 @@
       "title": "Terms of Usage"
     },
     "setup": {
-      "welcome": "Welcome to the Mirai Preview Program",
+      "welcome": "Welcome! Time to get you started.",
       "login": "Sign in",
       "register": "Signup",
       "email": "Email",
@@ -325,6 +326,7 @@
       "logging": "Logging",
       "loggingdelete": "Vil du slette din nåværende logg?",
       "loggingallow": "Tilatte logging av din aktivitet?",
+      "loggingprivate": "Vil du holde loggingen av din aktivitet på Mirai hemmelig?",
       "anilistdesc":
         "The AniList syncing function enables your Mirai account to sync with your AniList account.",
       "maldesc":
@@ -351,7 +353,7 @@
       "title": "Hjelp"
     },
     "setup": {
-      "welcome": "Velkommen til Forhåndsvisningsprogrammet til Mirai",
+      "welcome": "Velkommen! La oss sette i gang.",
       "login": "Logg inn",
       "register": "Meld deg inn",
       "email": "E-post",

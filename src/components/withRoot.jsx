@@ -42,7 +42,7 @@ const theme = createMuiTheme({
   },
   typography: {
     // Use the system font.
-    fontFamily: "BlinkMacSystemFont, -apple-system, 'SF Display'",
+    fontFamily: "BlinkMacSystemFont, -apple-system, 'SF Display', 'Segoe UI', 'Roboto', 'Ubuntu', 'Arial'",
     fontSize: 16
   },
   overrides: {
@@ -52,8 +52,33 @@ const theme = createMuiTheme({
       }
     },
     MuiTooltip: {
-      tooltipBottom: {
+      tooltipPlacementBottom: {
         fontSize: 14
+      }
+    },
+    MuiButton: {
+      root: {
+        '-webkitAppRegion': 'no-drag'
+      }
+    },
+    MuiIconButton: {
+      root: {
+        '-webkitAppRegion': 'no-drag'
+      }
+    },
+    MuiTab: {
+      root: {
+        '-webkitAppRegion': 'no-drag'
+      }
+    },
+    MuiBackdrop: {
+      root: {
+        '-webkitAppRegion': 'no-drag'
+      }
+    },
+    MuiInput: {
+      root: {
+        '-webkitAppRegion': 'no-drag'
       }
     }
   }

@@ -92,17 +92,33 @@ class History extends Component {
 	componentWillMount = () => {
 		checklang(this);
 		scrollFix();
+		this.getColors();
 	};
 
 	componentDidMount = () => {};
 
+	getColors = () => {
+		const hue = localStorage.getItem("user-hue");
+		if (hue) {
+		  let hues = JSON.parse(hue);
+		  return this.setState({
+			hue: hues.hue,
+			hueVib: hues.hueVib,
+			hueVibN: hues.hueVibN
+		  });
+		} else {
+		  return null;
+		}
+	  };
+
 	render() {
 		const { classes, profile } = this.props;
-		const { index, lang } = this.state;
+		const { index, lang, hue } = this.state;
 		const user = isEmpty(profile) ? null : profile;
 		return (
 			<div>
-				<TitleHeader color={'#000'} />
+				<TitleHeader color={hue ? hue : '#000'} />
+				<Header color={hue ? hue : '#111'} />
 				<CommandoBarTop title="History">
 					<Hidden smDown>
 						<div
@@ -274,6 +290,7 @@ class History extends Component {
 											</Typography>
 										</ItemContainer>
 										<ItemContainer>
+										<Column>
 											{Object.values(user.feed)
 												.sort((a, b) => b.date - a.date)
 												.map((feed, index) => (
@@ -289,6 +306,7 @@ class History extends Component {
                   activity
                   noActions />
 												))}
+												</Column>
 										</ItemContainer>
 									</div>
 								) : (

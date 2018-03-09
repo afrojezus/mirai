@@ -5,6 +5,7 @@ import { CircularProgress } from "material-ui/Progress";
 import { withStyles } from "material-ui/styles";
 import { firebaseConnect, isLoaded, isEmpty } from "react-redux-firebase";
 import { connect } from "react-redux";
+import colorizer from '../utils/colorizer';
 import { MIR_PLAY_SHOW } from "../constants";
 /* import Home from './home';
 import Setup from './setup';
@@ -106,10 +107,6 @@ const Tag = LoadableVisibility({
   loader: () => import("./tag.jsx"),
   loading: LoadingScreen
 });
-const Feeds = LoadableVisibility({
-  loader: () => import("./feeds.jsx"),
-  loading: LoadingScreen
-});
 const Settings = LoadableVisibility({
   loader: () => import("./settings.jsx"),
   loading: LoadingScreen
@@ -132,7 +129,8 @@ const DevPlayer = LoadableVisibility({
 });
 class Index extends Component {
   state = {
-    loading: true
+    loading: true,
+    log: 'Please wait'
   };
 
   componentWillMount = () => {
@@ -140,32 +138,52 @@ class Index extends Component {
   };
 
   componentWillReceiveProps = async ({ authExists, mir, profile }) => {
-    if (authExists && mir) {
-      return await this.handleProfile(profile);
-    } else if (mir) {
-      return this.setState({ loading: false });
+    if (authExists) {
+      this.handleProfile(profile);
+      return this.handleColors(profile);
     } else {
-      return this.setState({ loading: false });
+      return this.timedLoad();
     }
   };
 
-  handleProfile = async profile => {
+  handleColors = profile => this.setState({}, async () => {
+    if (profile.headers) {
+    const hues = localStorage.getItem('user-hue');
+      if (!hues) {
+        return this.setState({log: 'Applying coloring...'}, () => colorizer(profile.headers).then(pal => {
+          let hues = {
+            hue: pal.DarkMuted && pal.DarkMuted.getHex(),
+            hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
+            hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
+          };
+          localStorage.setItem("user-hue", JSON.stringify(hues));
+          return this.timedLoad("[mirai] Coloring applied.");
+        }));
+      } else {
+        return this.timedLoad();
+      }
+    } else {
+      return this.timedLoad();
+    }
+  });
+
+  timedLoad = (message) => setTimeout(() => this.setState({loading: false}, () => message ? console.info(message) : null), 1000);
+
+  handleProfile = profile => this.setState({log: 'Getting user info...'}, async () => {
     if (profile.userID) {
-      if (profile.role !== undefined) return this.setState({ loading: false });
-      else
-        return this.props.firebase
+      if (profile.role !== undefined) return null;
+      else 
+        return this.setState({log: 'Adding role...'}, () => this.props.firebase
           .database()
           .ref("/users")
           .child(profile.userID)
-          .update({ role: "Normal" })
-          .then(() => this.setState({ loading: false }));
-    } else {
-      return this.setState({ loading: true });
+          .update({ role: "Normal" }))
     }
-  };
+    return null;
+  });
 
   render() {
-    if (this.state.loading) return <LoadingScreen />;
+    if (this.state.loading) return <LoadingScreen log={this.state.log} />;
     return (
       <div
         className={this.props.classes.root}
@@ -178,7 +196,6 @@ class Index extends Component {
             <Route path="/show" exact component={Show} />
             <Route path="/wizard" exact component={Wizard} />
             <Route path="/user" exact component={User} />
-            <Route path="/feeds" exact component={Feeds} />
             <Route path="/rankings" exact component={Rankings} />
             <Route path="/live" exact component={Live} />
             <Route path="/watch" exact component={Watch} />

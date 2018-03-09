@@ -22,6 +22,7 @@ import {
 import CardButton, { PeopleButton } from '../components/cardButton';
 import checklang from '../checklang';
 import { scrollFix } from './../utils/scrollFix';
+import TwistFilter from './../utils/filter';
 
 const style = theme => ({
 	root: {
@@ -757,7 +758,7 @@ class Fig extends Component {
 							/>
 						) : null
 					) : null}
-					{(data && data.Character) || (data && data.Staff) ? (
+					{this.props.mir && this.props.mir.twist && this.props.mir.twist.length > 0 && (data && data.Character) || (data && data.Staff) ? (
 						<Grid container spacing={0}>
 							<M.Grid container spacing={0} className={classes.container}>
 								<M.Grid item className={classes.artworkContainer} xs>
@@ -883,7 +884,7 @@ class Fig extends Component {
 												Works
 											</M.Typography>
 											<M.Grid container className={classes.itemcontainer}>
-												{data.Staff.staffMedia.edges.map(anime => (
+												{TwistFilter(data.Staff.staffMedia.edges, this.props.mir.twist).map(anime => (
 													<CardButton
 														onClick={() =>
 															this.props.history.push(
@@ -910,7 +911,7 @@ class Fig extends Component {
 												Stars in
 											</M.Typography>
 											<M.Grid container className={classes.itemcontainer}>
-												{data.Character.media.edges.map(anime => (
+												{TwistFilter(data.Character.media.edges, this.props.mir.twist).map(anime => (
 													<CardButton
 														title={anime.node.title.romaji}
 														key={anime.id}
@@ -948,7 +949,7 @@ const mapPTS = dispatch => ({
 });
 
 export default firebaseConnect()(
-	connect(({ firebase: { profile } }) => ({ profile }), mapPTS)(
+	connect(({ firebase: { profile }, mir }) => ({ profile, mir }), mapPTS)(
 		M.withStyles(style)(Fig)
 	)
 );

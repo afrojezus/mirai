@@ -8,6 +8,7 @@ import CircularProgress from "material-ui/Progress/CircularProgress";
 import LinearProgress from "material-ui/Progress/LinearProgress";
 import Typography from "material-ui/Typography/Typography";
 import { blue, grey } from "material-ui/colors";
+import moment from 'moment'
 import Hidden from "material-ui/Hidden/Hidden";
 import Modal from "material-ui/Modal";
 import classNames from "classnames";
@@ -15,7 +16,9 @@ import Zoom from "material-ui/transitions/Zoom";
 import Fade from "material-ui/transitions/Fade";
 // import withTheme from 'material-ui/styles/withTheme';
 import Button from "material-ui/Button/Button";
-import Card, { CardActions, CardHeader, CardContent } from "material-ui/Card";
+import Avatar from 'material-ui/Avatar'
+import Card, { CardActions, CardHeader, CardContent, CardMedia } from "material-ui/Card";
+import Divider from 'material-ui/Divider'
 
 const style = theme => ({
   compacMode: {
@@ -26,7 +29,8 @@ const style = theme => ({
     boxSizing: "border-box",
     [theme.breakpoints.down("sm")]: {
       flexDirection: "column",
-      padding: theme.spacing.unit
+      padding: theme.spacing.unit,
+      marginTop: '0 !important'
     },
     background: "transparent !important",
     transition: theme.transitions.create(["all"]),
@@ -212,9 +216,7 @@ const style = theme => ({
     width: "100%",
     maxWidth: 1500,
     [theme.breakpoints.down("sm")]: {
-      paddingLeft: theme.spacing.unit * 3,
-      paddingRight: theme.spacing.unit * 3,
-      display: "initial"
+      display: "none"
     },
     transition: theme.transitions.create(["all"])
   },
@@ -380,9 +382,12 @@ export const SectionSubTitle = withStyles(style, { withTheme: true })(
 );
 
 export const LoadingScreen = withStyles(style, { withTheme: true })(
-  ({ classes }) => (
+  ({ classes, log }) => (
     <div className={classes.loadingRoot}>
+    <div style={{margin: 'auto', display: 'flex', flexDirection: 'column'}}>
       <CircularProgress className={classes.loadingCircle} />
+      {log && log !== '' ? <Typography variant='title' style={{textAlign: 'center', marginTop: 16}}>{log}</Typography> : null}
+      </div>
     </div>
   )
 );
@@ -410,7 +415,7 @@ export const Container = withStyles(style, { withTheme: true })(
       alignItems={alignItems}
       style={
         hasHeader
-          ? {
+          ? (window.innerWidth < 1000 || window.mobilecheck()) ? null : {
               marginTop: theme.spacing.unit * 16
             }
           : null
@@ -447,10 +452,28 @@ export const Dialogue = withStyles(style, { withTheme: true })(
     title,
     actions,
     actionsSend,
+    zoom, // This is an user-feed.
+    feed,
     ...props
   }) => (
     <Modal open={open} {...props}>
-      <Fade in={open}>
+      {zoom ? <Zoom in={open}>
+      <Card elevation={4} className={classes.modalPaper} style={{padding: 0}}>
+      <CardHeader title={feed.ftitle} subheader={feed.context + " | " + moment(feed.date).from(Date.now())} avatar={<Avatar src={feed.avatar} />} />
+      <Divider />
+      {feed.image ? <img style={{    transition: theme.transitions.create(["all"]),
+      maxHeight: window.innerHeight,
+      width: "100%",
+      objectFit: "cover"}} alt='' src={feed.image} /> : null}
+        <CardContent>
+          <Typography
+            variant="body1"
+          >
+            {feed.text}
+          </Typography>
+        </CardContent>
+      </Card>
+    </Zoom> : <Fade in={open}>
         <Card elevation={4} className={classes.modalPaper}>
           <CardContent>
             <Typography
@@ -473,7 +496,7 @@ export const Dialogue = withStyles(style, { withTheme: true })(
             </CardActions>
           ) : null}
         </Card>
-      </Fade>
+      </Fade>}
     </Modal>
   )
 );
@@ -510,10 +533,14 @@ export const TitleHeader = withStyles(style, { withTheme: true })(
     title,
     subtitle,
     color,
+    miraiLogo,
     colortext,
     ...props
-  }) => (
-    <div
+  }) => {
+    if (window.innerWidth < 1000)
+    return null
+    else 
+    return ( <div
       className={classes.titleheader}
       style={
         color
@@ -526,27 +553,43 @@ export const TitleHeader = withStyles(style, { withTheme: true })(
       {...props}
     >
       <div className={classes.titleHeaderInner}>
-        <Typography
+      {miraiLogo ? <div style={{flex: 1}} /> : null}
+      {miraiLogo ? <div style={{display: window.mobilecheck() ? 'none' : null}}><Typography
+        className={classes.titleheadertitle}
+        style={{marginTop: theme.spacing.unit * 12}}
+        variant="display3"
+      >
+        Welcome to Mirai
+      </Typography>
+      <Typography
+        className={classes.titleheadersubtitle}
+        style={{marginTop: -8, textAlign: window.mobilecheck() ? null : 'center', fontSize: 18}}
+        variant="headline"
+      >
+        <strong>Your</strong> anime streaming app
+      </Typography></div> : null}
+      {miraiLogo ? <div style={{flex: 1}} /> : null}
+        {miraiLogo ? null : <Typography
           className={classes.titleheadertitle}
           style={colortext ? { color: colortext } : null}
           variant="display3"
         >
           {title}
-        </Typography>
-        <Hidden smDown>
+        </Typography>}
+        {miraiLogo ? null :<Hidden smDown>
           <div style={{ flex: "1 1 100%" }} />
-        </Hidden>
-        <Typography
+         </Hidden>}
+        {miraiLogo ? null :<Typography
           className={classes.titleheadersubtitle}
           style={colortext ? { color: colortext } : null}
           variant="headline"
         >
           {subtitle}
-        </Typography>
+        </Typography>}
       </div>
       {children}
     </div>
-  )
+  )}
 );
 
 class HeaderRaw extends React.Component {
@@ -603,7 +646,7 @@ export const LoadingIndicator = withStyles(style)(({ classes, loading }) => {
     return (
       <LinearProgress
         className={classes.loadingBarMobile}
-        classes={{ primaryColorBar: classes.loadingBarColor }}
+        classes={{ barColorPrimary: classes.loadingBarColor }}
         style={!loading ? { opacity: 0 } : null}
       />
     );
@@ -622,8 +665,8 @@ Container.propTypes = {
   spacing: PropTypes.number
 };
 Container.defaultProps = {
-  spacing: 0
+  spacing: 0,
 };
 Root.propTypes = {
-  children: PropTypes.node
+  children: PropTypes.node,
 };

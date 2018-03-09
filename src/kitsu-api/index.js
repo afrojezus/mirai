@@ -2,7 +2,7 @@
  * Kitsu API for Mirai
  */
 
-import Kitsu from 'kitsu';
+import Kitsu from './kitsu/kitsu';
 
 const kapi = new Kitsu();
 

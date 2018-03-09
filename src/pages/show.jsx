@@ -157,7 +157,6 @@ const styles = theme => ({
     transition: theme.transitions.create(["all"])
   },
   mainFrame: {
-    marginLeft: 24,
     [theme.breakpoints.down("sm")]: {
       marginLeft: 0,
       paddingTop: `${theme.spacing.unit * 8}px !important`
@@ -191,22 +190,18 @@ const styles = theme => ({
     marginBottom: theme.spacing.unit
   },
   boldD: {
-    marginTop: theme.spacing.unit,
     color: "white",
     textShadow: "0 0 12px rgba(0,0,0,.1)",
-    marginBottom: theme.spacing.unit,
     fontWeight: 600
   },
   smallD: {
-    marginLeft: theme.spacing.unit,
-    marginTop: theme.spacing.unit,
+    marginLeft: theme.spacing.unit / 2,
     color: "white",
     textShadow: "0 0 12px rgba(0,0,0,.1)",
-    marginBottom: theme.spacing.unit
   },
   sepD: {
     display: "flex",
-    marginLeft: theme.spacing.unit
+    marginLeft: theme.spacing.unit / 2
   },
   artworkimg: {
     width: "100%",
@@ -254,7 +249,9 @@ const styles = theme => ({
     zIndex: 500
   },
   genreRow: {
-    display: "flex"
+    display: "flex",
+    margin: 'auto',
+    marginBottom: theme.spacing.unit
   },
   tagChip: {
     margin: theme.spacing.unit / 2,
@@ -997,7 +994,29 @@ class Show extends Component {
           }
         )
         .then(() => {
-          this.setState({ fav: true });
+          this.setState({ fav: true }, () => {
+            if (
+              data &&
+              !isEmpty(this.props.profile) &&
+              this.props.profile.username &&
+              this.props.profile.willLog
+            ) {
+              this.props.firebase.ref('/users').child(this.props.profile.userID).child('feed')
+                .child(this.state.id + 'F').update({
+                  date: Date.now(),
+                  id: this.state.id + 'F', 
+                  showId: this.state.id,
+                  type: "FAV",
+                  activity: `Favorited ${data.title.romaji}`,
+                  bgImg: this.state.data.Media.bannerImage && this.state.data.Media.bannerImage,
+                  coverImg: this.state.data.Media.coverImage.large,
+                  user: {
+                    username: this.props.profile.username,
+                    avatar: this.props.profile.avatar,
+                    userID: this.props.profile.userID
+                  }
+                })
+          }});
         });
   };
 
@@ -1007,7 +1026,16 @@ class Show extends Component {
     if (!isEmpty(this.props.profile))
       this.props.firebase
         .remove(`users/${this.props.profile.userID}/favs/${entity}/${data.id}`)
-        .then(() => this.setState({ fav: false }));
+        .then(() => this.setState({ fav: false }, () => {
+          if (
+            data &&
+            !isEmpty(this.props.profile) &&
+            this.props.profile.username &&
+            this.props.profile.willLog
+          ) {
+            this.props.firebase.ref('/users').child(this.props.profile.userID).child('feed')
+              .child(this.state.id + 'F').remove()
+        }}));
   };
 
   RecommendThis = async () => {
@@ -1039,7 +1067,29 @@ class Show extends Component {
           }
         )
         .then(() => {
-          this.setState({ recommend: true });
+          this.setState({ recommend: true }, () => {
+            if (
+              data &&
+              !isEmpty(this.props.profile) &&
+              this.props.profile.username &&
+              this.props.profile.willLog
+            ) {
+              this.props.firebase.ref('/users').child(this.props.profile.userID).child('feed')
+                .child(this.state.id + 'R').update({
+                  date: Date.now(),
+                  id: this.state.id + 'R', 
+                  showId: this.state.id,
+                  type: "RECOMMEND",
+                  activity: `Recommended ${data.title.romaji}`,
+                  bgImg: this.state.data.Media.bannerImage && this.state.data.Media.bannerImage,
+                  coverImg: this.state.data.Media.coverImage.large,
+                  user: {
+                    username: this.props.profile.username,
+                    avatar: this.props.profile.avatar,
+                    userID: this.props.profile.userID
+                  }
+                })
+          }});
         });
   };
 
@@ -1051,7 +1101,16 @@ class Show extends Component {
         .remove(
           `users/${this.props.profile.userID}/recommends/${entity}/${data.id}`
         )
-        .then(() => this.setState({ recommend: false }));
+        .then(() => this.setState({ recommend: false }, () => {
+          if (
+            data &&
+            !isEmpty(this.props.profile) &&
+            this.props.profile.username &&
+            this.props.profile.willLog
+          ) {
+            this.props.firebase.ref('/users').child(this.props.profile.userID).child('feed')
+              .child(this.state.id + 'R').remove()
+        }}));
   };
 
   addToLater = async () => {
@@ -1079,7 +1138,29 @@ class Show extends Component {
           rank:
             data.rankings && data.rankings.length > 0 ? data.rankings[0] : null
         }
-      );
+      ).then(() => {
+        if (
+          data &&
+          !isEmpty(this.props.profile) &&
+          this.props.profile.username &&
+          this.props.profile.willLog
+        ) {
+          this.props.firebase.ref('/users').child(this.props.profile.userID).child('feed')
+            .child(this.state.id + 'L').update({
+              date: Date.now(),
+              id: this.state.id + 'L', 
+              showId: this.state.id,
+              type: "LATER",
+              activity: `Added ${data.title.romaji} to their later list`,
+              bgImg: this.state.data.Media.bannerImage && this.state.data.Media.bannerImage,
+              coverImg: this.state.data.Media.coverImage.large,
+              user: {
+                username: this.props.profile.username,
+                avatar: this.props.profile.avatar,
+                userID: this.props.profile.userID
+              }
+            })
+      }});
   };
 
   removeFromLater = async () => {
@@ -1088,7 +1169,16 @@ class Show extends Component {
     if (!isEmpty(this.props.profile))
       this.props.firebase.remove(
         `users/${this.props.profile.userID}/later/${entity}/${data.id}`
-      );
+      ).then(() => {
+        if (
+          data &&
+          !isEmpty(this.props.profile) &&
+          this.props.profile.username &&
+          this.props.profile.willLog
+        ) {
+          this.props.firebase.ref('/users').child(this.props.profile.userID).child('feed')
+            .child(this.state.id + 'L').remove()
+      }});
   };
 
   reportError = () => this.setState({ reportModal: !this.state.reportModal });
@@ -1308,7 +1398,7 @@ class Show extends Component {
                       variant="raised"
                       color="primary"
                       className={classes.streamButton}
-                      style={{background: hue}}
+                      style={{background: hue, color: 'white'}}
                       onClick={this.stream}
                     >
                       {lang.show.livestreamButton}
@@ -1353,10 +1443,7 @@ class Show extends Component {
                   </div>
                   <div style={{ display: "flex", width: "100%" }}>
                     <Typography
-                      style={
-                        data.Media.synonyms && data.Media.synonyms.length > 0
-                          ? { marginBottom: 0 }
-                          : null
+                      style={{margin: 'auto'}
                       }
                       className={classes.bigTitle}
                       variant="display3"
@@ -1387,27 +1474,25 @@ class Show extends Component {
                     </Tooltip>
                   </div>
                   {data.Media.synonyms && data.Media.synonyms.length > 0 ? (
+                    <div style={{display: 'flex', width: '100%'}}>
                     <Typography
-                      style={{ marginBottom: 12 }}
+                      style={{ marginTop: -2 }}
                       className={classes.smallTitle}
                       variant="display1"
                     >
                       {`${lang.show.alsoKnownAs} `}
                       {data.Media.synonyms.map(s => s).join(", ")}
                     </Typography>
+                    </div>
                   ) : null}
-                  <Divider />
-                  <Typography
-                    className={classes.desc}
-                    variant="body1"
-                    dangerouslySetInnerHTML={{ __html: data.Media.description }}
-                  />
+                  <div style={{display: 'flex', width: '100%'}}>
+                  <div style={{margin: 'auto'}}>
                   <div style={{ display: "flex" }}>
                     {data.Media.staff &&
                     data.Media.staff.edges.filter(
                       s => s.role === "Director"
                     )[0] ? (
-                      <Typography className={classes.boldD} variant="headline">
+                      <Typography className={classes.boldD} variant="body1">
                         {lang.show.director}
                       </Typography>
                     ) : null}
@@ -1415,7 +1500,7 @@ class Show extends Component {
                     data.Media.staff.edges.filter(
                       s => s.role === "Director"
                     )[0] ? (
-                      <Typography className={classes.smallD} variant="headline">
+                      <Typography className={classes.smallD} variant="body1">
                         {
                           data.Media.staff.edges.filter(
                             s => s.role === "Director"
@@ -1437,7 +1522,7 @@ class Show extends Component {
                       <div className={classes.sepD}>
                         <Typography
                           className={classes.boldD}
-                          variant="headline"
+                          variant="body1"
                         >
                           {data.Media.staff.edges.filter(
                             s => s.role === "Director"
@@ -1447,7 +1532,7 @@ class Show extends Component {
                         </Typography>
                         <Typography
                           className={classes.smallD}
-                          variant="headline"
+                          variant="body1"
                         >
                           {
                             data.Media.staff.edges.filter(
@@ -1465,69 +1550,33 @@ class Show extends Component {
                       </div>
                     ) : null}
                   </div>
+                  </div>
+                  <div style={{flex: 1}} />
+                  <div className={classes.genreRow}>
+                  {data.Media.genres
+                    ? data.Media.genres.map((o, index) => (
+                        <Chip
+                          className={classes.tagChip}
+                          key={index}
+                          label={o}
+                        />
+                      ))
+                    : null}
+                </div>
+                  </div>
                   <Divider />
-                  <Grid container>
-                    <Grid item xs className={classes.tagBox}>
-                      <Typography className={classes.tagTitle} variant="title">
-                        {lang.show.genres}
-                      </Typography>
-                      <div className={classes.genreRow}>
-                        {data.Media.genres
-                          ? data.Media.genres.map((o, index) => (
-                              <Chip
-                                onClick={() =>
-                                  this.props.history.push(`/tag?g=${o}`)
-                                }
-                                className={classes.tagChip}
-                                key={index}
-                                label={o}
-                              />
-                            ))
-                          : null}
-                      </div>
-                    </Grid>
-                    <Grid item xs className={classes.tagBox}>
-                      <Typography className={classes.tagTitle} variant="title">
-                        {lang.show.tags}
-                      </Typography>
-                      <div className={classes.genreRow}>
-                        {data.Media.tags &&
-                          data.Media.tags.map((o, index) => (
-                            <Chip
-                              onClick={() =>
-                                this.props.history.push(`/tag?t=${o.id}`)
-                              }
-                              className={classes.tagChip}
-                              key={index}
-                              label={o.name}
-                            />
-                          ))}
-                      </div>
-                    </Grid>
-                    {data.Media.type.includes("MANGA") ? null : (
-                      <Grid item xs className={classes.tagBox}>
-                        <Typography
-                          className={classes.tagTitle}
-                          variant="title"
+                  <Typography
+                          className={classes.boldD}
+                          variant="body1"
+                          style={{marginTop: theme.spacing.unit}}
                         >
-                          {lang.show.producers}
+                          Synopsis
                         </Typography>
-                        <div className={classes.genreRow}>
-                          {data.Media.studios &&
-                            data.Media.studios.edges.map((o, index) => (
-                              <Chip
-                                onClick={() =>
-                                  this.props.history.push(`/tag?s=${o.node.id}`)
-                                }
-                                className={classes.tagChip}
-                                key={index}
-                                label={o.node.name}
-                              />
-                            ))}
-                        </div>
-                      </Grid>
-                    )}
-                  </Grid>
+                  <Typography
+                    className={classes.desc}
+                    variant="body1"
+                    dangerouslySetInnerHTML={{ __html: data.Media.description }}
+                  />
                 </Grid>
               </Container>
               <MainCard>
@@ -1659,8 +1708,8 @@ class Show extends Component {
                         variant="determinate"
                         value={user.episodeProgress[data.Media.id].played * 100}
                         classes={{
-                          primaryColor: classes.progressBar,
-                          primaryColorBar: classes.progressBarActive
+                          colorPrimary: classes.progressBar,
+                          barColorPrimary: classes.progressBarActive
                         }}
                       />
                       <Typography
@@ -2010,7 +2059,7 @@ class Show extends Component {
                   <div style={{ flex: 1 }} />
                   {data.Media.rankings &&
                     data.Media.rankings.map((ran, index) => (
-                      <Paper className={classes.commandoTextBoxRow}>
+                      <Paper key={index} className={classes.commandoTextBoxRow}>
                         <Typography
                           variant="title"
                           className={classes.commandoTextNumberRow}
@@ -2044,9 +2093,9 @@ class Show extends Component {
                     {data.Media.characters &&
                     data.Media.characters.edges.length > 0 ? (
                       <ItemContainer>
-                        {data.Media.characters.edges.map(cast => (
+                        {data.Media.characters.edges.map((cast, index) => (
                           <PeopleButton
-                            key={cast.id}
+                            key={index}
                             onClick={() =>
                               this.props.history.push(
                                 `/fig?${
@@ -2121,9 +2170,9 @@ class Show extends Component {
                     <SectionTitle title={lang.show.staff} />
                     <ItemContainer>
                       {data.Media.staff &&
-                        data.Media.staff.edges.map(staff => (
+                        data.Media.staff.edges.map((staff, index) => (
                           <PeopleButton
-                            key={staff.id}
+                            key={index}
                             image={staff.node.image.medium}
                             name={{
                               first: staff.node.name.first,
@@ -2142,7 +2191,7 @@ class Show extends Component {
                       {data.Media.relations &&
                         data.Media.relations.edges.map((anime, index) => (
                           <CardButton
-                            key={anime.id}
+                            key={index}
                             image={anime.node.coverImage.large}
                             title={anime.node.title.romaji}
                             subtitle={`${
@@ -2161,13 +2210,13 @@ class Show extends Component {
                         data.Media.tags.length > 0 &&
                         similars &&
                         similars.data &&
-                        similars.data.Page.media &&
+                        similars.data.Page.media && this.props.mir.twist &&
                         TwistFilter(similars.data.Page.media, this.props.mir.twist)
                           .filter(a => a.id !== data.Media.id)
                           .splice(0, 8)
                           .map((anime, index) => (
                             <CardButton
-                              key={anime.id}
+                              key={index}
                               image={anime.coverImage.large}
                               title={anime.title.romaji}
                               subtitle="SIMILAR"
@@ -2184,13 +2233,13 @@ class Show extends Component {
                         data.Media.tags.length > 1 &&
                         similars2 &&
                         similars2.data &&
-                        similars2.data.Page.media &&
+                        similars2.data.Page.media && this.props.mir.twist &&
                         TwistFilter(similars2.data.Page.media, this.props.mir.twist)
                           .filter(a => a.id !== data.Media.id)
                           .splice(0, 8)
                           .map((anime, index) => (
                             <CardButton
-                              key={anime.id}
+                              key={index}
                               image={anime.coverImage.large}
                               title={anime.title.romaji}
                               subtitle="SIMILAR"

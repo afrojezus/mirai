@@ -95,7 +95,8 @@ const style = theme => ({
   },
   backToolbar: {
     zIndex: 10,
-    transition: theme.transitions.create(["all"])
+    transition: theme.transitions.create(["all"]),
+    '-webkitAppRegion': 'drag'
   },
   indicator: {
     flexDirection: "row",
@@ -406,7 +407,6 @@ class MirPlayer extends Component {
   };
 
   onProgress = state => {
-    const play = this.state.played;
     if (!this.state.seeking)
       this.setState(state, async () => {
         this.setState({
@@ -916,8 +916,8 @@ class MirPlayer extends Component {
               <LinearProgress
                 classes={{
                   root: classes.progress,
-                  primaryColor: classes.progressBgOver,
-                  primaryColorBar: classes.progressBar
+                  colorPrimary: classes.progressBgOver,
+                  barColorPrimary: classes.progressBar
                 }}
                 variant="determinate"
                 value={played * 100}
@@ -926,8 +926,8 @@ class MirPlayer extends Component {
               <LinearProgress
                 classes={{
                   root: classes.progressLoaded,
-                  primaryColor: classes.progressBg,
-                  primaryColorBar: classes.progressBarLoaded
+                  colorPrimary: classes.progressBg,
+                  barColorPrimary: classes.progressBarLoaded
                 }}
                 variant="determinate"
                 value={loaded * 100}
@@ -940,7 +940,7 @@ class MirPlayer extends Component {
                 type="range"
                 step="any"
                 max={0.999}
-                min={0}
+                min={0.001}
                 value={played}
                 onMouseDown={this.onSeekMouseDown}
                 onChange={this.onSeekChange}
@@ -1126,8 +1126,8 @@ class MirPlayer extends Component {
                 <LinearProgress
                   classes={{
                     root: classes.progressVolume,
-                    primaryColor: classes.progressBgOver,
-                    primaryColorBar: classes.progressBar
+                    colorPrimary: classes.progressBgOver,
+                    barColorPrimary: classes.progressBar
                   }}
                   variant="determinate"
                   value={volume * 100}
@@ -1268,63 +1268,67 @@ class MirPlayer extends Component {
               <Icon.ViewList />
             </IconButton>
             <Menu
-              id="ep-menu"
-              anchorEl={menuEl}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right"
-              }}
-              transformOrigin={{
-                vertical: "center",
-                horizontal: "right"
-              }}
-              open={menu}
-              classes={{
-                paper: classes.menuPaper
-              }}
-              onClose={this.closeMenu}
-              PaperProps={{
-                style: {
-                  width: 300,
-                  padding: 0,
-                  outline: "none",
-                  background: grey[800]
-                }
-              }}
-              MenuListProps={{
-                style: {
-                  padding: 0,
-                  outline: "none"
-                }
-              }}
-            >
-              <Card style={{ background: grey[800] }}>
-                <CardHeader
-                  style={{ background: grey[900] }}
-                  title="Episodes"
-                />
-                <Divider />
-                <CardContent className={classes.epListCont}>
-                  {eps &&
-                    eps.map(e => (
-                      <MenuItem
-                        onClick={() => {
-                          this.setState({ ep: e.ep }, async () =>
-                            loadEp(e, null)
-                          );
-                        }}
-                        key={e.ep}
-                        selected={e.ep === ep}
-                        className={classes.epListItem}
-                      >
-                        Episode {e.ep}
-                        <div style={{ flex: 1 }} />
-                        {e.ep === ep ? <Icon.PlayArrow /> : null}
-                      </MenuItem>
-                    ))}
-                </CardContent>
-              </Card>
-            </Menu>
+            id="ep-menu"
+            anchorEl={menuEl}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "right"
+            }}
+            transformOrigin={{
+              vertical: "center",
+              horizontal: "right"
+            }}
+            open={menu}
+            classes={{
+              paper: classes.menuPaper
+            }}
+            onClose={this.closeMenu}
+            PaperProps={{
+              style: {
+                width: 420,
+                padding: 0,
+                outline: "none",
+                background: grey[800]
+              }
+            }}
+            MenuListProps={{
+              style: {
+                padding: 0,
+                outline: "none"
+              }
+            }}
+          >
+            <Card style={{ background: grey[800] }}>
+              <CardHeader
+                style={{ background: grey[900] }}
+                title="Episodes"
+              />
+              <Divider />
+              <CardContent className={classes.epListCont}>
+                {eps &&
+                  eps.map(e => (
+                    <MenuItem
+                      onClick={() => {
+                        this.setState({ ep: e.ep }, async () =>
+                          loadEp(this, e, null)
+                        );
+                      }}
+                      key={e.ep}
+                      selected={e.ep === ep}
+                      className={classes.epListItem}
+                    >
+                    {e.thumb ? <img alt='' className={classes.episodeThumb} src={e.thumb.original} /> : null}
+                    <div style={{display: 'flex', flexFlow: 'column nowrap', paddingLeft: 8}}>
+                      <Typography variant='title' className={classes.episodeCount}>Episode {e.ep}</Typography>
+                      {e.canon ? <Typography variant='body1' className={classes.episodeName}>{e.canon}</Typography> : null}
+                      </div>
+                      <div style={{ flex: 1 }} />
+                      {e.ep === ep ? <Icon.PlayArrow /> : null}
+                    </MenuItem>
+                  ))}
+              </CardContent>
+            </Card>
+          </Menu>
           </div>
         )}
       </div>

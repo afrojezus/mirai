@@ -57,3 +57,20 @@
  Sat Mar 03 2018 21:14:55 GMT+0100 (CET)
 [debug] [2018-03-03T20:14:55.248Z] >>> HTTP REQUEST GET https://apikeys.googleapis.com/v1/projects/yura-a8e86/apiKeys  
  Sat Mar 03 2018 21:14:55 GMT+0100 (CET)
+[debug] [2018-03-09T01:28:47.526Z] ----------------------------------------------------------------------
+[debug] [2018-03-09T01:28:47.528Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\thora\AppData\Local\Yarn\Data\global\node_modules\firebase-tools\bin\firebase deploy
+[debug] [2018-03-09T01:28:47.528Z] CLI Version:   3.17.5
+[debug] [2018-03-09T01:28:47.528Z] Platform:      win32
+[debug] [2018-03-09T01:28:47.528Z] Node Version:  v8.9.4
+[debug] [2018-03-09T01:28:47.529Z] Time:          Fri Mar 09 2018 02:28:47 GMT+0100 (Vest-Europa (normaltid))
+[debug] [2018-03-09T01:28:47.529Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-03-09T01:28:47.538Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-03-09T01:28:47.539Z] > authorizing via signed-in user
+[debug] [2018-03-09T01:28:47.540Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/yura-a8e86  
+  
+ Fri Mar 09 2018 02:28:47 GMT+0100 (Vest-Europa (normaltid))
+[debug] [2018-03-09T01:28:48.336Z] <<< HTTP RESPONSE 200
+[debug] [2018-03-09T01:28:48.336Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/yura-a8e86/tokens  
+  
+ Fri Mar 09 2018 02:28:48 GMT+0100 (Vest-Europa (normaltid))

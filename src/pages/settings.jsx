@@ -9,7 +9,7 @@ import blue from "material-ui/colors/blue";
 import green from "material-ui/colors/green";
 import { connect } from "react-redux";
 import { firebaseConnect, firebase } from "react-redux-firebase";
-import { TitleHeader, Header, Column, Row } from "../components/layouts";
+import { TitleHeader, Header, Column, Row, Dialogue } from "../components/layouts";
 import { history } from "../store";
 
 import strings from "../strings.json";
@@ -138,7 +138,8 @@ class Settings extends Component {
     theme: "Mirai",
     langCode: "en-us",
     lang: strings.enus,
-    langVal: ""
+    langVal: "",
+    deleteDialog: false
   };
 
   componentWillMount = () => {
@@ -291,6 +292,12 @@ class Settings extends Component {
     else this.props.firebase.updateProfile({ willLog: true });
   };
 
+  changeLogPrivate = async (e, check) => {
+    const set = this.props.profile.privateLog;
+    if (set) this.props.firebase.updateProfile({ privateLog: false });
+    else this.props.firebase.updateProfile({ privateLog: true });
+  };
+
   deleteLogg = async () =>
     this.props.firebase
       .ref("users")
@@ -298,9 +305,29 @@ class Settings extends Component {
       .child("feed")
       .remove();
 
+  deleteMyAccount = async () => {
+    const db = this.props.firebase.ref("users")
+    .child(this.props.profile.userID);
+    try {
+      await db.remove();
+      return this.props.firebase
+      .logout()
+      .then(async () =>
+        localForage.removeItem("user", async () => {
+          localStorage.removeItem("user-hue");
+          this.props.history.push("/setup");
+          await localForage.removeItem("player-state");
+        })
+      )
+      .catch(err => console.error(err.message));
+    } catch (error) {
+      return console.error(error);
+    }
+  }
+
   render() {
     const { classes, theme } = this.props;
-    const { loading, langCode, lang, langVal, hue } = this.state;
+    const { loading, langCode, lang, langVal, hue, deleteDialog } = this.state;
     const user = this.props.profile;
     if (!user) return null;
     return (
@@ -643,6 +670,25 @@ class Settings extends Component {
                       }
                     />
                   </M.FormGroup>
+                <M.Typography variant="body1">
+                  {lang.settings.loggingprivate}
+                </M.Typography>
+                 <M.FormGroup>
+                  <M.FormControlLabel
+                  disabled={!this.props.profile.willLog}
+                    control={
+                      <M.Switch
+                        checked={this.props.profile.privateLog}
+                        onChange={this.changeLogPrivate}
+                      />
+                    }
+                    label={
+                      this.props.profile.privateLog
+                        ? lang.settings.on
+                        : lang.settings.off
+                    }
+                  />
+                </M.FormGroup>
                 </Column>
               </M.ExpansionPanelDetails>
             </M.ExpansionPanel>
@@ -691,6 +737,7 @@ class Settings extends Component {
               </M.ExpansionPanelActions>
             </M.ExpansionPanel>
             <M.ExpansionPanel
+                    disabled
               style={{ background: hue ? hue : null }}
               className={classes.panel}
             >
@@ -731,6 +778,7 @@ class Settings extends Component {
               </M.ExpansionPanelActions>
             </M.ExpansionPanel>
             <M.ExpansionPanel
+            disabled
               style={{ background: hue ? hue : null }}
               className={classes.panel}
             >
@@ -775,6 +823,7 @@ class Settings extends Component {
               {lang.settings.misc}
             </M.Typography>
             <M.ExpansionPanel
+            disabled
               style={{ background: hue ? hue : null }}
               className={classes.panel}
             >
@@ -818,8 +867,17 @@ class Settings extends Component {
                 </M.FormGroup>
               </M.ExpansionPanelActions>
             </M.ExpansionPanel>
+            <div style={{display: 'flex', marginTop: theme.spacing.unit * 12}}><div style={{flex: 1}} /><M.Button variant='raised' color='secondary' style={{background: 'red'}} onClick={() => this.setState({deleteDialog: true})}>Delete my account</M.Button></div>
           </M.Grid>
         </div>
+        <Dialogue open={deleteDialog} onClose={() => this.setState({deleteDialog: false})} title='Are you sure you want to delete your account?'>
+        <M.Typography variant='body1'>This action cannot be undone.</M.Typography>
+        <div style={{display: 'flex', marginTop: theme.spacing.unit * 4}}>
+        <M.Button onClick={() => this.setState({deleteDialog: false})}>Nope</M.Button>
+        <div style={{flex: 1}} />
+        <M.Button variant='raised' color='secondary' style={{background: 'red'}} onClick={this.deleteMyAccount}>Yes</M.Button>
+        </div>
+        </Dialogue>
       </div>
     );
   }

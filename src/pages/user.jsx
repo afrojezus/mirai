@@ -924,11 +924,7 @@ class User extends Component {
                   ) : null}
                 </M.Menu>
               </CommandoBar>
-              <SwipableViews
-                index={tabVal}
-                onChangeIndex={index => this.setState({ tabVal: index })}
-              >
-                <M.Grid container className={classes.container}>
+                {tabVal === 0 ? <M.Grid container className={classes.container}>
                   <M.Grid item xs style={{ zIndex: 10 }}>
                     <SectionTitle title={lang.user.friends} />
                     <M.Grid container className={classes.itemcontainer}>
@@ -976,21 +972,27 @@ class User extends Component {
                     </M.Grid>
                     <SectionTitle title={lang.user.activity} />
                         {data ? (
-                          data.feed ? (
+                          data.feed && !data.privateLog ? (
                             Object.values(data.feed)
                               .sort((a, b) => b.date - a.date)
-                              .map((act, index) => (
+                              .map((feed, index) => (
                                 <Feed
-                                  title={"Activity"}
-                                  avatar={act.coverImg}
-                                  context={act.type}
-                                  noActions
-                                  id={index}
-                                  text={act.activity}
-                                  date={act.date}
-                                  key={index}
-                                  style={{ width: 450, flexBasis: "initial" }}
-                                />
+                                    key={index}
+                                    ftitle={feed.user.username}
+                                    context={feed.activity}
+                                    date={feed.date}
+                                    avatar={feed.user.avatar}
+                                    id={feed.id}
+                                    image={feed.coverImg}
+                                    user={{
+                                      avatar: feed.user.avatar,
+                                      id: feed.user.userID,
+                                      username: feed.user.username
+                                    }}
+                                    color={hue}
+                                    activity
+                                    noActions
+                                  />
                               ))
                           ) : (
                             <M.Typography variant="body1">
@@ -1346,8 +1348,8 @@ class User extends Component {
                       )}
                     </M.Grid>
                   </M.Grid>
-                </M.Grid>
-                <Container>
+                </M.Grid> : null}
+                {tabVal === 1 ?  <Container>
                   <ItemContainer>
                     {userFeeds &&
                     Object.values(userFeeds).filter(
@@ -1360,17 +1362,18 @@ class User extends Component {
                         .sort((a, b) => b.date - a.date)
                         .map((feed, index) => (
                           <Feed
-                            color={hue}
-                            key={index}
-                            ftitle={feed.user.username}
-                            context={feed.context}
-                            text={feed.text}
-                            date={feed.date}
-                            avatar={feed.user.avatar}
-                            image={feed.image}
-                            id={feed.id}
-                            user={feed.user}
-                          />
+                                    key={index}
+                                    ftitle={feed.user.username}
+                                    context={feed.context}
+                                    text={feed.text}
+                                    date={feed.date}
+                                    avatar={feed.user.avatar}
+                                    image={feed.image}
+                                    id={feed.id}
+                                    user={feed.user}
+                                    color={hue}
+                                    likes={feed.likes}
+                                  />
                         ))
                     ) : (
                       <SectionTitle
@@ -1379,8 +1382,8 @@ class User extends Component {
                       />
                     )}
                   </ItemContainer>
-                </Container>
-                <Container>
+                </Container> : null}
+                {tabVal === 2 ? <Container>
                   <Column>
                     <M.Typography variant="title" className={classes.secTitle}>
                       {lang.user.animeList.recentlyWatched}
@@ -1432,49 +1435,6 @@ class User extends Component {
                       ) : (
                         <M.Typography variant="body1">
                           Watch something?
-                        </M.Typography>
-                      )}
-                    </M.Grid>
-                    <M.Typography
-                      variant={"title"}
-                      className={classes.secTitleSmall}
-                    >
-                      {lang.user.animeList.lastyura}
-                    </M.Typography>
-                    <M.Grid container className={classes.itemcontainer}>
-                      {data ? (
-                        data.lastEp ? (
-                          Object.values(data.lastEp).map((show, index) => (
-                            <CardButton
-                              key={index}
-                              onClick={() =>
-                                this.props.history.push(`/show?s=${show.id}`)
-                              }
-                              title={show.showName}
-                              image={show.imageLgeBanner}
-                              subtitle={show.showEp}
-                            />
-                          ))
-                        ) : (
-                          <M.Typography variant="body1">
-                            {data.username} never used yura, nothing to find.
-                          </M.Typography>
-                        )
-                      ) : !isEmpty(user) && user.lastEp ? (
-                        Object.values(user.lastEp).map((show, index) => (
-                          <CardButton
-                            key={index}
-                            onClick={() =>
-                              this.props.history.push(`/show?s=${show.id}`)
-                            }
-                            title={show.showName}
-                            image={show.imageLgeBanner}
-                            subtitle={show.showEp}
-                          />
-                        ))
-                      ) : (
-                        <M.Typography variant="body1">
-                          No information on about yura history.
                         </M.Typography>
                       )}
                     </M.Grid>
@@ -1636,8 +1596,8 @@ class User extends Component {
                       )}
                     </M.Grid>
                   </Column>
-                </Container>
-                <Container>
+                </Container> : null}
+                {tabVal === 3 ?  <Container>
                   <Column>
                     <M.Typography variant="title" className={classes.secTitle}>
                       {lang.user.mangaList.recentlyread}
@@ -1656,8 +1616,8 @@ class User extends Component {
                     </M.Typography>
                     <M.Grid container className={classes.itemcontainer} />
                   </Column>
-                </Container>
-                <Container>
+                </Container> : null}
+                {tabVal === 4 ? <Container>
                   <Column>
                     <SectionTitle
                       title={
@@ -1768,8 +1728,7 @@ class User extends Component {
                       )}
                     </ItemContainer>
                   </Column>
-                </Container>
-              </SwipableViews>
+                </Container> : null}
             </MainCard>
           </Container>
         </Root>
