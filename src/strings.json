@@ -131,6 +131,18 @@
       "access": "Sign in",
       "divein": "Enter"
     },
+    "explore": {
+      "title": "Explore",
+      "topRatedTitle": "Best rated anime",
+      "topRatedDesc": "The 'best' anime as decided by the community of AniList",
+      "topPopularTitle": "Most popular anime",
+      "topPopularDesc": "The most popular anime of all time",
+      "recommendationsTitle": "Recommendations",
+      "hCorner": "H Corner",
+      "collectionsTitle": "Collections",
+      "friendsTitle": "Recommended by friends",
+      "error": "Something happened"
+    },
     "show": {
       "moreMenu": {
         "report": "Report error",
@@ -276,6 +288,18 @@
           "Det er enkelt å legge til en direktestrømming! Bare velg 'Livestream denne animen' når du er inne på en anime. Så enkelt er det!"
       }
     },
+    "explore": {
+      "title": "Utforsk",
+      "topRatedTitle": "Best vurdert anime",
+      "topRatedDesc": "De beste animene ifølge AniList brukerne",
+      "topPopularTitle": "Mest populære anime",
+      "topPopularDesc": "De mest populære animene",
+      "recommendationsTitle": "Anbefalinger",
+      "hCorner": "H Hjørnet",
+      "collectionsTitle": "Samlinger",
+      "friendsTitle": "Anbefalinger av vennene dine",
+      "error": "Noe skjedde"
+    },
     "home": {
       "welcomeuser": "Velkommen tilbake",
       "welcomeanon": "Mirai. En annerledes type streaming.",
@@ -326,7 +350,8 @@
       "logging": "Logging",
       "loggingdelete": "Vil du slette din nåværende logg?",
       "loggingallow": "Tilatte logging av din aktivitet?",
-      "loggingprivate": "Vil du holde loggingen av din aktivitet på Mirai hemmelig?",
+      "loggingprivate":
+        "Vil du holde loggingen av din aktivitet på Mirai hemmelig?",
       "anilistdesc":
         "The AniList syncing function enables your Mirai account to sync with your AniList account.",
       "maldesc":

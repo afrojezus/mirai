@@ -8,7 +8,6 @@ import IconButton from "material-ui/IconButton";
 import checkLang from "../checklang";
 import strings from "../strings.json";
 import { firebaseConnect, isEmpty } from "react-redux-firebase";
-import Colorizer from "../utils/colorizer";
 import { blue, grey } from "material-ui/colors";
 import { connect } from "react-redux";
 import Filter from "../utils/filter";
@@ -30,7 +29,7 @@ import Hidden from "material-ui/Hidden";
 import { FeedMaker, Feed } from "../components/feed";
 import Select from "material-ui/Select";
 import { MenuItem } from "material-ui/Menu";
-import { SearchBox } from '../components/superbar';
+import { SearchBox } from "../components/superbar";
 
 const styles = theme => ({
   root: {
@@ -355,8 +354,8 @@ const styles = theme => ({
     paddingRight: theme.spacing.unit * 2,
     margin: "auto 0",
     width: "auto",
-    color: 'white'
-  },
+    color: "white"
+  }
 });
 
 class Home extends Component {
@@ -412,7 +411,8 @@ class Home extends Component {
         // Get users
         const usersync = usersR.val();
         // Get activity feed from users
-        const users = Object.values(usersync).filter(a => !a.privateLog)
+        const users = Object.values(usersync)
+          .filter(a => !a.privateLog)
           .filter(x => x.feed)
           .map(f => f.feed);
         const userFeedArray = users.map(s => Object.values(s));
@@ -478,24 +478,36 @@ class Home extends Component {
             color={hue !== "#111" ? hue : "#111"}
           />
           <Root>
-            <Container hasHeader={!isEmpty(user) ? false : window.mobilecheck() ? false : true} spacing={16}>
-              {!isEmpty(user) ? <Hidden mdDown>
-                <Grid item xs={3}>
-                  <SectionTitle title="Hahaha... nothing to see here... yet" />
-                </Grid>
-              </Hidden> : <Grid item xs={3} />}
+            <Container
+              hasHeader={
+                !isEmpty(user) ? false : window.mobilecheck() ? false : true
+              }
+              spacing={16}
+            >
+              {!isEmpty(user) ? (
+                <Hidden mdDown>
+                  <Grid item xs={3}>
+                    <SectionTitle title="Hahaha... nothing to see here... yet" />
+                  </Grid>
+                </Hidden>
+              ) : (
+                <Grid item xs={3} />
+              )}
               <Grid item xs>
-                {!isEmpty(user) ? <FeedMaker color={hue} /> : 
-                <SearchBox
-                mir={this.props.mir}
-                history={this.props.history}
-                main
-                classes={{
-                  searchBar: classes.searchBar,
-                  searchInput: classes.searchInput,
-                  searchIcon: classes.searchIcon
-                }}
-              />}
+                {!isEmpty(user) ? (
+                  <FeedMaker color={hue} />
+                ) : (
+                  <SearchBox
+                    mir={this.props.mir}
+                    history={this.props.history}
+                    main
+                    classes={{
+                      searchBar: classes.searchBar,
+                      searchInput: classes.searchInput,
+                      searchIcon: classes.searchIcon
+                    }}
+                  />
+                )}
                 <Container style={{ padding: 8 }}>
                   <SectionTitle title={lang.home.feeds} noPad />
                   <div style={{ flex: 1 }} />
@@ -601,34 +613,40 @@ class Home extends Component {
                         );
                     })
                 ) : (
-                  <Container style={{ padding: 8 }}><SectionTitle title="Nobody has said anything..." lighter /></Container>
+                  <Container style={{ padding: 8 }}>
+                    <SectionTitle title="Nobody has said anything..." lighter />
+                  </Container>
                 )}
               </Grid>
-              {!isEmpty(user) ? <Grid item xs={3}>
-                {!isEmpty(user) &&
-                user.favs &&
-                user.favs.show &&
-                user.favs.show ? (
-                  <div style={{ width: "100%" }}>
+              {!isEmpty(user) ? (
+                <Grid item xs={3}>
+                  {!isEmpty(user) &&
+                  user.favs &&
+                  user.favs.show &&
+                  user.favs.show ? (
+                    <div style={{ width: "100%" }}>
                       <SectionTitle title={lang.home.animefavTitle} />
                       <div style={{ flex: 1 }} />
-                    <ItemContainer style={{ marginTop: 24 }}>
-                      {Object.values(user.favs.show)
-                        .sort((a, b) => a.name - b.name)
-                        .map(anime => (
-                          <CardButton
-                            key={anime.id}
-                            title={anime.name}
-                            image={anime.image}
-                            onClick={() =>
-                              this.props.history.push(`/show?s=${anime.id}`)
-                            }
-                          />
-                        ))}
-                    </ItemContainer>
-                  </div>
-                ) : null}
-              </Grid> : <Grid item xs={3} />}
+                      <ItemContainer style={{ marginTop: 24 }}>
+                        {Object.values(user.favs.show)
+                          .sort((a, b) => a.name - b.name)
+                          .map(anime => (
+                            <CardButton
+                              key={anime.id}
+                              title={anime.name}
+                              image={anime.image}
+                              onClick={() =>
+                                this.props.history.push(`/show?s=${anime.id}`)
+                              }
+                            />
+                          ))}
+                      </ItemContainer>
+                    </div>
+                  ) : null}
+                </Grid>
+              ) : (
+                <Grid item xs={3} />
+              )}
             </Container>
           </Root>
         </div>

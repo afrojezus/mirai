@@ -195,12 +195,26 @@ class Rankings extends Component {
 
   getFriendsRecommend = async () => {
     const you = this.props.profile;
+    if (isEmpty(you)) {
+      return null;
+    }
     const db = this.props.firebase.database().ref("/users");
     try {
-      /*return db
-        .child(you.userID)
-        .child("friends")
-        .on("value", value => console.log(value.val()));*/
+      return db.on("value", value => {
+        const allUsers = value.val();
+        console.log(you.friends);
+        const yourUsers = Object.values(you.friends);
+        const yourUsersArray = yourUsers.map(s => {
+          return s.userID;
+        });
+        console.log(yourUsersArray);
+        const allUsersArray = Object.values(allUsers);
+        console.log(
+          allUsersArray
+            .filter(a => a.userID)
+            .filter(s => s.userID === yourUsersArray.userID)
+        );
+      });
     } catch (error) {
       return console.error(error);
     }
@@ -228,7 +242,7 @@ class Rankings extends Component {
           color={hue ? hue : "#111"}
           image={collection && index === 5 ? collection.bg : null}
         />
-        <CommandoBarTop title="Rankings">
+        <CommandoBarTop title={lang.explore.title}>
           <Hidden smDown>
             <div style={{ flex: 1 }} />
           </Hidden>
@@ -242,7 +256,7 @@ class Rankings extends Component {
             fullWidth
           >
             <Tab
-              label="Overview"
+              label={lang.explore.title}
               classes={{
                 root: classes.tab,
                 label:
@@ -252,7 +266,7 @@ class Rankings extends Component {
               }}
             />
             <Tab
-              label="Recommendations"
+              label={lang.explore.recommendationsTitle}
               classes={{
                 root: classes.tab,
                 label:
@@ -263,7 +277,7 @@ class Rankings extends Component {
             />
             <Tab
               disabled
-              label="H Corner"
+              label={lang.explore.hCorner}
               classes={{
                 root: classes.tab,
                 label:
@@ -273,7 +287,7 @@ class Rankings extends Component {
               }}
             />
             <Tab
-              label="Collections"
+              label={lang.explore.collectionsTitle}
               classes={{
                 root: classes.tab,
                 label:
@@ -284,7 +298,7 @@ class Rankings extends Component {
             />
             <Tab
               disabled={isEmpty(this.props.profile)}
-              label="Friends"
+              label={lang.explore.friendsTitle}
               classes={{
                 root: classes.tab,
                 label:
@@ -303,10 +317,10 @@ class Rankings extends Component {
             <Container>
               <Column>
                 <Typography variant="display3" className={classes.feedTitle}>
-                  Explore
+                  {lang.explore.title}
                 </Typography>
-                <SectionTitle noPad title="Top rated anime" />
-                <SectionSubTitle title="The 'best' anime as decided by the community of AniList" />
+                <SectionTitle noPad title={lang.explore.topRatedTitle} />
+                <SectionSubTitle title={lang.explore.topRatedDesc} />
                 {topScore &&
                 topScore.data &&
                 this.props.mir &&
@@ -325,8 +339,8 @@ class Rankings extends Component {
                   <SuperTable loading />
                 )}
                 <Divider className={classes.divider} />
-                <SectionTitle noPad title="Top popular anime" />
-                <SectionSubTitle title="The most popular anime of all time" />
+                <SectionTitle noPad title={lang.explore.topPopularTitle} />
+                <SectionSubTitle title={lang.explore.topPopularDesc} />
                 {topPopularity &&
                 topPopularity.data &&
                 this.props.mir &&
@@ -396,9 +410,9 @@ class Rankings extends Component {
             <Container>
               <Column>
                 <Typography variant={"display3"} className={classes.feedTitle}>
-                  Recommendations
+                  {lang.explore.recommendationsTitle}
                 </Typography>
-                <SectionTitle title="Something must have happened" lighter />
+                <SectionTitle title={lang.explore.error} lighter />
               </Column>
             </Container>
           ) : null}
@@ -458,7 +472,7 @@ class Rankings extends Component {
               <Container>
                 <Column>
                   <Typography variant="display3" className={classes.feedTitle}>
-                    Collections
+                    {lang.explore.collectionsTitle}
                   </Typography>
                   {rankingMentionable ? (
                     <SuperTable
@@ -478,7 +492,7 @@ class Rankings extends Component {
             <Container>
               <Column>
                 <Typography variant="display3" className={classes.feedTitle}>
-                  Recommended by friends
+                  {lang.explore.friendsTitle}
                 </Typography>
                 {friendRecommends && friendRecommends.show ? (
                   Object.values(friendRecommends)
@@ -495,10 +509,7 @@ class Rankings extends Component {
                       />
                     ))
                 ) : (
-                  <SectionTitle
-                    title="Your friends haven't recommend any animes yet"
-                    lighter
-                  />
+                  <SectionTitle title={lang.explore.error} lighter />
                 )}
               </Column>
             </Container>

@@ -1,23 +1,15 @@
 // TODO: Fix every single eslint-airbnb issue
 /* eslint-disable react/no-array-index-key */
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 import { withStyles } from "material-ui/styles";
 import { connect } from "react-redux";
-import { firebaseConnect, firebase } from "react-redux-firebase";
+import { firebaseConnect } from "react-redux-firebase";
 import Typography from "material-ui/Typography/Typography";
 import Divider from "material-ui/Divider/Divider";
 import checklang from "../checklang";
 import strings from "../strings.json";
 import { scrollFix } from "./../utils/scrollFix";
-import {
-  Root,
-  CommandoBar,
-  Container,
-  LoadingIndicator,
-  TitleHeader,
-  Header
-} from "../components/layouts";
+import { Root, Container, TitleHeader, Header } from "../components/layouts";
 
 const style = theme => ({
   column: {

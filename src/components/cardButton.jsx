@@ -4,7 +4,6 @@ import Card from "material-ui/Card/Card";
 import Grid from "material-ui/Grid/Grid";
 import withStyles from "material-ui/styles/withStyles";
 import Typography from "material-ui/Typography/Typography";
-import CardMedia from "material-ui/Card/CardMedia";
 import { blue } from "material-ui/colors";
 import Avatar from "material-ui/Avatar/Avatar";
 

@@ -1,8 +1,6 @@
 import React from "react";
-import PropTypes from "prop-types";
 import * as Icon from "material-ui-icons";
 import Dotdotdot from "react-dotdotdot";
-import Slider from "react-slick";
 
 import { connect } from "react-redux";
 import { push } from "react-router-redux";
@@ -12,7 +10,6 @@ import CircularProgress from "material-ui/Progress/CircularProgress";
 import moment from "moment";
 import withStyles from "material-ui/styles/withStyles";
 import Typography from "material-ui/Typography/Typography";
-import FadeIn from "react-fade-in";
 import Button from "material-ui/Button/Button";
 
 const windowWidth = window.innerWidth;
@@ -339,7 +336,6 @@ const SuperTable = class extends React.Component {
 
   render() {
     const { classes, theme, loading, data, ...props } = this.props;
-    const { currentSlide, slideRange } = this.state;
     const backArrow = window.mobilecheck() ? null : (
       <Button onClick={this.goBack} className={classes.bakA} variant="fab">
         <Icon.ArrowBack />

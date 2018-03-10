@@ -39,6 +39,7 @@ import { LoadingScreen } from "../components/layouts";
 
 import { history } from "../store";
 import { mirLoader } from "../utils/mirLoader";
+import AniList from "../anilist-api";
 
 const styles = theme => ({
   root: {},

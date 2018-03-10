@@ -7,7 +7,6 @@ import { withStyles } from "material-ui/styles";
 import Toolbar from "material-ui/Toolbar";
 import Menu from "material-ui/Menu";
 import MenuIcon from "material-ui-icons/Menu";
-import AccountCircle from "material-ui-icons/AccountCircle";
 import { grey } from "material-ui/colors";
 import Drawer from "material-ui/Drawer";
 import checklang from "../checklang";
@@ -22,25 +21,19 @@ import List, {
   ListSubheader
 } from "material-ui/List";
 import isElectron from "../utils/electron.js";
-import AtIcon from "material-ui-icons/Email";
 import Hidden from "material-ui/Hidden";
 import Divider from "material-ui/Divider";
 import { CardHeader } from "material-ui/Card";
 import HomeIcon from "material-ui-icons/Home";
 import SearchIcon from "material-ui-icons/Search";
-import DashboardIcon from "material-ui-icons/Dashboard";
 import LiveTvIcon from "material-ui-icons/LiveTv";
 import BellIcon from "material-ui-icons/Notifications";
 import BellOffIcon from "material-ui-icons/NotificationsNone";
-import StarIcon from "material-ui-icons/Star";
 import Avatar from "material-ui/Avatar";
 import CompassIcon from "material-ui-icons/Explore";
 import ArrowBackIcon from "material-ui-icons/ArrowBack";
 import MoreVert from "material-ui-icons/MoreHoriz";
-import CloseIcon from "material-ui-icons/Close";
-import AppsIcon from "material-ui-icons/Apps";
 import strings from "../strings.json";
-import * as Vibrant from "node-vibrant";
 
 import localForage from "localforage";
 
@@ -696,16 +689,12 @@ class Superbar extends Component {
       anchorEl,
       infoEl,
       drawerOpen,
-      notAtTop,
       tabVal,
       currentPage,
       watchIsOn,
-      hue,
       mirTitle,
       scrolling,
-      commit,
       lang,
-      userMenuHover,
       onlineUsers,
       donateModal
     } = this.state;
@@ -1457,6 +1446,8 @@ export class SearchBox extends Component {
       } else {
         return this.props.history.push(`/search?q=${search}`);
       }
+    } else {
+      return null;
     }
   };
 

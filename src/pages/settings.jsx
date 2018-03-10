@@ -1,16 +1,20 @@
 // TODO: Fix every single eslint-airbnb issue
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 import * as M from "material-ui";
 import * as Icon from "material-ui-icons";
 import Dropzone from "react-dropzone";
 import localForage from "localforage";
-import blue from "material-ui/colors/blue";
-import green from "material-ui/colors/green";
 import { connect } from "react-redux";
-import { firebaseConnect, firebase } from "react-redux-firebase";
-import { TitleHeader, Header, Column, Row, Dialogue } from "../components/layouts";
-import { history } from "../store";
+import { firebaseConnect } from "react-redux-firebase";
+import { clientID } from "../utils/segoku/config.json";
+import AniList from "../anilist-api";
+import {
+  TitleHeader,
+  Header,
+  Column,
+  Row,
+  Dialogue
+} from "../components/layouts";
 
 import strings from "../strings.json";
 import { scrollFix } from "./../utils/scrollFix";
@@ -139,7 +143,9 @@ class Settings extends Component {
     langCode: "en-us",
     lang: strings.enus,
     langVal: "",
-    deleteDialog: false
+    deleteDialog: false,
+    hasEnteredTwist: false,
+    ALToken: ""
   };
 
   componentWillMount = () => {
@@ -163,6 +169,20 @@ class Settings extends Component {
         break;
     }
   };
+
+  enableTwist = () => {
+    AniList.auth(this.state.ALToken);
+    this.setState({ hasEnteredTwist: false }, () => {});
+  };
+
+  triggerTwist = () => {
+    window.open(
+      `https://anilist.co/api/v2/oauth/authorize?client_id=${clientID}&response_type=token`
+    );
+    this.setState({ hasEnteredTwist: true });
+  };
+
+  removeTwist = () => localStorage.removeItem("ALTOKEN");
 
   getColors = () => {
     const hue = localStorage.getItem("user-hue");
@@ -244,16 +264,16 @@ class Settings extends Component {
           this.props.firebase
             .updateProfile({ headers: bg.snapshot.downloadURL })
             .then(() => {
-                colorizer(this.props.profile.headers).then(pal => {
-                  let hues = {
-                    hue: pal.DarkMuted && pal.DarkMuted.getHex(),
-                    hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
-                    hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
-                  };
-                  console.info("Background updated.");
-                  localStorage.setItem("user-hue", JSON.stringify(hues));
-                  return this.setState({ bgLoading: false, bg: null });
-                });
+              colorizer(this.props.profile.headers).then(pal => {
+                let hues = {
+                  hue: pal.DarkMuted && pal.DarkMuted.getHex(),
+                  hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
+                  hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
+                };
+                console.info("Background updated.");
+                localStorage.setItem("user-hue", JSON.stringify(hues));
+                return this.setState({ bgLoading: false, bg: null });
+              });
             });
         }
       );
@@ -306,28 +326,37 @@ class Settings extends Component {
       .remove();
 
   deleteMyAccount = async () => {
-    const db = this.props.firebase.ref("users")
-    .child(this.props.profile.userID);
+    const db = this.props.firebase
+      .ref("users")
+      .child(this.props.profile.userID);
     try {
       await db.remove();
       return this.props.firebase
-      .logout()
-      .then(async () =>
-        localForage.removeItem("user", async () => {
-          localStorage.removeItem("user-hue");
-          this.props.history.push("/setup");
-          await localForage.removeItem("player-state");
-        })
-      )
-      .catch(err => console.error(err.message));
+        .logout()
+        .then(async () =>
+          localForage.removeItem("user", async () => {
+            localStorage.removeItem("user-hue");
+            this.props.history.push("/setup");
+            await localForage.removeItem("player-state");
+          })
+        )
+        .catch(err => console.error(err.message));
     } catch (error) {
       return console.error(error);
     }
-  }
+  };
 
   render() {
     const { classes, theme } = this.props;
-    const { loading, langCode, lang, langVal, hue, deleteDialog } = this.state;
+    const {
+      langCode,
+      lang,
+      langVal,
+      hue,
+      deleteDialog,
+      hasEnteredTwist,
+      ALToken
+    } = this.state;
     const user = this.props.profile;
     if (!user) return null;
     return (
@@ -670,25 +699,25 @@ class Settings extends Component {
                       }
                     />
                   </M.FormGroup>
-                <M.Typography variant="body1">
-                  {lang.settings.loggingprivate}
-                </M.Typography>
-                 <M.FormGroup>
-                  <M.FormControlLabel
-                  disabled={!this.props.profile.willLog}
-                    control={
-                      <M.Switch
-                        checked={this.props.profile.privateLog}
-                        onChange={this.changeLogPrivate}
-                      />
-                    }
-                    label={
-                      this.props.profile.privateLog
-                        ? lang.settings.on
-                        : lang.settings.off
-                    }
-                  />
-                </M.FormGroup>
+                  <M.Typography variant="body1">
+                    {lang.settings.loggingprivate}
+                  </M.Typography>
+                  <M.FormGroup>
+                    <M.FormControlLabel
+                      disabled={!this.props.profile.willLog}
+                      control={
+                        <M.Switch
+                          checked={this.props.profile.privateLog}
+                          onChange={this.changeLogPrivate}
+                        />
+                      }
+                      label={
+                        this.props.profile.privateLog
+                          ? lang.settings.on
+                          : lang.settings.off
+                      }
+                    />
+                  </M.FormGroup>
                 </Column>
               </M.ExpansionPanelDetails>
             </M.ExpansionPanel>
@@ -706,7 +735,7 @@ class Settings extends Component {
                 </div>
                 <div className={classes.column}>
                   <M.Typography className={classes.secondaryHeading}>
-                    {this.props.profile.anilist
+                    {localStorage.getItem("ALTOKEN")
                       ? lang.settings.on
                       : lang.settings.off}
                   </M.Typography>
@@ -718,26 +747,21 @@ class Settings extends Component {
                 </M.Typography>
               </M.ExpansionPanelDetails>
               <M.ExpansionPanelActions>
-                <M.FormGroup>
-                  <M.FormControlLabel
-                    control={
-                      <M.Switch
-                        disabled
-                        checked={this.props.profile.anilist}
-                        onChange={this.changeAnilistSetting}
-                      />
-                    }
-                    label={
-                      this.props.profile.anilist
-                        ? lang.settings.on
-                        : lang.settings.off
-                    }
-                  />
-                </M.FormGroup>
+                <M.Button
+                  onClick={
+                    localStorage.getItem("ALTOKEN")
+                      ? this.removeTwist
+                      : this.triggerTwist
+                  }
+                >
+                  {localStorage.getItem("ALTOKEN")
+                    ? "Disconnect from AniList"
+                    : "Connect with AniList"}
+                </M.Button>
               </M.ExpansionPanelActions>
             </M.ExpansionPanel>
             <M.ExpansionPanel
-                    disabled
+              disabled
               style={{ background: hue ? hue : null }}
               className={classes.panel}
             >
@@ -778,7 +802,7 @@ class Settings extends Component {
               </M.ExpansionPanelActions>
             </M.ExpansionPanel>
             <M.ExpansionPanel
-            disabled
+              disabled
               style={{ background: hue ? hue : null }}
               className={classes.panel}
             >
@@ -823,7 +847,7 @@ class Settings extends Component {
               {lang.settings.misc}
             </M.Typography>
             <M.ExpansionPanel
-            disabled
+              disabled
               style={{ background: hue ? hue : null }}
               className={classes.panel}
             >
@@ -867,16 +891,73 @@ class Settings extends Component {
                 </M.FormGroup>
               </M.ExpansionPanelActions>
             </M.ExpansionPanel>
-            <div style={{display: 'flex', marginTop: theme.spacing.unit * 12}}><div style={{flex: 1}} /><M.Button variant='raised' color='secondary' style={{background: 'red'}} onClick={() => this.setState({deleteDialog: true})}>Delete my account</M.Button></div>
+            <div
+              style={{ display: "flex", marginTop: theme.spacing.unit * 12 }}
+            >
+              <div style={{ flex: 1 }} />
+              <M.Button
+                variant="raised"
+                color="secondary"
+                style={{ background: "red" }}
+                onClick={() => this.setState({ deleteDialog: true })}
+              >
+                Delete my account
+              </M.Button>
+            </div>
           </M.Grid>
         </div>
-        <Dialogue open={deleteDialog} onClose={() => this.setState({deleteDialog: false})} title='Are you sure you want to delete your account?'>
-        <M.Typography variant='body1'>This action cannot be undone.</M.Typography>
-        <div style={{display: 'flex', marginTop: theme.spacing.unit * 4}}>
-        <M.Button onClick={() => this.setState({deleteDialog: false})}>Nope</M.Button>
-        <div style={{flex: 1}} />
-        <M.Button variant='raised' color='secondary' style={{background: 'red'}} onClick={this.deleteMyAccount}>Yes</M.Button>
-        </div>
+        <Dialogue
+          open={deleteDialog}
+          onClose={() => this.setState({ deleteDialog: false })}
+          title="Are you sure you want to delete your account?"
+        >
+          <M.Typography variant="body1">
+            This action cannot be undone.
+          </M.Typography>
+          <div style={{ display: "flex", marginTop: theme.spacing.unit * 4 }}>
+            <M.Button onClick={() => this.setState({ deleteDialog: false })}>
+              Nope
+            </M.Button>
+            <div style={{ flex: 1 }} />
+            <M.Button
+              variant="raised"
+              color="secondary"
+              style={{ background: "red" }}
+              onClick={this.deleteMyAccount}
+            >
+              Yes
+            </M.Button>
+          </div>
+        </Dialogue>
+        <Dialogue
+          open={hasEnteredTwist}
+          onClose={() => this.setState({ hasEnteredTwist: false })}
+          title="Enter the code you got from AniList"
+        >
+          <Column>
+            <M.Typography variant="body1">
+              This will enable Mirai to use your AniList account for syncing.
+            </M.Typography>
+            <M.TextField
+              value={ALToken}
+              onChange={e => this.setState({ ALToken: e.target.value })}
+              placeholder="Enter your code here"
+            />
+          </Column>
+          <div style={{ display: "flex", marginTop: theme.spacing.unit * 4 }}>
+            <M.Button onClick={() => this.setState({ hasEnteredTwist: false })}>
+              Actually nevermind
+            </M.Button>
+            <div style={{ flex: 1 }} />
+            <M.Button
+              disabled={ALToken.length > 0 ? false : true}
+              variant="raised"
+              color="primary"
+              onClick={this.enableTwist}
+            >
+              Apply
+            </M.Button>
+          </div>
         </Dialogue>
       </div>
     );

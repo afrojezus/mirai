@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import * as Icon from "material-ui-icons";
 import moment from "moment";
 import queryString from "query-string";
-
+import translate from "translate";
 import Colorizer from "../utils/colorizer";
 import FadeIn from "react-fade-in";
 import { connect } from "react-redux";
@@ -20,17 +20,17 @@ import IconButton from "material-ui/IconButton/IconButton";
 import Paper from "material-ui/Paper/Paper";
 import Modal from "material-ui/Modal/Modal";
 import blue from "material-ui/colors/blue";
-import classnames from 'classnames'
+import classnames from "classnames";
 import grey from "material-ui/colors/grey";
 import checklang from "../checklang";
 import strings from "../strings.json";
 import Menu, { MenuItem } from "material-ui/Menu";
 import withStyles from "material-ui/styles/withStyles";
 import { timeFormatter } from "../components/supertable";
-import bigfuck from '../utils/bigfuck';
-import TwistFilter from '../utils/filter';
+import bigfuck from "../utils/bigfuck";
+import TwistFilter from "../utils/filter";
 import Anilist from "../anilist-api";
-import Kitsu from '../kitsu-api';
+import Kitsu from "../kitsu-api";
 import {
   bigFuckingQueryS,
   entryQuery,
@@ -59,8 +59,8 @@ import { MIR_SET_TITLE, MIR_PLAY_SHOW } from "../constants";
 import { FormControl, FormHelperText } from "material-ui/Form";
 import Select from "material-ui/Select";
 import { scrollFix } from "./../utils/scrollFix";
-import List, { ListItem, ListItemText} from "material-ui/List";
-import {guid} from '../utils/uuid';
+import List, { ListItem, ListItemText } from "material-ui/List";
+import { guid } from "../utils/uuid";
 
 const styles = theme => ({
   loading: {
@@ -197,7 +197,7 @@ const styles = theme => ({
   smallD: {
     marginLeft: theme.spacing.unit / 2,
     color: "white",
-    textShadow: "0 0 12px rgba(0,0,0,.1)",
+    textShadow: "0 0 12px rgba(0,0,0,.1)"
   },
   sepD: {
     display: "flex",
@@ -250,7 +250,7 @@ const styles = theme => ({
   },
   genreRow: {
     display: "flex",
-    margin: 'auto',
+    margin: "auto",
     marginBottom: theme.spacing.unit
   },
   tagChip: {
@@ -572,31 +572,31 @@ const styles = theme => ({
   streamButton: {
     width: "100%",
     marginTop: theme.spacing.unit,
-    animation: 'loadIn .5s ease'
+    animation: "loadIn .5s ease"
   },
   epList: {
     maxHeight: 500,
-    overflowY: 'auto'
+    overflowY: "auto"
   },
   epCard: {
     width: 48,
-    borderRadius: '50%',
-    boxSizing: 'border-box',
+    borderRadius: "50%",
+    boxSizing: "border-box",
     height: 48,
-    border: '2px solid transparent',
+    border: "2px solid transparent",
     fontWeight: 700,
     fontSize: theme.typography.pxToRem(18),
     boxShadow: theme.shadows[2]
   },
   epCardActive: {
-    border: '2px solid white'
+    border: "2px solid white"
   },
   activeEpDot: {
     height: 2,
     width: 2,
-    borderRadius: '50%',
+    borderRadius: "50%",
     boxShadow: theme.shadows[3],
-    background: 'white'
+    background: "white"
   }
 });
 
@@ -636,7 +636,8 @@ class Show extends Component {
     if (
       this.props.mir !== nextProps.mir &&
       this.state.data &&
-      this.state.data.Media && this.state.data.Media.type.includes('ANIME')
+      this.state.data.Media &&
+      this.state.data.Media.type.includes("ANIME")
     )
       await this.executeTwist();
   };
@@ -654,6 +655,7 @@ class Show extends Component {
     if (location.pathname === "/show")
       if ((id.s || id.m) !== this.state.id) {
         this.init();
+        scrollFix();
       }
     return false;
   });
@@ -674,50 +676,30 @@ class Show extends Component {
           const superBar = document.getElementById("superBar");
           if (superBar) superBar.style.background = null;
           const id = queryString.parse(this.props.history.location.search);
-            const data = this.props.history.location.search.includes(
-              "?s=99999999999"
-            )
-              ? await this.props.firebase
-                  .database()
-                  .ref("/anime")
-                  .child("Cory")
-                  .once("value")
-              : this.props.history.location.search.includes("?m=")
-                ? await Anilist.get(entryQueryM, { id: id.m })
-                : await Anilist.get(entryQuery, { id: id.s });
-            try {
-              if (data) {
-                if (
-                  this.props.history.location.search.includes("?s=99999999999")
-                ) {
-                  const cory = await data.val();
-                  if (cory)
-                    this.setState(
-                      {
-                        data: {
-                          Media: cory
-                        },
-                        id: cory.id,
-                        fav: this.props.history.location.search.includes("?s=")
-                          ? !!(
-                              this.props.profile.favs &&
-                              this.props.profile.favs.show &&
-                              this.props.profile.favs.show[id.s]
-                            )
-                          : !!(
-                              this.props.profile.favs &&
-                              this.props.profile.favs.manga &&
-                              this.props.profile.favs.manga[id.m]
-                            )
-                      },
-                      () => this.pasta()
-                    );
-                  else throw new Error("Cory fucked up.");
-                } else {
+          const data = this.props.history.location.search.includes(
+            "?s=99999999999"
+          )
+            ? await this.props.firebase
+                .database()
+                .ref("/anime")
+                .child("Cory")
+                .once("value")
+            : this.props.history.location.search.includes("?m=")
+              ? await Anilist.get(entryQueryM, { id: id.m })
+              : await Anilist.get(entryQuery, { id: id.s });
+          try {
+            if (data) {
+              if (
+                this.props.history.location.search.includes("?s=99999999999")
+              ) {
+                const cory = await data.val();
+                if (cory)
                   this.setState(
                     {
-                      data: data.data,
-                      id: data.data.Media.id,
+                      data: {
+                        Media: cory
+                      },
+                      id: cory.id,
                       fav: this.props.history.location.search.includes("?s=")
                         ? !!(
                             this.props.profile.favs &&
@@ -732,13 +714,33 @@ class Show extends Component {
                     },
                     () => this.pasta()
                   );
-                }
-              } else throw new Error("Metadata error");
-            } catch (error) {
-              this.setState({ error }, () =>
-                setTimeout(() => this.setState({ error: "" }), 3000)
-              );
-            }
+                else throw new Error("Cory fucked up.");
+              } else {
+                this.setState(
+                  {
+                    data: data.data,
+                    id: data.data.Media.id,
+                    fav: this.props.history.location.search.includes("?s=")
+                      ? !!(
+                          this.props.profile.favs &&
+                          this.props.profile.favs.show &&
+                          this.props.profile.favs.show[id.s]
+                        )
+                      : !!(
+                          this.props.profile.favs &&
+                          this.props.profile.favs.manga &&
+                          this.props.profile.favs.manga[id.m]
+                        )
+                  },
+                  () => this.pasta()
+                );
+              }
+            } else throw new Error("Metadata error");
+          } catch (error) {
+            this.setState({ error }, () =>
+              setTimeout(() => this.setState({ error: "" }), 3000)
+            );
+          }
         }, 300)
     );
 
@@ -858,12 +860,18 @@ class Show extends Component {
     if (dbval && Object(dbval.val())[this.state.id]) {
       const eps = await db.child(this.state.id).once("value");
       if (eps) {
-        return Kitsu.addKitsuMetadata(this.state.data.Media.title.romaji,eps.val(), this.state.data.Media.format).then((km) => this.setState({ eps: km }, () =>
-        console.info("[mirai] Loaded from database")
-      ))
-      .catch(kmN => this.setState({eps: kmN}));
-      }
-      else throw new Error("owo");
+        return Kitsu.addKitsuMetadata(
+          this.state.data.Media.title.romaji,
+          eps.val(),
+          this.state.data.Media.format
+        )
+          .then(km =>
+            this.setState({ eps: km }, () =>
+              console.info("[mirai] Loaded from database")
+            )
+          )
+          .catch(kmN => this.setState({ eps: kmN }));
+      } else throw new Error("owo");
     } else if (this.props.mir && this.props.mir.twist) {
       if (
         this.props.mir.play &&
@@ -874,8 +882,9 @@ class Show extends Component {
       ) {
         return this.setState({ eps: this.props.mir.play.eps });
       }
-      const correctedtitle = bigfuck(this.state.data.Media.title.romaji
-        .toLowerCase())
+      const correctedtitle = bigfuck(
+        this.state.data.Media.title.romaji.toLowerCase()
+      );
       const meta = Object.values(this.props.mir.twist).filter(s =>
         s.name.toLowerCase().match(`${correctedtitle}`)
       );
@@ -884,20 +893,33 @@ class Show extends Component {
         const eps = await Twist.get(meta[0].link, meta[0].ongoing);
         try {
           if (eps)
-            return Kitsu.addKitsuMetadata(this.state.data.Media.title.romaji, eps, this.state.data.Media.format).then(finishedEps => this.setState({ eps: finishedEps }, async () => {
-              if (meta[0].ongoing === false) {
-                const dbtwist = this.props.firebase.ref("anime").child("twist");
-                await dbtwist.child(this.state.id).update(finishedEps);
-                return console.info("[mirai] Uploaded to database")
-              }
-            }))
-            .catch(kmN => this.setState({eps: kmN}, async () => {
-              if (meta[0].ongoing === false) {
-                const dbtwist = this.props.firebase.ref("anime").child("twist");
-                await dbtwist.child(this.state.id).update(kmN);
-                return console.info("[mirai] Uploaded to database")
-              }
-            }));;
+            return Kitsu.addKitsuMetadata(
+              this.state.data.Media.title.romaji,
+              eps,
+              this.state.data.Media.format
+            )
+              .then(finishedEps =>
+                this.setState({ eps: finishedEps }, async () => {
+                  if (meta[0].ongoing === false) {
+                    const dbtwist = this.props.firebase
+                      .ref("anime")
+                      .child("twist");
+                    await dbtwist.child(this.state.id).update(finishedEps);
+                    return console.info("[mirai] Uploaded to database");
+                  }
+                })
+              )
+              .catch(kmN =>
+                this.setState({ eps: kmN }, async () => {
+                  if (meta[0].ongoing === false) {
+                    const dbtwist = this.props.firebase
+                      .ref("anime")
+                      .child("twist");
+                    await dbtwist.child(this.state.id).update(kmN);
+                    return console.info("[mirai] Uploaded to database");
+                  }
+                })
+              );
         } catch (error) {
           return this.setState({ epError: true });
         }
@@ -1001,22 +1023,29 @@ class Show extends Component {
               this.props.profile.username &&
               this.props.profile.willLog
             ) {
-              this.props.firebase.ref('/users').child(this.props.profile.userID).child('feed')
-                .child(this.state.id + 'F').update({
+              this.props.firebase
+                .ref("/users")
+                .child(this.props.profile.userID)
+                .child("feed")
+                .child(this.state.id + "F")
+                .update({
                   date: Date.now(),
-                  id: this.state.id + 'F', 
+                  id: this.state.id + "F",
                   showId: this.state.id,
                   type: "FAV",
                   activity: `Favorited ${data.title.romaji}`,
-                  bgImg: this.state.data.Media.bannerImage && this.state.data.Media.bannerImage,
+                  bgImg:
+                    this.state.data.Media.bannerImage &&
+                    this.state.data.Media.bannerImage,
                   coverImg: this.state.data.Media.coverImage.large,
                   user: {
                     username: this.props.profile.username,
                     avatar: this.props.profile.avatar,
                     userID: this.props.profile.userID
                   }
-                })
-          }});
+                });
+            }
+          });
         });
   };
 
@@ -1026,16 +1055,23 @@ class Show extends Component {
     if (!isEmpty(this.props.profile))
       this.props.firebase
         .remove(`users/${this.props.profile.userID}/favs/${entity}/${data.id}`)
-        .then(() => this.setState({ fav: false }, () => {
-          if (
-            data &&
-            !isEmpty(this.props.profile) &&
-            this.props.profile.username &&
-            this.props.profile.willLog
-          ) {
-            this.props.firebase.ref('/users').child(this.props.profile.userID).child('feed')
-              .child(this.state.id + 'F').remove()
-        }}));
+        .then(() =>
+          this.setState({ fav: false }, () => {
+            if (
+              data &&
+              !isEmpty(this.props.profile) &&
+              this.props.profile.username &&
+              this.props.profile.willLog
+            ) {
+              this.props.firebase
+                .ref("/users")
+                .child(this.props.profile.userID)
+                .child("feed")
+                .child(this.state.id + "F")
+                .remove();
+            }
+          })
+        );
   };
 
   RecommendThis = async () => {
@@ -1074,22 +1110,29 @@ class Show extends Component {
               this.props.profile.username &&
               this.props.profile.willLog
             ) {
-              this.props.firebase.ref('/users').child(this.props.profile.userID).child('feed')
-                .child(this.state.id + 'R').update({
+              this.props.firebase
+                .ref("/users")
+                .child(this.props.profile.userID)
+                .child("feed")
+                .child(this.state.id + "R")
+                .update({
                   date: Date.now(),
-                  id: this.state.id + 'R', 
+                  id: this.state.id + "R",
                   showId: this.state.id,
                   type: "RECOMMEND",
                   activity: `Recommended ${data.title.romaji}`,
-                  bgImg: this.state.data.Media.bannerImage && this.state.data.Media.bannerImage,
+                  bgImg:
+                    this.state.data.Media.bannerImage &&
+                    this.state.data.Media.bannerImage,
                   coverImg: this.state.data.Media.coverImage.large,
                   user: {
                     username: this.props.profile.username,
                     avatar: this.props.profile.avatar,
                     userID: this.props.profile.userID
                   }
-                })
-          }});
+                });
+            }
+          });
         });
   };
 
@@ -1101,16 +1144,23 @@ class Show extends Component {
         .remove(
           `users/${this.props.profile.userID}/recommends/${entity}/${data.id}`
         )
-        .then(() => this.setState({ recommend: false }, () => {
-          if (
-            data &&
-            !isEmpty(this.props.profile) &&
-            this.props.profile.username &&
-            this.props.profile.willLog
-          ) {
-            this.props.firebase.ref('/users').child(this.props.profile.userID).child('feed')
-              .child(this.state.id + 'R').remove()
-        }}));
+        .then(() =>
+          this.setState({ recommend: false }, () => {
+            if (
+              data &&
+              !isEmpty(this.props.profile) &&
+              this.props.profile.username &&
+              this.props.profile.willLog
+            ) {
+              this.props.firebase
+                .ref("/users")
+                .child(this.props.profile.userID)
+                .child("feed")
+                .child(this.state.id + "R")
+                .remove();
+            }
+          })
+        );
   };
 
   addToLater = async () => {
@@ -1119,66 +1169,82 @@ class Show extends Component {
     const image = data.coverImage.large;
     const entity = data.type.includes("ANIME") ? "show" : "manga";
     if (!isEmpty(this.props.profile))
-      this.props.firebase.update(
-        `users/${this.props.profile.userID}/later/${entity}/${data.id}`,
-        {
-          name,
-          image,
-          id: data.id,
-          link:
-            this.props.history.location.pathname +
-            this.props.history.location.search,
-          date: Date.now(),
-          bg: data.bannerImage
-            ? data.bannerImage
-            : this.state.hue ? this.state.hue : null,
-          avgScore: data.averageScore,
-          meanScore: data.meanScore,
-          type: data.status.includes("NOT_YET_RELEASED") ? "TBA" : null,
-          rank:
-            data.rankings && data.rankings.length > 0 ? data.rankings[0] : null
-        }
-      ).then(() => {
-        if (
-          data &&
-          !isEmpty(this.props.profile) &&
-          this.props.profile.username &&
-          this.props.profile.willLog
-        ) {
-          this.props.firebase.ref('/users').child(this.props.profile.userID).child('feed')
-            .child(this.state.id + 'L').update({
-              date: Date.now(),
-              id: this.state.id + 'L', 
-              showId: this.state.id,
-              type: "LATER",
-              activity: `Added ${data.title.romaji} to their later list`,
-              bgImg: this.state.data.Media.bannerImage && this.state.data.Media.bannerImage,
-              coverImg: this.state.data.Media.coverImage.large,
-              user: {
-                username: this.props.profile.username,
-                avatar: this.props.profile.avatar,
-                userID: this.props.profile.userID
-              }
-            })
-      }});
+      this.props.firebase
+        .update(
+          `users/${this.props.profile.userID}/later/${entity}/${data.id}`,
+          {
+            name,
+            image,
+            id: data.id,
+            link:
+              this.props.history.location.pathname +
+              this.props.history.location.search,
+            date: Date.now(),
+            bg: data.bannerImage
+              ? data.bannerImage
+              : this.state.hue ? this.state.hue : null,
+            avgScore: data.averageScore,
+            meanScore: data.meanScore,
+            type: data.status.includes("NOT_YET_RELEASED") ? "TBA" : null,
+            rank:
+              data.rankings && data.rankings.length > 0
+                ? data.rankings[0]
+                : null
+          }
+        )
+        .then(() => {
+          if (
+            data &&
+            !isEmpty(this.props.profile) &&
+            this.props.profile.username &&
+            this.props.profile.willLog
+          ) {
+            this.props.firebase
+              .ref("/users")
+              .child(this.props.profile.userID)
+              .child("feed")
+              .child(this.state.id + "L")
+              .update({
+                date: Date.now(),
+                id: this.state.id + "L",
+                showId: this.state.id,
+                type: "LATER",
+                activity: `Added ${data.title.romaji} to their later list`,
+                bgImg:
+                  this.state.data.Media.bannerImage &&
+                  this.state.data.Media.bannerImage,
+                coverImg: this.state.data.Media.coverImage.large,
+                user: {
+                  username: this.props.profile.username,
+                  avatar: this.props.profile.avatar,
+                  userID: this.props.profile.userID
+                }
+              });
+          }
+        });
   };
 
   removeFromLater = async () => {
     const data = this.state.data.Media;
     const entity = data.type.includes("ANIME") ? "show" : "manga";
     if (!isEmpty(this.props.profile))
-      this.props.firebase.remove(
-        `users/${this.props.profile.userID}/later/${entity}/${data.id}`
-      ).then(() => {
-        if (
-          data &&
-          !isEmpty(this.props.profile) &&
-          this.props.profile.username &&
-          this.props.profile.willLog
-        ) {
-          this.props.firebase.ref('/users').child(this.props.profile.userID).child('feed')
-            .child(this.state.id + 'L').remove()
-      }});
+      this.props.firebase
+        .remove(`users/${this.props.profile.userID}/later/${entity}/${data.id}`)
+        .then(() => {
+          if (
+            data &&
+            !isEmpty(this.props.profile) &&
+            this.props.profile.username &&
+            this.props.profile.willLog
+          ) {
+            this.props.firebase
+              .ref("/users")
+              .child(this.props.profile.userID)
+              .child("feed")
+              .child(this.state.id + "L")
+              .remove();
+          }
+        });
   };
 
   reportError = () => this.setState({ reportModal: !this.state.reportModal });
@@ -1195,7 +1261,7 @@ class Show extends Component {
 
   rSendDReport = () => {};
 
-  showEpisodes = (e) => this.setState({showEpisodes: !this.state.showEpisodes});
+  showEpisodes = e => this.setState({ showEpisodes: !this.state.showEpisodes });
 
   render() {
     const { classes, mir, theme } = this.props;
@@ -1252,11 +1318,17 @@ class Show extends Component {
       </Menu>
     );
 
-    if (error) return (
-      <div className={classes.frame}>
-      <TitleHeader title='Well this is kinda awkward...' subtitle={error} color={hue} colortext={hueVib} />
-      </div>
-    )
+    if (error)
+      return (
+        <div className={classes.frame}>
+          <TitleHeader
+            title="Well this is kinda awkward..."
+            subtitle={error}
+            color={hue}
+            colortext={hueVib}
+          />
+        </div>
+      );
 
     return (
       <div className={classes.frame}>
@@ -1275,78 +1347,81 @@ class Show extends Component {
                 id="mainHeader"
                 style={{ background: hue }}
               >
-                <Grid item xs={3} style={{maxWidth: 300, margin: 'auto'}} className={classes.leftSide}>
-                    <div
-                      aria-controls="button"
-                      className={
-                        mir && mir.play && mir.play.meta.id === data.Media.id
-                          ? classes.artworkDisabled
-                          : data.Media.type.includes("MANGA")
-                            ? classes.artwork
-                            : data.Media.status.includes("NOT_YET_RELEASED") ||
-                              !eps
-                              ? classes.artworkDisabled
-                              : classes.artwork
-                      }
-                      onClick={
-                        mir && mir.play && mir.play.meta.id === data.Media.id
-                          ? null
-                          : data.Media.type.includes("MANGA")
-                            ? this.play
-                            : data.Media.status.includes("NOT_YET_RELEASED") ||
-                              !eps
-                              ? null
-                              : this.play
-                      }
-                      onKeyDown={this.handleKeyDown}
-                    >
-                      <img
-                        src={data.Media.coverImage.large}
-                        alt=""
-                        className={classes.artworkimg}
-                        style={{ opacity: 0 }}
-                        onLoad={e => (e.currentTarget.style.opacity = null)}
-                      />
-                      <CircularProgress
-                        className={classes.loadingArtwork}
-                        style={
-                          data.Media.type.includes("MANGA")
+                <Grid
+                  item
+                  xs={3}
+                  style={{ maxWidth: 300, margin: "auto" }}
+                  className={classes.leftSide}
+                >
+                  <div
+                    aria-controls="button"
+                    className={
+                      mir && mir.play && mir.play.meta.id === data.Media.id
+                        ? classes.artworkDisabled
+                        : data.Media.type.includes("MANGA")
+                          ? classes.artwork
+                          : data.Media.status.includes("NOT_YET_RELEASED") ||
+                            !eps
+                            ? classes.artworkDisabled
+                            : classes.artwork
+                    }
+                    onClick={
+                      mir && mir.play && mir.play.meta.id === data.Media.id
+                        ? null
+                        : data.Media.type.includes("MANGA")
+                          ? this.play
+                          : data.Media.status.includes("NOT_YET_RELEASED") ||
+                            !eps
+                            ? null
+                            : this.play
+                    }
+                    onKeyDown={this.handleKeyDown}
+                  >
+                    <img
+                      src={data.Media.coverImage.large}
+                      alt=""
+                      className={classes.artworkimg}
+                      style={{ opacity: 0 }}
+                      onLoad={e => (e.currentTarget.style.opacity = null)}
+                    />
+                    <CircularProgress
+                      className={classes.loadingArtwork}
+                      style={
+                        data.Media.type.includes("MANGA")
+                          ? { opacity: 0 }
+                          : eps
                             ? { opacity: 0 }
-                            : eps
-                              ? { opacity: 0 }
-                              : epError ? { opacity: 0 } : null
-                        }
-                      />
-                      <Typography className="artworktitle" variant="display1">
-                        {mir &&
-                        mir.play &&
-                        mir.play.meta.id === data.Media.id ? (
-                          lang.show.playing
-                        ) : data.Media.status.includes("NOT_YET_RELEASED") ? (
-                          "TBA"
-                        ) : data.Media.type.includes("MANGA") ? (
-                          <Button
-                            variant={"fab"}
-                            style={{background: hue}}
-                            className={classes.playArtworkButtonContainer}
-                          >
-                            <Icon.Book className={classes.playArtworkButton} />
-                          </Button>
-                        ) : eps ? (
-                          <Button
-                            variant={"fab"}
-                            style={{background: hue}}
-                            className={classes.playArtworkButtonContainer}
-                          >
-                            <Icon.PlayArrow
-                              className={classes.playArtworkButton}
-                            />
-                          </Button>
-                        ) : epError ? (
-                          lang.show.notavaliable
-                        ) : null}
-                      </Typography>
-                      </div>
+                            : epError ? { opacity: 0 } : null
+                      }
+                    />
+                    <Typography className="artworktitle" variant="display1">
+                      {mir && mir.play && mir.play.meta.id === data.Media.id ? (
+                        lang.show.playing
+                      ) : data.Media.status.includes("NOT_YET_RELEASED") ? (
+                        "TBA"
+                      ) : data.Media.type.includes("MANGA") ? (
+                        <Button
+                          variant={"fab"}
+                          style={{ background: hue }}
+                          className={classes.playArtworkButtonContainer}
+                        >
+                          <Icon.Book className={classes.playArtworkButton} />
+                        </Button>
+                      ) : eps ? (
+                        <Button
+                          variant={"fab"}
+                          style={{ background: hue }}
+                          className={classes.playArtworkButtonContainer}
+                        >
+                          <Icon.PlayArrow
+                            className={classes.playArtworkButton}
+                          />
+                        </Button>
+                      ) : epError ? (
+                        lang.show.notavaliable
+                      ) : null}
+                    </Typography>
+                  </div>
                   {!isEmpty(user) &&
                   data.Media.type.includes("ANIME") &&
                   !data.Media.status.includes("NOT_YET_RELEASED") &&
@@ -1356,7 +1431,7 @@ class Show extends Component {
                       variant="raised"
                       color="primary"
                       className={classes.streamButton}
-                      style={{background: hue, color: 'white'}}
+                      style={{ background: hue, color: "white" }}
                       onClick={this.stream}
                     >
                       {lang.show.livestreamButton}
@@ -1401,8 +1476,7 @@ class Show extends Component {
                   </div>
                   <div style={{ display: "flex", width: "100%" }}>
                     <Typography
-                      style={{margin: 'auto'}
-                      }
+                      style={{ margin: "auto" }}
                       className={classes.bigTitle}
                       variant="display3"
                     >
@@ -1432,104 +1506,107 @@ class Show extends Component {
                     </Tooltip>
                   </div>
                   {data.Media.synonyms && data.Media.synonyms.length > 0 ? (
-                    <div style={{display: 'flex', width: '100%'}}>
-                    <Typography
-                      style={{ marginTop: -2 }}
-                      className={classes.smallTitle}
-                      variant="display1"
-                    >
-                      {`${lang.show.alsoKnownAs} `}
-                      {data.Media.synonyms.map(s => s).join(", ")}
-                    </Typography>
+                    <div style={{ display: "flex", width: "100%" }}>
+                      <Typography
+                        style={{ marginTop: -2 }}
+                        className={classes.smallTitle}
+                        variant="display1"
+                      >
+                        {`${lang.show.alsoKnownAs} `}
+                        {data.Media.synonyms.map(s => s).join(", ")}
+                      </Typography>
                     </div>
                   ) : null}
-                  <div style={{display: 'flex', width: '100%'}}>
-                  <div style={{margin: 'auto'}}>
-                  <div style={{ display: "flex" }}>
-                    {data.Media.staff &&
-                    data.Media.staff.edges.filter(
-                      s => s.role === "Director"
-                    )[0] ? (
-                      <Typography className={classes.boldD} variant="body1">
-                        {lang.show.director}
-                      </Typography>
-                    ) : null}
-                    {data.Media.staff &&
-                    data.Media.staff.edges.filter(
-                      s => s.role === "Director"
-                    )[0] ? (
-                      <Typography className={classes.smallD} variant="body1">
-                        {
-                          data.Media.staff.edges.filter(
-                            s => s.role === "Director"
-                          )[0].node.name.first
-                        }{" "}
-                        {data.Media.staff.edges.filter(
+                  <div style={{ display: "flex", width: "100%" }}>
+                    <div style={{ margin: "auto" }}>
+                      <div style={{ display: "flex" }}>
+                        {data.Media.staff &&
+                        data.Media.staff.edges.filter(
                           s => s.role === "Director"
-                        )[0].node.name.last
-                          ? data.Media.staff.edges.filter(
+                        )[0] ? (
+                          <Typography className={classes.boldD} variant="body1">
+                            {lang.show.director}
+                          </Typography>
+                        ) : null}
+                        {data.Media.staff &&
+                        data.Media.staff.edges.filter(
+                          s => s.role === "Director"
+                        )[0] ? (
+                          <Typography
+                            className={classes.smallD}
+                            variant="body1"
+                          >
+                            {
+                              data.Media.staff.edges.filter(
+                                s => s.role === "Director"
+                              )[0].node.name.first
+                            }{" "}
+                            {data.Media.staff.edges.filter(
                               s => s.role === "Director"
                             )[0].node.name.last
-                          : null}
-                      </Typography>
-                    ) : null}
-                    {data.Media.staff &&
-                    data.Media.staff.edges.filter(
-                      s => s.role === "Original Creator"
-                    )[0] ? (
-                      <div className={classes.sepD}>
-                        <Typography
-                          className={classes.boldD}
-                          variant="body1"
-                        >
-                          {data.Media.staff.edges.filter(
-                            s => s.role === "Director"
-                          )[0]
-                            ? lang.show.author
-                            : lang.show.authorProper}
-                        </Typography>
-                        <Typography
-                          className={classes.smallD}
-                          variant="body1"
-                        >
-                          {
-                            data.Media.staff.edges.filter(
-                              s => s.role === "Original Creator"
-                            )[0].node.name.first
-                          }{" "}
-                          {data.Media.staff.edges.filter(
-                            s => s.role === "Original Creator"
-                          )[0].node.name.last
-                            ? data.Media.staff.edges.filter(
+                              ? data.Media.staff.edges.filter(
+                                  s => s.role === "Director"
+                                )[0].node.name.last
+                              : null}
+                          </Typography>
+                        ) : null}
+                        {data.Media.staff &&
+                        data.Media.staff.edges.filter(
+                          s => s.role === "Original Creator"
+                        )[0] ? (
+                          <div className={classes.sepD}>
+                            <Typography
+                              className={classes.boldD}
+                              variant="body1"
+                            >
+                              {data.Media.staff.edges.filter(
+                                s => s.role === "Director"
+                              )[0]
+                                ? lang.show.author
+                                : lang.show.authorProper}
+                            </Typography>
+                            <Typography
+                              className={classes.smallD}
+                              variant="body1"
+                            >
+                              {
+                                data.Media.staff.edges.filter(
+                                  s => s.role === "Original Creator"
+                                )[0].node.name.first
+                              }{" "}
+                              {data.Media.staff.edges.filter(
                                 s => s.role === "Original Creator"
                               )[0].node.name.last
-                            : null}
-                        </Typography>
+                                ? data.Media.staff.edges.filter(
+                                    s => s.role === "Original Creator"
+                                  )[0].node.name.last
+                                : null}
+                            </Typography>
+                          </div>
+                        ) : null}
                       </div>
-                    ) : null}
-                  </div>
-                  </div>
-                  <div style={{flex: 1}} />
-                  <div className={classes.genreRow}>
-                  {data.Media.genres
-                    ? data.Media.genres.map((o, index) => (
-                        <Chip
-                          className={classes.tagChip}
-                          key={index}
-                          label={o}
-                        />
-                      ))
-                    : null}
-                </div>
+                    </div>
+                    <div style={{ flex: 1 }} />
+                    <div className={classes.genreRow}>
+                      {data.Media.genres
+                        ? data.Media.genres.map((o, index) => (
+                            <Chip
+                              className={classes.tagChip}
+                              key={index}
+                              label={o}
+                            />
+                          ))
+                        : null}
+                    </div>
                   </div>
                   <Divider />
                   <Typography
-                          className={classes.boldD}
-                          variant="body1"
-                          style={{marginTop: theme.spacing.unit}}
-                        >
-                          Synopsis
-                        </Typography>
+                    className={classes.boldD}
+                    variant="body1"
+                    style={{ marginTop: theme.spacing.unit }}
+                  >
+                    Synopsis
+                  </Typography>
                   <Typography
                     className={classes.desc}
                     variant="body1"
@@ -1538,11 +1615,49 @@ class Show extends Component {
                 </Grid>
               </Container>
               <MainCard>
-                {showEpisodes ? <FadeIn><Container style={{maxHeight: showEpisodes ? 500 : 0, opacity: showEpisodes ? 1 : 0, padding: showEpisodes ? 24 : 0}}><Column><Divider style={{marginBottom: 8}} /><SectionTitle style={{opacity: showEpisodes ? 1 : 0}} title={lang.show.episodes} />
-                <ItemContainer style={{opacity: showEpisodes ? 1 : 0}}>
-                {eps && eps.map((ep, index) => <Grid item><Chip onClick={() => this.play(ep.ep)} style={{background: hue}} className={classnames(classes.epCard, ep.ep === !isEmpty(user) && user.episodeProgress && user.episodeProgress[data.Media.id] && user.episodeProgress[data.Media.id].ep ? classes.epCardActive : null)} key={index} label={ep.ep}></Chip></Grid>)}
-                </ItemContainer>
-                </Column></Container></FadeIn> : null}
+                {showEpisodes ? (
+                  <FadeIn>
+                    <Container
+                      style={{
+                        maxHeight: showEpisodes ? 500 : 0,
+                        opacity: showEpisodes ? 1 : 0,
+                        padding: showEpisodes ? 24 : 0
+                      }}
+                    >
+                      <Column>
+                        <Divider style={{ marginBottom: 8 }} />
+                        <SectionTitle
+                          style={{ opacity: showEpisodes ? 1 : 0 }}
+                          title={lang.show.episodes}
+                        />
+                        <ItemContainer
+                          style={{ opacity: showEpisodes ? 1 : 0 }}
+                        >
+                          {eps &&
+                            eps.map((ep, index) => (
+                              <Grid item>
+                                <Chip
+                                  onClick={() => this.play(ep.ep)}
+                                  style={{ background: hue }}
+                                  className={classnames(
+                                    classes.epCard,
+                                    ep.ep === !isEmpty(user) &&
+                                    user.episodeProgress &&
+                                    user.episodeProgress[data.Media.id] &&
+                                    user.episodeProgress[data.Media.id].ep
+                                      ? classes.epCardActive
+                                      : null
+                                  )}
+                                  key={index}
+                                  label={ep.ep}
+                                />
+                              </Grid>
+                            ))}
+                        </ItemContainer>
+                      </Column>
+                    </Container>
+                  </FadeIn>
+                ) : null}
                 <CommandoBar
                   style={{
                     borderTop: "1px solid rgba(255,255,255,.1",
@@ -1760,7 +1875,7 @@ class Show extends Component {
                           user.recommends.show[this.state.id] ? (
                             <Icon.SentimentVerySatisfied />
                           ) : (
-                            <Icon.SentimentNeutral/>
+                            <Icon.SentimentNeutral />
                           )
                         ) : user.recommends &&
                         user.recommends.manga &&
@@ -2168,8 +2283,12 @@ class Show extends Component {
                         data.Media.tags.length > 0 &&
                         similars &&
                         similars.data &&
-                        similars.data.Page.media && this.props.mir.twist &&
-                        TwistFilter(similars.data.Page.media, this.props.mir.twist)
+                        similars.data.Page.media &&
+                        this.props.mir.twist &&
+                        TwistFilter(
+                          similars.data.Page.media,
+                          this.props.mir.twist
+                        )
                           .filter(a => a.id !== data.Media.id)
                           .splice(0, 8)
                           .map((anime, index) => (
@@ -2191,8 +2310,12 @@ class Show extends Component {
                         data.Media.tags.length > 1 &&
                         similars2 &&
                         similars2.data &&
-                        similars2.data.Page.media && this.props.mir.twist &&
-                        TwistFilter(similars2.data.Page.media, this.props.mir.twist)
+                        similars2.data.Page.media &&
+                        this.props.mir.twist &&
+                        TwistFilter(
+                          similars2.data.Page.media,
+                          this.props.mir.twist
+                        )
                           .filter(a => a.id !== data.Media.id)
                           .splice(0, 8)
                           .map((anime, index) => (
