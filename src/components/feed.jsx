@@ -25,8 +25,8 @@ import { guid } from "../utils/uuid";
 import Tooltip from "material-ui/Tooltip/Tooltip";
 import CircularProgress from "material-ui/Progress/CircularProgress";
 import { history } from "../store";
-import Hidden from 'material-ui/Hidden'
-import {Dialogue} from './layouts';
+import Hidden from "material-ui/Hidden";
+import { Dialogue } from "./layouts";
 
 const feedWidth = "100%";
 const feedHeight = 60;
@@ -98,8 +98,8 @@ const style = theme => ({
     bottom: 0,
     boxSizing: "border-box",
     opacity: 1,
-    [theme.breakpoints.down('sm')]: {
-    justifyContent: 'space-around'
+    [theme.breakpoints.down("sm")]: {
+      justifyContent: "space-around"
     }
   },
   headerAva: {
@@ -108,7 +108,8 @@ const style = theme => ({
   media: {
     transition: theme.transitions.create(["all"]),
     minHeight: 300,
-    maxHeight: 700
+    maxHeight: 700,
+    borderBottom: "1px solid rgba(255,255,255,.1)"
   },
   mediaF: {
     transition: theme.transitions.create(["all"]),
@@ -390,7 +391,7 @@ export const Feed = firebaseConnect()(
       class extends Component {
         static propTypes = {
           classes: PropTypes.object.isRequired,
-          theme: PropTypes.object.isRequired,
+          theme: PropTypes.object.isRequired
         };
 
         static defaultProps = {
@@ -449,14 +450,14 @@ export const Feed = firebaseConnect()(
             .ref("/social")
             .child("byusers")
             .child(this.props.id)
-            .child('likes')
+            .child("likes")
             .child(this.props.profile.userID);
-            try {
-              return await db.update({like: true});
-            } catch (error) {
-              return console.error(error);
-            }
-        }
+          try {
+            return await db.update({ like: true });
+          } catch (error) {
+            return console.error(error);
+          }
+        };
 
         disLikeThis = async () => {
           const db = this.props.firebase
@@ -464,22 +465,22 @@ export const Feed = firebaseConnect()(
             .ref("/social")
             .child("byusers")
             .child(this.props.id)
-            .child('likes')
+            .child("likes")
             .child(this.props.profile.userID);
-            try {
-              return await db.remove();
-            } catch (error) {
-              return console.error(error);
-            }
-        }
+          try {
+            return await db.remove();
+          } catch (error) {
+            return console.error(error);
+          }
+        };
 
-        showComments = () => this.setState({showComments: true});
+        showComments = () => this.setState({ showComments: true });
 
-        hideComments = () => this.setState({showComments: false});
+        hideComments = () => this.setState({ showComments: false });
 
         repostThis = async () => {
-          console.info('[mirai] This feature is yet to be added!')
-        }
+          console.info("[mirai] This feature is yet to be added!");
+        };
 
         render() {
           const {
@@ -510,7 +511,22 @@ export const Feed = firebaseConnect()(
           const { showComments } = this.state;
           return (
             <Grid item xs className={classes.root} style={style}>
-            <Dialogue zoom open={showComments} onClose={this.hideComments} feed={{ftitle, image, text, context, user, avatar, date, color, id}}></Dialogue>
+              <Dialogue
+                zoom
+                open={showComments}
+                onClose={this.hideComments}
+                feed={{
+                  ftitle,
+                  image,
+                  text,
+                  context,
+                  user,
+                  avatar,
+                  date,
+                  color,
+                  id
+                }}
+              />
               <FadeIn>
                 <Card
                   style={{ background: color ? color : null }}
@@ -557,11 +573,11 @@ export const Feed = firebaseConnect()(
                             subheader: classes.subheader,
                             action: classes.cardaction
                           }}
-                          action={activity ? null :
-                            isEmpty(
+                          action={
+                            activity ? null : isEmpty(
                               profile
-                            ) ? null : mirUpdate ? null : noDelete ? null : (user &&
-                              user.id === profile.userID) ? (
+                            ) ? null : mirUpdate ? null : noDelete ? null : user &&
+                            user.id === profile.userID ? (
                               <IconButton
                                 classes={{ label: classes.text }}
                                 onClick={
@@ -597,12 +613,16 @@ export const Feed = firebaseConnect()(
                       )}
                       {noActions ? null : (
                         <CardActions className={classes.cardactionsF}>
-                        <Hidden smDown><div style={{flex: 1}} /></Hidden>
+                          <Hidden smDown>
+                            <div style={{ flex: 1 }} />
+                          </Hidden>
                           <Tooltip
                             title={
                               isEmpty(profile)
                                 ? "You need to login to like posts"
-                                : likes && likes[profile.userID] ? "Dislike this" : "Like this"
+                                : likes && likes[profile.userID]
+                                  ? "Dislike this"
+                                  : "Like this"
                             }
                             placement="bottom"
                           >
@@ -610,17 +630,21 @@ export const Feed = firebaseConnect()(
                               <IconButton
                                 disabled={isEmpty(profile) ? true : false}
                                 classes={{ label: classes.text }}
-                                onClick={async () => likes && likes[profile.userID] ? this.disLikeThis() : this.likeThis()}
+                                onClick={async () =>
+                                  likes && likes[profile.userID]
+                                    ? this.disLikeThis()
+                                    : this.likeThis()
+                                }
                               >
-                                {likes && likes[profile.userID] ? <ICON.Favorite /> : <ICON.FavoriteBorder />}
+                                {likes && likes[profile.userID] ? (
+                                  <ICON.Favorite />
+                                ) : (
+                                  <ICON.FavoriteBorder />
+                                )}
                               </IconButton>
                             </div>
                           </Tooltip>
-                          <Tooltip
-                            title={"Show comments"
-                            }
-                            placement="bottom"
-                          >
+                          <Tooltip title={"Show comments"} placement="bottom">
                             <div>
                               <IconButton
                                 classes={{ label: classes.text }}

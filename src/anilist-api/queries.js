@@ -332,7 +332,7 @@ export const entryQueryM = `
 
 export const bigFuckingQuery = `
 
-query ($id: Int, $page: Int, $season: MediaSeason, $seasonYear: Int, $search: String, $status: MediaStatus, $isAdult: Boolean, $sort: [MediaSort]) {
+query ($id: Int, $page: Int, $season: MediaSeason, $seasonYear: Int, $search: String, $status: MediaStatus, $isAdult: Boolean, $sort: [MediaSort], $genre: String, $tag: String) {
 
   Page (page: $page) {
 
@@ -350,7 +350,7 @@ query ($id: Int, $page: Int, $season: MediaSeason, $seasonYear: Int, $search: St
 
     }
 
-    media (id: $id, search: $search, season: $season, seasonYear: $seasonYear, sort: $sort, status: $status, isAdult: $isAdult, type: ANIME) {
+    media (id: $id, search: $search, season: $season, seasonYear: $seasonYear, sort: $sort, status: $status, isAdult: $isAdult, genre: $genre, tag: $tag, type: ANIME) {
 
       id
 

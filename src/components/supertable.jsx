@@ -12,6 +12,9 @@ import withStyles from "material-ui/styles/withStyles";
 import Typography from "material-ui/Typography/Typography";
 import Button from "material-ui/Button/Button";
 
+import checklang from "../checklang";
+import strings from "../strings.json";
+
 const windowWidth = window.innerWidth;
 
 const style = theme => ({
@@ -256,7 +259,8 @@ const SuperTable = class extends React.Component {
   static defaultProps = {
     limit: 18,
     loading: false,
-    data: []
+    data: [],
+    lang: strings.enus
   };
 
   constructor(props) {
@@ -266,6 +270,10 @@ const SuperTable = class extends React.Component {
       slideRange: 0
     };
   }
+
+  componentWillMount = () => {
+    checklang(this);
+  };
 
   goBack = e => {
     e.persist();
@@ -336,6 +344,7 @@ const SuperTable = class extends React.Component {
 
   render() {
     const { classes, theme, loading, data, ...props } = this.props;
+    const { lang } = this.state;
     const backArrow = window.mobilecheck() ? null : (
       <Button onClick={this.goBack} className={classes.bakA} variant="fab">
         <Icon.ArrowBack />

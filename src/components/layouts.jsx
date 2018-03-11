@@ -8,7 +8,7 @@ import CircularProgress from "material-ui/Progress/CircularProgress";
 import LinearProgress from "material-ui/Progress/LinearProgress";
 import Typography from "material-ui/Typography/Typography";
 import { blue, grey } from "material-ui/colors";
-import moment from 'moment'
+import moment from "moment";
 import Hidden from "material-ui/Hidden/Hidden";
 import Modal from "material-ui/Modal";
 import classNames from "classnames";
@@ -16,9 +16,14 @@ import Zoom from "material-ui/transitions/Zoom";
 import Fade from "material-ui/transitions/Fade";
 // import withTheme from 'material-ui/styles/withTheme';
 import Button from "material-ui/Button/Button";
-import Avatar from 'material-ui/Avatar'
-import Card, { CardActions, CardHeader, CardContent, CardMedia } from "material-ui/Card";
-import Divider from 'material-ui/Divider'
+import Avatar from "material-ui/Avatar";
+import Card, {
+  CardActions,
+  CardHeader,
+  CardContent,
+  CardMedia
+} from "material-ui/Card";
+import Divider from "material-ui/Divider";
 
 const style = theme => ({
   compacMode: {
@@ -30,7 +35,7 @@ const style = theme => ({
     [theme.breakpoints.down("sm")]: {
       flexDirection: "column",
       padding: theme.spacing.unit,
-      marginTop: '0 !important'
+      marginTop: "0 !important"
     },
     background: "transparent !important",
     transition: theme.transitions.create(["all"]),
@@ -84,7 +89,7 @@ const style = theme => ({
   },
   commandoBarTopInner: {
     width: "100%",
-    maxWidth: 1970,
+    maxWidth: 1500,
     marginLeft: "auto",
     marginRight: "auto",
     display: "flex",
@@ -285,12 +290,15 @@ const style = theme => ({
     }
   },
   secTitle: {
-    padding: theme.spacing.unit,
-    paddingLeft: 0,
+    zIndex: "inherit",
+    display: "flex"
+  },
+  secTitleText: {
     fontWeight: 700,
     fontSize: 22,
-    zIndex: "inherit",
-    paddingBottom: theme.spacing.unit * 2
+    paddingLeft: 0,
+    margin: "auto 0",
+    padding: theme.spacing.unit
   },
   secSubtitle: {
     padding: theme.spacing.unit,
@@ -351,21 +359,25 @@ ItemContainer.defaultProps = {
 };
 
 export const SectionTitle = withStyles(style, { withTheme: true })(
-  ({ classes, title, lighter, noPad, ...props }) => (
-    <Typography
-      variant={"title"}
-      className={classNames(
-        classes.secTitle,
-        lighter ? classes.lightersecTitle : null
-      )}
-      style={{
-        color: lighter ? "rgba(255,255,255,.5)" : null,
-        paddingBottom: noPad ? 0 : null,
-        ...props
-      }}
-    >
-      {title}
-    </Typography>
+  ({ classes, title, lighter, noPad, button, buttonClick, ...props }) => (
+    <div className={classes.secTitle}>
+      <Typography
+        variant={"title"}
+        className={classNames(
+          classes.secTitleText,
+          lighter ? classes.lightersecTitle : null
+        )}
+        style={{
+          color: lighter ? "rgba(255,255,255,.5)" : null,
+          paddingBottom: noPad ? 0 : null,
+          ...props
+        }}
+      >
+        {title}
+      </Typography>
+      {button ? <div style={{ flex: 1 }} /> : null}
+      {button ? <Button onClick={buttonClick}>{button}</Button> : null}
+    </div>
   )
 );
 
@@ -384,9 +396,16 @@ export const SectionSubTitle = withStyles(style, { withTheme: true })(
 export const LoadingScreen = withStyles(style, { withTheme: true })(
   ({ classes, log }) => (
     <div className={classes.loadingRoot}>
-    <div style={{margin: 'auto', display: 'flex', flexDirection: 'column'}}>
-      <CircularProgress className={classes.loadingCircle} />
-      {log && log !== '' ? <Typography variant='title' style={{textAlign: 'center', marginTop: 16}}>{log}</Typography> : null}
+      <div style={{ margin: "auto", display: "flex", flexDirection: "column" }}>
+        <CircularProgress className={classes.loadingCircle} />
+        {log && log !== "" ? (
+          <Typography
+            variant="title"
+            style={{ textAlign: "center", marginTop: 16 }}
+          >
+            {log}
+          </Typography>
+        ) : null}
       </div>
     </div>
   )
@@ -415,9 +434,11 @@ export const Container = withStyles(style, { withTheme: true })(
       alignItems={alignItems}
       style={
         hasHeader
-          ? (window.innerWidth < 1000 || window.mobilecheck()) ? null : {
-              marginTop: theme.spacing.unit * 16
-            }
+          ? window.innerWidth < 1000 || window.mobilecheck()
+            ? null
+            : {
+                marginTop: theme.spacing.unit * 16
+              }
           : null
       }
       spacing={spacing}
@@ -457,46 +478,70 @@ export const Dialogue = withStyles(style, { withTheme: true })(
     ...props
   }) => (
     <Modal open={open} {...props}>
-      {zoom ? <Zoom in={open}>
-      <Card elevation={4} className={classes.modalPaper} style={{padding: 0}}>
-      <CardHeader title={feed.ftitle} subheader={feed.context + " | " + moment(feed.date).from(Date.now())} avatar={<Avatar src={feed.avatar} />} />
-      <Divider />
-      {feed.image ? <img style={{    transition: theme.transitions.create(["all"]),
-      maxHeight: window.innerHeight,
-      width: "100%",
-      objectFit: "cover"}} alt='' src={feed.image} /> : null}
-        <CardContent>
-          <Typography
-            variant="body1"
+      {zoom ? (
+        <Zoom in={open}>
+          <Card
+            elevation={4}
+            className={classes.modalPaper}
+            style={{ padding: 0, maxWidth: 700 }}
           >
-            {feed.text}
-          </Typography>
-        </CardContent>
-      </Card>
-    </Zoom> : <Fade in={open}>
-        <Card elevation={4} className={classes.modalPaper}>
-          <CardContent>
-            <Typography
-              variant="title"
-              className={classNames(classes.modalTextColor, classes.modalTitle)}
-            >
-              {title}
-            </Typography>
-            {children}
-          </CardContent>
-          {actions !== undefined ? (
-            <CardActions>
-              <div style={{ flex: 1 }} />
-              {actions.includes("send") ? (
-                <Button onClick={actionsSend}>SEND</Button>
-              ) : null}
-              {actions.includes("ok") ? (
-                <Button onClick={props.onClose}>OK</Button>
-              ) : null}
-            </CardActions>
-          ) : null}
-        </Card>
-      </Fade>}
+            <CardHeader
+              title={feed.ftitle}
+              subheader={
+                feed.context + " | " + moment(feed.date).from(Date.now())
+              }
+              avatar={<Avatar src={feed.avatar} />}
+            />
+            <Divider />
+            {feed.image ? (
+              <img
+                style={{
+                  transition: theme.transitions.create(["all"]),
+                  maxHeight: window.innerHeight,
+                  width: "100%",
+                  objectFit: "cover"
+                }}
+                alt=""
+                src={feed.image}
+              />
+            ) : null}
+            <CardContent>
+              <Typography variant="body1">{feed.text}</Typography>
+            </CardContent>
+          </Card>
+        </Zoom>
+      ) : (
+        <Fade in={open}>
+          <Card elevation={4} className={classes.modalPaper}>
+            <CardContent>
+              <Typography
+                variant="title"
+                className={classNames(
+                  classes.modalTextColor,
+                  classes.modalTitle
+                )}
+              >
+                {title}
+              </Typography>
+              {children}
+            </CardContent>
+            {actions !== undefined ? (
+              <CardActions>
+                <div style={{ flex: 1 }} />
+                {actions.includes("send") ? (
+                  <Button onClick={actionsSend}>SEND</Button>
+                ) : null}
+                {actions.includes("ok") ? (
+                  <Button onClick={props.onClose}>OK</Button>
+                ) : null}
+                {actions.includes("close") ? (
+                  <Button onClick={props.onClose}>CLOSE</Button>
+                ) : null}
+              </CardActions>
+            ) : null}
+          </Card>
+        </Fade>
+      )}
     </Modal>
   )
 );
@@ -537,59 +582,74 @@ export const TitleHeader = withStyles(style, { withTheme: true })(
     colortext,
     ...props
   }) => {
-    if (window.innerWidth < 1000)
-    return null
-    else 
-    return ( <div
-      className={classes.titleheader}
-      style={
-        color
-          ? {
-              opacity: 1,
-              background: `linear-gradient(to top, transparent, ${color})`
-            }
-          : null
-      }
-      {...props}
-    >
-      <div className={classes.titleHeaderInner}>
-      {miraiLogo ? <div style={{flex: 1}} /> : null}
-      {miraiLogo ? <div style={{display: window.mobilecheck() ? 'none' : null}}><Typography
-        className={classes.titleheadertitle}
-        style={{marginTop: theme.spacing.unit * 12}}
-        variant="display3"
-      >
-        Welcome to Mirai
-      </Typography>
-      <Typography
-        className={classes.titleheadersubtitle}
-        style={{marginTop: -8, textAlign: window.mobilecheck() ? null : 'center', fontSize: 18}}
-        variant="headline"
-      >
-        <strong>Your</strong> anime streaming app
-      </Typography></div> : null}
-      {miraiLogo ? <div style={{flex: 1}} /> : null}
-        {miraiLogo ? null : <Typography
-          className={classes.titleheadertitle}
-          style={colortext ? { color: colortext } : null}
-          variant="display3"
+    if (window.innerWidth < 1000) return null;
+    else
+      return (
+        <div
+          className={classes.titleheader}
+          style={
+            color
+              ? {
+                  opacity: 1,
+                  background: `linear-gradient(to top, transparent, ${color})`
+                }
+              : null
+          }
+          {...props}
         >
-          {title}
-        </Typography>}
-        {miraiLogo ? null :<Hidden smDown>
-          <div style={{ flex: "1 1 100%" }} />
-         </Hidden>}
-        {miraiLogo ? null :<Typography
-          className={classes.titleheadersubtitle}
-          style={colortext ? { color: colortext } : null}
-          variant="headline"
-        >
-          {subtitle}
-        </Typography>}
-      </div>
-      {children}
-    </div>
-  )}
+          <div className={classes.titleHeaderInner}>
+            {miraiLogo ? <div style={{ flex: 1 }} /> : null}
+            {miraiLogo ? (
+              <div style={{ display: window.mobilecheck() ? "none" : null }}>
+                <Typography
+                  className={classes.titleheadertitle}
+                  style={{ marginTop: theme.spacing.unit * 12 }}
+                  variant="display3"
+                >
+                  Welcome to Mirai
+                </Typography>
+                <Typography
+                  className={classes.titleheadersubtitle}
+                  style={{
+                    marginTop: -8,
+                    textAlign: window.mobilecheck() ? null : "center",
+                    fontSize: 18
+                  }}
+                  variant="headline"
+                >
+                  <strong>Your</strong> anime streaming app
+                </Typography>
+              </div>
+            ) : null}
+            {miraiLogo ? <div style={{ flex: 1 }} /> : null}
+            {miraiLogo ? null : (
+              <Typography
+                className={classes.titleheadertitle}
+                style={colortext ? { color: colortext } : null}
+                variant="display3"
+              >
+                {title}
+              </Typography>
+            )}
+            {miraiLogo ? null : (
+              <Hidden smDown>
+                <div style={{ flex: "1 1 100%" }} />
+              </Hidden>
+            )}
+            {miraiLogo ? null : (
+              <Typography
+                className={classes.titleheadersubtitle}
+                style={colortext ? { color: colortext } : null}
+                variant="headline"
+              >
+                {subtitle}
+              </Typography>
+            )}
+          </div>
+          {children}
+        </div>
+      );
+  }
 );
 
 class HeaderRaw extends React.Component {
@@ -665,8 +725,8 @@ Container.propTypes = {
   spacing: PropTypes.number
 };
 Container.defaultProps = {
-  spacing: 0,
+  spacing: 0
 };
 Root.propTypes = {
-  children: PropTypes.node,
+  children: PropTypes.node
 };

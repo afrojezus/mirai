@@ -115,7 +115,7 @@ const styles = theme => ({
       // background: blue.A200
     },
     "&:hover > div > div > div": {
-      borderColor: theme.palette.primary.light
+      borderColor: theme.palette.primary.main
     },
     "&:hover > div > div > div > img": {
       boxShadow: "none"

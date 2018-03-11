@@ -74,8 +74,9 @@ const styles = theme => ({
     background: "linear-gradient(to top, transparent, rgba(0,0,0,1))"
   },
   appBar: {
-    background: theme.palette.background.appBar,
-    borderBottom: `1px solid rgba(255,255,255,0)`,
+    background: "rgba(0,0,0,.75)",
+    boxShadow: "none",
+    borderBottom: `1px solid rgba(255,255,255,.16)`,
     "-webkitAppRegion": "drag"
   },
   appBarTop: {
@@ -943,7 +944,7 @@ class Superbar extends Component {
           {window.safari ? null : (
             <div
               className={classes.gd}
-              style={scrolling ? { opacity: 0 } : { opacity: 0.5 }}
+              style={scrolling ? { opacity: 0.9 } : { opacity: 0.5 }}
             />
           )}
           <Toolbar

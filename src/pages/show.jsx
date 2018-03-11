@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import * as Icon from "material-ui-icons";
 import moment from "moment";
 import queryString from "query-string";
-import translate from "translate";
 import Colorizer from "../utils/colorizer";
 import FadeIn from "react-fade-in";
 import { connect } from "react-redux";
@@ -597,6 +596,10 @@ const styles = theme => ({
     borderRadius: "50%",
     boxShadow: theme.shadows[3],
     background: "white"
+  },
+  statusForm: {
+    minWidth: 300,
+    marginBottom: theme.spacing.unit * 3
   }
 });
 
@@ -610,7 +613,7 @@ class Show extends Component {
     playerActive: false,
     id: 0,
     hue: "#111",
-    hueVib: blue.A200,
+    hueVib: grey.A200,
     hueVibN: grey[900],
     eps: null,
     epError: false,
@@ -620,7 +623,8 @@ class Show extends Component {
     lang: strings.enus,
     rVal: "",
     userlessREmail: "",
-    showEpisodes: false
+    showEpisodes: false,
+    statusVal: ""
   };
 
   componentWillMount = () => {
@@ -811,6 +815,31 @@ class Show extends Component {
         })
         .then(() => console.info("Logged!"));
     }*/
+    const entity = data.type.includes("ANIME") ? "show" : "manga";
+    if (
+      this.props.profile.completed &&
+      this.props.profile.completed[entity][data.id]
+    ) {
+      this.setState({ statusVal: "c" });
+    }
+
+    if (
+      this.props.profile.dropped &&
+      this.props.profile.dropped[entity][data.id]
+    ) {
+      this.setState({ statusVal: "d" });
+    }
+
+    if (
+      this.props.profile.episodeProgress &&
+      this.props.profile.episodeProgress[data.id] &&
+      !(
+        this.props.profile.completed &&
+        this.props.profile.completed[entity][data.id]
+      )
+    ) {
+      this.setState({ statusVal: "w" });
+    }
 
     if (image)
       Colorizer(`https://cors-anywhere.herokuapp.com/${image}`).then(pal => {
@@ -949,8 +978,9 @@ class Show extends Component {
         })
         .then(() => {
           // console.log(this.props);
-          this.setState({ status: "active" });
-          return this.props.history.push(`/watch`);
+          this.setState({ statusVal: "w" }, () => {
+            this.addToWatching().then(() => this.props.history.push(`/watch`));
+          });
         });
     } else
       this.props.history.push(
@@ -1263,6 +1293,217 @@ class Show extends Component {
 
   showEpisodes = e => this.setState({ showEpisodes: !this.state.showEpisodes });
 
+  addToCompleted = async () => {
+    const data = this.state.data.Media;
+    const name = data.title.romaji;
+    const image = data.coverImage.large;
+    const entity = data.type.includes("ANIME") ? "show" : "manga";
+    if (
+      this.props.profile.dropped &&
+      this.props.profile.dropped[entity][data.id]
+    ) {
+      this.props.firebase
+        .database()
+        .ref("users")
+        .child(this.props.profile.userID)
+        .child("dropped")
+        .child(entity)
+        .child(data.id)
+        .remove();
+    }
+    if (!isEmpty(this.props.profile))
+      this.props.firebase
+        .update(
+          `users/${this.props.profile.userID}/completed/${entity}/${data.id}`,
+          {
+            name,
+            image,
+            id: data.id,
+            link:
+              this.props.history.location.pathname +
+              this.props.history.location.search,
+            date: Date.now(),
+            bg: data.bannerImage
+              ? data.bannerImage
+              : this.state.hue ? this.state.hue : null,
+            avgScore: data.averageScore,
+            meanScore: data.meanScore,
+            type: data.status.includes("NOT_YET_RELEASED") ? "TBA" : null,
+            rank:
+              data.rankings && data.rankings.length > 0
+                ? data.rankings[0]
+                : null
+          }
+        )
+        .then(() => {
+          if (
+            data &&
+            !isEmpty(this.props.profile) &&
+            this.props.profile.username &&
+            this.props.profile.willLog
+          ) {
+            this.props.firebase
+              .ref("/users")
+              .child(this.props.profile.userID)
+              .child("feed")
+              .child(this.state.id + "C")
+              .update({
+                date: Date.now(),
+                id: this.state.id + "C",
+                showId: this.state.id,
+                type: "COMPLETED",
+                activity: `Completed ${data.title.romaji}`,
+                bgImg:
+                  this.state.data.Media.bannerImage &&
+                  this.state.data.Media.bannerImage,
+                coverImg: this.state.data.Media.coverImage.large,
+                user: {
+                  username: this.props.profile.username,
+                  avatar: this.props.profile.avatar,
+                  userID: this.props.profile.userID
+                }
+              });
+          }
+        });
+  };
+
+  addToDropped = async () => {
+    const data = this.state.data.Media;
+    const name = data.title.romaji;
+    const image = data.coverImage.large;
+    const entity = data.type.includes("ANIME") ? "show" : "manga";
+    // You can't drop something you've completed so...................
+    if (
+      this.props.profile.completed &&
+      this.props.profile.completed[entity][data.id]
+    ) {
+      return null;
+    }
+    if (!isEmpty(this.props.profile))
+      this.props.firebase
+        .update(
+          `users/${this.props.profile.userID}/dropped/${entity}/${data.id}`,
+          {
+            name,
+            image,
+            id: data.id,
+            link:
+              this.props.history.location.pathname +
+              this.props.history.location.search,
+            date: Date.now(),
+            bg: data.bannerImage
+              ? data.bannerImage
+              : this.state.hue ? this.state.hue : null,
+            avgScore: data.averageScore,
+            meanScore: data.meanScore,
+            type: data.status.includes("NOT_YET_RELEASED") ? "TBA" : null,
+            rank:
+              data.rankings && data.rankings.length > 0
+                ? data.rankings[0]
+                : null
+          }
+        )
+        .then(() => {
+          if (
+            data &&
+            !isEmpty(this.props.profile) &&
+            this.props.profile.username &&
+            this.props.profile.willLog
+          ) {
+            this.props.firebase
+              .ref("/users")
+              .child(this.props.profile.userID)
+              .child("feed")
+              .child(this.state.id + "D")
+              .update({
+                date: Date.now(),
+                id: this.state.id + "D",
+                showId: this.state.id,
+                type: "DROPPED",
+                activity: `Dropped ${data.title.romaji}`,
+                bgImg:
+                  this.state.data.Media.bannerImage &&
+                  this.state.data.Media.bannerImage,
+                coverImg: this.state.data.Media.coverImage.large,
+                user: {
+                  username: this.props.profile.username,
+                  avatar: this.props.profile.avatar,
+                  userID: this.props.profile.userID
+                }
+              });
+          }
+        });
+  };
+
+  addToWatching = async () => {
+    const data = this.state.data.Media;
+    const name = data.title.romaji;
+    const image = data.coverImage.large;
+    const entity = data.type.includes("ANIME") ? "show" : "manga";
+    if (
+      this.props.profile.dropped &&
+      this.props.profile.dropped[entity][data.id]
+    ) {
+      this.props.firebase
+        .database()
+        .ref("users")
+        .child(this.props.profile.userID)
+        .child("dropped")
+        .child(entity)
+        .child(data.id)
+        .remove()
+        .then(() => {
+          if (
+            data &&
+            !isEmpty(this.props.profile) &&
+            this.props.profile.username &&
+            this.props.profile.willLog
+          ) {
+            this.props.firebase
+              .ref("/users")
+              .child(this.props.profile.userID)
+              .child("feed")
+              .child(this.state.id + "UD")
+              .update({
+                date: Date.now(),
+                id: this.state.id + "UD",
+                showId: this.state.id,
+                type: "UNDROPPED",
+                activity: `Undropped ${data.title.romaji}`,
+                bgImg:
+                  this.state.data.Media.bannerImage &&
+                  this.state.data.Media.bannerImage,
+                coverImg: this.state.data.Media.coverImage.large,
+                user: {
+                  username: this.props.profile.username,
+                  avatar: this.props.profile.avatar,
+                  userID: this.props.profile.userID
+                }
+              });
+          }
+        });
+    }
+  };
+
+  changeStatusVal = e =>
+    this.setState({ statusVal: e.target.value }, async () => {
+      switch (this.state.statusVal) {
+        case "":
+          break;
+        case "c":
+          await this.addToCompleted();
+          break;
+        case "w":
+          await this.addToWatching();
+          break;
+        case "d":
+          await this.addToDropped();
+          break;
+        default:
+          break;
+      }
+    });
+
   render() {
     const { classes, mir, theme } = this.props;
     const {
@@ -1283,7 +1524,8 @@ class Show extends Component {
       rVal,
       userlessREmail,
       showEpisodes,
-      error
+      error,
+      statusVal
     } = this.state;
     const openMenu = Boolean(menuEl);
 
@@ -1375,6 +1617,7 @@ class Show extends Component {
                             ? null
                             : this.play
                     }
+                    onMouseOver={e => (e.currentTarget.style.background = hue)}
                     onKeyDown={this.handleKeyDown}
                   >
                     <img
@@ -1612,6 +1855,32 @@ class Show extends Component {
                     variant="body1"
                     dangerouslySetInnerHTML={{ __html: data.Media.description }}
                   />
+                  {data.Media.rankings ? (
+                    <Grid container style={{ marginTop: theme.spacing.unit }}>
+                      {data.Media.rankings.map((ran, index) => (
+                        <Paper
+                          key={index}
+                          className={classes.commandoTextBoxRow}
+                          style={{ flex: 1 }}
+                        >
+                          <Typography
+                            variant="title"
+                            className={classes.commandoTextNumberRow}
+                            style={{ color: hueVib }}
+                          >
+                            #{ran.rank}
+                          </Typography>
+                          <Typography
+                            variant="body1"
+                            className={classes.commandoTextLabelRow}
+                          >
+                            {ran.context} {ran.format.replace(/_/gi, " ")}{" "}
+                            {ran.season} {ran.year}
+                          </Typography>
+                        </Paper>
+                      ))}
+                    </Grid>
+                  ) : null}
                 </Grid>
               </Container>
               <MainCard>
@@ -1775,7 +2044,13 @@ class Show extends Component {
                         variant="title"
                         className={classes.progressTitle}
                       >
-                        Episode {user.episodeProgress[data.Media.id].ep}
+                        Episode {user.episodeProgress[data.Media.id].ep}{" "}
+                        {eps &&
+                        eps[user.episodeProgress[data.Media.id].ep - 1].canon
+                          ? " • " +
+                            eps[user.episodeProgress[data.Media.id].ep - 1]
+                              .canon
+                          : null}
                       </Typography>
                       <LinearProgress
                         variant="determinate"
@@ -1789,7 +2064,9 @@ class Show extends Component {
                         variant="body1"
                         className={classes.commandoTextLabel}
                       >
-                        {lang.show.progress}
+                        {statusVal.includes("c")
+                          ? lang.show.rewatchprogress
+                          : lang.show.progress}
                       </Typography>
                     </div>
                   ) : null}
@@ -2007,7 +2284,7 @@ class Show extends Component {
                     </form>
                     {rVal !== "" ? (
                       <Column>
-                        {user ? (
+                        {!isEmpty(user) ? (
                           rVal === "m" ? (
                             <Button onClick={this.rSendMReport}>
                               Send using Mirai Account
@@ -2130,26 +2407,56 @@ class Show extends Component {
                     </Typography>
                   </div>
                   <div style={{ flex: 1 }} />
-                  {data.Media.rankings &&
-                    data.Media.rankings.map((ran, index) => (
-                      <Paper key={index} className={classes.commandoTextBoxRow}>
-                        <Typography
-                          variant="title"
-                          className={classes.commandoTextNumberRow}
-                          style={{ color: hueVib }}
+                  {!isEmpty(user) ? (
+                    <form autoComplete="off">
+                      <FormControl fullWidth className={classes.statusForm}>
+                        <InputLabel htmlFor="statusVal">
+                          {lang.show.status.title}
+                        </InputLabel>
+                        <Select
+                          value={statusVal}
+                          onChange={this.changeStatusVal}
+                          inputProps={{
+                            name: "statval",
+                            id: "statusVal"
+                          }}
                         >
-                          #{ran.rank}
-                        </Typography>
-                        <Typography
-                          variant="body1"
-                          className={classes.commandoTextLabelRow}
-                        >
-                          {ran.context} {ran.format.replace(/_/gi, " ")}
-                          <br />
-                          {ran.season} {ran.year}
-                        </Typography>
-                      </Paper>
-                    ))}
+                          <MenuItem value="" />
+                          <MenuItem
+                            disabled={
+                              statusVal.includes("c")
+                                ? true
+                                : user.episodeProgress &&
+                                  user.episodeProgress[data.Media.id]
+                                  ? false
+                                  : true
+                            }
+                            value="w"
+                          >
+                            {lang.show.status.watching}
+                          </MenuItem>
+                          <MenuItem value="c">
+                            {lang.show.status.finished}
+                          </MenuItem>
+                          <MenuItem
+                            disabled={
+                              this.props.profile.completed &&
+                              this.props.profile.completed[
+                                data.Media.type.includes("ANIME")
+                                  ? "show"
+                                  : "manga"
+                              ][data.Media.id]
+                                ? true
+                                : false
+                            }
+                            value="d"
+                          >
+                            {lang.show.status.dropped}
+                          </MenuItem>
+                        </Select>
+                      </FormControl>
+                    </form>
+                  ) : null}
                 </CommandoBar>
                 <Container>
                   <Grid item xs style={{ zIndex: 10 }}>

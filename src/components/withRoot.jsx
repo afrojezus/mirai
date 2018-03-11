@@ -1,6 +1,6 @@
 /* eslint-disable flowtype/require-valid-file-annotation */
 
-import React, { Component } from "react";
+import React from "react";
 import { MuiThemeProvider, createMuiTheme } from "material-ui/styles";
 import Reboot from "material-ui/Reboot";
 import { blue } from "material-ui/colors/index";
@@ -13,7 +13,8 @@ const getColors = () => {
     return {
       hue: hues.hue,
       hueVib: hues.hueVib,
-      hueVibN: hues.hueVibN
+      hueVibN: hues.hueVibN,
+      hueAccent: hues.hueAccent
     };
   } else {
     return null;
@@ -25,24 +26,25 @@ const theme = createMuiTheme({
   palette: {
     primary: getColors()
       ? {
-          main: getColors().hueVib
-            ? getColors().hueVib
-            : getColors().hue ? getColors().hue : blue
+          main: getColors().hueAccent
+            ? getColors().hueAccent
+            : getColors().hueVibN ? getColors().hueVibN : blue
         }
       : blue,
     secondary: blue,
     type: "dark",
     background: {
-      default: getColors() && getColors().hue ? getColors().hue : "#111",
-      paper: getColors() && getColors().hue ? getColors().hue : "#111",
-      appBar: getColors() && getColors().hue ? getColors().hue : "#111",
+      default: "#111",
+      paper: "#111",
+      appBar: "#111",
       contentFrame: "#eeeeee"
     },
-    contrastThreshold: 1.7
+    contrastThreshold: 3
   },
   typography: {
     // Use the system font.
-    fontFamily: "BlinkMacSystemFont, -apple-system, 'SF Display', 'Segoe UI', 'Roboto', 'Ubuntu', 'Arial'",
+    fontFamily:
+      "BlinkMacSystemFont, -apple-system, 'SF Display', 'Segoe UI', 'Roboto', 'Ubuntu', 'Arial'",
     fontSize: 16
   },
   overrides: {
@@ -58,27 +60,27 @@ const theme = createMuiTheme({
     },
     MuiButton: {
       root: {
-        '-webkitAppRegion': 'no-drag'
+        "-webkitAppRegion": "no-drag"
       }
     },
     MuiIconButton: {
       root: {
-        '-webkitAppRegion': 'no-drag'
+        "-webkitAppRegion": "no-drag"
       }
     },
     MuiTab: {
       root: {
-        '-webkitAppRegion': 'no-drag'
+        "-webkitAppRegion": "no-drag"
       }
     },
     MuiBackdrop: {
       root: {
-        '-webkitAppRegion': 'no-drag'
+        "-webkitAppRegion": "no-drag"
       }
     },
     MuiInput: {
       root: {
-        '-webkitAppRegion': 'no-drag'
+        "-webkitAppRegion": "no-drag"
       }
     }
   }

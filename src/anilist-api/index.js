@@ -36,13 +36,15 @@ const get = async (query, reqObj) => {
         query,
         variables: reqObj
       },
-      {
-        headers: {
-          Authorization: userToken ? "Bearer " + userToken : null,
-          "Content-Type": "application/json",
-          Accept: "application/json"
-        }
-      }
+      userToken
+        ? {
+            headers: {
+              Authorization: "Bearer " + userToken,
+              "Content-Type": "application/json",
+              Accept: "application/json"
+            }
+          }
+        : null
     );
     return data.data;
   } catch (error) {

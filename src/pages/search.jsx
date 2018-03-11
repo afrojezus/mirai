@@ -17,7 +17,7 @@ import { LoadingIndicator, TitleHeader, Header } from "../components/layouts";
 import CardButton, { PeopleButton } from "../components/cardButton";
 import Anilist from "../anilist-api";
 import { scrollFix } from "./../utils/scrollFix";
-import TwistFilter from './../utils/filter'
+import TwistFilter from "./../utils/filter";
 
 const style = theme => ({
   container: {
@@ -507,7 +507,7 @@ class Search extends Component {
       <div>
         <LoadingIndicator loading={loading} />
         <div className={classes.root}>
-          <div className={classes.cox} style={loading ? { opacity: 0 } : null}>
+          <div className={classes.cox}>
             <M.Grid container spacing={0} className={classes.content}>
               <M.Hidden mdUp>
                 <form
@@ -533,17 +533,16 @@ class Search extends Component {
                   </M.Typography>
                   <M.Grid container className={classes.itemcontainer}>
                     {anime
-                      ? TwistFilter(anime, this.props.mir.twist)
-                          .map(show => (
-                            <CardButton
-                              key={show.id}
-                              title={show.title.romaji}
-                              image={show.coverImage.large}
-                              onClick={() =>
-                                this.openEntity(`/show?s=${show.id}`)
-                              }
-                            />
-                          ))
+                      ? TwistFilter(anime, this.props.mir.twist).map(show => (
+                          <CardButton
+                            key={show.id}
+                            title={show.title.romaji}
+                            image={show.coverImage.large}
+                            onClick={() =>
+                              this.openEntity(`/show?s=${show.id}`)
+                            }
+                          />
+                        ))
                       : null}
                   </M.Grid>
                 </M.Grid>

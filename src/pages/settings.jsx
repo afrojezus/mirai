@@ -84,7 +84,8 @@ const style = theme => ({
     position: "absolute",
     top: 0,
     left: 0,
-    objectFit: "cover"
+    objectFit: "cover",
+    transition: theme.transitions.create(["all"])
   },
   bg: {
     height: "100%",
@@ -92,7 +93,8 @@ const style = theme => ({
     position: "absolute",
     top: 0,
     left: 0,
-    objectFit: "contain"
+    objectFit: "cover",
+    transition: theme.transitions.create(["all"])
   },
   dropzone: {
     height: 256,
@@ -101,10 +103,15 @@ const style = theme => ({
     borderRadius: "50%",
     margin: "auto",
     border: "2px solid white",
-    "&:hover": {
-      filter: "brightness(1.1)"
+    "&:hover > div": {
+      filter: "brightness(0.5)"
     },
-    zIndex: 1000
+    "&:hover > svg": {
+      opacity: 1
+    },
+    transition: theme.transitions.create(["all"]),
+    zIndex: 1000,
+    cursor: "pointer"
   },
   dropzoneBg: {
     height: 256,
@@ -112,10 +119,15 @@ const style = theme => ({
     position: "relative",
     margin: "auto",
     border: "2px solid white",
-    "&:hover": {
-      background: "rgba(255,255,255,.3)"
+    "&:hover > img": {
+      filter: "brightness(0.5)"
     },
-    zIndex: 1000
+    "&:hover > svg": {
+      opacity: 1
+    },
+    zIndex: 1000,
+    transition: theme.transitions.create(["all"]),
+    cursor: "pointer"
   },
   column: {
     flexBasis: "33.3%"
@@ -123,7 +135,18 @@ const style = theme => ({
   avaImg: {
     height: "100%",
     width: "100%",
-    objectFit: "cover"
+    objectFit: "cover",
+    borderRadius: "50%"
+  },
+  pictureIcon: {
+    top: "50%",
+    left: "50%",
+    position: "absolute",
+    transform: "translate(-50%,-50%)",
+    color: "white",
+    fontSize: 48,
+    opacity: 0,
+    transition: theme.transitions.create(["all"])
   }
 });
 
@@ -268,7 +291,8 @@ class Settings extends Component {
                 let hues = {
                   hue: pal.DarkMuted && pal.DarkMuted.getHex(),
                   hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
-                  hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex()
+                  hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex(),
+                  hueAccent: pal.Vibrant && pal.Vibrant.getHex()
                 };
                 console.info("Background updated.");
                 localStorage.setItem("user-hue", JSON.stringify(hues));
@@ -460,6 +484,7 @@ class Settings extends Component {
                         this.state.ava ? this.state.ava.preview : user.avatar
                       }
                     />
+                    <Icon.FileUpload className={classes.pictureIcon} />
                   </Dropzone>
                 </Column>
               </M.ExpansionPanelDetails>
@@ -470,9 +495,15 @@ class Settings extends Component {
                   </M.Button>
                 ) : null}
                 {this.state.ava ? (
-                  <M.Button onClick={this.changeAva} color="primary">
-                    {this.state.avaLoading ? <M.CircularProgress /> : null}
-                    {lang.settings.avaaccept}
+                  <M.Button
+                    onClick={this.state.avaLoading ? null : this.changeAva}
+                    color="primary"
+                  >
+                    {this.state.avaLoading ? (
+                      <M.CircularProgress />
+                    ) : (
+                      lang.settings.avaaccept
+                    )}
                   </M.Button>
                 ) : null}
               </M.ExpansionPanelActions>
@@ -509,6 +540,7 @@ class Settings extends Component {
                     className={classes.bg}
                     src={this.state.bg ? this.state.bg.preview : user.headers}
                   />
+                  <Icon.FileUpload className={classes.pictureIcon} />
                 </Dropzone>
               </M.ExpansionPanelDetails>
               <M.ExpansionPanelActions>
@@ -518,9 +550,15 @@ class Settings extends Component {
                   </M.Button>
                 ) : null}
                 {this.state.bg ? (
-                  <M.Button onClick={this.changeBg} color="primary">
-                    {this.state.bgLoading ? <M.CircularProgress /> : null}
-                    {lang.settings.bgaccept}
+                  <M.Button
+                    onClick={this.state.bgLoading ? null : this.changeBg}
+                    color="primary"
+                  >
+                    {this.state.bgLoading ? (
+                      <M.CircularProgress />
+                    ) : (
+                      lang.settings.bgaccept
+                    )}
                   </M.Button>
                 ) : null}
               </M.ExpansionPanelActions>

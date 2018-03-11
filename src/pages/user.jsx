@@ -924,7 +924,8 @@ class User extends Component {
                   ) : null}
                 </M.Menu>
               </CommandoBar>
-                {tabVal === 0 ? <M.Grid container className={classes.container}>
+              {tabVal === 0 ? (
+                <M.Grid container className={classes.container}>
                   <M.Grid item xs style={{ zIndex: 10 }}>
                     <SectionTitle title={lang.user.friends} />
                     <M.Grid container className={classes.itemcontainer}>
@@ -971,115 +972,117 @@ class User extends Component {
                       )}
                     </M.Grid>
                     <SectionTitle title={lang.user.activity} />
-                        {data ? (
-                          data.feed && !data.privateLog ? (
-                            Object.values(data.feed)
-                              .sort((a, b) => b.date - a.date)
-                              .map((feed, index) => (
-                                <Feed
-                                    key={index}
-                                    ftitle={feed.user.username}
-                                    context={feed.activity}
-                                    date={feed.date}
-                                    avatar={feed.user.avatar}
-                                    id={feed.id}
-                                    image={feed.coverImg}
-                                    user={{
-                                      avatar: feed.user.avatar,
-                                      id: feed.user.userID,
-                                      username: feed.user.username
-                                    }}
-                                    color={hue}
-                                    activity
-                                    noActions
-                                  />
-                              ))
-                          ) : (
-                            <M.Typography variant="body1">
-                              {lang.user.noact}
-                            </M.Typography>
-                          )
-                        ) : !isEmpty(user) && user.feed ? (
-                          Object.values(user.feed)
-                            .sort((a, b) => b.date - a.date)
-                            .map((feed, index) => {
-                              if (feed.user.username === undefined)
-                                // It's an update.
-                                return (
-                                  <Feed
-                                    key={index}
-                                    ftitle={feed.name}
-                                    context={"MIRAI UPDATE"}
-                                    text={feed.context}
-                                    date={feed.date}
-                                    avatar={feed.user.image}
-                                    id={feed.id}
-                                    user={feed.user}
-                                    mirUpdate
-                                    noActions
-                                    color={hue}
-                                  />
-                                );
-                              else if (feed.context === "INTRO")
-                                // It's an intro feed
-                                return (
-                                  <Feed
-                                    key={index}
-                                    ftitle={feed.user.username}
-                                    context={feed.context}
-                                    text={feed.text}
-                                    date={feed.date}
-                                    avatar={feed.user.avatar}
-                                    image={feed.image}
-                                    id={feed.id}
-                                    user={feed.user}
-                                    noDelete
-                                    noActions
-                                    color={hue}
-                                  />
-                                );
-                              else if (feed.type)
-                                // It's an activity feed
-                                return (
-                                  <Feed
-                                    key={index}
-                                    ftitle={feed.user.username}
-                                    context={feed.activity}
-                                    date={feed.date}
-                                    avatar={feed.user.avatar}
-                                    id={feed.id}
-                                    image={feed.coverImg}
-                                    user={{
-                                      avatar: feed.user.avatar,
-                                      id: feed.user.userID,
-                                      username: feed.user.username
-                                    }}
-                                    color={hue}
-                                    activity
-                                    noActions
-                                  />
-                                ); // It's an user-made feed
-                              else
-                                return (
-                                  <Feed
-                                    key={index}
-                                    ftitle={feed.user.username}
-                                    context={feed.context}
-                                    text={feed.text}
-                                    date={feed.date}
-                                    avatar={feed.user.avatar}
-                                    image={feed.image}
-                                    id={feed.id}
-                                    user={feed.user}
-                                    color={hue}
-                                  />
-                                );
-                            })
-                        ) : (
-                          <M.Typography variant="body1">
-                            {lang.user.noact}
-                          </M.Typography>
-                        )}
+                    {data ? (
+                      data.feed && !data.privateLog ? (
+                        Object.values(data.feed)
+                          .sort((a, b) => b.date - a.date)
+                          .map((feed, index) => (
+                            <Feed
+                              key={index}
+                              ftitle={feed.user.username}
+                              context={feed.activity}
+                              date={feed.date}
+                              avatar={feed.user.avatar}
+                              id={feed.id}
+                              image={feed.coverImg}
+                              user={{
+                                avatar: feed.user.avatar,
+                                id: feed.user.userID,
+                                username: feed.user.username
+                              }}
+                              color={hue}
+                              showId={feed.showId}
+                              activity
+                              noActions
+                            />
+                          ))
+                      ) : (
+                        <M.Typography variant="body1">
+                          {lang.user.noact}
+                        </M.Typography>
+                      )
+                    ) : !isEmpty(user) && user.feed ? (
+                      Object.values(user.feed)
+                        .sort((a, b) => b.date - a.date)
+                        .map((feed, index) => {
+                          if (feed.user.username === undefined)
+                            // It's an update.
+                            return (
+                              <Feed
+                                key={index}
+                                ftitle={feed.name}
+                                context={"MIRAI UPDATE"}
+                                text={feed.context}
+                                date={feed.date}
+                                avatar={feed.user.image}
+                                id={feed.id}
+                                user={feed.user}
+                                mirUpdate
+                                noActions
+                                color={hue}
+                              />
+                            );
+                          else if (feed.context === "INTRO")
+                            // It's an intro feed
+                            return (
+                              <Feed
+                                key={index}
+                                ftitle={feed.user.username}
+                                context={feed.context}
+                                text={feed.text}
+                                date={feed.date}
+                                avatar={feed.user.avatar}
+                                image={feed.image}
+                                id={feed.id}
+                                user={feed.user}
+                                noDelete
+                                noActions
+                                color={hue}
+                              />
+                            );
+                          else if (feed.type)
+                            // It's an activity feed
+                            return (
+                              <Feed
+                                key={index}
+                                ftitle={feed.user.username}
+                                context={feed.activity}
+                                date={feed.date}
+                                avatar={feed.user.avatar}
+                                id={feed.id}
+                                image={feed.coverImg}
+                                user={{
+                                  avatar: feed.user.avatar,
+                                  id: feed.user.userID,
+                                  username: feed.user.username
+                                }}
+                                color={hue}
+                                showId={feed.showId}
+                                activity
+                                noActions
+                              />
+                            ); // It's an user-made feed
+                          else
+                            return (
+                              <Feed
+                                key={index}
+                                ftitle={feed.user.username}
+                                context={feed.context}
+                                text={feed.text}
+                                date={feed.date}
+                                avatar={feed.user.avatar}
+                                image={feed.image}
+                                id={feed.id}
+                                user={feed.user}
+                                color={hue}
+                              />
+                            );
+                        })
+                    ) : (
+                      <M.Typography variant="body1">
+                        {lang.user.noact}
+                      </M.Typography>
+                    )}
                   </M.Grid>
                   <M.Grid item xs={5} style={{ zIndex: 10 }} id="favourites">
                     <SectionTitle title={lang.user.favorites} />
@@ -1348,8 +1351,10 @@ class User extends Component {
                       )}
                     </M.Grid>
                   </M.Grid>
-                </M.Grid> : null}
-                {tabVal === 1 ?  <Container>
+                </M.Grid>
+              ) : null}
+              {tabVal === 1 ? (
+                <Container>
                   <ItemContainer>
                     {userFeeds &&
                     Object.values(userFeeds).filter(
@@ -1362,18 +1367,18 @@ class User extends Component {
                         .sort((a, b) => b.date - a.date)
                         .map((feed, index) => (
                           <Feed
-                                    key={index}
-                                    ftitle={feed.user.username}
-                                    context={feed.context}
-                                    text={feed.text}
-                                    date={feed.date}
-                                    avatar={feed.user.avatar}
-                                    image={feed.image}
-                                    id={feed.id}
-                                    user={feed.user}
-                                    color={hue}
-                                    likes={feed.likes}
-                                  />
+                            key={index}
+                            ftitle={feed.user.username}
+                            context={feed.context}
+                            text={feed.text}
+                            date={feed.date}
+                            avatar={feed.user.avatar}
+                            image={feed.image}
+                            id={feed.id}
+                            user={feed.user}
+                            color={hue}
+                            likes={feed.likes}
+                          />
                         ))
                     ) : (
                       <SectionTitle
@@ -1382,8 +1387,10 @@ class User extends Component {
                       />
                     )}
                   </ItemContainer>
-                </Container> : null}
-                {tabVal === 2 ? <Container>
+                </Container>
+              ) : null}
+              {tabVal === 2 ? (
+                <Container>
                   <Column>
                     <M.Typography variant="title" className={classes.secTitle}>
                       {lang.user.animeList.recentlyWatched}
@@ -1411,8 +1418,7 @@ class User extends Component {
                             ))
                         ) : (
                           <M.Typography variant="body1">
-                            Appears {data.username} hasn't seen a anime here
-                            yet.
+                            {lang.user.animeList.rnone}
                           </M.Typography>
                         )
                       ) : !isEmpty(user) && user.episodeProgress ? (
@@ -1434,7 +1440,7 @@ class User extends Component {
                           ))
                       ) : (
                         <M.Typography variant="body1">
-                          Watch something?
+                          {lang.user.animeList.rnone}
                         </M.Typography>
                       )}
                     </M.Grid>
@@ -1461,8 +1467,7 @@ class User extends Component {
                             ))
                         ) : (
                           <M.Typography variant="body1">
-                            Appears {data.username} hasn't been keen on checking
-                            anime lately
+                            {lang.user.animeList.lnoneUser}
                           </M.Typography>
                         )
                       ) : !isEmpty(user) && user.later && user.later.show ? (
@@ -1483,7 +1488,7 @@ class User extends Component {
                           ))
                       ) : (
                         <M.Typography variant="body1">
-                          Add something to later?
+                          {lang.user.animeList.lnone}
                         </M.Typography>
                       )}
                     </M.Grid>
@@ -1492,58 +1497,46 @@ class User extends Component {
                     </M.Typography>
                     <M.Grid container className={classes.itemcontainer}>
                       {data ? (
-                        data.episodeProgress ? (
-                          Object.values(data.episodeProgress)
-                            .filter(s => s.recentlyWatched)
-                            .filter(u => !u.isOngoing)
-                            .filter(x => x.ep === x.eps.length - 1)
-                            .sort(
-                              (a, b) => b.recentlyWatched - a.recentlyWatched
-                            )
+                        data.completed && data.completed.show ? (
+                          Object.values(data.completed.show)
+                            .sort((a, b) => b.date - a.date)
                             .map(show => (
                               <CardButton
                                 key={show.showId}
                                 onClick={() =>
-                                  this.props.history.push(
-                                    `/show?s=${show.showId}`
-                                  )
+                                  this.props.history.push(show.link)
                                 }
-                                title={show.title}
-                                image={show.showArtwork}
-                                subtitle={`Completed ${moment(
-                                  show.recentlyWatched
-                                ).from(Date.now())}`}
+                                title={show.name}
+                                image={show.image}
+                                subtitle={`Completed ${moment(show.date).from(
+                                  Date.now()
+                                )}`}
                               />
                             ))
                         ) : (
                           <M.Typography variant="body1">
-                            Appears {data.username} hasn't completed a anime yet
+                            {lang.user.animeList.cnoneUser}
                           </M.Typography>
                         )
-                      ) : !isEmpty(user) && user.episodeProgress ? (
-                        Object.values(user.episodeProgress)
-                          .filter(s => s.recentlyWatched)
-                          .filter(u => !u.isOngoing)
-                          .filter(x => x.ep === x.eps.length - 1)
-                          .sort((a, b) => b.recentlyWatched - a.recentlyWatched)
+                      ) : !isEmpty(user) &&
+                      user.completed &&
+                      user.completed.show ? (
+                        Object.values(user.completed.show)
+                          .sort((a, b) => b.date - a.date)
                           .map(show => (
                             <CardButton
                               key={show.showId}
-                              onClick={() =>
-                                this.props.history.push(
-                                  `/show?s=${show.showId}`
-                                )
-                              }
-                              title={show.title}
-                              image={show.showArtwork}
-                              subtitle={`Completed ${moment(
-                                show.recentlyWatched
-                              ).from(Date.now())}`}
+                              onClick={() => this.props.history.push(show.link)}
+                              title={show.name}
+                              image={show.image}
+                              subtitle={`Completed ${moment(show.date).from(
+                                Date.now()
+                              )}`}
                             />
                           ))
                       ) : (
                         <M.Typography variant="body1">
-                          You haven't completed any anime yet...
+                          {lang.user.animeList.cnone}
                         </M.Typography>
                       )}
                     </M.Grid>
@@ -1552,52 +1545,54 @@ class User extends Component {
                     </M.Typography>
                     <M.Grid container className={classes.itemcontainer}>
                       {data ? (
-                        data.later && data.later.show ? (
-                          Object.values(data.later.show)
+                        data.dropped && data.dropped.show ? (
+                          Object.values(data.dropped.show)
                             .sort((a, b) => b.date - a.date)
                             .map(show => (
                               <CardButton
-                                key={show.id}
+                                key={show.showId}
                                 onClick={() =>
-                                  this.props.history.push(`/show?s=${show.id}`)
+                                  this.props.history.push(show.link)
                                 }
                                 title={show.name}
                                 image={show.image}
-                                subtitle={`Added ${moment(show.date).from(
+                                subtitle={`Dropped ${moment(show.date).from(
                                   Date.now()
                                 )}`}
                               />
                             ))
                         ) : (
                           <M.Typography variant="body1">
-                            Appears {data.username} hasn't dropped a anime yet
+                            {lang.user.animeList.dnoneUser}
                           </M.Typography>
                         )
-                      ) : !isEmpty(user) && user.later && user.later.show ? (
-                        Object.values(user.later.show)
+                      ) : !isEmpty(user) &&
+                      user.dropped &&
+                      user.dropped.show ? (
+                        Object.values(user.dropped.show)
                           .sort((a, b) => b.date - a.date)
                           .map(show => (
                             <CardButton
-                              key={show.id}
-                              onClick={() =>
-                                this.props.history.push(`/show?s=${show.id}`)
-                              }
+                              key={show.showId}
+                              onClick={() => this.props.history.push(show.link)}
                               title={show.name}
                               image={show.image}
-                              subtitle={`Added ${moment(show.date).from(
+                              subtitle={`Dropped ${moment(show.date).from(
                                 Date.now()
                               )}`}
                             />
                           ))
                       ) : (
                         <M.Typography variant="body1">
-                          You haven't dropped any anime yet
+                          {lang.user.animeList.dnone}
                         </M.Typography>
                       )}
                     </M.Grid>
                   </Column>
-                </Container> : null}
-                {tabVal === 3 ?  <Container>
+                </Container>
+              ) : null}
+              {tabVal === 3 ? (
+                <Container>
                   <Column>
                     <M.Typography variant="title" className={classes.secTitle}>
                       {lang.user.mangaList.recentlyread}
@@ -1616,8 +1611,10 @@ class User extends Component {
                     </M.Typography>
                     <M.Grid container className={classes.itemcontainer} />
                   </Column>
-                </Container> : null}
-                {tabVal === 4 ? <Container>
+                </Container>
+              ) : null}
+              {tabVal === 4 ? (
+                <Container>
                   <Column>
                     <SectionTitle
                       title={
@@ -1646,7 +1643,7 @@ class User extends Component {
                             ))
                         ) : (
                           <SectionTitle
-                            title="They've not recommended any anime yet"
+                            title={lang.user.recommendDataanimenone}
                             lighter
                           />
                         )
@@ -1668,7 +1665,7 @@ class User extends Component {
                           ))
                       ) : (
                         <SectionTitle
-                          title="You've not recommended any anime yet"
+                          title={lang.user.recommendanimenone}
                           lighter
                         />
                       )}
@@ -1700,7 +1697,7 @@ class User extends Component {
                             ))
                         ) : (
                           <SectionTitle
-                            title="They've not recommended any manga yet"
+                            title={lang.user.recommendDatamanganone}
                             lighter
                           />
                         )
@@ -1722,13 +1719,14 @@ class User extends Component {
                           ))
                       ) : (
                         <SectionTitle
-                          title="You've not recommended any manga yet"
+                          title={lang.user.recommendmanganone}
                           lighter
                         />
                       )}
                     </ItemContainer>
                   </Column>
-                </Container> : null}
+                </Container>
+              ) : null}
             </MainCard>
           </Container>
         </Root>

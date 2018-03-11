@@ -13,6 +13,12 @@ import { connect } from "react-redux";
 import Filter from "../utils/filter";
 import { scrollFix } from "./../utils/scrollFix";
 import CardButton from "../components/cardButton";
+import Card, {
+  CardHeader,
+  CardActions,
+  CardContent,
+  CardMedia
+} from "material-ui/Card";
 import {
   Container,
   Root,
@@ -30,6 +36,9 @@ import { FeedMaker, Feed } from "../components/feed";
 import Select from "material-ui/Select";
 import { MenuItem } from "material-ui/Menu";
 import { SearchBox } from "../components/superbar";
+import Avatar from "material-ui/Avatar";
+import Divider from "material-ui/Divider";
+import List, { ListItem, ListItemText } from "material-ui/List";
 
 const styles = theme => ({
   root: {
@@ -355,6 +364,33 @@ const styles = theme => ({
     margin: "auto 0",
     width: "auto",
     color: "white"
+  },
+  profileCardImg: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 80,
+    objectFit: "cover",
+    width: "100%",
+    opacity: 0.4,
+    zIndex: -1,
+    transition: theme.transitions.create(["all"]),
+    pointerEvent: "none"
+  },
+  userAvatar: {
+    zIndex: 5,
+    boxShadow: theme.shadows[6],
+    borderRadius: "50%"
+  },
+  userNick: {
+    zIndex: 5,
+    textShadow: "0 2px 30px rgba(0,0,0,3)"
+  },
+  userTitle: {
+    zIndex: 5,
+    textShadow: "0 2px 30px rgba(0,0,0,3)"
   }
 });
 
@@ -370,7 +406,8 @@ class Home extends Component {
     hueVib: "#111",
     hueVibN: "#111",
     lang: strings.enus,
-    filterFeedVal: 0
+    filterFeedVal: 0,
+    randomID: 1
   };
 
   componentWillMount = () => {
@@ -381,6 +418,7 @@ class Home extends Component {
   componentDidMount = () => {
     this.feedsObserve();
     this.getColors();
+    this.getRandomID();
     this.setState({ loading: false });
   };
   componentWillUnmount = () => {};
@@ -444,6 +482,13 @@ class Home extends Component {
 
   filterFeed = e => this.setState({ filterFeedVal: e.target.value });
 
+  getRandomID = () =>
+    this.props.firebase
+      .database()
+      .ref("anime")
+      .child("twist")
+      .on("value", val => this.setState({ randomID: val.val() }));
+
   componentDidCatch(error, info) {
     console.log(error, info);
   }
@@ -461,7 +506,8 @@ class Home extends Component {
       lang,
       filterFeedVal,
       searchVal,
-      searchResult
+      searchResult,
+      randomID
     } = this.state;
 
     const user = this.props.profile;
@@ -486,8 +532,51 @@ class Home extends Component {
             >
               {!isEmpty(user) ? (
                 <Hidden mdDown>
-                  <Grid item xs={3}>
-                    <SectionTitle title="Hahaha... nothing to see here... yet" />
+                  <Grid item xs={3} style={{ padding: 16 }}>
+                    <Card
+                      style={{
+                        background: hue,
+                        border: "1px solid rgba(255,255,255,.1)",
+                        position: "relative"
+                      }}
+                      elevation={4}
+                    >
+                      <CardHeader
+                        onClick={() => this.props.history.push("/user")}
+                        title={user.username}
+                        subheader={user.nick}
+                        avatar={<Avatar src={user.avatar} />}
+                        style={{
+                          cursor: "pointer",
+                          background: `url(${user.headers})`
+                        }}
+                        classes={{
+                          title: classes.userTitle,
+                          subheader: classes.userNick,
+                          avatar: classes.userAvatar
+                        }}
+                      />
+                      <Divider />
+                      <MenuItem
+                        onClick={() => this.props.history.push("/user")}
+                      >
+                        <ICON.People style={{ marginRight: 16 }} /> Friends
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => this.props.history.push("/later")}
+                      >
+                        <ICON.WatchLater style={{ marginRight: 16 }} /> Later
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() =>
+                          this.props.history.push(
+                            `/show?s=${Object.keys(randomID)[0]}`
+                          )
+                        }
+                      >
+                        <ICON.Star style={{ marginRight: 16 }} /> Random
+                      </MenuItem>
+                    </Card>
                   </Grid>
                 </Hidden>
               ) : (
@@ -619,30 +708,43 @@ class Home extends Component {
                 )}
               </Grid>
               {!isEmpty(user) ? (
-                <Grid item xs={3}>
-                  {!isEmpty(user) &&
-                  user.favs &&
-                  user.favs.show &&
-                  user.favs.show ? (
-                    <div style={{ width: "100%" }}>
-                      <SectionTitle title={lang.home.animefavTitle} />
-                      <div style={{ flex: 1 }} />
-                      <ItemContainer style={{ marginTop: 24 }}>
-                        {Object.values(user.favs.show)
-                          .sort((a, b) => a.name - b.name)
-                          .map(anime => (
-                            <CardButton
-                              key={anime.id}
-                              title={anime.name}
-                              image={anime.image}
-                              onClick={() =>
-                                this.props.history.push(`/show?s=${anime.id}`)
-                              }
+                <Grid item xs={3} style={{ padding: 16 }}>
+                  <Card
+                    style={{
+                      background: hue,
+                      border: "1px solid rgba(255,255,255,.1)"
+                    }}
+                    elevation={4}
+                  >
+                    <CardHeader title={lang.home.animefavTitle} />
+                    <Divider />
+                    {!isEmpty(user) &&
+                      user.favs &&
+                      user.favs.show &&
+                      user.favs.show &&
+                      Object.values(user.favs.show)
+                        .sort((a, b) => a.name - b.name)
+                        .map(anime => (
+                          <MenuItem
+                            style={{ paddingLeft: 0 }}
+                            key={anime.id}
+                            onClick={() =>
+                              this.props.history.push(`/show?s=${anime.id}`)
+                            }
+                          >
+                            <Avatar
+                              src={anime.image}
+                              style={{
+                                borderRadius: 0,
+                                height: "auto",
+                                width: 60,
+                                background: "white"
+                              }}
                             />
-                          ))}
-                      </ItemContainer>
-                    </div>
-                  ) : null}
+                            <ListItemText primary={anime.name} />
+                          </MenuItem>
+                        ))}
+                  </Card>
                 </Grid>
               ) : (
                 <Grid item xs={3} />

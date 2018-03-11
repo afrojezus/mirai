@@ -191,37 +191,23 @@ class Live extends Component {
                     : classes.tabLabel
               }}
             />
-            <Tab
-              disabled
-              label={lang.live.livetv}
-              classes={{
-                root: classes.tab,
-                label:
-                  this.state.index === 2
-                    ? classes.tabLabelActive
-                    : classes.tabLabel
-              }}
-            />
           </Tabs>
           <Hidden smDown>
             <div style={{ flex: 1 }} />
           </Hidden>
         </CommandoBarTop>
         <Root hasTab>
-          <SwipeableViews
-            index={index}
-            onChangeIndex={index => this.setState({ index })}
-          >
+          {index === 0 ? (
             <Container>
               <Column>
                 <Typography variant="display3" className={classes.feedTitle}>
                   {lang.live.streams}
                 </Typography>
-                <Container>
-                  {streams &&
-                    Object.values(streams)
-                      .filter(u => u.id !== "example").length > 0 ?
-                      Object.values(streams)
+                {streams &&
+                Object.values(streams).filter(u => u.id !== "example").length >
+                  0 ? (
+                  <Container>
+                    {Object.values(streams)
                       .filter(u => u.id !== "example")
                       .map((stream, index) => (
                         <CardButton
@@ -233,22 +219,27 @@ class Live extends Component {
                           title={stream.title}
                           subtitle={stream.hoster + "'s stream"}
                         />
-                      )) : <SectionTitle title='No streams today!' lighter />}
-                </Container>
+                      ))}
+                  </Container>
+                ) : (
+                  <SectionTitle title={lang.live.nostreams} lighter />
+                )}
               </Column>
             </Container>
+          ) : null}
+          {index === 1 ? (
             <Container>
               <Column>
                 <Typography variant="display3" className={classes.feedTitle}>
                   {lang.live.friendsstream}
                 </Typography>
-                <Container>
-                  {streams &&
-                  Object.values(streams)
-                    .filter(u => u.id !== "example")
-                    .filter(s => profile.friends && profile.friends[s.id])
-                    .length > 0 ? (
-                    Object.values(streams)
+                {streams &&
+                Object.values(streams)
+                  .filter(u => u.id !== "example")
+                  .filter(s => profile.friends && profile.friends[s.id])
+                  .length > 0 ? (
+                  <Container>
+                    {Object.values(streams)
                       .filter(u => u.id !== "example")
                       .filter(s => profile.friends && profile.friends[s.id])
                       .map((stream, index) => (
@@ -261,16 +252,15 @@ class Live extends Component {
                           title={stream.title}
                           subtitle={stream.hoster + "'s stream"}
                         />
-                      ))
-                  ) : (
-                    <SectionTitle
-                      title="None of your friends are currently streaming at the moment."
-                      lighter
-                    />
-                  )}
-                </Container>
+                      ))}
+                  </Container>
+                ) : (
+                  <SectionTitle title={lang.live.nofriends} lighter />
+                )}
               </Column>
             </Container>
+          ) : null}
+          {index === 2 ? (
             <Container>
               <Column>
                 <Typography variant="display3" className={classes.feedTitle}>
@@ -278,10 +268,7 @@ class Live extends Component {
                 </Typography>
               </Column>
             </Container>
-            <Container>
-              <Column />
-            </Container>
-          </SwipeableViews>
+          ) : null}
         </Root>
       </div>
     );

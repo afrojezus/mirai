@@ -343,26 +343,61 @@ class MirPlayer extends Component {
     if (this.state.loaded < 0) {
       return null;
     }
-    return this.props.firebase
-      .ref("/users")
-      .child(this.props.profile.userID)
-      .child("feed")
-      .child(id)
-      .update({
-        date: Date.now(),
-        id,
-        type: "WATCH",
-        showId: this.state.showId,
-        activity: `Watched ${
-          this.state.eps.length > 1 ? "Episode " + this.state.ep + " of" : ""
-        } ${this.state.title}`,
-        coverImg: this.state.showArtwork,
-        user: {
-          username: this.props.profile.username,
-          avatar: this.props.profile.avatar,
-          userID: this.props.profile.userID
-        }
-      });
+
+    if (
+      this.props.profile.completed &&
+      this.props.profile.completed.show[this.state.showId]
+    ) {
+      if (
+        !isEmpty(this.props.profile) &&
+        this.props.profile.username &&
+        this.props.profile.willLog
+      ) {
+        return this.props.firebase
+          .ref("/users")
+          .child(this.props.profile.userID)
+          .child("feed")
+          .child(id)
+          .update({
+            date: Date.now(),
+            id,
+            type: "REWATCH",
+            showId: this.state.showId,
+            activity: `Rewatched ${
+              this.state.eps.length > 1
+                ? "Episode " + this.state.ep + " of"
+                : ""
+            } ${this.state.title}`,
+            coverImg: this.state.showArtwork,
+            user: {
+              username: this.props.profile.username,
+              avatar: this.props.profile.avatar,
+              userID: this.props.profile.userID
+            }
+          });
+      }
+    } else {
+      return this.props.firebase
+        .ref("/users")
+        .child(this.props.profile.userID)
+        .child("feed")
+        .child(id)
+        .update({
+          date: Date.now(),
+          id,
+          type: "WATCH",
+          showId: this.state.showId,
+          activity: `Watched ${
+            this.state.eps.length > 1 ? "Episode " + this.state.ep + " of" : ""
+          } ${this.state.title}`,
+          coverImg: this.state.showArtwork,
+          user: {
+            username: this.props.profile.username,
+            avatar: this.props.profile.avatar,
+            userID: this.props.profile.userID
+          }
+        });
+    }
   };
 
   componentWillUnmount = async () => {

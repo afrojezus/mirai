@@ -17,7 +17,8 @@ import {
   Header,
   Column,
   SectionTitle,
-  ItemContainer
+  ItemContainer,
+  SectionSubTitle
 } from "../components/layouts";
 import SuperTable from "../components/supertable";
 import checklang from "../checklang";
@@ -113,14 +114,14 @@ class History extends Component {
       <div>
         <TitleHeader color={hue ? hue : "#000"} />
         <Header color={hue ? hue : "#111"} />
-        <CommandoBarTop title="History">
+        <CommandoBarTop title={lang.superbar.history}>
           <Hidden smDown>
             <div
               className={classes.commandoTextBox}
               style={{ marginRight: 16, marginLeft: 16 }}
             >
               <Typography variant={"title"} className={classes.commandoText}>
-                History
+                {lang.superbar.history}
               </Typography>
             </div>
           </Hidden>
@@ -130,7 +131,7 @@ class History extends Component {
             indicatorClassName={classes.tabLine}
           >
             <Tab
-              label="Overview"
+              label={lang.history.overview}
               classes={{
                 root: classes.tab,
                 label:
@@ -140,7 +141,7 @@ class History extends Component {
               }}
             />
             <Tab
-              label="Anime log"
+              label={lang.history.alog}
               classes={{
                 root: classes.tab,
                 label:
@@ -150,7 +151,7 @@ class History extends Component {
               }}
             />
             <Tab
-              label="Manga log"
+              label={lang.history.mlog}
               classes={{
                 root: classes.tab,
                 label:
@@ -160,7 +161,7 @@ class History extends Component {
               }}
             />
             <Tab
-              label="User log"
+              label={lang.history.ulog}
               classes={{
                 root: classes.tab,
                 label:
@@ -173,31 +174,23 @@ class History extends Component {
           <div style={{ flex: 1 }} />
         </CommandoBarTop>
         <Root hasTab>
-          <SwipeableViews
-            index={index}
-            onChangeIndex={index => this.setState({ index })}
-          >
+          {index === 0 ? (
             <Container>
               <Column>
                 <Typography variant="display3" className={classes.feedTitle}>
-                  Overview
+                  {lang.history.overview}
                 </Typography>
                 {user && user.episodeProgress ? (
                   <div>
-                    <ItemContainer
-                      noMargin
-                      style={{
-                        flexDirection: "row",
-                        display: "flex"
-                      }}
-                    >
-                      <SectionTitle title={lang.home.animehistoryTitle} />
-                      <div style={{ flex: 1 }} />
-                      <Typography variant="title" className={classes.headline}>
-                        {Object.values(user.episodeProgress).length}{" "}
-                        {lang.home.animehistoryEstimate}
-                      </Typography>
-                    </ItemContainer>
+                    <SectionTitle noPad title={lang.home.animehistoryTitle} />
+                    <SectionSubTitle
+                      title={
+                        Object.values(user.episodeProgress).length -
+                        1 +
+                        " " +
+                        lang.home.animehistoryEstimate
+                      }
+                    />
                     <Container spacing={16}>
                       {user.episodeProgress ? (
                         <SuperTable
@@ -220,26 +213,21 @@ class History extends Component {
                     variant="title"
                     style={{ color: "rgba(255,255,255, .5)" }}
                   >
-                    No history of anime being seen found
+                    {lang.history.noneA}
                   </Typography>
                 )}
                 <Divider className={classes.divider} />
                 {user && user.chapterProgress ? (
                   <div>
-                    <ItemContainer
-                      noMargin
-                      style={{
-                        flexDirection: "row",
-                        display: "flex"
-                      }}
-                    >
-                      <SectionTitle title={lang.home.animehistoryTitle} />
-                      <div style={{ flex: 1 }} />
-                      <Typography variant="title" className={classes.headline}>
-                        {Object.values(user.episodeProgress).length}{" "}
-                        {lang.home.animehistoryEstimate}
-                      </Typography>
-                    </ItemContainer>
+                    <SectionTitle noPad title={lang.home.animehistoryTitle} />
+                    <SectionSubTitle
+                      title={
+                        Object.values(user.episodeProgress).length -
+                        1 +
+                        " " +
+                        lang.home.animehistoryEstimate
+                      }
+                    />
                     <Container spacing={16}>
                       {user.episodeProgress ? (
                         <SuperTable
@@ -262,27 +250,20 @@ class History extends Component {
                     variant="title"
                     style={{ color: "rgba(255,255,255, .5)" }}
                   >
-                    No history of manga being read found
+                    {lang.history.noneM}
                   </Typography>
                 )}
                 <Divider className={classes.divider} />
                 {user && user.feed ? (
                   <div>
-                    <ItemContainer
-                      topPad
-                      noMargin
-                      style={{
-                        flexDirection: "row",
-                        display: "flex"
-                      }}
-                    >
-                      <SectionTitle title="Activity" />
-                      <div style={{ flex: 1 }} />
-                      <Typography variant="title" className={classes.headline}>
-                        {Object.values(user.feed).length} instances of activity
-                        found
-                      </Typography>
-                    </ItemContainer>
+                    <SectionTitle noPad title="Activity" />
+                    <SectionSubTitle
+                      title={
+                        Object.values(user.feed).length +
+                        " " +
+                        lang.history.instances
+                      }
+                    />
                     <ItemContainer>
                       <Column>
                         {Object.values(user.feed)
@@ -303,6 +284,7 @@ class History extends Component {
                               }}
                               activity
                               noActions
+                              color={hue}
                             />
                           ))}
                       </Column>
@@ -314,16 +296,18 @@ class History extends Component {
                     style={{ color: "rgba(255,255,255, .5)" }}
                   >
                     {user && !user.willLog
-                      ? "Logging is disabled"
-                      : "No activites found"}
+                      ? lang.history.logdisabled
+                      : lang.history.noneU}
                   </Typography>
                 )}
               </Column>
             </Container>
+          ) : null}
+          {index === 1 ? (
             <Container>
               <Column>
                 <Typography variant="display3" className={classes.feedTitle}>
-                  Anime log
+                  {lang.history.alog}
                 </Typography>
                 <ItemContainer>
                   {!isEmpty(user) && user.episodeProgress ? (
@@ -352,16 +336,18 @@ class History extends Component {
                       variant="title"
                       style={{ color: "rgba(255,255,255, .5)" }}
                     >
-                      No history of anime being seen found
+                      {lang.history.noneA}
                     </Typography>
                   )}
                 </ItemContainer>
               </Column>
             </Container>
+          ) : null}
+          {index === 2 ? (
             <Container>
               <Column>
                 <Typography variant="display3" className={classes.feedTitle}>
-                  Manga log
+                  {lang.history.mlog}
                 </Typography>
                 <ItemContainer>
                   {!isEmpty(user) && user.chapterProgress ? (
@@ -390,35 +376,40 @@ class History extends Component {
                       variant="title"
                       style={{ color: "rgba(255,255,255, .5)" }}
                     >
-                      No history of manga being read found
+                      {lang.history.noneM}
                     </Typography>
                   )}
                 </ItemContainer>
               </Column>
             </Container>
+          ) : null}
+          {index === 3 ? (
             <Container>
               <Column>
                 <Typography variant="display3" className={classes.feedTitle}>
-                  User log
+                  {lang.history.ulog}
                 </Typography>
                 <ItemContainer>
                   {user && user.feed ? (
                     Object.values(user.feed)
                       .sort((a, b) => b.date - a.date)
-                      .map((act, index) => (
+                      .map((feed, index) => (
                         <Feed
-                          title={"Activity"}
-                          avatar={act.coverImg}
-                          context={act.type}
-                          noActions
-                          id={index}
-                          text={act.activity}
-                          date={act.date}
                           key={index}
-                          style={{
-                            width: 450,
-                            flexBasis: "initial"
+                          ftitle={feed.user.username}
+                          context={feed.activity}
+                          date={feed.date}
+                          avatar={feed.user.avatar}
+                          id={feed.id}
+                          image={feed.coverImg}
+                          user={{
+                            avatar: feed.user.avatar,
+                            id: feed.user.userID,
+                            username: feed.user.username
                           }}
+                          activity
+                          noActions
+                          color={hue}
                         />
                       ))
                   ) : (
@@ -427,14 +418,14 @@ class History extends Component {
                       style={{ color: "rgba(255,255,255, .5)" }}
                     >
                       {user && !user.willLog
-                        ? "Logging is disabled"
-                        : "No activites found"}
+                        ? lang.history.logdisabled
+                        : lang.history.noneU}
                     </Typography>
                   )}
                 </ItemContainer>
               </Column>
             </Container>
-          </SwipeableViews>
+          ) : null}
         </Root>
       </div>
     );

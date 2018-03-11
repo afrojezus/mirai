@@ -44,7 +44,10 @@
         "title": "How to add a new stream!",
         "desc":
           "Adding a stream is simple. Simply find a anime you want to watch and select 'Livestream this anime'. It's just that simple."
-      }
+      },
+      "nofriends":
+        "None of your friends are currently streaming at the moment.",
+      "nostreams": "No streams today!"
     },
     "home": {
       "welcomeuser": "Welcome back",
@@ -68,6 +71,17 @@
       "mangatitle": "Manga you want to check out later",
       "animenone": "It appears you got no anime to check out later...",
       "manganone": "It appears you got no manga to check out later..."
+    },
+    "history": {
+      "overview": "Overview",
+      "alog": "Anime log",
+      "mlog": "Manga log",
+      "ulog": "User log",
+      "noneA": "No history of anime found",
+      "noneM": "No history of manga found",
+      "noneU": "No user activity found",
+      "instances": "instances of activities found",
+      "logdisabled": "Logging is disabled"
     },
     "settings": {
       "settings": "Settings",
@@ -141,7 +155,24 @@
       "hCorner": "H Corner",
       "collectionsTitle": "Collections",
       "friendsTitle": "Recommended by friends",
-      "error": "Something happened"
+      "error": "Something happened",
+      "showAll": "Show all",
+      "action": {
+        "title": "Action",
+        "desc": "Fast-paced anime classics"
+      },
+      "cgct": {
+        "title": "Cute girls doing cute things",
+        "desc": "Self-explainatory"
+      },
+      "drama": {
+        "title": "Drama",
+        "desc": "Tears, conflict and much more awaits"
+      },
+      "meme": {
+        "title": "Memes",
+        "desc": "These ones are just memes"
+      }
     },
     "show": {
       "moreMenu": {
@@ -169,6 +200,7 @@
       "meanscore": "Mean Score",
       "episodes": "Episodes",
       "progress": "Your progress",
+      "rewatchprogress": "Your rewatch progress",
       "removelater": "Remove from later",
       "addlater": "Add to later",
       "removefav": "Remove from favorites",
@@ -177,6 +209,12 @@
         "title": "Report ",
         "errors": "for errors",
         "select": "What do you wish to report this anime/manga for?"
+      },
+      "status": {
+        "title": "Your status on this anime/manga",
+        "finished": "Completed",
+        "dropped": "Dropped",
+        "watching": "Watching"
       },
       "airingstart": "Airing start",
       "airingended": "Airing ended",
@@ -219,6 +257,7 @@
       "characters": "Characters",
       "staff": "Staff & Actors",
       "studio": "Studios",
+      "none": "N/A",
       "noact": "No activites were found",
       "activity": "Activity",
       "recommends": "Recommends",
@@ -226,18 +265,36 @@
       "recommendmanga": "Manga you recommend",
       "recommenddataanime": "Anime they recommend",
       "recommenddatamanga": "Manga they recommend",
+      "recommendanimenone": "You've not recommended any anime yet",
+      "recommendmanganone": "You've not recommended any manga yet",
+      "recommendDataanimenone": "They've not recommended any anime yet",
+      "recommendDatamanganone": "They've not recommended any manga yet",
       "animeList": {
         "recentlyWatched": "Recently watched",
         "lastyura": "Last seen anime on yura",
         "later": "Later",
         "compl": "Completed",
-        "dropped": "Dropped (anime you haven't seen for more than 2 weeks)"
+        "dropped": "Dropped",
+        "rnone": "No anime found...",
+        "lnone": "No anime found in your later list",
+        "lnoneUser": "No anime found in their later list",
+        "cnone": "You haven't completed a anime yet",
+        "cnoneUser": "They haven't completed a anime yet",
+        "dnoneUser": "They haven't dropped any anime yet",
+        "dnone": "You haven't dropped any anime yet"
       },
       "mangaList": {
         "recentlyread": "Recently read",
         "later": "Later",
         "compl": "Completed",
-        "dropped": "Dropped (manga you haven't read for more than 2 weeks)"
+        "dropped": "Dropped",
+        "rnone": "No manga found...",
+        "lnone": "No manga found in your later list",
+        "lnoneUser": "No manga found in their later list",
+        "cnone": "You haven't completed a manga yet",
+        "cnoneUser": "They haven't completed a manga yet",
+        "dnoneUser": "They haven't dropped any manga yet",
+        "dnone": "You haven't dropped any manga yet"
       }
     }
   },
@@ -286,7 +343,9 @@
         "title": "Hvordan lager man en ny stream?",
         "desc":
           "Det er enkelt å legge til en direktestrømming! Bare velg 'Livestream denne animen' når du er inne på en anime. Så enkelt er det!"
-      }
+      },
+      "nofriends": "Ingen av vennene dine streamer i dag",
+      "nostreams": "Ingen streams for i dag!"
     },
     "explore": {
       "title": "Utforsk",
@@ -298,7 +357,24 @@
       "hCorner": "H Hjørnet",
       "collectionsTitle": "Samlinger",
       "friendsTitle": "Anbefalinger av vennene dine",
-      "error": "Noe skjedde"
+      "error": "Noe skjedde",
+      "showAll": "Vis alle",
+      "action": {
+        "title": "Action",
+        "desc": "Mye skjer i disse"
+      },
+      "cgct": {
+        "title": "Søte jenter gjør søte ting",
+        "desc": "Finn ut selv hva det innebærer..."
+      },
+      "drama": {
+        "title": "Drama",
+        "desc": "Tårer, konflikter og mye mer"
+      },
+      "meme": {
+        "title": "Memes",
+        "desc": "Disse er memes"
+      }
     },
     "home": {
       "welcomeuser": "Velkommen tilbake",
@@ -386,6 +462,17 @@
       "access": "Logg inn",
       "divein": "Enter"
     },
+    "history": {
+      "overview": "Oversikt",
+      "alog": "Anime logg",
+      "mlog": "Manga logg",
+      "ulog": "Bruker logg",
+      "noneA": "Ingen logg av anime funnet",
+      "noneM": "Ingen logg av manga funnet",
+      "noneU": "Ingen bruker aktivitet funnet",
+      "instances": "logg av bruker aktivitet funnet",
+      "logdisabled": "Logging er deaktivert"
+    },
     "show": {
       "moreMenu": {
         "report": "Rapporter feil",
@@ -412,6 +499,7 @@
       "meanscore": "Meningsmåling",
       "episodes": "Episoder",
       "progress": "Din fremgang",
+      "rewatchprogress": "Din nye fremgang",
       "removelater": "Fjern fra senere",
       "addlater": "Legg til senere",
       "removefav": "Fjern fra favoritter",
@@ -420,6 +508,12 @@
         "title": "Rapporter ",
         "errors": "for feil",
         "select": "Hva er det du ønsker å rapportere om?"
+      },
+      "status": {
+        "title": "Din status på denne animen/mangaen",
+        "finished": "Fullført",
+        "dropped": "Droppet",
+        "watching": "Ser på"
       },
       "airingstart": "Kringkasting start",
       "airingended": "Kringkasting slutt",
@@ -462,6 +556,7 @@
       "characters": "Karakterer",
       "staff": "Medvirkende og skuespillere",
       "studio": "Studioer",
+      "none": "Ingenting funnet...",
       "activity": "Aktivitet",
       "noact": "Ingen aktiviteter ble funnet",
       "recommends": "Anbefalinger",
@@ -469,18 +564,36 @@
       "recommendmanga": "Dine manga anbefalinger",
       "recommenddataanime": "Animer de anbefaler",
       "recommenddatamanga": "Mangaer de anbefaler",
+      "recommendanimenone": "Du har ikke anbefalt en anime enda",
+      "recommendmanganone": "Du har ikke anbefalt en manga enda",
+      "recommendDataanimenone": "De har ikke anbefalt en anime enda",
+      "recommendDatamanganone": "De har ikke anbefalt en manga enda",
       "animeList": {
         "recentlyWatched": "Sist sett",
         "lastyura": "Sist sett på Yura",
         "later": "Senere",
         "compl": "Fullført",
-        "dropped": "Droppet (anime du ikke har forsettet på i mer enn 2 uker)"
+        "dropped": "Droppet",
+        "rnone": "Ingen anime funnet",
+        "lnone": "Ingen anime funnet i senere listen din",
+        "lnoneUser": "Ingen anime funnet i senere listen til dem",
+        "cnone": "Du har ikke fullført en anime enda",
+        "cnoneUser": "De har ikke fullført en anime enda",
+        "dnoneUser": "De har ikke droppet en anime enda",
+        "dnone": "Du har ikke droppet en anime enda"
       },
       "mangaList": {
         "recentlyread": "Sist lest",
         "later": "Senere",
         "compl": "Fullført",
-        "dropped": "Droppet (manga du ikke har forsettet på i mer enn 2 uker)"
+        "dropped": "Droppet",
+        "rnone": "Ingen mangaer funnet",
+        "lnone": "Ingen mangaer funnet i senere listen din",
+        "lnoneUser": "Ingen mangaer funnet i senere listen til dem",
+        "cnone": "Du har ikke fullført en manga enda",
+        "cnoneUser": "De har ikke fullført en manga enda",
+        "dnoneUser": "De har ikke droppet en manga enda",
+        "dnone": "Du har ikke droppet en manga enda"
       }
     }
   }
