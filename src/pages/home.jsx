@@ -394,6 +394,10 @@ const styles = theme => ({
   userTitle: {
     zIndex: 5,
     textShadow: "0 2px 30px rgba(0,0,0,3)"
+  },
+  secTitleText: {
+    fontWeight: 700,
+    fontSize: 22
   }
 });
 
@@ -943,7 +947,10 @@ class Home extends Component {
                     }}
                     elevation={4}
                   >
-                    <CardHeader title={lang.home.animefavTitle} />
+                    <CardHeader
+                      title={lang.home.animefavTitle}
+                      classes={{ title: classes.secTitleText }}
+                    />
                     <Divider />
                     {!isEmpty(user) &&
                     user.favs &&

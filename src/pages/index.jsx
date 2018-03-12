@@ -40,6 +40,7 @@ import { LoadingScreen } from "../components/layouts";
 import { history } from "../store";
 import { mirLoader } from "../utils/mirLoader";
 import AniList from "../anilist-api";
+import Snackbar from "material-ui";
 
 const styles = theme => ({
   root: {},
@@ -131,7 +132,9 @@ const DevPlayer = LoadableVisibility({
 class Index extends Component {
   state = {
     loading: true,
-    log: "Please wait"
+    log: "Please wait",
+    error: false,
+    info: "ECODE: 1. Mirai couldn't load. Check console for more information."
   };
 
   componentWillMount = () => {
@@ -197,39 +200,45 @@ class Index extends Component {
       return null;
     });
 
+  componentDidCatch = (error, info) => {
+    console.error(error, info);
+    this.setState({ error: error, errorInfo: info });
+  };
+
   render() {
-    if (this.state.loading) return <LoadingScreen log={this.state.log} />;
+    if (this.state.error) return <LoadingScreen error log={this.state.info} />;
     return (
-      <div
-        className={this.props.classes.root}
-        style={{ opacity: this.state.loading && !this.props.mir.twist ? 0 : 1 }}
-      >
-        <Superbar history={history}>
-          <Switch>
-            <Route path="/" exact component={Home} />
-            <Route path="/setup" exact component={Setup} />
-            <Route path="/show" exact component={Show} />
-            <Route path="/wizard" exact component={Wizard} />
-            <Route path="/user" exact component={User} />
-            <Route path="/rankings" exact component={Rankings} />
-            <Route path="/live" exact component={Live} />
-            <Route path="/watch" exact component={Watch} />
-            <Route path="/monika" exact component={Monika} />
-            <Route path="/settings" exact component={Settings} />
-            <Route path="/search" exact component={Search} />
-            <Route path="/read" exact component={Read} />
-            <Route path="/fig" exact component={Fig} />
-            <Route path="/tag" exact component={Tag} />
-            <Route path="/later" exact component={Later} />
-            <Route path="/history" exact component={History} />
-            <Route path="/help" exact component={Help} />
-            <Route path="/stream" exact component={Stream} />
-            <Route path="/tou" exact component={Tos} />
-            <Route exact component={PageNotFound} />
-            <Route path="/admin/db" exact component={DevDB} />
-            <Route path="/dev/player" exact component={DevPlayer} />
-          </Switch>
-        </Superbar>
+      <div className={this.props.classes.root}>
+        {this.state.loading ? (
+          <LoadingScreen log={this.state.log} />
+        ) : (
+          <Superbar history={history}>
+            <Switch>
+              <Route path="/" exact component={Home} />
+              <Route path="/setup" exact component={Setup} />
+              <Route path="/show" exact component={Show} />
+              <Route path="/wizard" exact component={Wizard} />
+              <Route path="/user" exact component={User} />
+              <Route path="/rankings" exact component={Rankings} />
+              <Route path="/live" exact component={Live} />
+              <Route path="/watch" exact component={Watch} />
+              <Route path="/monika" exact component={Monika} />
+              <Route path="/settings" exact component={Settings} />
+              <Route path="/search" exact component={Search} />
+              <Route path="/read" exact component={Read} />
+              <Route path="/fig" exact component={Fig} />
+              <Route path="/tag" exact component={Tag} />
+              <Route path="/later" exact component={Later} />
+              <Route path="/history" exact component={History} />
+              <Route path="/help" exact component={Help} />
+              <Route path="/stream" exact component={Stream} />
+              <Route path="/tou" exact component={Tos} />
+              <Route exact component={PageNotFound} />
+              <Route path="/admin/db" exact component={DevDB} />
+              <Route path="/dev/player" exact component={DevPlayer} />
+            </Switch>
+          </Superbar>
+        )}
       </div>
     );
   }

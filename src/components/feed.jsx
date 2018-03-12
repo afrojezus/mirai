@@ -175,7 +175,8 @@ export const FeedMaker = firebaseConnect()(
           avatar: "",
           uploadingImage: false,
           error: false,
-          lang: strings.enus
+          lang: strings.enus,
+          forbidden: false
         };
 
         componentWillMount() {
@@ -270,7 +271,8 @@ export const FeedMaker = firebaseConnect()(
             date,
             avatar,
             uploadingImage,
-            lang
+            lang,
+            forbidden
           } = this.state;
           if (isEmpty(profile)) return null;
           return (
@@ -328,14 +330,28 @@ export const FeedMaker = firebaseConnect()(
                       disableUnderline: true,
                       style: { fontSize: text && text.length < 50 ? 24 : null }
                     }}
+                    error={forbidden}
                     placeholder={lang.feed.placeholder}
                     fullWidth
                     onChange={e => {
                       let val = e.target.value;
-                      this.setState(
-                        { text: val },
-                        () => (val === "" ? this.setState({ image: "" }) : null)
-                      );
+                      if (
+                        val.includes("<script>") ||
+                        val.includes("eval") ||
+                        val.includes("<iframe>") ||
+                        val.includes("<head>") ||
+                        val.includes("<body>") ||
+                        val.includes("<html>") ||
+                        val.includes("autoplay")
+                      ) {
+                        this.setState({ forbidden: true });
+                      } else {
+                        this.setState(
+                          { text: val, forbidden: false },
+                          () =>
+                            val === "" ? this.setState({ image: "" }) : null
+                        );
+                      }
                     }}
                   />
                 </CardContent>
@@ -393,6 +409,7 @@ export const FeedMaker = firebaseConnect()(
                     <Button
                       classes={{ label: classes.text }}
                       onClick={this.postFeed}
+                      disabled={forbidden}
                     >
                       {lang.feed.post}
                     </Button>

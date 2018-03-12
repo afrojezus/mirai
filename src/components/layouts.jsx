@@ -402,7 +402,7 @@ export const SectionTitle = withStyles(style, { withTheme: true })(
         style={{
           color: lighter ? "rgba(255,255,255,.5)" : null,
           paddingBottom: noPad ? 0 : null,
-          ...props
+          ...props.style
         }}
       >
         {title}
@@ -446,10 +446,14 @@ export const SectionSubTitle = withStyles(style, { withTheme: true })(
 );
 
 export const LoadingScreen = withStyles(style, { withTheme: true })(
-  ({ classes, log }) => (
+  ({ classes, error, log }) => (
     <div className={classes.loadingRoot}>
       <div style={{ margin: "auto", display: "flex", flexDirection: "column" }}>
-        <CircularProgress className={classes.loadingCircle} />
+        {error ? (
+          <Icon.ErrorOutline className={classes.loadingCircle} />
+        ) : (
+          <CircularProgress className={classes.loadingCircle} />
+        )}
         {log && log !== "" ? (
           <Typography
             variant="title"

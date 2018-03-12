@@ -47,7 +47,8 @@ import Tabs, { Tab } from "material-ui/Tabs";
 
 import { firebaseConnect, isEmpty } from "react-redux-firebase";
 import miraiLogo from "../assets/mirai-icon.png";
-import NotificationForm from "./notificationForm";
+import miraiLogoBlack from "../assets/mirai-icon-dark.png";
+import NotificationForm, { types } from "./notificationForm";
 import { history } from "../store";
 import MirPlayer from "./mirplayer";
 import { Dialogue } from "./layouts";
@@ -396,7 +397,9 @@ class Superbar extends Component {
     userMenuHover: false,
     onlineUsers: [],
     donateModal: false,
-    langMenu: false
+    langMenu: null,
+    openSnack: false,
+    snackMessage: ""
   };
 
   componentWillMount = () => {
@@ -415,12 +418,22 @@ class Superbar extends Component {
       this.setState({ watchIsOn: false });
     }
 
+    if (
+      this.props.history.location.pathname === "/stream" &&
+      window.location.pathname === "/stream"
+    ) {
+      this.setState({ watchIsOn: true });
+    } else {
+      this.setState({ watchIsOn: false });
+    }
+
     checklang(this);
   };
 
   componentDidMount = async () => {
     window.addEventListener("scroll", this.handleScroll);
     await this.getUsersOnline();
+    // await this.handleNotifications(); TODO: Service worker method instead of this.
   };
 
   componentWillReceiveProps = nextProps => {
@@ -430,6 +443,72 @@ class Superbar extends Component {
           this.setState({ mirTitle: nextProps.mir.title })
         );
       }
+  };
+
+  handleNotifications = async () => {
+    if (!isEmpty(this.props.profile)) {
+      return this.props.firebase
+        .database()
+        .ref("/users")
+        .child(this.props.profile.userID)
+        .child("notifications")
+        .on("value", val => {
+          const data = val.val();
+          if (data) {
+            const notifications = Object.values(data).filter(
+              n => n.ignored === false
+            );
+            const sortedNotificationsByDate =
+              notifications.length > 0
+                ? notifications.sort((a, b) => b.date - a.date)
+                : null;
+            return this.checkForNotifications(sortedNotificationsByDate);
+          } else {
+            return null;
+          }
+        });
+    } else {
+      return null;
+    }
+  };
+
+  checkForNotifications = async notification => {
+    if (!("Notification" in window)) {
+      return console.info(
+        "[mirai] Web notification support not found on this browser."
+      );
+    }
+
+    if (isEmpty(this.props.profile)) {
+      return console.info(
+        "[mirai] Guest mode detected, notifications disabled."
+      );
+    }
+
+    try {
+      await Notification.requestPermission();
+      if (Notification.permission === "denied") {
+        throw new Error("Web notifications denied.");
+      } else {
+        if (!notification) return null;
+        else {
+          notification.forEach(s => {
+            const n = new Notification("Mirai", {
+              body: s.desc,
+              icon: s.avatar,
+              badge: miraiLogoBlack,
+              vibrate: [110],
+              tag: s.id
+            });
+            n.addEventListener("click", event => {
+              n.close();
+            });
+          });
+        }
+      }
+    } catch (error) {
+      return console.error(error);
+    }
   };
 
   componentWillUnmount = () => {
@@ -610,6 +689,9 @@ class Superbar extends Component {
       case "/watch":
         this.setState({ currentPage: "", tabVaL: 3, watchIsOn: true });
         break;
+      case "/stream":
+        this.setState({ currentPage: "", tabVaL: 3, watchIsOn: true });
+        break;
       case "/tag":
         this.setState({ currentPage: "", tabVal: 3, watchIsOn: false });
         break;
@@ -729,7 +811,9 @@ class Superbar extends Component {
       lang,
       onlineUsers,
       donateModal,
-      langMenu
+      langMenu,
+      openSnack,
+      snackMessage
     } = this.state;
 
     const user = !isEmpty(this.props.profile) ? this.props.profile : null;
@@ -747,7 +831,7 @@ class Superbar extends Component {
     const metaShit = (
       <div className={classes.metashit}>
         <Typography className={classes.footerCopy} variant="headline">
-          Mirai (Depth study mode)
+          Mirai (Depth study version)
           <br />
           {onlineUsers ? Object.values(onlineUsers).length : 0} users online
           <br />

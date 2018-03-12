@@ -14,7 +14,7 @@ import checklang from "../checklang";
 import { connect } from "react-redux";
 import { firebaseConnect, isEmpty } from "react-redux-firebase";
 
-const types = {
+export const types = {
   FRIEND_REQUEST: "fr",
   STREAM_INVITE: "si",
   NEW_EPISODE: "nep",
@@ -42,7 +42,7 @@ const style = theme => ({
   }
 });
 
-const Notification = firebaseConnect()(
+export const NotificationCard = firebaseConnect()(
   connect(
     ({ firebase: { profile }, mir }) => ({
       profile,
@@ -223,7 +223,7 @@ class NotificationForm extends Component {
         <CardContent>
           {notifications && notifications.length > 0 ? (
             notifications.map((notification, index) => (
-              <Notification
+              <NotificationCard
                 key={index}
                 userid={notification.userid}
                 id={notification.id}

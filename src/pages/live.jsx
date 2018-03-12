@@ -203,6 +203,10 @@ class Live extends Component {
                 <Typography variant="display3" className={classes.feedTitle}>
                   {lang.live.streams}
                 </Typography>
+                <SectionTitle
+                  title={lang.live.streamsdesc}
+                  style={{ marginTop: -32 }}
+                />
                 {streams &&
                 Object.values(streams).filter(u => u.id !== "example").length >
                   0 ? (

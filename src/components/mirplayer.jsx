@@ -270,6 +270,13 @@ const style = theme => ({
   episodeThumb: {
     width: 60,
     objectFit: "cover"
+  },
+  marginAuto: {
+    margin: "auto"
+  },
+  secTitleText: {
+    fontWeight: 700,
+    fontSize: 22
   }
 });
 
@@ -536,15 +543,11 @@ class MirPlayer extends Component {
     const controls = document.getElementById("controls");
     const pcontrols = document.getElementById("pipcontrols");
     const player = document.getElementById("player");
-    const epMenu = this.state.menuEl;
-    const volMenu = this.state.volEl;
     if (back && (controls || pcontrols) && player) {
       back.style.opacity = 1;
       if (controls) controls.style.opacity = 1;
       if (pcontrols) pcontrols.style.opacity = 1;
       player.style.cursor = "initial";
-      if (epMenu) epMenu.style.opacity = 1;
-      if (volMenu) volMenu.style.opacity = 1;
       this.mouseResetDelay();
     }
   };
@@ -565,8 +568,8 @@ class MirPlayer extends Component {
     ) {
       player.style.cursor = "none";
       back.style.opacity = 0;
-      if (epMenu) epMenu.style.opacity = 0;
-      if (volMenu) volMenu.style.opacity = 0;
+      if (epMenu) this.closeMenu();
+      if (volMenu) this.setState({ volEl: null });
       if (controls) controls.style.opacity = 0;
       if (pcontrols && window.mobilecheck() === false)
         pcontrols.style.opacity = 0;
@@ -1246,6 +1249,15 @@ class MirPlayer extends Component {
                     <CardHeader
                       style={{ background: grey[900] }}
                       title="Episodes"
+                      classes={{
+                        action: classes.marginAuto,
+                        title: classes.secTitleText
+                      }}
+                      action={
+                        <IconButton onClick={this.closeMenu}>
+                          <Icon.ExpandMore />
+                        </IconButton>
+                      }
                     />
                     <Divider />
                     <CardContent className={classes.epListCont}>
@@ -1366,6 +1378,15 @@ class MirPlayer extends Component {
                 <CardHeader
                   style={{ background: grey[900] }}
                   title="Episodes"
+                  classes={{
+                    action: classes.marginAuto,
+                    title: classes.secTitleText
+                  }}
+                  action={
+                    <IconButton onClick={this.closeMenu}>
+                      <Icon.ExpandMore />
+                    </IconButton>
+                  }
                 />
                 <Divider />
                 <CardContent className={classes.epListCont}>

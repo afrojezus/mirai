@@ -56,6 +56,9 @@ const theme = createMuiTheme({
     MuiTooltip: {
       tooltipPlacementBottom: {
         fontSize: 14
+      },
+      tooltipPlacementTop: {
+        fontSize: 14
       }
     },
     MuiButton: {

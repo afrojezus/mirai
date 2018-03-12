@@ -44,87 +44,24 @@ import { PeopleButton } from "./cardButton";
 import moment from "moment";
 import { Dialogue } from "./layouts";
 
+import Avatar from "material-ui/Avatar";
+
 const style = theme => ({
-  userRow: {
-    display: "flex",
-    marginTop: theme.spacing.unit
-  },
-  kingSeat: {},
-  pawnSeat: {},
-  streamFrame: {
-    display: "flex",
-    width: "100%",
-    height: `calc(100vh - ${theme.mixins.toolbar.minHeight +
-      theme.spacing.unit * 8}px)`
-  },
-  streamPlayer: {
-    flex: 1,
-    width: "100%",
-    display: "flex",
-    flexDirection: "column"
-  },
-  coverContainer: {
-    boxSizing: "border-box",
-    height: "inherit",
-    padding: theme.spacing.unit * 3
-  },
-  streamTitle: {
-    fontSize: theme.typography.pxToRem(24),
-    fontWeight: "700"
-  },
-  streamDesc: {
-    fontSize: theme.typography.pxToRem(16),
-    fontWeight: "500"
-  },
-  cover: {
-    height: "100%",
-    boxSizing: "border-box"
-  },
-  mainContainer: {
-    width: "100%",
-    flex: "1",
-    paddingTop: "24px",
-    paddingBottom: "24px",
-    boxSizing: "border-box"
-  },
-  peopleBar: {
-    height: 300,
-    width: "100%",
-    display: "flex"
-  },
-  eventSlide: {
-    width: 400,
-    background: "#080808",
-    position: "relative"
-  },
-  eventTitle: {
-    margin: theme.spacing.unit * 2,
-    fontSize: theme.typography.pxToRem(18),
-    fontWeight: "700"
-  },
-  eventTextfield: {
-    bottom: 0,
-    boxSizing: "border-box",
-    padding: theme.spacing.unit * 2,
-    position: "absolute"
-  },
-  infoBar: {
-    paddingTop: theme.spacing.unit * 8,
-    background: "#090909",
-    height: theme.mixins.toolbar.minHeight + theme.spacing.unit * 8,
-    boxShadow: "0 2px 16px rgba(0,0,0,.3)"
-  },
   root: {
-    width: "100%",
+    minHeight: "100vh",
+    minWidth: "100%",
+    position: "fixed",
+    bottom: 0,
+    top: 0,
+    right: 0,
+    left: 0,
     overflow: "hidden",
     animation: "playerLoad .5s ease",
-    transition: theme.transitions.create(["all"]),
-    position: "relative",
-    flex: 1
+    transition: theme.transitions.create(["all"])
   },
   rootSmol: {
-    minHeight: 280,
-    minWidth: 500,
+    minHeight: 140,
+    minWidth: 240,
     position: "fixed",
     right: theme.spacing.unit * 3,
     bottom: theme.spacing.unit * 3,
@@ -150,18 +87,17 @@ const style = theme => ({
     transition: theme.transitions.create(["all"])
   },
   controlpanel: {
-    position: "absolute",
+    position: "fixed",
     bottom: 0,
     width: "100%",
-    background: window.safari
-      ? "rgba(0,0,0,.2)"
-      : "linear-gradient(to top, rgba(0,0,0,.75), rgba(0,0,0,.1))",
-    transition: theme.transitions.create(["all"]),
-    backdropFilter: "blur(10px)"
+    background: "linear-gradient(to top, rgba(0,0,0,.75), rgba(0,0,0,.1))",
+    transition: theme.transitions.create(["all"])
   },
   backToolbar: {
     zIndex: 10,
-    transition: theme.transitions.create(["all"])
+    transition: theme.transitions.create(["all"]),
+    "-webkitAppRegion": "drag",
+    background: "linear-gradient(to top, rgba(0,0,0,.1), rgba(0,0,0,.75))"
   },
   indicator: {
     flexDirection: "row",
@@ -245,7 +181,8 @@ const style = theme => ({
     padding: 0,
     margin: "auto",
     transition: theme.transitions.create(["all"]),
-    color: "white"
+    color: "white",
+    pointerEvents: "none"
   },
   showInfo: {
     margin: "auto",
@@ -305,11 +242,12 @@ const style = theme => ({
     flexFlow: "column wrap",
     zIndex: "3000",
     position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%,-50%)",
+    bottom: 0,
+    left: 0,
+    width: "100%",
     transition: theme.transitions.create(["all"]),
     opacity: 0,
+    background: "linear-gradient(to bottom, transparent, rgba(0,0,0,.95))",
     [theme.breakpoints.down("sm")]: {
       opacity: 1
     }
@@ -317,10 +255,31 @@ const style = theme => ({
   piptitle: {
     [theme.breakpoints.down("sm")]: {
       display: "none"
-    }
+    },
+    margin: "auto",
+    fontSize: theme.typography.pxToRem(12),
+    paddingLeft: theme.spacing.unit
   },
   controlpanelActions: {
     margin: theme.spacing.unit
+  },
+  episodeName: {
+    fontSize: ".6em",
+    opacity: 0.5
+  },
+  episodeCount: {
+    fontSize: "1em"
+  },
+  episodeThumb: {
+    width: 60,
+    objectFit: "cover"
+  },
+  marginAuto: {
+    margin: "auto"
+  },
+  secTitleText: {
+    fontWeight: 700,
+    fontSize: 22
   }
 });
 
@@ -360,8 +319,10 @@ class MirStreamer extends Component {
     king: false,
     hoster: "",
     hosterAva: "",
+    hosterPlayTime: "",
     date: "",
-    alphaMsg: true
+    alphaMsg: true,
+    id: 0
   };
 
   componentWillMount = async () => {
@@ -375,7 +336,7 @@ class MirStreamer extends Component {
     if (playerVolume) this.setState({ volume: playerVolume });
 
     console.info(
-      "Welcome to the Mirai Livestreaming Client, it's currently in extreme alpha and hopefully shit doesn't fuck up."
+      "[mirai] This feature is quite experimental, but shouldn't run into issues most of the time."
     );
 
     if (localStorage.getItem("hasSeenTheAlphaMsgForStreamingLikeACoolDude")) {
@@ -425,20 +386,24 @@ class MirStreamer extends Component {
         }*/
     //this.props.removeDataFromMir(null);
 
-    if (this.state.king) {
-      return await this.props.firebase
-        .database()
-        .ref("/streams")
-        .child(this.props.profile.userID)
-        .remove();
+    if (this.state.id !== 0) {
+      if (this.state.king) {
+        return await this.props.firebase
+          .database()
+          .ref("/streams")
+          .child(this.props.profile.userID)
+          .remove();
+      } else {
+        return await this.props.firebase
+          .database()
+          .ref("/streams")
+          .child(this.state.id)
+          .child("users")
+          .child(this.props.profile.userID)
+          .remove();
+      }
     } else {
-      return await this.props.firebase
-        .database()
-        .ref("/streams")
-        .child(this.state.id)
-        .child("users")
-        .child(this.props.profile.userID)
-        .remove();
+      return this.props.history.goBack();
     }
   };
 
@@ -654,19 +619,9 @@ class MirStreamer extends Component {
               .on("value", async value => {
                 try {
                   const val = await value.val();
-                  return this.setState(
-                    {
-                      played: val.played,
-                      playing: val.playing
-                    },
-                    () => {
-                      if (!this.state.playing) {
-                        return null;
-                      } else {
-                        return this.player.seekTo(this.state.played);
-                      }
-                    }
-                  );
+                  return this.setState({
+                    hosterPlayTime: val.played
+                  });
                 } catch (error) {
                   return console.error(error);
                 }
@@ -788,6 +743,8 @@ class MirStreamer extends Component {
       }
     });
 
+  skipToHostersTime = () => this.player.seekTo(this.state.hosterPlayTime);
+
   handleEnded = () => {
     this.reveal();
     /*if (!isEmpty(this.props.profile) && this.state.loaded > 0) {
@@ -876,82 +833,91 @@ class MirStreamer extends Component {
     const volumeMenu = Boolean(volEl);
     const qualityMenu = Boolean(quaEl);
     return (
-      <div>
-        <Toolbar className={classes.infoBar}>
+      <div
+        id="frame"
+        className={classes.root}
+        onMouseLeave={
+          played === 1 ? null : menu || volumeMenu ? null : this.hide
+        }
+        onMouseMove={this.reveal}
+        onTouchMove={this.reveal}
+      >
+        <div>
+          <Dialogue
+            open={alphaMsg}
+            title={"Welcome to livestreaming"}
+            actions={"ok"}
+            onClose={() =>
+              this.setState({ alphaMsg: false }, () =>
+                localStorage.setItem(
+                  "hasSeenTheAlphaMsgForStreamingLikeACoolDude",
+                  true
+                )
+              )
+            }
+          >
+            <Typography variant="body1">
+              Mirai sharestreaming isn't fully optimal yet, but should run
+              almost issue-less.
+            </Typography>
+          </Dialogue>
+          <CircularProgress
+            className={classes.loading}
+            style={!buffering ? { opacity: 0 } : null}
+          />
+        </div>
+        <Toolbar id="backbutton" className={classes.backToolbar}>
+          <IconButton
+            style={{
+              marginLeft: -12,
+              marginRight: 20
+            }}
+            onClick={() => this.props.history.goBack()}
+          >
+            <Icon.ArrowBack />
+          </IconButton>
           <Typography variant={"title"}>
-            {king ? "Your stream" : `${hoster}s Stream`}
+            {king ? "Your sharestream" : `${hoster}s sharestream`}
           </Typography>
           <div style={{ flex: 1 }} />
-          <IconButton onClick={this.streamInvite}>
-            <Icon.PersonAdd />
-          </IconButton>
-          <IconButton onClick={this.streamMenu}>
-            <Icon.MoreVert />
-          </IconButton>
-        </Toolbar>
-        <Dialogue
-          open={alphaMsg}
-          title={"Welcome to livestreaming"}
-          actions={"ok"}
-          onClose={() =>
-            this.setState({ alphaMsg: false }, () =>
-              localStorage.setItem(
-                "hasSeenTheAlphaMsgForStreamingLikeACoolDude",
-                true
-              )
-            )
-          }
-        >
           <Typography variant="body1">
-            Mirai livestreaming is in early stages and won't work optimal at all
-            times.
+            {users
+              ? Object.values(users).length > 1
+                ? Object.values(users).length + " users watching"
+                : Object.values(users).length + " user watching"
+              : null}
           </Typography>
-        </Dialogue>
-        <div className={classes.streamFrame}>
-          <div className={classes.streamPlayer}>
-            <div
-              id="frame"
-              className={classes.root}
-              onMouseLeave={played === 1 ? null : this.hide}
-              onMouseMove={this.reveal}
-              onTouchMove={this.reveal}
-            >
-              <div>
-                <CircularProgress
-                  className={classes.loading}
-                  style={!buffering ? { opacity: 0 } : null}
-                />
-              </div>
-              <div onClick={this.playPause}>
-                <ReactPlayer
-                  id="player"
-                  ref={player => {
-                    this.player = player;
-                  }}
-                  url={source}
-                  volume={volume}
-                  playing={playing}
-                  controls={native}
-                  onProgress={this.onProgress}
-                  className={classes.player}
-                  width="100%"
-                  height="100%"
-                  onBuffer={this.onBuffer}
-                  onReady={() =>
-                    this.setState({
-                      playing: true,
-                      buffering: false,
-                      status: title
-                    })
-                  }
-                  onPause={() => this.setState({ playing: false })}
-                  onEnded={this.handleEnded}
-                  onError={e => console.error(e)}
-                  onDuration={dura => this.setState({ duration: dura })}
-                  style={played === 1 ? { filter: "brightness(.2)" } : null}
-                />
-              </div>
-              {/*played === 1 ? (
+        </Toolbar>
+        <div onClick={this.playPause}>
+          <ReactPlayer
+            id="player"
+            ref={player => {
+              this.player = player;
+            }}
+            url={source}
+            volume={volume}
+            playing={playing}
+            controls={native}
+            onProgress={this.onProgress}
+            className={classes.player}
+            width="100%"
+            height="100%"
+            onBuffer={this.onBuffer}
+            onReady={() =>
+              this.setState({
+                playing: true,
+                buffering: false,
+                status: title
+              })
+            }
+            onPause={() => this.setState({ playing: false })}
+            onEnded={this.handleEnded}
+            onError={e => console.error(e)}
+            onDuration={dura => this.setState({ duration: dura })}
+            style={played === 1 ? { filter: "brightness(.2)" } : null}
+          />
+        </div>
+        {/*played === 1 ? (
 					<FadeIn>
 						<div className={classes.showInfo}>
 							<div className={classes.showInfoColumn}>
@@ -980,298 +946,367 @@ class MirStreamer extends Component {
 						</div>
 					</FadeIn>
 				) : null*/}
-              {!native ? (
-                <Card id="controls" className={classes.controlpanel}>
-                  <CardContent className={classes.indicator}>
-                    <LinearProgress
-                      classes={{
-                        root: classes.progress,
-                        primaryColor: classes.progressBgOver,
-                        primaryColorBar: classes.progressBar
-                      }}
-                      variant="determinate"
-                      value={played * 100}
-                      valueBuffer={loaded * 100}
-                    />
-                    <LinearProgress
-                      classes={{
-                        root: classes.progressLoaded,
-                        primaryColor: classes.progressBg,
-                        primaryColorBar: classes.progressBarLoaded
-                      }}
-                      variant="determinate"
-                      value={loaded * 100}
-                    />
-                    <input
-                      className={classnames(
-                        classes.progressInput,
-                        "webKitThumbButton"
-                      )}
-                      type="range"
-                      step="any"
-                      max={0.999}
-                      min={0}
-                      value={played}
-                      onMouseDown={king ? this.onSeekMouseDown : null}
-                      onChange={king ? this.onSeekChange : null}
-                      onMouseUp={king ? this.onSeekMouseUp : null}
-                    />
-                  </CardContent>
-                  <CardActions className={classes.controlpanelActions}>
-                    <IconButton
-                      disabled={!!(loaded === 0 || !source)}
-                      onClick={this.playPause}
-                    >
-                      {playing ? (
-                        <Icon.Pause />
-                      ) : played === 1 ? (
-                        <Icon.Replay />
-                      ) : (
-                        <Icon.PlayArrow />
-                      )}
-                    </IconButton>
+        {!native ? (
+          <Card id="controls" className={classes.controlpanel}>
+            <CardContent className={classes.indicator}>
+              <LinearProgress
+                classes={{
+                  root: classes.progress,
+                  colorPrimary: classes.progressBgOver,
+                  barColorPrimary: classes.progressBar
+                }}
+                variant="determinate"
+                value={played * 100}
+                valueBuffer={loaded * 100}
+              />
+              <LinearProgress
+                classes={{
+                  root: classes.progressLoaded,
+                  colorPrimary: classes.progressBg,
+                  barColorPrimary: classes.progressBarLoaded
+                }}
+                variant="determinate"
+                value={loaded * 100}
+              />
+              <input
+                className={classnames(
+                  classes.progressInput,
+                  "webKitThumbButton"
+                )}
+                type="range"
+                step="any"
+                max={0.999}
+                min={0.001}
+                value={played}
+                onMouseDown={this.onSeekMouseDown}
+                onChange={this.onSeekChange}
+                onMouseUp={this.onSeekMouseUp}
+              />
+            </CardContent>
+            <CardActions className={classes.controlpanelActions}>
+              <IconButton
+                disabled={!!(loaded === 0 || !source)}
+                onClick={this.playPause}
+              >
+                {playing ? (
+                  <Icon.Pause />
+                ) : played === 1 ? (
+                  <Icon.Replay />
+                ) : (
+                  <Icon.PlayArrow />
+                )}
+              </IconButton>
+              <Tooltip title="Forward to hosters playtime">
+                <IconButton
+                  disabled={king ? true : loaded === 0}
+                  onClick={this.skipToHostersTime}
+                >
+                  <Icon.FastForward />
+                </IconButton>
+              </Tooltip>
+              <Typography
+                variant="title"
+                className={!source ? classes.left : null}
+              >
+                {status} {played > 0 && source ? ` Episode ${ep}` : null}
+              </Typography>
+              <div style={{ flex: 1 }} />
+              <Tooltip title={king ? "You" : hoster}>
+                <Avatar
+                  src={king ? this.props.profile.avatar : hosterAva}
+                  style={{ border: "2px solid", borderColor: yellow.A200 }}
+                />
+              </Tooltip>
+              {users &&
+                Object.values(users)
+                  .filter(u => !u.king)
+                  .map((user, index) => (
+                    <Tooltip title={user.name}>
+                      <Avatar key={index} src={user.avatar} />
+                    </Tooltip>
+                  ))}
+              <IconButton
+                disabled={!torrent}
+                aria-owns={qualityMenu ? "quality-menu" : null}
+                aria-haspopup="true"
+                onClick={e => this.setState({ quaEl: e.currentTarget })}
+                color="default"
+                style={{ marginLeft: 8 }}
+              >
+                {torrent ? (
+                  quality === 480 ? (
                     <Typography
                       variant="title"
-                      className={!source ? classes.left : null}
+                      className={classes.qualityTitle}
                     >
-                      {status} {played > 0 && source ? ` Episode ${ep}` : null}
+                      480p
                     </Typography>
-                    <div style={{ flex: 1 }} />
-                    <IconButton disabled={!torrent} color="default">
-                      <Typography
-                        variant="title"
-                        style={torrent ? null : { opacity: ".2" }}
-                        className={classes.qualityTitle}
-                      >
-                        {videoQuality ? `${videoQuality}p` : "HD"}
-                      </Typography>
-                    </IconButton>
-                    <Typography variant="body1" className={classes.duration}>
-                      <Duration seconds={duration * played} />
+                  ) : quality === 720 ? (
+                    <Typography
+                      variant="title"
+                      className={classes.qualityTitle}
+                    >
+                      720p
                     </Typography>
-                    <Menu
-                      id="quality-menu"
-                      anchorEl={quaEl}
-                      anchorOrigin={{
-                        vertical: "top",
-                        horizontal: "right"
-                      }}
-                      transformOrigin={{
-                        vertical: "center",
-                        horizontal: "right"
-                      }}
-                      open={qualityMenu}
+                  ) : quality === 1080 ? (
+                    <Typography
+                      variant="title"
+                      className={classes.qualityTitle}
+                    >
+                      1080p
+                    </Typography>
+                  ) : null
+                ) : (
+                  <Typography
+                    variant="title"
+                    style={torrent ? null : { opacity: ".2" }}
+                    className={classes.qualityTitle}
+                  >
+                    {videoQuality ? `${videoQuality}p` : "HD"}
+                  </Typography>
+                )}
+              </IconButton>
+              <Typography variant="body1" className={classes.duration}>
+                <Duration seconds={duration * played} />
+              </Typography>
+              <Menu
+                id="quality-menu"
+                anchorEl={quaEl}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right"
+                }}
+                transformOrigin={{
+                  vertical: "center",
+                  horizontal: "right"
+                }}
+                open={qualityMenu}
+                classes={{
+                  paper: classes.menuPaper
+                }}
+                onClose={() => this.setState({ quaEl: null })}
+                PaperProps={{
+                  style: {
+                    width: 300,
+                    padding: 0,
+                    outline: "none",
+                    background: grey[800]
+                  }
+                }}
+                MenuListProps={{
+                  style: {
+                    padding: 0,
+                    outline: "none"
+                  }
+                }}
+              >
+                <Card style={{ background: grey[800] }}>
+                  <CardHeader
+                    style={{ background: grey[900] }}
+                    title="Quality"
+                  />
+                  <Divider />
+                  <CardContent className={classes.epListCont}>
+                    <MenuItem
+                      onClick={() => this.changeQuality(1080)}
+                      selected={quality === 1080}
+                      className={classes.epListItem}
+                    >
+                      1080p
+                      <div style={{ flex: 1 }} />
+                      {quality === 1080 ? <Icon.PlayArrow /> : null}
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => this.changeQuality(720)}
+                      selected={quality === 720}
+                      className={classes.epListItem}
+                    >
+                      720p
+                      <div style={{ flex: 1 }} />
+                      {quality === 720 ? <Icon.PlayArrow /> : null}
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => this.changeQuality(480)}
+                      selected={quality === 480}
+                      className={classes.epListItem}
+                    >
+                      480p
+                      <div style={{ flex: 1 }} />
+                      {quality === 480 ? <Icon.PlayArrow /> : null}
+                    </MenuItem>
+                  </CardContent>
+                </Card>
+              </Menu>
+              <IconButton
+                aria-owns={volumeMenu ? "volume-menu" : null}
+                aria-haspopup="true"
+                onClick={e => this.setState({ volEl: e.currentTarget })}
+                color="default"
+              >
+                {volume > 0 ? <Icon.VolumeUp /> : <Icon.VolumeOff />}
+              </IconButton>
+              <Menu
+                id="volume-menu"
+                anchorEl={volEl}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right"
+                }}
+                transformOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right"
+                }}
+                open={volumeMenu}
+                onClose={() => this.setState({ volEl: null })}
+                PaperProps={{
+                  style: {
+                    outline: "none",
+                    background: grey[800]
+                  }
+                }}
+                MenuListProps={{
+                  style: {
+                    padding: 8,
+                    outline: "none",
+                    boxSizing: "border-box"
+                  }
+                }}
+              >
+                <LinearProgress
+                  classes={{
+                    root: classes.progressVolume,
+                    colorPrimary: classes.progressBgOver,
+                    barColorPrimary: classes.progressBar
+                  }}
+                  variant="determinate"
+                  value={volume * 100}
+                />
+                <input
+                  step="any"
+                  type="range"
+                  className={classnames(
+                    classes.volumeSlider,
+                    "webKitThumbButton",
+                    "webKitSlider"
+                  )}
+                  max={1}
+                  min={0}
+                  value={volume}
+                  onChange={this.setVolume}
+                />
+              </Menu>
+              <IconButton onClick={this.handleFullscreen}>
+                {fullscreen ? <Icon.FullscreenExit /> : <Icon.Fullscreen />}
+              </IconButton>
+              <div>
+                <IconButton
+                  disabled={
+                    !king ? true : eps.length < 1 ? true : !(eps.length > 0)
+                  }
+                  aria-owns={menu ? "ep-menu" : null}
+                  aria-haspopup="true"
+                  onClick={e => this.setState({ menuEl: e.currentTarget })}
+                  color="default"
+                >
+                  <Icon.ViewList />
+                </IconButton>
+                <Menu
+                  id="ep-menu"
+                  anchorEl={menuEl}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right"
+                  }}
+                  transformOrigin={{
+                    vertical: "center",
+                    horizontal: "right"
+                  }}
+                  open={menu}
+                  classes={{
+                    paper: classes.menuPaper
+                  }}
+                  onClose={this.closeMenu}
+                  PaperProps={{
+                    style: {
+                      width: 420,
+                      padding: 0,
+                      outline: "none",
+                      background: grey[800]
+                    }
+                  }}
+                  MenuListProps={{
+                    style: {
+                      padding: 0,
+                      outline: "none"
+                    }
+                  }}
+                >
+                  <Card style={{ background: grey[800] }}>
+                    <CardHeader
+                      style={{ background: grey[900] }}
+                      title="Episodes"
                       classes={{
-                        paper: classes.menuPaper
+                        action: classes.marginAuto,
+                        title: classes.secTitleText
                       }}
-                      onClose={() => this.setState({ quaEl: null })}
-                      PaperProps={{
-                        style: {
-                          width: 300,
-                          padding: 0,
-                          outline: "none",
-                          background: grey[800]
-                        }
-                      }}
-                      MenuListProps={{
-                        style: {
-                          padding: 0,
-                          outline: "none"
-                        }
-                      }}
-                    >
-                      <Card style={{ background: grey[800] }}>
-                        <CardHeader
-                          style={{ background: grey[900] }}
-                          title="Quality"
-                        />
-                        <Divider />
-                        <CardContent className={classes.epListCont}>
-                          <MenuItem
-                            onClick={() => this.changeQuality(1080)}
-                            selected={quality === 1080}
-                            className={classes.epListItem}
-                          >
-                            1080p
-                            <div style={{ flex: 1 }} />
-                            {quality === 1080 ? <Icon.PlayArrow /> : null}
-                          </MenuItem>
-                          <MenuItem
-                            onClick={() => this.changeQuality(720)}
-                            selected={quality === 720}
-                            className={classes.epListItem}
-                          >
-                            720p
-                            <div style={{ flex: 1 }} />
-                            {quality === 720 ? <Icon.PlayArrow /> : null}
-                          </MenuItem>
-                          <MenuItem
-                            onClick={() => this.changeQuality(480)}
-                            selected={quality === 480}
-                            className={classes.epListItem}
-                          >
-                            480p
-                            <div style={{ flex: 1 }} />
-                            {quality === 480 ? <Icon.PlayArrow /> : null}
-                          </MenuItem>
-                        </CardContent>
-                      </Card>
-                    </Menu>
-                    <IconButton
-                      aria-owns={volumeMenu ? "volume-menu" : null}
-                      aria-haspopup="true"
-                      onClick={e => this.setState({ volEl: e.currentTarget })}
-                      color="default"
-                    >
-                      {volume > 0 ? <Icon.VolumeUp /> : <Icon.VolumeOff />}
-                    </IconButton>
-                    <Menu
-                      id="volume-menu"
-                      anchorEl={volEl}
-                      anchorOrigin={{
-                        vertical: "top",
-                        horizontal: "right"
-                      }}
-                      transformOrigin={{
-                        vertical: "bottom",
-                        horizontal: "right"
-                      }}
-                      open={volumeMenu}
-                      onClose={() => this.setState({ volEl: null })}
-                      PaperProps={{
-                        style: {
-                          outline: "none",
-                          background: grey[800]
-                        },
-                        onMouseLeave: () => this.setState({ volEl: null })
-                      }}
-                      MenuListProps={{
-                        style: {
-                          padding: 8,
-                          outline: "none",
-                          boxSizing: "border-box"
-                        }
-                      }}
-                    >
-                      <LinearProgress
-                        classes={{
-                          root: classes.progressVolume,
-                          primaryColor: classes.progressBgOver,
-                          primaryColorBar: classes.progressBar
-                        }}
-                        variant="determinate"
-                        value={volume * 100}
-                      />
-                      <input
-                        step="any"
-                        type="range"
-                        className={classnames(
-                          classes.volumeSlider,
-                          "webKitThumbButton",
-                          "webKitSlider"
-                        )}
-                        max={1}
-                        min={0}
-                        value={volume}
-                        onChange={this.setVolume}
-                      />
-                    </Menu>
-                    <IconButton
-                      disabled={
-                        loaded === 0
-                          ? eps.length > 0 ? eps.length < ep : true
-                          : false
+                      action={
+                        <IconButton onClick={this.closeMenu}>
+                          <Icon.ExpandMore />
+                        </IconButton>
                       }
-                      onClick={this.skipToNextEp}
-                    >
-                      <Icon.SkipNext />
-                    </IconButton>
-                    <IconButton
-                      disabled={loaded === 0}
-                      onClick={this.skip30Sec}
-                    >
-                      <Icon.Forward30 />
-                    </IconButton>
-                    <IconButton onClick={this.handleFullscreen}>
-                      {fullscreen ? (
-                        <Icon.FullscreenExit />
-                      ) : (
-                        <Icon.Fullscreen />
-                      )}
-                    </IconButton>
-                    <div>
-                      <IconButton
-                        disabled={!(eps.length > 0)}
-                        aria-owns={menu ? "ep-menu" : null}
-                        aria-haspopup="true"
-                        onClick={e =>
-                          this.setState({ menuEl: e.currentTarget })
-                        }
-                        color="default"
-                      >
-                        <Icon.ViewList />
-                      </IconButton>
-                      <Menu
-                        id="ep-menu"
-                        anchorEl={menuEl}
-                        anchorOrigin={{
-                          vertical: "top",
-                          horizontal: "right"
-                        }}
-                        transformOrigin={{
-                          vertical: "center",
-                          horizontal: "right"
-                        }}
-                        open={menu}
-                        classes={{
-                          paper: classes.menuPaper
-                        }}
-                        onClose={this.closeMenu}
-                        PaperProps={{
-                          style: {
-                            width: 300,
-                            padding: 0,
-                            outline: "none",
-                            background: grey[800]
-                          },
-                          onMouseLeave: () => this.setState({ menuEl: null })
-                        }}
-                        MenuListProps={{
-                          style: {
-                            padding: 0,
-                            outline: "none"
-                          }
-                        }}
-                      >
-                        <Card style={{ background: grey[800] }}>
-                          <CardHeader
-                            style={{ background: grey[900] }}
-                            title="Episodes"
-                          />
-                          <Divider />
-                          <CardContent className={classes.epListCont}>
-                            {eps &&
-                              eps.map(e => (
-                                <MenuItem
-                                  onClick={() => {
-                                    this.setState({ ep: e.ep }, async () =>
-                                      loadEp(this, e, null)
-                                    );
-                                  }}
-                                  key={e.ep}
-                                  selected={e.ep === ep}
-                                  className={classes.epListItem}
+                    />
+                    <Divider />
+                    <CardContent className={classes.epListCont}>
+                      {eps &&
+                        eps.map(e => (
+                          <MenuItem
+                            onClick={() => {
+                              this.setState({ ep: e.ep }, async () =>
+                                loadEp(this, e, null)
+                              );
+                            }}
+                            key={e.ep}
+                            selected={e.ep === ep}
+                            className={classes.epListItem}
+                          >
+                            {e.thumb ? (
+                              <img
+                                alt=""
+                                className={classes.episodeThumb}
+                                src={e.thumb.original}
+                              />
+                            ) : null}
+                            <div
+                              style={{
+                                display: "flex",
+                                flexFlow: "column nowrap",
+                                paddingLeft: 8
+                              }}
+                            >
+                              <Typography
+                                variant="title"
+                                className={classes.episodeCount}
+                              >
+                                Episode {e.ep}
+                              </Typography>
+                              {e.canon ? (
+                                <Typography
+                                  variant="body1"
+                                  className={classes.episodeName}
                                 >
-                                  Episode {e.ep}
-                                  <div style={{ flex: 1 }} />
-                                  {e.ep === ep ? <Icon.PlayArrow /> : null}
-                                </MenuItem>
-                              ))}
-                          </CardContent>
-                        </Card>
-                      </Menu>
-                    </div>
-                    {/* <Tooltip
+                                  {e.canon}
+                                </Typography>
+                              ) : null}
+                            </div>
+                            <div style={{ flex: 1 }} />
+                            {e.ep === ep ? <Icon.PlayArrow /> : null}
+                          </MenuItem>
+                        ))}
+                    </CardContent>
+                  </Card>
+                </Menu>
+              </div>
+              {/* <Tooltip
           PopperProps={{ PaperProps: { style: { fontSize: 16 } } }}
           title="Switch between Twist mode (recommended) or Nyaa mode (highly experimental)"
         >
@@ -1285,137 +1320,84 @@ class MirStreamer extends Component {
             />
           </FormGroup>
         </Tooltip> */}
-                  </CardActions>
-                </Card>
-              ) : (
-                <div>
-                  <IconButton
-                    disabled={!(eps.length > 0)}
-                    aria-owns={menu ? "ep-menu" : null}
-                    aria-haspopup="true"
-                    onClick={e => this.setState({ menuEl: e.currentTarget })}
-                    color="default"
-                    style={{
-                      position: "fixed",
-                      bottom: theme.spacing.unit * 4,
-                      right: theme.spacing.unit * 4
-                    }}
-                  >
-                    <Icon.ViewList />
-                  </IconButton>
-                  <Menu
-                    id="ep-menu"
-                    anchorEl={menuEl}
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "right"
-                    }}
-                    transformOrigin={{
-                      vertical: "center",
-                      horizontal: "right"
-                    }}
-                    open={menu}
-                    classes={{
-                      paper: classes.menuPaper
-                    }}
-                    onClose={this.closeMenu}
-                    PaperProps={{
-                      style: {
-                        width: 300,
-                        padding: 0,
-                        outline: "none",
-                        background: grey[800]
-                      }
-                    }}
-                    MenuListProps={{
-                      style: {
-                        padding: 0,
-                        outline: "none"
-                      }
-                    }}
-                  >
-                    <Card style={{ background: grey[800] }}>
-                      <CardHeader
-                        style={{ background: grey[900] }}
-                        title="Episodes"
-                      />
-                      <Divider />
-                      <CardContent className={classes.epListCont}>
-                        {eps &&
-                          eps.map(e => (
-                            <MenuItem
-                              onClick={() => {
-                                this.setState({ ep: e.ep }, async () =>
-                                  loadEp(e, null)
-                                );
-                              }}
-                              key={e.ep}
-                              selected={e.ep === ep}
-                              className={classes.epListItem}
-                            >
-                              Episode {e.ep}
-                              <div style={{ flex: 1 }} />
-                              {e.ep === ep ? <Icon.PlayArrow /> : null}
-                            </MenuItem>
-                          ))}
-                      </CardContent>
-                    </Card>
-                  </Menu>
-                </div>
-              )}
-            </div>
-            <div className={classes.peopleBar}>
-              <div className={classes.coverContainer}>
-                <img src={cover} alt="" className={classes.cover} />
-              </div>
-              <div className={classes.mainContainer}>
-                <Typography variant="title" className={classes.streamTitle}>
-                  Streaming {title}
-                </Typography>
-                <Typography variant="body1" className={classes.streamDesc}>
-                  Hosted by {king ? this.props.profile.username : hoster} |
-                  Hosted {moment(date).from(Date.now())}
-                </Typography>
-                <div className={classes.userRow}>
-                  <div className={classes.kingSeat}>
-                    <PeopleButton
-                      name={{
-                        first: king ? "You" : hoster
-                      }}
-                      image={king ? this.props.profile.avatar : hosterAva}
-                      style={{ borderColor: yellow.A200 }}
-                    />
-                  </div>
-                  <div className={classes.pawnSeat}>
-                    <Grid container>
-                      {users &&
-                        Object.values(users)
-                          .filter(u => !u.king)
-                          .map((user, index) => (
-                            <PeopleButton
-                              key={index}
-                              image={user.avatar}
-                              name={{ first: user.name }}
-                            />
-                          ))}
-                    </Grid>
-                  </div>
-                </div>
-              </div>
-            </div>
+            </CardActions>
+          </Card>
+        ) : (
+          <div>
+            <IconButton
+              disabled={!(eps.length > 0)}
+              aria-owns={menu ? "ep-menu" : null}
+              aria-haspopup="true"
+              onClick={e => this.setState({ menuEl: e.currentTarget })}
+              color="default"
+              style={{
+                position: "fixed",
+                bottom: theme.spacing.unit * 4,
+                right: theme.spacing.unit * 4
+              }}
+            >
+              <Icon.ViewList />
+            </IconButton>
+            <Menu
+              id="ep-menu"
+              anchorEl={menuEl}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right"
+              }}
+              transformOrigin={{
+                vertical: "center",
+                horizontal: "right"
+              }}
+              open={menu}
+              classes={{
+                paper: classes.menuPaper
+              }}
+              onClose={this.closeMenu}
+              PaperProps={{
+                style: {
+                  width: 300,
+                  padding: 0,
+                  outline: "none",
+                  background: grey[800]
+                }
+              }}
+              MenuListProps={{
+                style: {
+                  padding: 0,
+                  outline: "none"
+                }
+              }}
+            >
+              <Card style={{ background: grey[800] }}>
+                <CardHeader
+                  style={{ background: grey[900] }}
+                  title="Episodes"
+                />
+                <Divider />
+                <CardContent className={classes.epListCont}>
+                  {eps &&
+                    eps.map(e => (
+                      <MenuItem
+                        onClick={() => {
+                          this.setState({ ep: e.ep }, async () =>
+                            loadEp(e, null)
+                          );
+                        }}
+                        key={e.ep}
+                        selected={e.ep === ep}
+                        className={classes.epListItem}
+                      >
+                        Episode {e.ep}
+                        <div style={{ flex: 1 }} />
+                        {e.ep === ep ? <Icon.PlayArrow /> : null}
+                      </MenuItem>
+                    ))}
+                </CardContent>
+              </Card>
+            </Menu>
           </div>
-          <div className={classes.eventSlide}>
-            <Typography variant="body1" className={classes.eventTitle}>
-              Chat
-            </Typography>
-            <Divider />
-            <TextField
-              className={classes.eventTextfield}
-              fullWidth
-              InputProps={{ fullWidth: true }}
-            />
-          </div>
-        </div>
+        )}
       </div>
     );
   }

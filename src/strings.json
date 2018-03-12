@@ -37,13 +37,14 @@
     },
     "live": {
       "streams": "Streams",
+      "streamsdesc": "Watch anime with people in realtime",
       "friendsstream": "Friends",
       "livetv": "Live TV",
       "friends": "Friends",
       "streamHelp": {
         "title": "How to add a new stream!",
         "desc":
-          "Adding a stream is simple. Simply find a anime you want to watch and select 'Livestream this anime'. It's just that simple."
+          "Adding a stream is simple. Simply find a anime you want to watch and select 'Sharestream this anime'. It's just that simple."
       },
       "nofriends":
         "None of your friends are currently streaming at the moment.",
@@ -187,7 +188,7 @@
       },
       "notavaliable": "Not avaliable",
       "playing": "Playing",
-      "livestreamButton": "Livestream this anime",
+      "livestreamButton": "Sharestream this anime",
       "chapters": "chapters",
       "volumes": "volumes",
       "provider": "Data provided by AniList",
@@ -349,13 +350,14 @@
     },
     "live": {
       "streams": "Streamer",
+      "streamsdesc": "Se på anime sammen med andre samtidig",
       "friendsstream": "Dette streamer vennene dine",
       "friends": "Venner",
       "livetv": "Direkte-TV",
       "streamHelp": {
         "title": "Hvordan lager man en ny stream?",
         "desc":
-          "Det er enkelt å legge til en direktestrømming! Bare velg 'Livestream denne animen' når du er inne på en anime. Så enkelt er det!"
+          "Det er enkelt å legge til en delestrømming! Bare velg 'Delestream denne animen' når du er inne på en anime. Så enkelt er det!"
       },
       "nofriends": "Ingen av vennene dine streamer i dag",
       "nostreams": "Ingen streams for i dag!"
@@ -507,7 +509,7 @@
       },
       "notavaliable": "Ikke tilgjengelig",
       "playing": "Spiller nå",
-      "livestreamButton": "Livestream denne animen",
+      "livestreamButton": "Delestream denne animen",
       "chapters": "kapitler",
       "volumes": "volumer",
       "provider": "Informasjonen er servert fra AniList",
@@ -662,6 +664,7 @@
     },
     "live": {
       "streams": "ストリーミング",
+      "streamsdesc": "Watch anime in realtime with other people",
       "friendsstream": "友人のストリーム",
       "friends": "友達",
       "livetv": "Direkte-TV",
