@@ -26,7 +26,10 @@ import {
   LoadingIndicator,
   TitleHeader,
   ItemContainer,
-  SectionTitle
+  SectionTitle,
+  SectionSubTitle,
+  Dialogue,
+  Column
 } from "../components/layouts";
 import SuperTable from "../components/supertable";
 import Anilist from "../anilist-api";
@@ -407,7 +410,11 @@ class Home extends Component {
     hueVibN: "#111",
     lang: strings.enus,
     filterFeedVal: 0,
-    randomID: 1
+    randomID: 1,
+    selectedRow: null,
+    showMore: false,
+    selectedTitle: "",
+    selectedDesc: ""
   };
 
   componentWillMount = () => {
@@ -419,7 +426,7 @@ class Home extends Component {
     this.feedsObserve();
     this.getColors();
     this.getRandomID();
-    this.setState({ loading: false });
+    this.fetchOngoing();
   };
   componentWillUnmount = () => {};
 
@@ -493,6 +500,76 @@ class Home extends Component {
     console.log(error, info);
   }
 
+  selectThis = type => {
+    switch (type) {
+      case "oA":
+        this.setState({
+          selectedRow: this.state.ongoing,
+          showMore: true,
+          selectedTitle: this.state.lang.home.ongoingAnimeTitle,
+          selectedDesc:
+            this.state.ongoing &&
+            this.state.ongoing.data &&
+            this.props.mir &&
+            this.props.mir.twist &&
+            this.props.mir.twist.length > 0
+              ? `${Filter(
+                  this.state.ongoing.data.Page.media,
+                  this.props.mir.twist
+                ).filter(s => s.nextAiringEpisode).length - 1} ${
+                  this.state.lang.home.ongoingAnimeEstimate
+                }`
+              : null
+        });
+        break;
+      case "oM":
+        this.setState({
+          selectedRow: this.state.ongoingM,
+          showMore: true,
+          selectedTitle: this.state.lang.home.ongoingMangaTitle
+        });
+        break;
+      case "tc":
+        this.setState({
+          selectedRow: this.state.topScore,
+          showMore: true,
+          selectedTitle: this.state.lang.explore.topRatedTitle,
+          selectedDesc: this.state.lang.explore.topRatedDesc
+        });
+        break;
+      case "tp":
+        this.setState({
+          selectedRow: this.state.topPopularity,
+          showMore: true,
+          selectedTitle: this.state.lang.explore.topPopularTitle,
+          selectedDesc: this.state.lang.explore.topPopularDesc
+        });
+        break;
+      default:
+        break;
+    }
+  };
+
+  fetchOngoing = async () => {
+    const ongoing = await Anilist.get(bigFuckingQuery, {
+      page: 1,
+      isAdult: false,
+      sort: ["POPULARITY_DESC"],
+      status: "RELEASING"
+    });
+
+    try {
+      if (ongoing)
+        return this.setState({
+          ongoing,
+          loading: false
+        });
+    } catch (error) {
+      console.error(error);
+    }
+    return null;
+  };
+
   render() {
     const { classes } = this.props;
     const {
@@ -507,7 +584,11 @@ class Home extends Component {
       filterFeedVal,
       searchVal,
       searchResult,
-      randomID
+      randomID,
+      showMore,
+      selectedRow,
+      selectedTitle,
+      selectedDesc
     } = this.state;
 
     const user = this.props.profile;
@@ -517,19 +598,106 @@ class Home extends Component {
         {!isEmpty(user) && user.headers ? (
           <Header image={user.headers} color={hue} />
         ) : null}
-        <div className={classes.frame}>
+        {isEmpty(user) ? (
           <TitleHeader
-            title={null}
-            miraiLogo={!isEmpty(user) ? false : true}
-            color={hue !== "#111" ? hue : "#111"}
+            title={lang.home.welcomeanon}
+            subtitle={lang.home.welcomeSubtitle}
+            miraiLogo
+            color={"#000"}
           />
+        ) : null}
+        <Dialogue
+          open={showMore}
+          onClose={() =>
+            this.setState({
+              showMore: false,
+              selectedRow: null,
+              selectedTitle: "",
+              selectedDesc: ""
+            })
+          }
+          title={selectedTitle}
+          actions={"close"}
+        >
+          {selectedDesc !== "" ? (
+            <Typography variant="headline">{selectedDesc}</Typography>
+          ) : null}
+
+          <ItemContainer
+            style={{
+              maxWidth: 1600,
+              maxHeight: window.innerHeight / 1.5,
+              overflowY: "auto",
+              overflowX: "hidden"
+            }}
+          >
+            {selectedRow &&
+              this.props.mir.twist &&
+              this.props.mir.twist.length > 0 &&
+              Filter(selectedRow.data.Page.media, this.props.mir.twist).map(
+                (action, index) => (
+                  <CardButton
+                    key={index}
+                    onClick={() =>
+                      this.props.history.push(`/show?s=${action.id}`)
+                    }
+                    image={action.coverImage.large}
+                    title={action.title.romaji}
+                  />
+                )
+              )}
+          </ItemContainer>
+        </Dialogue>
+        <div className={classes.frame}>
           <Root>
-            <Container
-              hasHeader={
-                !isEmpty(user) ? false : window.mobilecheck() ? false : true
-              }
-              spacing={16}
-            >
+            <Container hasHeader={isEmpty(user)} spacing={16}>
+              {!isEmpty(user) ? (
+                <Column>
+                  <SectionTitle
+                    noPad
+                    title={lang.home.ongoingAnimeTitle}
+                    subtitle={
+                      ongoing &&
+                      ongoing.data &&
+                      this.props.mir &&
+                      this.props.mir.twist &&
+                      this.props.mir.twist.length > 0
+                        ? `${Filter(
+                            ongoing.data.Page.media,
+                            this.props.mir.twist
+                          ).filter(s => s.nextAiringEpisode).length - 1} ${
+                            lang.home.ongoingAnimeEstimate
+                          }`
+                        : null
+                    }
+                    button={lang.explore.showAll}
+                    buttonClick={() => this.selectThis("oA")}
+                  />
+                  {ongoing &&
+                  ongoing.data &&
+                  this.props.mir &&
+                  this.props.mir.twist &&
+                  this.props.mir.twist.length > 0 ? (
+                    <SuperTable
+                      data={Filter(
+                        ongoing.data.Page.media,
+                        this.props.mir.twist
+                      )
+                        .filter(s => s.nextAiringEpisode)
+                        .sort(
+                          (a, b) =>
+                            a.nextAiringEpisode.timeUntilAiring -
+                            b.nextAiringEpisode.timeUntilAiring
+                        )}
+                      type="s"
+                      typeof="ongoing"
+                      limit={12}
+                    />
+                  ) : (
+                    <SuperTable loading />
+                  )}
+                </Column>
+              ) : null}
               {!isEmpty(user) ? (
                 <Hidden mdDown>
                   <Grid item xs={3} style={{ padding: 16 }}>
@@ -560,12 +728,14 @@ class Home extends Component {
                       <MenuItem
                         onClick={() => this.props.history.push("/user")}
                       >
-                        <ICON.People style={{ marginRight: 16 }} /> Friends
+                        <ICON.People style={{ marginRight: 16 }} />{" "}
+                        {lang.user.friends}
                       </MenuItem>
                       <MenuItem
                         onClick={() => this.props.history.push("/later")}
                       >
-                        <ICON.WatchLater style={{ marginRight: 16 }} /> Later
+                        <ICON.WatchLater style={{ marginRight: 16 }} />{" "}
+                        {lang.superbar.later}
                       </MenuItem>
                       <MenuItem
                         onClick={() =>
@@ -574,7 +744,8 @@ class Home extends Component {
                           )
                         }
                       >
-                        <ICON.Star style={{ marginRight: 16 }} /> Random
+                        <ICON.Star style={{ marginRight: 16 }} />
+                        {lang.home.random}
                       </MenuItem>
                     </Card>
                   </Grid>
@@ -597,14 +768,64 @@ class Home extends Component {
                     }}
                   />
                 )}
+                {isEmpty(user) ? (
+                  <Container style={{ padding: 8 }}>
+                    <Column>
+                      <SectionTitle
+                        noPad
+                        title={lang.home.ongoingAnimeTitle}
+                        subtitle={
+                          ongoing &&
+                          ongoing.data &&
+                          this.props.mir &&
+                          this.props.mir.twist &&
+                          this.props.mir.twist.length > 0
+                            ? `${Filter(
+                                ongoing.data.Page.media,
+                                this.props.mir.twist
+                              ).filter(s => s.nextAiringEpisode).length - 1} ${
+                                lang.home.ongoingAnimeEstimate
+                              }`
+                            : null
+                        }
+                        button={lang.explore.showAll}
+                        buttonClick={() => this.selectThis("oA")}
+                      />
+                    </Column>
+                    {ongoing &&
+                    ongoing.data &&
+                    this.props.mir &&
+                    this.props.mir.twist &&
+                    this.props.mir.twist.length > 0 ? (
+                      <SuperTable
+                        data={Filter(
+                          ongoing.data.Page.media,
+                          this.props.mir.twist
+                        )
+                          .filter(s => s.nextAiringEpisode)
+                          .sort(
+                            (a, b) =>
+                              a.nextAiringEpisode.timeUntilAiring -
+                              b.nextAiringEpisode.timeUntilAiring
+                          )}
+                        type="s"
+                        typeof="ongoing"
+                        limit={12}
+                        single
+                      />
+                    ) : (
+                      <SuperTable loading single />
+                    )}
+                  </Container>
+                ) : null}
                 <Container style={{ padding: 8 }}>
                   <SectionTitle title={lang.home.feeds} noPad />
                   <div style={{ flex: 1 }} />
                   <form>
                     <Select value={filterFeedVal} onChange={this.filterFeed}>
-                      <MenuItem value={0}>All</MenuItem>
-                      <MenuItem value={1}>Only posts</MenuItem>
-                      <MenuItem value={2}>Only activities</MenuItem>
+                      <MenuItem value={0}>{lang.home.all}</MenuItem>
+                      <MenuItem value={1}>{lang.home.onlyfeeds}</MenuItem>
+                      <MenuItem value={2}>{lang.home.onlyactivities}</MenuItem>
                     </Select>
                   </form>
                 </Container>
@@ -627,7 +848,7 @@ class Home extends Component {
                             : filterFeedVal === 2 ? o.type : null
                     )
                     .map((feed, index) => {
-                      if (feed.user.username === undefined)
+                      if (feed.user && feed.user.username === undefined)
                         // It's an update.
                         return (
                           <Feed
@@ -680,6 +901,7 @@ class Home extends Component {
                               username: feed.user.username
                             }}
                             color={hue}
+                            format={feed.format}
                             activity
                             noActions
                           />
@@ -698,6 +920,7 @@ class Home extends Component {
                             user={feed.user}
                             color={hue}
                             likes={feed.likes}
+                            reposts={feed.reposts}
                           />
                         );
                     })
@@ -708,7 +931,11 @@ class Home extends Component {
                 )}
               </Grid>
               {!isEmpty(user) ? (
-                <Grid item xs={3} style={{ padding: 16 }}>
+                <Grid
+                  item
+                  xs={window.mobilecheck() ? 12 : 3}
+                  style={{ padding: 16 }}
+                >
                   <Card
                     style={{
                       background: hue,
@@ -719,9 +946,9 @@ class Home extends Component {
                     <CardHeader title={lang.home.animefavTitle} />
                     <Divider />
                     {!isEmpty(user) &&
-                      user.favs &&
-                      user.favs.show &&
-                      user.favs.show &&
+                    user.favs &&
+                    user.favs.show &&
+                    user.favs.show ? (
                       Object.values(user.favs.show)
                         .sort((a, b) => a.name - b.name)
                         .map(anime => (
@@ -743,7 +970,14 @@ class Home extends Component {
                             />
                             <ListItemText primary={anime.name} />
                           </MenuItem>
-                        ))}
+                        ))
+                    ) : (
+                      <MenuItem disabled>
+                        <Typography variant="body1">
+                          {lang.home.nofavs}
+                        </Typography>
+                      </MenuItem>
+                    )}
                   </Card>
                 </Grid>
               ) : (

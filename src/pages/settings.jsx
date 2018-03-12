@@ -232,9 +232,10 @@ class Settings extends Component {
   };
 
   changeLang = value =>
-    this.setState({ langCode: value, langVal: null }, () =>
-      localStorage.setItem("language", this.state.langCode)
-    );
+    this.setState({ langCode: value, langVal: null }, () => {
+      localStorage.setItem("language", this.state.langCode);
+      window.location.reload();
+    });
 
   handleAva = accept =>
     accept.forEach(file => this.setState({ ava: file }, () => {}));
@@ -287,17 +288,30 @@ class Settings extends Component {
           this.props.firebase
             .updateProfile({ headers: bg.snapshot.downloadURL })
             .then(() => {
-              colorizer(this.props.profile.headers).then(pal => {
-                let hues = {
-                  hue: pal.DarkMuted && pal.DarkMuted.getHex(),
-                  hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
-                  hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex(),
-                  hueAccent: pal.Vibrant && pal.Vibrant.getHex()
-                };
-                console.info("Background updated.");
-                localStorage.setItem("user-hue", JSON.stringify(hues));
-                return this.setState({ bgLoading: false, bg: null });
-              });
+              colorizer(this.props.profile.headers)
+                .then(pal => {
+                  let hues = {
+                    hue: pal.DarkMuted && pal.DarkMuted.getHex(),
+                    hueVib: pal.LightVibrant && pal.LightVibrant.getHex(),
+                    hueVibN: pal.DarkVibrant && pal.DarkVibrant.getHex(),
+                    hueAccent: pal.Vibrant && pal.Vibrant.getHex()
+                  };
+                  console.info("Background updated.");
+                  localStorage.setItem("user-hue", JSON.stringify(hues));
+                  return this.setState({ bgLoading: false, bg: null }, () =>
+                    window.location.reload()
+                  );
+                })
+                .catch(error => {
+                  console.error(error);
+                  console.info("Background updated, but with errors.");
+                  return this.setState({ bgLoading: false, bg: null });
+                });
+            })
+            .catch(error => {
+              console.error(error);
+              console.info("Background upload failed.");
+              return this.setState({ bgLoading: false, bg: null });
             });
         }
       );
@@ -394,7 +408,9 @@ class Settings extends Component {
           <M.Grid
             container
             spacing={0}
-            style={{ marginTop: theme.spacing.unit * 16 }}
+            style={{
+              marginTop: window.mobilecheck() ? 0 : theme.spacing.unit * 16
+            }}
             className={classes.content}
           >
             <M.Typography variant="headline" className={classes.headline}>
@@ -422,8 +438,24 @@ class Settings extends Component {
                   <form>
                     <M.FormControl>
                       <M.Select value={langCode} onChange={this.changeLangVal}>
-                        <M.MenuItem value="en-us">English</M.MenuItem>
-                        <M.MenuItem value="nb-no">Norsk Bokmål</M.MenuItem>
+                        <M.MenuItem value="en-us">
+                          <span role="img" aria-label="English">
+                            🇬🇧
+                          </span>{" "}
+                          English
+                        </M.MenuItem>
+                        <M.MenuItem value="nb-no">
+                          <span role="img" aria-label="Norsk Bokmål">
+                            🇳🇴
+                          </span>{" "}
+                          Norsk Bokmål
+                        </M.MenuItem>
+                        <M.MenuItem value="jp">
+                          <span role="img" aria-label="Norsk Bokmål">
+                            🇯🇵
+                          </span>{" "}
+                          日本語
+                        </M.MenuItem>
                       </M.Select>
                     </M.FormControl>
                   </form>

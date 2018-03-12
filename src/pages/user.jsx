@@ -791,15 +791,20 @@ class User extends Component {
                 </M.Typography>
                 <M.Typography className={classes.bigTitle} variant="display3">
                   {data ? data.username : user.username}{" "}
-                </M.Typography>
-                <M.Typography variant="display1" className={classes.smallTitle}>
-                  {data ? data.nick : user.nick}{" "}
                   {!isEmpty(user) &&
                   user.friends &&
                   data &&
-                  user.friends[data.userID]
-                    ? lang.user.bothfriends
-                    : null}
+                  user.friends[data.userID] ? (
+                    <M.Tooltip
+                      title={lang.user.bothfriends}
+                      style={{ letterSpacing: "initial" }}
+                    >
+                      <Icon.SupervisorAccount />
+                    </M.Tooltip>
+                  ) : null}
+                </M.Typography>
+                <M.Typography variant="display1" className={classes.smallTitle}>
+                  {data ? data.nick : user.nick}
                 </M.Typography>
                 <M.Typography
                   variant="body1"
@@ -964,11 +969,9 @@ class User extends Component {
                           />
                         ))
                       ) : (
-                        <ItemContainer>
-                          <M.Typography variant="body1">
-                            {lang.user.yougotnofriends}
-                          </M.Typography>
-                        </ItemContainer>
+                        <M.Typography variant="body1">
+                          {lang.user.yougotnofriends}
+                        </M.Typography>
                       )}
                     </M.Grid>
                     <SectionTitle title={lang.user.activity} />
@@ -992,6 +995,7 @@ class User extends Component {
                               }}
                               color={hue}
                               showId={feed.showId}
+                              format={feed.format}
                               activity
                               noActions
                             />
@@ -1075,6 +1079,7 @@ class User extends Component {
                                 id={feed.id}
                                 user={feed.user}
                                 color={hue}
+                                reposts={feed.reposts}
                               />
                             );
                         })
@@ -1084,7 +1089,12 @@ class User extends Component {
                       </M.Typography>
                     )}
                   </M.Grid>
-                  <M.Grid item xs={5} style={{ zIndex: 10 }} id="favourites">
+                  <M.Grid
+                    item
+                    xs={window.mobilecheck() ? 12 : 5}
+                    style={{ zIndex: 10 }}
+                    id="favourites"
+                  >
                     <SectionTitle title={lang.user.favorites} />
                     <M.Typography
                       variant="title"
@@ -1378,6 +1388,7 @@ class User extends Component {
                             user={feed.user}
                             color={hue}
                             likes={feed.likes}
+                            reposts={feed.reposts}
                           />
                         ))
                     ) : (

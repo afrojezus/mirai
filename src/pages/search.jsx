@@ -13,11 +13,19 @@ import searchQuery, {
   searchCharQuery,
   searchStudiosQuery
 } from "../utils/searchquery";
-import { LoadingIndicator, TitleHeader, Header } from "../components/layouts";
+import strings from "../strings.json";
+import {
+  LoadingIndicator,
+  TitleHeader,
+  Header,
+  SectionTitle,
+  Column
+} from "../components/layouts";
 import CardButton, { PeopleButton } from "../components/cardButton";
 import Anilist from "../anilist-api";
 import { scrollFix } from "./../utils/scrollFix";
 import TwistFilter from "./../utils/filter";
+import checklang from "../checklang";
 
 const style = theme => ({
   container: {
@@ -223,6 +231,7 @@ const style = theme => ({
   },
   secTitle: {
     padding: theme.spacing.unit,
+    paddingLeft: window.mobilecheck() ? null : 0,
     fontWeight: 700,
     fontSize: 22,
     zIndex: "inherit",
@@ -351,6 +360,13 @@ const style = theme => ({
   },
   cox: {
     transition: theme.transitions.create(["all"])
+  },
+  feedTitle: {
+    fontWeight: 700,
+    textShadow: "0 2px 24px rgba(0,0,0,.07)",
+    marginBottom: theme.spacing.unit * 3,
+    zIndex: 20,
+    color: "white"
   }
 });
 
@@ -362,11 +378,14 @@ class Search extends Component {
     users: null,
     hue: "#111",
     hueVib: "#0066ff",
-    hueVibN: "#111"
+    hueVibN: "#111",
+    lang: strings.enus,
+    error: false
   };
 
   componentWillMount = () => {
     scrollFix();
+    checklang(this);
   };
 
   componentDidMount = async () => {
@@ -403,72 +422,72 @@ class Search extends Component {
         staff: null,
         studios: null,
         users: null,
-        loading: true
+        loading: true,
+        error: false
       },
       async () => {
         if (this.state.searchVal === "") {
           return null;
         }
-        const { data } = await Anilist.get(searchQuery, {
-          search: this.state.searchVal,
-          isAdult: false,
-          page: 1
-        });
-
-        const characters = await Anilist.get(searchCharQuery, {
-          search: this.state.searchVal,
-          page: 1
-        });
-
-        const staff = await new Anilist.get(searchStaffQuery, {
-          search: this.state.searchVal,
-          page: 1
-        });
-
-        const studios = await new Anilist.get(searchStudiosQuery, {
-          search: this.state.searchVal,
-          page: 1
-        });
-
-        const users = await this.props.firebase
-          .database()
-          .ref("users")
-          .once("value");
-
-        if (
-          data &&
-          characters &&
-          staff &&
-          studios &&
-          users &&
-          this.props.mir &&
-          this.props.mir.twist
-        ) {
-          /* console.log(
-						data.Page.media
-							.filter(s => s.type === 'ANIME')
-							.filter(s => s.title.romaji)
-							.filter(d =>
-								this.props.mir.twist.filter(s => s.name.match(d.title.romaji))
-							)
-					); */
-          return this.setState({
-            anime: data.Page.media
-              .filter(s => s.type === "ANIME")
-              .filter(s => s.title.romaji),
-            manga: data.Page.media.filter(s => s.type === "MANGA"),
-            characters,
-            staff,
-            studios,
-            users: Object.values(users.val())
-              .filter(s => s.username)
-              .filter(s =>
-                s.username
-                  .toLowerCase()
-                  .match(`${this.state.searchVal.toLowerCase()}`)
-              ),
-            loading: false
+        try {
+          const { data } = await Anilist.get(searchQuery, {
+            search: this.state.searchVal,
+            isAdult: false,
+            page: 1
           });
+
+          const characters = await Anilist.get(searchCharQuery, {
+            search: this.state.searchVal,
+            page: 1
+          });
+
+          const staff = await new Anilist.get(searchStaffQuery, {
+            search: this.state.searchVal,
+            page: 1
+          });
+
+          const studios = await new Anilist.get(searchStudiosQuery, {
+            search: this.state.searchVal,
+            page: 1
+          });
+
+          const users = await this.props.firebase
+            .database()
+            .ref("users")
+            .once("value");
+
+          if (
+            data &&
+            characters &&
+            staff &&
+            studios &&
+            users &&
+            this.props.mir &&
+            this.props.mir.twist
+          ) {
+            return this.setState({
+              anime: data.Page.media
+                .filter(s => s.type === "ANIME")
+                .filter(s => s.title.romaji),
+              manga: data.Page.media.filter(s => s.type === "MANGA"),
+              characters,
+              staff,
+              studios,
+              users: Object.values(users.val())
+                .filter(s => s.username)
+                .filter(s =>
+                  s.username
+                    .toLowerCase()
+                    .match(`${this.state.searchVal.toLowerCase()}`)
+                ),
+              loading: false
+            });
+          } else {
+            throw new Error("No results");
+          }
+        } catch (error) {
+          console.error(error);
+          return this.setState({ error: true });
         }
       }
     );
@@ -501,7 +520,9 @@ class Search extends Component {
       users,
       hue,
       hueVibN,
-      hueVib
+      hueVib,
+      lang,
+      error
     } = this.state;
     return (
       <div>
@@ -523,148 +544,205 @@ class Search extends Component {
                   />
                 </form>
               </M.Hidden>
-              {anime &&
-              anime.length > 0 &&
-              this.props.mir &&
-              this.props.mir.twist ? (
-                <M.Grid container className={classes.container}>
-                  <M.Typography variant="title" className={classes.secTitle}>
-                    Anime
+              <M.Hidden mdDown>
+                {error ? null : (
+                  <M.Typography
+                    variant={"display3"}
+                    className={classes.feedTitle}
+                  >
+                    Search
                   </M.Typography>
-                  <M.Grid container className={classes.itemcontainer}>
-                    {anime
-                      ? TwistFilter(anime, this.props.mir.twist).map(show => (
-                          <CardButton
-                            key={show.id}
-                            title={show.title.romaji}
-                            image={show.coverImage.large}
-                            onClick={() =>
-                              this.openEntity(`/show?s=${show.id}`)
-                            }
-                          />
-                        ))
-                      : null}
-                  </M.Grid>
-                </M.Grid>
-              ) : null}
-              {manga && manga.length > 0 ? (
-                <M.Grid container className={classes.container}>
-                  <M.Typography variant="title" className={classes.secTitle}>
-                    Manga
+                )}
+              </M.Hidden>
+              {error ? (
+                <Column>
+                  <M.Typography
+                    variant={"display1"}
+                    style={{
+                      textAlign: "center"
+                    }}
+                  >
+                    Seems like something happened. Do you have a proxy by any
+                    chance?
                   </M.Typography>
-                  <M.Grid container className={classes.itemcontainer}>
-                    {manga
-                      ? manga.map(mang => (
-                          <CardButton
-                            key={mang.id}
-                            title={mang.title.romaji}
-                            image={mang.coverImage.large}
-                            onClick={() =>
-                              this.openEntity(`/show?m=${mang.id}`)
-                            }
-                          />
-                        ))
-                      : null}
-                  </M.Grid>
-                </M.Grid>
-              ) : null}
-              {characters && characters.data.Page.characters.length > 0 ? (
-                <M.Grid container className={classes.container}>
-                  <M.Typography variant="title" className={classes.secTitle}>
-                    Characters
-                  </M.Typography>
-                  <M.Grid container className={classes.itemcontainer}>
-                    {characters
-                      ? characters.data.Page.characters.map(char => (
-                          <PeopleButton
-                            key={char.id}
-                            name={{
-                              first: char.name.first,
-                              last: char.name.last
-                            }}
-                            image={char.image.large}
-                            onClick={() =>
-                              this.props.history.push(`/fig?c=${char.id}`)
-                            }
-                          />
-                        ))
-                      : null}
-                  </M.Grid>
-                </M.Grid>
-              ) : null}
-              {staff && staff.data.Page.staff.length > 0 ? (
-                <M.Grid container className={classes.container}>
-                  <M.Typography variant="title" className={classes.secTitle}>
-                    Staff & Actors
-                  </M.Typography>
-                  <M.Grid container className={classes.itemcontainer}>
-                    {staff
-                      ? staff.data.Page.staff.map(staf => (
-                          <PeopleButton
-                            key={staf.id}
-                            name={{
-                              first: staf.name.first,
-                              last: staf.name.last
-                            }}
-                            image={staf.image.large}
-                            onClick={() =>
-                              this.props.history.push(`/fig?s=${staf.id}`)
-                            }
-                          />
-                        ))
-                      : null}
-                  </M.Grid>
-                </M.Grid>
-              ) : null}
-              {studios && studios.data.Page.studios.length > 0 ? (
-                <M.Grid container className={classes.container}>
-                  <M.Typography variant="title" className={classes.secTitle}>
-                    Studios
-                  </M.Typography>
-                  <M.Grid container className={classes.itemcontainer}>
-                    {studios
-                      ? studios.data.Page.studios.map(studio => (
-                          <CardButton
-                            key={studio.id}
-                            title={studio.name}
-                            onClick={() =>
-                              this.openEntity(`/studio?s=${studio.id}`)
-                            }
-                          />
-                        ))
-                      : null}
-                  </M.Grid>
-                </M.Grid>
-              ) : null}
-              {users && users.length > 0 ? (
-                <M.Grid container className={classes.container}>
-                  <M.Typography variant="title" className={classes.secTitle}>
-                    Users
-                  </M.Typography>
-                  <M.Grid container className={classes.itemcontainer}>
-                    {users
-                      ? users.map(user => (
-                          <PeopleButton
-                            key={user.userID}
-                            name={{ first: user.username }}
-                            image={user.avatar}
-                            onClick={() =>
-                              this.props.history.push(
-                                `/user${
-                                  this.props.profile
-                                    ? user.userID === this.props.profile.userID
-                                      ? ``
-                                      : `?u=${user.userID}`
-                                    : `?u=${user.userID}`
-                                }`
+                </Column>
+              ) : (
+                <Column>
+                  {anime &&
+                  anime.length > 0 &&
+                  this.props.mir &&
+                  this.props.mir.twist ? (
+                    <M.Grid container className={classes.container}>
+                      <M.Typography
+                        variant="title"
+                        className={classes.secTitle}
+                      >
+                        Anime
+                      </M.Typography>
+                      <M.Grid container className={classes.itemcontainer}>
+                        {anime
+                          ? TwistFilter(anime, this.props.mir.twist).map(
+                              show => (
+                                <CardButton
+                                  key={show.id}
+                                  title={show.title.romaji}
+                                  image={show.coverImage.large}
+                                  onClick={() =>
+                                    this.openEntity(`/show?s=${show.id}`)
+                                  }
+                                />
                               )
-                            }
-                          />
-                        ))
-                      : null}
-                  </M.Grid>
-                </M.Grid>
-              ) : null}
+                            )
+                          : null}
+                      </M.Grid>
+                    </M.Grid>
+                  ) : (
+                    <SectionTitle title="No anime found" lighter />
+                  )}
+                  {manga && manga.length > 0 ? (
+                    <M.Grid container className={classes.container}>
+                      <M.Typography
+                        variant="title"
+                        className={classes.secTitle}
+                      >
+                        Manga
+                      </M.Typography>
+                      <M.Grid container className={classes.itemcontainer}>
+                        {manga
+                          ? manga.map(mang => (
+                              <CardButton
+                                key={mang.id}
+                                title={mang.title.romaji}
+                                image={mang.coverImage.large}
+                                onClick={() =>
+                                  this.openEntity(`/show?m=${mang.id}`)
+                                }
+                              />
+                            ))
+                          : null}
+                      </M.Grid>
+                    </M.Grid>
+                  ) : (
+                    <SectionTitle title="No manga found" lighter />
+                  )}
+                  {characters && characters.data.Page.characters.length > 0 ? (
+                    <M.Grid container className={classes.container}>
+                      <M.Typography
+                        variant="title"
+                        className={classes.secTitle}
+                      >
+                        Characters
+                      </M.Typography>
+                      <M.Grid container className={classes.itemcontainer}>
+                        {characters
+                          ? characters.data.Page.characters.map(char => (
+                              <PeopleButton
+                                key={char.id}
+                                name={{
+                                  first: char.name.first,
+                                  last: char.name.last
+                                }}
+                                image={char.image.large}
+                                onClick={() =>
+                                  this.props.history.push(`/fig?c=${char.id}`)
+                                }
+                              />
+                            ))
+                          : null}
+                      </M.Grid>
+                    </M.Grid>
+                  ) : null}
+                  {staff && staff.data.Page.staff.length > 0 ? (
+                    <M.Grid container className={classes.container}>
+                      <M.Typography
+                        variant="title"
+                        className={classes.secTitle}
+                      >
+                        Staff & Actors
+                      </M.Typography>
+                      <M.Grid container className={classes.itemcontainer}>
+                        {staff
+                          ? staff.data.Page.staff.map(staf => (
+                              <PeopleButton
+                                key={staf.id}
+                                name={{
+                                  first: staf.name.first,
+                                  last: staf.name.last
+                                }}
+                                image={staf.image.large}
+                                onClick={() =>
+                                  this.props.history.push(`/fig?s=${staf.id}`)
+                                }
+                              />
+                            ))
+                          : null}
+                      </M.Grid>
+                    </M.Grid>
+                  ) : (
+                    <SectionTitle title="No staff found" lighter />
+                  )}
+                  {studios && studios.data.Page.studios.length > 0 ? (
+                    <M.Grid container className={classes.container}>
+                      <M.Typography
+                        variant="title"
+                        className={classes.secTitle}
+                      >
+                        Studios
+                      </M.Typography>
+                      <M.Grid container className={classes.itemcontainer}>
+                        {studios
+                          ? studios.data.Page.studios.map(studio => (
+                              <CardButton
+                                key={studio.id}
+                                title={studio.name}
+                                onClick={() =>
+                                  this.openEntity(`/tag?s=${studio.id}`)
+                                }
+                              />
+                            ))
+                          : null}
+                      </M.Grid>
+                    </M.Grid>
+                  ) : (
+                    <SectionTitle title="No studios found" lighter />
+                  )}
+                  {users && users.length > 0 ? (
+                    <M.Grid container className={classes.container}>
+                      <M.Typography
+                        variant="title"
+                        className={classes.secTitle}
+                      >
+                        Users
+                      </M.Typography>
+                      <M.Grid container className={classes.itemcontainer}>
+                        {users
+                          ? users.map(user => (
+                              <PeopleButton
+                                key={user.userID}
+                                name={{ first: user.username }}
+                                image={user.avatar}
+                                onClick={() =>
+                                  this.props.history.push(
+                                    `/user${
+                                      this.props.profile
+                                        ? user.userID ===
+                                          this.props.profile.userID
+                                          ? ``
+                                          : `?u=${user.userID}`
+                                        : `?u=${user.userID}`
+                                    }`
+                                  )
+                                }
+                              />
+                            ))
+                          : null}
+                      </M.Grid>
+                    </M.Grid>
+                  ) : (
+                    <SectionTitle title="No users found" lighter />
+                  )}
+                </Column>
+              )}
             </M.Grid>
           </div>
         </div>

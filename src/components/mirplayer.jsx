@@ -419,8 +419,6 @@ class MirPlayer extends Component {
     if (this.state.torrent && this.state.torrentFile)
       hsfetcher.destroyClient(this.state.torrentFile);
 
-    await this.props.firebase.updateProfile({ status: `Oozing` });
-
     this.props.removeDataFromMir(null);
   };
 
@@ -1255,6 +1253,7 @@ class MirPlayer extends Component {
                         eps.map(e => (
                           <MenuItem
                             onClick={() => {
+                              this.logToActivity();
                               this.setState({ ep: e.ep }, async () =>
                                 loadEp(this, e, null)
                               );

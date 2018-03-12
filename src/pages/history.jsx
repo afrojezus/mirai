@@ -282,6 +282,7 @@ class History extends Component {
                                 id: feed.user.userID,
                                 username: feed.user.username
                               }}
+                              format={feed.format}
                               activity
                               noActions
                               color={hue}
@@ -408,6 +409,7 @@ class History extends Component {
                             username: feed.user.username
                           }}
                           activity
+                          format={feed.format}
                           noActions
                           color={hue}
                         />

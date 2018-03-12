@@ -51,8 +51,8 @@
     },
     "home": {
       "welcomeuser": "Welcome back",
-      "welcomeanon": "Mirai. A new kind of streamer.",
-      "welcomeSubtitle": "Mirai Preview",
+      "welcomeanon": "Mirai",
+      "welcomeSubtitle": "<strong>Your</strong> anime streaming app",
       "updates": "Updates",
       "animefavTitle": "Your anime favorites",
       "animefavEstimate": "anime favourites",
@@ -63,7 +63,12 @@
       "ongoingAnimeTitle": "Currently ongoing anime",
       "ongoingAnimeEstimate": "ongoing anime in database",
       "ongoingMangaTitle": "Currently ongoing manga",
-      "feeds": "Feed"
+      "feeds": "Feed",
+      "all": "All",
+      "onlyfeeds": "Only posts",
+      "onlyactivities": "Only activites",
+      "random": "Random",
+      "nofavs": "You got no favorites yet!"
     },
     "later": {
       "later": "Later",
@@ -91,11 +96,12 @@
       "misc": "Misc. Settings",
       "language": "Language",
       "languageDesc":
-        "Change the language of the UX in Mirai (experimental, recommended to use en-us for now.)",
+        "Change the language of the UX in Mirai (experimental, recommended to use en-us for now. Changes to the language will reload the app)",
       "avatar": "Avatar",
       "avaaccept": "Use as avatar",
       "bg": "Background",
-      "bgdesc": "The background also changes the accent color of the UI",
+      "bgdesc":
+        "The background also changes the accent color of the UI (This will reload the app)",
       "bgaccept": "Use as background",
       "nickname": "Nickname",
       "nickplaceholder": "Pick a decent nick... can be anything!",
@@ -241,7 +247,7 @@
     },
     "user": {
       "nouserfound": "In order to view others accounts, you need to log in.",
-      "bothfriends": "- You are both friends",
+      "bothfriends": "You are both friends",
       "feed": "Feed",
       "animelist": "Anime list",
       "mangalist": "Manga list",
@@ -296,6 +302,13 @@
         "dnoneUser": "They haven't dropped any manga yet",
         "dnone": "You haven't dropped any manga yet"
       }
+    },
+    "feed": {
+      "placeholder": "What's on your mind today?",
+      "removeimage": "Remove image",
+      "post": "Publish",
+      "uploadImage": "Upload an image",
+      "uploadError": "Currently issues with upload on Safari, sorry."
     }
   },
   "nbno": {
@@ -376,10 +389,17 @@
         "desc": "Disse er memes"
       }
     },
+    "feed": {
+      "placeholder": "Hva tenker du på i dag?",
+      "removeimage": "Fjern bilde",
+      "post": "Publiser",
+      "uploadImage": "Last opp et bilde",
+      "uploadError": "Problemer med opplastning av bilder på Safari, beklager."
+    },
     "home": {
       "welcomeuser": "Velkommen tilbake",
-      "welcomeanon": "Mirai. En annerledes type streaming.",
-      "welcomeSubtitle": "Mirai Forhåndsvisningsutgave",
+      "welcomeanon": "Mirai",
+      "welcomeSubtitle": "<strong>Din</strong> anime strømmingsapp",
       "updates": "Oppdateringer",
       "animefavTitle": "Dine anime favoritter",
       "animefavEstimate": "anime favoritter",
@@ -390,7 +410,12 @@
       "ongoingAnimeTitle": "Pågående anime",
       "ongoingAnimeEstimate": "animer som pågår i databasen",
       "ongoingMangaTitle": "Pågående manga (tegneserier)",
-      "feeds": "Aktiviteter"
+      "feeds": "Aktiviteter",
+      "all": "Alt",
+      "onlyfeeds": "Bare innlegg",
+      "onlyactivities": "Bare aktiviteter",
+      "random": "Tilfeldig",
+      "nofavs": "Du har ingen favoritter enda!"
     },
     "later": {
       "later": "Senere",
@@ -406,11 +431,13 @@
       "sync": "Synkronisering (Eksperimental)",
       "misc": "Andre innstillinger",
       "language": "Språk",
-      "languageDesc": "Endre språket til brukergrensesnittet til Mirai",
+      "languageDesc":
+        "Endre språket til brukergrensesnittet til Mirai (endringen vil refreshe appen)",
       "avatar": "Avatar",
       "avaaccept": "Bruk som avatar",
       "bg": "Bakgrunn",
-      "bgdesc": "Bakgrunnen endrer også fargepalettet til brukergrensesnittet",
+      "bgdesc":
+        "Bakgrunnen endrer også fargepalettet til brukergrensesnittet (Dette vil refreshe appen)",
       "bgaccept": "Bruk som bakgrunn",
       "nickname": "Kallenavn",
       "nickplaceholder":
@@ -540,7 +567,309 @@
     },
     "user": {
       "nouserfound": "For å se andre sine brukere, må du registrere deg",
-      "bothfriends": "- Dere er begge venner",
+      "bothfriends": "Dere er begge venner",
+      "feed": "Status",
+      "animelist": "Anime liste",
+      "mangalist": "Manga liste",
+      "stats": "Statestikk",
+      "removefriend": "Fjern venn",
+      "addfriend": "Legg til som venn",
+      "friends": "Venner",
+      "nofriends": "har ingen venner",
+      "yougotnofriends": "Du har ingen venner",
+      "favorites": "Favoritter",
+      "anime": "Anime",
+      "manga": "Manga (tegneserier)",
+      "characters": "Karakterer",
+      "staff": "Medvirkende og skuespillere",
+      "studio": "Studioer",
+      "none": "Ingenting funnet...",
+      "activity": "Aktivitet",
+      "noact": "Ingen aktiviteter ble funnet",
+      "recommends": "Anbefalinger",
+      "recommendanime": "Dine anime anbefalinger",
+      "recommendmanga": "Dine manga anbefalinger",
+      "recommenddataanime": "Animer de anbefaler",
+      "recommenddatamanga": "Mangaer de anbefaler",
+      "recommendanimenone": "Du har ikke anbefalt en anime enda",
+      "recommendmanganone": "Du har ikke anbefalt en manga enda",
+      "recommendDataanimenone": "De har ikke anbefalt en anime enda",
+      "recommendDatamanganone": "De har ikke anbefalt en manga enda",
+      "animeList": {
+        "recentlyWatched": "Sist sett",
+        "lastyura": "Sist sett på Yura",
+        "later": "Senere",
+        "compl": "Fullført",
+        "dropped": "Droppet",
+        "rnone": "Ingen anime funnet",
+        "lnone": "Ingen anime funnet i senere listen din",
+        "lnoneUser": "Ingen anime funnet i senere listen til dem",
+        "cnone": "Du har ikke fullført en anime enda",
+        "cnoneUser": "De har ikke fullført en anime enda",
+        "dnoneUser": "De har ikke droppet en anime enda",
+        "dnone": "Du har ikke droppet en anime enda"
+      },
+      "mangaList": {
+        "recentlyread": "Sist lest",
+        "later": "Senere",
+        "compl": "Fullført",
+        "dropped": "Droppet",
+        "rnone": "Ingen mangaer funnet",
+        "lnone": "Ingen mangaer funnet i senere listen din",
+        "lnoneUser": "Ingen mangaer funnet i senere listen til dem",
+        "cnone": "Du har ikke fullført en manga enda",
+        "cnoneUser": "De har ikke fullført en manga enda",
+        "dnoneUser": "De har ikke droppet en manga enda",
+        "dnone": "Du har ikke droppet en manga enda"
+      }
+    }
+  },
+  "jp": {
+    "superbar": {
+      "home": "自宅",
+      "feeds": "フィード",
+      "rankings": "探検する",
+      "live": "ライブ",
+      "you": "君は",
+      "history": "ログ",
+      "later": "後で",
+      "favorites": "お気に入り",
+      "help": "助けて",
+      "feedback": "フィードバック",
+      "termsofusage": "利用規約",
+      "monika": "Monika",
+      "donate": "寄付する",
+      "usermenu": {
+        "title": "未来",
+        "subheader": "より多くの機能を使用するにはログインしてください",
+        "loginbutton": "サインイン",
+        "developer": "管理者",
+        "developerDb": "管理コンソール",
+        "developerMedia": "メディア",
+        "settings": "設定",
+        "signout": "サインアウト"
+      },
+      "searchbox": {
+        "placeholder": "最小3文字"
+      },
+      "notifications": {
+        "title": "通知",
+        "signup": "通知にサインアップする!",
+        "empty": "今日の通知はありません!"
+      },
+      "user": "ユーザー",
+      "search": "サーチ"
+    },
+    "live": {
+      "streams": "ストリーミング",
+      "friendsstream": "友人のストリーム",
+      "friends": "友達",
+      "livetv": "Direkte-TV",
+      "streamHelp": {
+        "title": "新しいストリームを作る方法は？",
+        "desc":
+          "新しいライブストリームを作るのは簡単です！ あなたがアニメの中にいるときにちょうど「Livestream this anime」を選んでください。 それは簡単です！"
+      },
+      "nofriends": "今日あなたの友人の誰もストリーミングしていません",
+      "nostreams": "今日のストリームはありません！"
+    },
+    "explore": {
+      "title": "探検する",
+      "topRatedTitle": "人気アニメ",
+      "topRatedDesc": "AniListユーザーの「ベスト」アニメ",
+      "topPopularTitle": "最も人気のあるアニメ",
+      "topPopularDesc": "すべての時間の中で最も人気のあるアニメ",
+      "recommendationsTitle": "推奨事項",
+      "hCorner": "R-18",
+      "collectionsTitle": "コレクション",
+      "friendsTitle": "お友達のおすすめ",
+      "error": "何かあった",
+      "showAll": "すべて表示する",
+      "action": {
+        "title": "アクション",
+        "desc": "ペースが速いアクション満載のアニメ"
+      },
+      "cgct": {
+        "title": "かわいい女の子が可愛い",
+        "desc": "自明の"
+      },
+      "drama": {
+        "title": "ドラマ",
+        "desc": "涙、紛争など"
+      },
+      "meme": {
+        "title": "ミームズ",
+        "desc": "これらはミームです"
+      }
+    },
+    "home": {
+      "welcomeuser": "お帰りなさい",
+      "welcomeanon": "未来",
+      "welcomeSubtitle": "<strong>あなたの</strong> アニメストリーミングアプリ",
+      "updates": "アップデート",
+      "animefavTitle": "あなたのアニメのお気に入り",
+      "animefavEstimate": "アニメのお気に入り",
+      "animehistoryTitle": "あなたが以前見たアニメ",
+      "animehistoryEstimate": "アニメ",
+      "history": "ログ",
+      "collections": "記事",
+      "ongoingAnimeTitle": "進行中のアニメ",
+      "ongoingAnimeEstimate": "データベースで進行中のアニメ",
+      "ongoingMangaTitle": "進行中のマンガ",
+      "feeds": "アクティビティ",
+      "nofavs": "まだお気に入りはありません！",
+      "all": "すべて",
+      "onlyfeeds": "投稿のみ",
+      "onlyactivities": "アクティビティのみ",
+      "random": "ランダム"
+    },
+    "later": {
+      "later": "後で",
+      "animetitle": "後で見たいアニメ",
+      "mangatitle": "後で読んでみたいマンガ",
+      "animenone": "あなたの後のリストに何もないように見える",
+      "manganone": "あなたの後のリストに何もないように見える"
+    },
+    "settings": {
+      "settings": "設定",
+      "aesthetics": "美学",
+      "account": "アカウント",
+      "sync": "同期（ワイプ",
+      "misc": "その他 設定",
+      "language": "言語",
+      "languageDesc":
+        "言語を将来に変更します。 （変更によりアプリがリロードされます）",
+      "avatar": "アバター",
+      "avaaccept": "アバターとして使う",
+      "bg": "バックグラウンド",
+      "bgdesc":
+        "背景もUXのカラーパレットを変更します（これはアプリケーションをリロードします）",
+      "bgaccept": "背景として使用",
+      "nickname": "ニックネーム",
+      "nickplaceholder": "良いニックネームを選んで、何でもかまいません！",
+      "nickaccept": "ニックネームとして使用",
+      "username": "ユーザー名",
+      "usernameplaceholder": "あなたのユーザー名を一意にする",
+      "useraccept": "ユーザー名として使用する",
+      "motto": "モットー",
+      "mottoplaceholder": "最適なモットーを選んでください",
+      "mottoaccept": "モットーとして使う",
+      "logging": "ロギング",
+      "loggingdelete": "あなたのログを削除しますか？",
+      "loggingallow": "あなたの活動の記録を許可しますか？",
+      "loggingprivate": "ログを非公開にしますか？",
+      "anilistdesc":
+        "AniListの同期機能により、将来のアカウントをAniListアカウントと同期させることができます",
+      "maldesc":
+        "The MyAnimeList syncing function enables your Mirai account to sync with your MyAnimeList account.",
+      "discorddesc":
+        "Sync your Mirai activity onto your Discord as a game. Requires you having Discord linked.",
+      "contribmodule": "暗号モード",
+      "contribdesc":
+        "Cryptominingモードでは、将来のCPUパワーを活用してプロジェクトに資金を提供できます。 これはパフォーマンスに全く影響しません。",
+      "on": "に",
+      "off": "オフ",
+      "cancel": "キャンセル",
+      "accept": "つかいます",
+      "yes": "はい",
+      "userdesc": "あなたのユーザー名は将来、あなたの本当の名前です。",
+      "nickdesc":
+        "あなたのニックネームは、自分が誰であるかを表すと信じるものであれば何でもかまいません。"
+    },
+    "tos": {
+      "title": "利用規約"
+    },
+    "help": {
+      "title": "助けて"
+    },
+    "setup": {
+      "welcome": "ようこそ、あなたを設定しましょう。",
+      "login": "サインイン",
+      "register": "サインアップ",
+      "email": "Eメール",
+      "password": "パスワード",
+      "access": "サインイン",
+      "divein": "入る"
+    },
+    "history": {
+      "overview": "Oversikt",
+      "alog": "Anime logg",
+      "mlog": "Manga logg",
+      "ulog": "Bruker logg",
+      "noneA": "Ingen logg av anime funnet",
+      "noneM": "Ingen logg av manga funnet",
+      "noneU": "Ingen bruker aktivitet funnet",
+      "instances": "logg av bruker aktivitet funnet",
+      "logdisabled": "Logging er deaktivert"
+    },
+    "show": {
+      "moreMenu": {
+        "report": "Rapporter feil",
+        "editentry": "Endre anime/manga"
+      },
+      "notavaliable": "Ikke tilgjengelig",
+      "playing": "Spiller nå",
+      "livestreamButton": "Livestream denne animen",
+      "chapters": "kapitler",
+      "volumes": "volumer",
+      "provider": "Informasjonen er servert fra AniList",
+      "episodeTooltip":
+        "Hos pågående anime eller manga kan det ta opp til 1 virkedag for at det skal komme tilgjengelig på Mirai",
+      "episodeWhen": "til Episode",
+      "arrives": "kommer",
+      "alsoKnownAs": "Også kjent som:",
+      "director": "Regissert av ",
+      "author": "og skrevet av",
+      "authorProper": "Skrevet av ",
+      "genres": "Sjangre",
+      "tags": "Emner",
+      "producers": "Produsenter",
+      "avgscore": "Gjennomsnittsmåling",
+      "meanscore": "Meningsmåling",
+      "episodes": "Episoder",
+      "progress": "Din fremgang",
+      "rewatchprogress": "Din nye fremgang",
+      "removelater": "Fjern fra senere",
+      "addlater": "Legg til senere",
+      "removefav": "Fjern fra favoritter",
+      "addfav": "Legg til i favoritter",
+      "reportModal": {
+        "title": "Rapporter ",
+        "errors": "for feil",
+        "select": "Hva er det du ønsker å rapportere om?"
+      },
+      "status": {
+        "title": "Din status på denne animen/mangaen",
+        "finished": "Fullført",
+        "dropped": "Droppet",
+        "watching": "Ser på"
+      },
+      "airingstart": "Kringkasting start",
+      "airingended": "Kringkasting slutt",
+      "releasedate": "Lanseringsdato",
+      "publishstart": "Publiserings start",
+      "publishended": "Publiserings slutt",
+      "cast": "Skuespillere",
+      "char": "Karakterer",
+      "as": "som",
+      "staff": "Medvirkende",
+      "similar": "Ligner på denne",
+      "recommend": "Anbefal denne animen",
+      "nonrecommend": "Ikke anbefal denne animen",
+      "playthis":
+        "Spill denne animen fra begynnelsen (eller hvor du sist sluttet)",
+      "playthisM":
+        "Les denne mangaen fra begynnelsen (eller hvor du sist sluttet)",
+      "showEpisodes": "Vis episoder",
+      "showChapters": "Vis kapitler",
+      "hideEpisodes": "Skjul episoder",
+      "hideChapters": "Skjul kapitler",
+      "unavaliable":
+        "Beklageligvis er ikke denne animen/mangaen tilgjengelig på Mirai, rapporter utilgjengeligheten til hovedutvikleren hvis du vil at den skal dukke opp tilgjengelig i nær fremtid."
+    },
+    "user": {
+      "nouserfound": "For å se andre sine brukere, må du registrere deg",
+      "bothfriends": "Dere er begge venner",
       "feed": "Status",
       "animelist": "Anime liste",
       "mangalist": "Manga liste",

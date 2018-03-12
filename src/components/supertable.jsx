@@ -280,11 +280,15 @@ const SuperTable = class extends React.Component {
     const list = document.getElementById(this.getListType());
     let scrollSlide = this.state.currentSlide;
     const listelement = list.childNodes[0];
-    let calculateWidth = windowWidth > 1366 ? 3 : windowWidth > 1000 ? 2 : 1;
+    let calculateWidth = this.props.single
+      ? 1
+      : windowWidth > 1366 ? 3 : windowWidth > 1000 ? 2 : 1;
     scrollSlide -= listelement.scrollWidth * calculateWidth;
     scrollSlide < 0 ? (scrollSlide = 0) : (scrollSlide = scrollSlide);
     this.setState({ currentSlide: scrollSlide }, () => {
-      list.scroll({ left: this.state.currentSlide, behavior: "smooth" });
+      window.navigator.userAgent.indexOf("Edge") > -1
+        ? (list.scrollLeft = this.state.currentSlide)
+        : list.scroll({ left: this.state.currentSlide, behavior: "smooth" });
       if (scrollSlide === 0) {
         console.log("Oh shit");
       }
@@ -296,13 +300,17 @@ const SuperTable = class extends React.Component {
     const list = document.getElementById(this.getListType());
     let scrollSlide = this.state.currentSlide;
     const listelement = list.childNodes[0];
-    let calculateWidth = windowWidth > 1366 ? 3 : windowWidth > 1000 ? 2 : 1;
+    let calculateWidth = this.props.single
+      ? 1
+      : windowWidth > 1366 ? 3 : windowWidth > 1000 ? 2 : 1;
     scrollSlide += listelement.scrollWidth * calculateWidth;
     scrollSlide > list.scrollWidth
       ? (scrollSlide = list.scrollWidth)
       : (scrollSlide = scrollSlide);
     this.setState({ currentSlide: scrollSlide }, () => {
-      list.scroll({ left: this.state.currentSlide, behavior: "smooth" });
+      window.navigator.userAgent.indexOf("Edge") > -1
+        ? (list.scrollLeft = this.state.currentSlide)
+        : list.scroll({ left: this.state.currentSlide, behavior: "smooth" });
       if (scrollSlide === list.scrollWidth) {
         console.log("Oh shit");
       }
@@ -343,7 +351,7 @@ const SuperTable = class extends React.Component {
   };
 
   render() {
-    const { classes, theme, loading, data, ...props } = this.props;
+    const { classes, theme, loading, data, single, ...props } = this.props;
     const { lang } = this.state;
     const backArrow = window.mobilecheck() ? null : (
       <Button onClick={this.goBack} className={classes.bakA} variant="fab">
@@ -362,11 +370,12 @@ const SuperTable = class extends React.Component {
           <GridList
             id="nulllist"
             className={classes.list}
-            cols={calculateWidth}
+            cols={single ? 1 : calculateWidth}
             cellHeight={300}
+            style={{ paddingBottom: single ? 0 : null }}
           >
-            {nullarray.map(o => (
-              <GridListTile className={classes.bigCardStill} key={o.i}>
+            {single ? (
+              <GridListTile className={classes.bigCardStill}>
                 <div className={classes.bigCardImage} />
                 <div className={classes.bigCardRow}>
                   <CircularProgress
@@ -380,7 +389,24 @@ const SuperTable = class extends React.Component {
                   />
                 </div>
               </GridListTile>
-            ))}
+            ) : (
+              nullarray.map(o => (
+                <GridListTile className={classes.bigCardStill} key={o.i}>
+                  <div className={classes.bigCardImage} />
+                  <div className={classes.bigCardRow}>
+                    <CircularProgress
+                      style={{
+                        color: "white",
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%,-50%)"
+                      }}
+                    />
+                  </div>
+                </GridListTile>
+              ))
+            )}
           </GridList>
         </div>
       );
@@ -836,8 +862,9 @@ const SuperTable = class extends React.Component {
               props.type.includes("m") ? "mangaongoinglist" : "animeongoinglist"
             }
             className={classes.list}
-            cols={calculateWidth}
+            cols={single ? 1 : calculateWidth}
             cellHeight={300}
+            style={{ paddingBottom: single ? 0 : null }}
           >
             {data.splice(0, props.limit).map(anime => (
               <GridListTile

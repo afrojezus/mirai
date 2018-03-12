@@ -14,6 +14,7 @@ import Close from "material-ui-icons/Close";
 import Minimize from "material-ui-icons/Remove";
 import Maximize from "material-ui-icons/Fullscreen";
 import UnMaximize from "material-ui-icons/FullscreenExit";
+import Dotdotdot from "react-dotdotdot";
 import List, {
   ListItem,
   ListItemIcon,
@@ -33,6 +34,7 @@ import Avatar from "material-ui/Avatar";
 import CompassIcon from "material-ui-icons/Explore";
 import ArrowBackIcon from "material-ui-icons/ArrowBack";
 import MoreVert from "material-ui-icons/MoreHoriz";
+import TranslateIcon from "material-ui-icons/Translate";
 import strings from "../strings.json";
 
 import localForage from "localforage";
@@ -49,6 +51,7 @@ import NotificationForm from "./notificationForm";
 import { history } from "../store";
 import MirPlayer from "./mirplayer";
 import { Dialogue } from "./layouts";
+import { MenuItem } from "material-ui/Menu";
 
 const drawerWidth = 240;
 
@@ -146,7 +149,8 @@ const styles = theme => ({
   drawerToolbar: theme.mixins.toolbar,
   drawer: {
     width: drawerWidth,
-    height: "100%"
+    height: "100%",
+    overflowX: "hidden"
   },
   drawerBg: {},
   drawerDocked: {
@@ -391,7 +395,8 @@ class Superbar extends Component {
     lang: strings.enus,
     userMenuHover: false,
     onlineUsers: [],
-    donateModal: false
+    donateModal: false,
+    langMenu: false
   };
 
   componentWillMount = () => {
@@ -667,6 +672,32 @@ class Superbar extends Component {
 
   openDonate = () => this.setState({ donateModal: true, anchorEl: null });
 
+  handleLangMenu = event => {
+    this.setState({ langMenu: event.currentTarget });
+  };
+
+  changeLang = lang => {
+    switch (lang) {
+      case "en":
+        localStorage.setItem("language", "en-us");
+        window.location.reload();
+        break;
+
+      case "no":
+        localStorage.setItem("language", "nb-no");
+        window.location.reload();
+        break;
+
+      case "jp":
+        localStorage.setItem("language", "jp");
+        window.location.reload();
+        break;
+
+      default:
+        break;
+    }
+  };
+
   // Electron functions
   eMaximize = () => {
     const electron = window.require("electron").remote.getCurrentWindow();
@@ -697,7 +728,8 @@ class Superbar extends Component {
       scrolling,
       lang,
       onlineUsers,
-      donateModal
+      donateModal,
+      langMenu
     } = this.state;
 
     const user = !isEmpty(this.props.profile) ? this.props.profile : null;
@@ -710,6 +742,7 @@ class Superbar extends Component {
 
     const open = Boolean(anchorEl);
     const infoOpen = Boolean(infoEl);
+    const openLangMenu = Boolean(langMenu);
 
     const metaShit = (
       <div className={classes.metashit}>
@@ -1020,7 +1053,9 @@ class Superbar extends Component {
             </Hidden>
             <Hidden mdUp>
               <Typography variant="title">
-                {mirTitle !== "" ? mirTitle : currentPage}
+                <Dotdotdot clamp={1}>
+                  {mirTitle !== "" ? mirTitle : currentPage}
+                </Dotdotdot>
               </Typography>
             </Hidden>
             <Hidden smDown>
@@ -1114,6 +1149,16 @@ class Superbar extends Component {
                 <NotificationForm />
               </Menu>
             </div>
+            {isEmpty(user) ? (
+              <IconButton
+                aria-owns={openLangMenu ? "lang-menu" : null}
+                aria-haspopup="true"
+                onClick={this.handleLangMenu}
+                contrast={"default"}
+              >
+                <TranslateIcon />
+              </IconButton>
+            ) : null}
             <div>
               <IconButton
                 aria-owns={open ? "profile-menu" : null}
@@ -1307,6 +1352,103 @@ class Superbar extends Component {
                 </div>
               </Menu>
             </div>
+            <Menu
+              id="lang-menu"
+              anchorEl={langMenu}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right"
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right"
+              }}
+              open={openLangMenu}
+              PaperProps={{
+                style: {
+                  maxHeight: window.innerHeight / 1.05,
+                  overflowY: "auto",
+                  zIndex: 2000
+                }
+              }}
+              onClose={() => this.setState({ langMenu: null })}
+              PopoverClasses={{ paper: classes.menuPadding }}
+            >
+              <div
+                style={{ outline: "none", maxHeight: "inherit", maxWidth: 250 }}
+                className={classes.profileCard}
+              >
+                <MenuItem
+                  onClick={() => {
+                    this.changeLang("en");
+                    this.setState({ langMenu: null });
+                  }}
+                >
+                  <Avatar
+                    style={{
+                      color: "white",
+                      marginRight: 8,
+                      background: "transparent"
+                    }}
+                  >
+                    <span
+                      role="img"
+                      aria-label="English"
+                      style={{ color: "white", marginBottom: 4 }}
+                    >
+                      🇬🇧
+                    </span>
+                  </Avatar>
+                  English
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    this.changeLang("no");
+                    this.setState({ langMenu: null });
+                  }}
+                >
+                  <Avatar
+                    style={{
+                      color: "white",
+                      marginRight: 8,
+                      background: "transparent"
+                    }}
+                  >
+                    <span
+                      role="img"
+                      aria-label="Norsk Bokmål"
+                      style={{ color: "white", marginBottom: 4 }}
+                    >
+                      🇳🇴
+                    </span>
+                  </Avatar>
+                  Norsk Bokmål
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    this.changeLang("jp");
+                    this.setState({ langMenu: null });
+                  }}
+                >
+                  <Avatar
+                    style={{
+                      color: "white",
+                      marginRight: 8,
+                      background: "transparent"
+                    }}
+                  >
+                    <span
+                      role="img"
+                      aria-label="Norsk Bokmål"
+                      style={{ color: "white", marginBottom: 4 }}
+                    >
+                      🇯🇵
+                    </span>
+                  </Avatar>
+                  日本語 (Experimental)
+                </MenuItem>
+              </div>
+            </Menu>
             {isElectron() ? (
               <IconButton onClick={this.eMinimize}>
                 <Minimize />

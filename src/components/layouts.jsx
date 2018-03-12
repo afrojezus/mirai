@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import * as Icon from "material-ui-icons";
 import withStyles from "material-ui/styles/withStyles";
 import Grid from "material-ui/Grid/Grid";
 import Toolbar from "material-ui/Toolbar/Toolbar";
@@ -9,21 +10,25 @@ import LinearProgress from "material-ui/Progress/LinearProgress";
 import Typography from "material-ui/Typography/Typography";
 import { blue, grey } from "material-ui/colors";
 import moment from "moment";
-import Hidden from "material-ui/Hidden/Hidden";
 import Modal from "material-ui/Modal";
 import classNames from "classnames";
 import Zoom from "material-ui/transitions/Zoom";
 import Fade from "material-ui/transitions/Fade";
 // import withTheme from 'material-ui/styles/withTheme';
+import { isEmpty, firebaseConnect } from "react-redux-firebase";
+import { connect } from "react-redux";
 import Button from "material-ui/Button/Button";
 import Avatar from "material-ui/Avatar";
+import Tooltip from "material-ui/Tooltip";
 import Card, {
   CardActions,
   CardHeader,
   CardContent,
   CardMedia
 } from "material-ui/Card";
+import Hidden from "material-ui/Hidden";
 import Divider from "material-ui/Divider";
+import IconButton from "material-ui/IconButton";
 
 const style = theme => ({
   compacMode: {
@@ -318,13 +323,30 @@ const style = theme => ({
     background: theme.palette.background.paper,
     outline: "none",
     minHeight: 120,
-    minWidth: 500
+    minWidth: window.mobilecheck() ? null : 500
   },
   modalTextColor: {
     color: grey[50]
   },
   modalTitle: {
     fontWeight: 700
+  },
+  likeContainer: {
+    display: "flex",
+    opacity: 0.7,
+    margin: "0 4px"
+  },
+  likeIcon: {
+    color: "white",
+    fontSize: 18,
+    margin: "auto"
+  },
+  likeCount: {
+    marginLeft: theme.spacing.unit,
+    fontWeight: 700
+  },
+  dialogueActionButton: {
+    margin: "auto"
   }
 });
 
@@ -359,7 +381,17 @@ ItemContainer.defaultProps = {
 };
 
 export const SectionTitle = withStyles(style, { withTheme: true })(
-  ({ classes, title, lighter, noPad, button, buttonClick, ...props }) => (
+  ({
+    classes,
+    theme,
+    title,
+    lighter,
+    subtitle,
+    noPad,
+    button,
+    buttonClick,
+    ...props
+  }) => (
     <div className={classes.secTitle}>
       <Typography
         variant={"title"}
@@ -375,6 +407,26 @@ export const SectionTitle = withStyles(style, { withTheme: true })(
       >
         {title}
       </Typography>
+      {subtitle && subtitle !== "" ? (
+        <Hidden mdDown>
+          <Typography
+            variant={"title"}
+            className={classNames(
+              classes.secTitleText,
+              classes.lightersecTitle
+            )}
+            style={{
+              color: "rgba(255,255,255,.5)",
+              paddingBottom: noPad ? 0 : null,
+              marginLeft: theme.spacing.unit,
+              fontWeight: 500,
+              fontSize: 18
+            }}
+          >
+            {subtitle}
+          </Typography>
+        </Hidden>
+      ) : null}
       {button ? <div style={{ flex: 1 }} /> : null}
       {button ? <Button onClick={buttonClick}>{button}</Button> : null}
     </div>
@@ -464,85 +516,166 @@ export const Root = withStyles(style, { withTheme: true })(
   )
 );
 
-export const Dialogue = withStyles(style, { withTheme: true })(
-  ({
-    classes,
-    theme,
-    children,
-    open,
-    title,
-    actions,
-    actionsSend,
-    zoom, // This is an user-feed.
-    feed,
-    ...props
-  }) => (
-    <Modal open={open} {...props}>
-      {zoom ? (
-        <Zoom in={open}>
-          <Card
-            elevation={4}
-            className={classes.modalPaper}
-            style={{ padding: 0, maxWidth: 700 }}
-          >
-            <CardHeader
-              title={feed.ftitle}
-              subheader={
-                feed.context + " | " + moment(feed.date).from(Date.now())
-              }
-              avatar={<Avatar src={feed.avatar} />}
-            />
-            <Divider />
-            {feed.image ? (
-              <img
-                style={{
-                  transition: theme.transitions.create(["all"]),
-                  maxHeight: window.innerHeight,
-                  width: "100%",
-                  objectFit: "cover"
-                }}
-                alt=""
-                src={feed.image}
-              />
-            ) : null}
-            <CardContent>
-              <Typography variant="body1">{feed.text}</Typography>
-            </CardContent>
-          </Card>
-        </Zoom>
-      ) : (
-        <Fade in={open}>
-          <Card elevation={4} className={classes.modalPaper}>
-            <CardContent>
-              <Typography
-                variant="title"
-                className={classNames(
-                  classes.modalTextColor,
-                  classes.modalTitle
-                )}
+export const Dialogue = firebaseConnect()(
+  connect(({ firebase: { profile }, ...state }) => ({ profile, ...state }))(
+    withStyles(style, { withTheme: true })(
+      ({
+        classes,
+        theme,
+        children,
+        open,
+        title,
+        actions,
+        actionsSend,
+        zoom, // This is an user-feed.
+        feed,
+        profile,
+        style,
+        onClose
+      }) => (
+        <Modal open={open} style={style} onClose={onClose}>
+          {zoom ? (
+            <Zoom in={open}>
+              <Card
+                elevation={4}
+                className={classes.modalPaper}
+                style={{ padding: 0, maxWidth: 700 }}
               >
-                {title}
-              </Typography>
-              {children}
-            </CardContent>
-            {actions !== undefined ? (
-              <CardActions>
-                <div style={{ flex: 1 }} />
-                {actions.includes("send") ? (
-                  <Button onClick={actionsSend}>SEND</Button>
+                <CardHeader
+                  title={feed.ftitle}
+                  subheader={
+                    feed.context + " | " + moment(feed.date).from(Date.now())
+                  }
+                  avatar={<Avatar src={feed.avatar} />}
+                  action={
+                    <IconButton onClick={onClose}>
+                      <Icon.Close />
+                    </IconButton>
+                  }
+                  classes={{
+                    action: classes.dialogueActionButton
+                  }}
+                />
+                <Divider />
+                {feed.image ? (
+                  <img
+                    style={{
+                      transition: theme.transitions.create(["all"]),
+                      maxHeight: window.innerHeight,
+                      width: "100%",
+                      objectFit: "cover"
+                    }}
+                    alt=""
+                    src={feed.image}
+                  />
                 ) : null}
-                {actions.includes("ok") ? (
-                  <Button onClick={props.onClose}>OK</Button>
+                <CardContent>
+                  <Typography
+                    variant="body1"
+                    dangerouslySetInnerHTML={{ __html: feed.text }}
+                  />
+                </CardContent>
+                <Divider />
+                <CardActions>
+                  <Tooltip
+                    title={
+                      !feed.likes
+                        ? "Nobody likes this post"
+                        : Object.values(feed.likes).length > 1
+                          ? Object.values(feed.likes).length +
+                            " users liked this"
+                          : Object.values(feed.likes).length +
+                            " user liked this"
+                    }
+                  >
+                    <div className={classes.likeContainer}>
+                      <Icon.Favorite className={classes.likeIcon} />
+                      <Typography vairant="title" className={classes.likeCount}>
+                        {!feed.likes ? 0 : Object.values(feed.likes).length}
+                      </Typography>
+                    </div>
+                  </Tooltip>
+                  <IconButton
+                    style={{
+                      opacity: 0,
+                      pointerEvents: "none",
+                      cursor: "default"
+                    }}
+                  />
+                  <div style={{ flex: 1 }} />
+                  {!isEmpty(profile) && profile ? (
+                    <Tooltip
+                      title={
+                        isEmpty(profile)
+                          ? "You need to login to like posts"
+                          : feed.likes && feed.likes[profile.userID]
+                            ? "Dislike this"
+                            : "Like this"
+                      }
+                      placement="bottom"
+                    >
+                      <div>
+                        <IconButton
+                          disabled={isEmpty(feed.profile) ? true : false}
+                          classes={{ label: classes.text }}
+                          onClick={async () =>
+                            feed.likes && feed.likes[profile.userID]
+                              ? feed.disLikeThis()
+                              : feed.likeThis()
+                          }
+                        >
+                          {profile &&
+                          profile.userID &&
+                          feed.likes &&
+                          feed.likes[profile.userID] ? (
+                            <Icon.Favorite />
+                          ) : (
+                            <Icon.FavoriteBorder />
+                          )}
+                        </IconButton>
+                      </div>
+                    </Tooltip>
+                  ) : null}
+                </CardActions>
+              </Card>
+            </Zoom>
+          ) : (
+            <Fade in={open}>
+              <Card elevation={4} className={classes.modalPaper}>
+                <CardContent>
+                  <Typography
+                    variant="title"
+                    className={classNames(
+                      classes.modalTextColor,
+                      classes.modalTitle
+                    )}
+                  >
+                    {title}
+                  </Typography>
+                  {children}
+                </CardContent>
+                {actions !== undefined ? (
+                  <CardActions>
+                    <Hidden mdDown>
+                      <div style={{ flex: 1 }} />
+                    </Hidden>
+                    {actions.includes("send") ? (
+                      <Button onClick={actionsSend}>SEND</Button>
+                    ) : null}
+                    {actions.includes("ok") ? (
+                      <Button onClick={onClose}>OK</Button>
+                    ) : null}
+                    {actions.includes("close") ? (
+                      <Button onClick={onClose}>CLOSE</Button>
+                    ) : null}
+                  </CardActions>
                 ) : null}
-                {actions.includes("close") ? (
-                  <Button onClick={props.onClose}>CLOSE</Button>
-                ) : null}
-              </CardActions>
-            ) : null}
-          </Card>
-        </Fade>
-      )}
-    </Modal>
+              </Card>
+            </Fade>
+          )}
+        </Modal>
+      )
+    )
   )
 );
 
@@ -603,10 +736,13 @@ export const TitleHeader = withStyles(style, { withTheme: true })(
               <div style={{ display: window.mobilecheck() ? "none" : null }}>
                 <Typography
                   className={classes.titleheadertitle}
-                  style={{ marginTop: theme.spacing.unit * 12 }}
+                  style={{
+                    marginTop: theme.spacing.unit * 12,
+                    textAlign: "center"
+                  }}
                   variant="display3"
                 >
-                  Welcome to Mirai
+                  {title}
                 </Typography>
                 <Typography
                   className={classes.titleheadersubtitle}
@@ -616,9 +752,8 @@ export const TitleHeader = withStyles(style, { withTheme: true })(
                     fontSize: 18
                   }}
                   variant="headline"
-                >
-                  <strong>Your</strong> anime streaming app
-                </Typography>
+                  dangerouslySetInnerHTML={{ __html: subtitle }}
+                />
               </div>
             ) : null}
             {miraiLogo ? <div style={{ flex: 1 }} /> : null}

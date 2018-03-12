@@ -9,7 +9,7 @@ import { grey } from "material-ui/colors";
 import Divider from "material-ui/Divider";
 import TextField from "material-ui/TextField";
 import Button from "material-ui/Button";
-import colorizer from '../utils/colorizer'
+import colorizer from "../utils/colorizer";
 import Tilt from "react-tilt";
 import checklang from "../checklang";
 import strings from "../strings.json";
@@ -102,7 +102,7 @@ class Setup extends Component {
   login = () =>
     this.props.firebase
       .login({ email: this.state.email, password: this.state.password })
-      .then((e) => {
+      .then(e => {
         history.push("/");
       })
       .catch(error =>
@@ -139,7 +139,7 @@ class Setup extends Component {
             willLog: false
           })
           .then(() => {
-                history.push("/wizard");
+            history.push("/wizard");
           });
       })
       .catch(error =>
@@ -205,11 +205,19 @@ class Setup extends Component {
               {email && password ? (
                 <div>
                   {mode.includes("login") ? (
-                    <Button color="primary" onClick={this.login}>
+                    <Button
+                      color="primary"
+                      style={{ whiteSpace: "nowrap" }}
+                      onClick={this.login}
+                    >
                       {lang.setup.access}
                     </Button>
                   ) : (
-                    <Button color="primary" onClick={this.signup}>
+                    <Button
+                      color="primary"
+                      style={{ whiteSpace: "nowrap" }}
+                      onClick={this.signup}
+                    >
                       {lang.setup.divein}
                     </Button>
                   )}

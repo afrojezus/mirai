@@ -27,6 +27,8 @@ import CircularProgress from "material-ui/Progress/CircularProgress";
 import { history } from "../store";
 import Hidden from "material-ui/Hidden";
 import { Dialogue } from "./layouts";
+import checklang from "../checklang";
+import strings from "../strings.json";
 
 const feedWidth = "100%";
 const feedHeight = 60;
@@ -139,6 +141,20 @@ const style = theme => ({
     borderBottomLeftRadius: 1,
     borderTopLeftRadius: 1,
     cursor: "pointer"
+  },
+  likeContainer: {
+    display: "flex",
+    opacity: 0.7,
+    margin: "0 4px"
+  },
+  likeIcon: {
+    color: "white",
+    fontSize: 18,
+    margin: "auto"
+  },
+  likeCount: {
+    marginLeft: theme.spacing.unit,
+    fontWeight: 700
   }
 });
 
@@ -158,8 +174,13 @@ export const FeedMaker = firebaseConnect()(
           date: Date.now(),
           avatar: "",
           uploadingImage: false,
-          error: false
+          error: false,
+          lang: strings.enus
         };
+
+        componentWillMount() {
+          checklang(this);
+        }
 
         componentDidMount = () => {
           const { id, image, date } = this.state;
@@ -248,7 +269,8 @@ export const FeedMaker = firebaseConnect()(
             image,
             date,
             avatar,
-            uploadingImage
+            uploadingImage,
+            lang
           } = this.state;
           if (isEmpty(profile)) return null;
           return (
@@ -306,7 +328,7 @@ export const FeedMaker = firebaseConnect()(
                       disableUnderline: true,
                       style: { fontSize: text && text.length < 50 ? 24 : null }
                     }}
-                    placeholder="What's on your mind today?"
+                    placeholder={lang.feed.placeholder}
                     fullWidth
                     onChange={e => {
                       let val = e.target.value;
@@ -337,8 +359,8 @@ export const FeedMaker = firebaseConnect()(
                       <Tooltip
                         title={
                           window.safari
-                            ? "Currently issues with image upload on Safari, sorry."
-                            : "Upload an image"
+                            ? lang.feed.uploadError
+                            : lang.feed.uploadImage
                         }
                       >
                         <div>
@@ -363,7 +385,7 @@ export const FeedMaker = firebaseConnect()(
                       classes={{ label: classes.text }}
                       onClick={() => this.setState({ image: "" })}
                     >
-                      Remove image
+                      {lang.feed.removeimage}
                     </Button>
                   ) : null}
                   <div style={{ flex: 1 }} />
@@ -372,7 +394,7 @@ export const FeedMaker = firebaseConnect()(
                       classes={{ label: classes.text }}
                       onClick={this.postFeed}
                     >
-                      Post
+                      {lang.feed.post}
                     </Button>
                   ) : null}
                 </CardActions>
@@ -506,7 +528,9 @@ export const Feed = firebaseConnect()(
             showId,
             style,
             likes,
-            comments
+            comments,
+            format,
+            reposts
           } = this.props;
           const { showComments } = this.state;
           return (
@@ -524,7 +548,12 @@ export const Feed = firebaseConnect()(
                   avatar,
                   date,
                   color,
-                  id
+                  id,
+                  likes,
+                  reposts,
+                  profile,
+                  likeThis: async () => this.likeThis(),
+                  disLikeThis: async () => this.disLikeThis()
                 }}
               />
               <FadeIn>
@@ -536,7 +565,15 @@ export const Feed = firebaseConnect()(
                     {activity ? (
                       <img
                         onClick={() =>
-                          activity ? history.push(`/show?s=${showId}`) : null
+                          activity
+                            ? format
+                              ? history.push(
+                                  `/show?${
+                                    format.includes("show") ? "s" : "m"
+                                  }=${showId}`
+                                )
+                              : history.push(`/show?s=${showId}`)
+                            : null
                         }
                         src={image}
                         alt=""
@@ -578,16 +615,18 @@ export const Feed = firebaseConnect()(
                               profile
                             ) ? null : mirUpdate ? null : noDelete ? null : user &&
                             user.id === profile.userID ? (
-                              <IconButton
-                                classes={{ label: classes.text }}
-                                onClick={
-                                  activity
-                                    ? this.deleteOwnActivity
-                                    : this.deleteOwnFeed
-                                }
-                              >
-                                <ICON.Close />
-                              </IconButton>
+                              <Tooltip title="Delete this">
+                                <IconButton
+                                  classes={{ label: classes.text }}
+                                  onClick={
+                                    activity
+                                      ? this.deleteOwnActivity
+                                      : this.deleteOwnFeed
+                                  }
+                                >
+                                  <ICON.Delete />
+                                </IconButton>
+                              </Tooltip>
                             ) : null
                           }
                         />
@@ -613,9 +652,50 @@ export const Feed = firebaseConnect()(
                       )}
                       {noActions ? null : (
                         <CardActions className={classes.cardactionsF}>
-                          <Hidden smDown>
-                            <div style={{ flex: 1 }} />
-                          </Hidden>
+                          <Tooltip
+                            title={
+                              !likes
+                                ? "Nobody likes this post"
+                                : Object.values(likes).length > 1
+                                  ? Object.values(likes).length +
+                                    " users liked this"
+                                  : Object.values(likes).length +
+                                    " user liked this"
+                            }
+                          >
+                            <div className={classes.likeContainer}>
+                              <ICON.Favorite className={classes.likeIcon} />
+                              <Typography
+                                vairant="title"
+                                className={classes.likeCount}
+                              >
+                                {!likes ? 0 : Object.values(likes).length}
+                              </Typography>
+                            </div>
+                          </Tooltip>
+                          <Tooltip
+                            style={{ display: "none" }}
+                            title={
+                              !reposts
+                                ? "Nobody has reposted this post"
+                                : Object.values(reposts).length > 1
+                                  ? Object.values(reposts).length +
+                                    " users reposted this"
+                                  : Object.values(reposts).length +
+                                    " user reposted this"
+                            }
+                          >
+                            <div className={classes.likeContainer}>
+                              <ICON.Share className={classes.likeIcon} />
+                              <Typography
+                                vairant="title"
+                                className={classes.likeCount}
+                              >
+                                {!reposts ? 0 : Object.values(reposts).length}
+                              </Typography>
+                            </div>
+                          </Tooltip>
+                          <div style={{ flex: 1 }} />
                           <Tooltip
                             title={
                               isEmpty(profile)
@@ -644,16 +724,6 @@ export const Feed = firebaseConnect()(
                               </IconButton>
                             </div>
                           </Tooltip>
-                          <Tooltip title={"Show comments"} placement="bottom">
-                            <div>
-                              <IconButton
-                                classes={{ label: classes.text }}
-                                onClick={this.showComments}
-                              >
-                                <ICON.Comment />
-                              </IconButton>
-                            </div>
-                          </Tooltip>
                           {user && user.id === profile.userID ? null : (
                             <Tooltip
                               title={
@@ -661,19 +731,30 @@ export const Feed = firebaseConnect()(
                                   ? "You need to login to repost posts"
                                   : "Repost this"
                               }
+                              style={{ display: "none" }}
                               placement="bottom"
                             >
                               <div>
                                 <IconButton
                                   disabled={isEmpty(profile) ? true : false}
                                   classes={{ label: classes.text }}
-                                  onClick={this.repostFeed}
+                                  onClick={async () => this.repostThis()}
                                 >
                                   <ICON.Share />
                                 </IconButton>
                               </div>
                             </Tooltip>
                           )}
+                          <Tooltip title={"Show"} placement="bottom">
+                            <div>
+                              <IconButton
+                                classes={{ label: classes.text }}
+                                onClick={this.showComments}
+                              >
+                                <ICON.FlipToFront />
+                              </IconButton>
+                            </div>
+                          </Tooltip>
                         </CardActions>
                       )}
                     </div>

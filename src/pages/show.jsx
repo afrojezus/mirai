@@ -818,6 +818,7 @@ class Show extends Component {
     const entity = data.type.includes("ANIME") ? "show" : "manga";
     if (
       this.props.profile.completed &&
+      this.props.profile.completed[entity] &&
       this.props.profile.completed[entity][data.id]
     ) {
       this.setState({ statusVal: "c" });
@@ -825,6 +826,7 @@ class Show extends Component {
 
     if (
       this.props.profile.dropped &&
+      this.props.profile.dropped[entity] &&
       this.props.profile.dropped[entity][data.id]
     ) {
       this.setState({ statusVal: "d" });
@@ -835,6 +837,7 @@ class Show extends Component {
       this.props.profile.episodeProgress[data.id] &&
       !(
         this.props.profile.completed &&
+        this.props.profile.completed[entity] &&
         this.props.profile.completed[entity][data.id]
       )
     ) {
@@ -1300,6 +1303,7 @@ class Show extends Component {
     const entity = data.type.includes("ANIME") ? "show" : "manga";
     if (
       this.props.profile.dropped &&
+      this.props.profile.dropped[entity] &&
       this.props.profile.dropped[entity][data.id]
     ) {
       this.props.firebase
@@ -1352,6 +1356,7 @@ class Show extends Component {
                 id: this.state.id + "C",
                 showId: this.state.id,
                 type: "COMPLETED",
+                format: entity,
                 activity: `Completed ${data.title.romaji}`,
                 bgImg:
                   this.state.data.Media.bannerImage &&
@@ -1375,6 +1380,7 @@ class Show extends Component {
     // You can't drop something you've completed so...................
     if (
       this.props.profile.completed &&
+      this.props.profile.completed[entity] &&
       this.props.profile.completed[entity][data.id]
     ) {
       return null;
@@ -1420,6 +1426,7 @@ class Show extends Component {
                 id: this.state.id + "D",
                 showId: this.state.id,
                 type: "DROPPED",
+                format: entity,
                 activity: `Dropped ${data.title.romaji}`,
                 bgImg:
                   this.state.data.Media.bannerImage &&
@@ -1469,6 +1476,7 @@ class Show extends Component {
                 id: this.state.id + "UD",
                 showId: this.state.id,
                 type: "UNDROPPED",
+                format: entity,
                 activity: `Undropped ${data.title.romaji}`,
                 bgImg:
                   this.state.data.Media.bannerImage &&
@@ -2441,6 +2449,11 @@ class Show extends Component {
                           <MenuItem
                             disabled={
                               this.props.profile.completed &&
+                              this.props.profile.completed[
+                                data.Media.type.includes("ANIME")
+                                  ? "show"
+                                  : "manga"
+                              ] &&
                               this.props.profile.completed[
                                 data.Media.type.includes("ANIME")
                                   ? "show"

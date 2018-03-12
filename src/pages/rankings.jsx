@@ -249,6 +249,9 @@ class Rankings extends Component {
     if (isEmpty(you)) {
       return null;
     }
+    if (!isEmpty(you) && !you.friends) {
+      return null;
+    }
     const db = this.props.firebase.database().ref("/users");
     try {
       return db.on("value", value => {
@@ -420,6 +423,7 @@ class Rankings extends Component {
               }}
             />
             <Tab
+              style={{ display: "none" }}
               disabled
               label={lang.explore.hCorner}
               classes={{
@@ -441,6 +445,7 @@ class Rankings extends Component {
               }}
             />
             <Tab
+              style={{ display: "none" }}
               disabled={true}
               label={lang.explore.friendsTitle}
               classes={{
