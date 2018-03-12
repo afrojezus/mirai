@@ -27,6 +27,7 @@ import {
 import { Feed } from "../components/feed";
 import Hidden from "material-ui/Hidden";
 import { scrollFix } from "./../utils/scrollFix";
+import Divider from "material-ui/Divider";
 
 // const VirtualizedSwipableViews = virtualize(SwipableViews);
 
@@ -933,10 +934,10 @@ class User extends Component {
                 <M.Grid container className={classes.container}>
                   <M.Grid item xs style={{ zIndex: 10 }}>
                     <SectionTitle title={lang.user.friends} />
-                    <M.Grid container className={classes.itemcontainer}>
-                      {data ? (
-                        data.friends ? (
-                          Object.values(data.friends).map((friend, index) => (
+                    {data ? (
+                      data.friends ? (
+                        <M.Grid container className={classes.itemcontainer}>
+                          {Object.values(data.friends).map((friend, index) => (
                             <PeopleButton
                               key={index}
                               name={{ first: friend.username }}
@@ -947,16 +948,16 @@ class User extends Component {
                               }
                               image={friend.avatar}
                             />
-                          ))
-                        ) : (
-                          <ItemContainer topPad>
-                            <M.Typography variant="body1">
-                              {`${data.username} ${lang.user.nofriends}`}
-                            </M.Typography>
-                          </ItemContainer>
-                        )
-                      ) : user.friends ? (
-                        Object.values(user.friends).map((friend, index) => (
+                          ))}
+                        </M.Grid>
+                      ) : (
+                        <M.Typography variant="body1">
+                          {`${data.username} ${lang.user.nofriends}`}
+                        </M.Typography>
+                      )
+                    ) : user.friends ? (
+                      <M.Grid container className={classes.itemcontainer}>
+                        {Object.values(user.friends).map((friend, index) => (
                           <PeopleButton
                             key={index}
                             name={{ first: friend.username }}
@@ -967,13 +968,14 @@ class User extends Component {
                             }
                             image={friend.avatar}
                           />
-                        ))
-                      ) : (
-                        <M.Typography variant="body1">
-                          {lang.user.yougotnofriends}
-                        </M.Typography>
-                      )}
-                    </M.Grid>
+                        ))}
+                      </M.Grid>
+                    ) : (
+                      <M.Typography variant="body1">
+                        {lang.user.yougotnofriends}
+                      </M.Typography>
+                    )}
+                    <Divider style={{ marginBottom: 8, marginTop: 16 }} />
                     <SectionTitle title={lang.user.activity} />
                     {data ? (
                       data.feed && !data.privateLog ? (
@@ -1606,21 +1608,149 @@ class User extends Component {
                 <Container>
                   <Column>
                     <M.Typography variant="title" className={classes.secTitle}>
-                      {lang.user.mangaList.recentlyread}
-                    </M.Typography>
-                    <M.Grid container className={classes.itemcontainer} />
-                    <M.Typography variant="title" className={classes.secTitle}>
                       {lang.user.mangaList.later}
                     </M.Typography>
-                    <M.Grid container className={classes.itemcontainer} />
+                    <M.Grid container className={classes.itemcontainer}>
+                      {data ? (
+                        data.later && data.later.manga ? (
+                          Object.values(data.later.manga)
+                            .sort((a, b) => b.date - a.date)
+                            .map(show => (
+                              <CardButton
+                                key={show.id}
+                                onClick={() =>
+                                  this.props.history.push(`/show?s=${show.id}`)
+                                }
+                                title={show.name}
+                                image={show.image}
+                                subtitle={`Added ${moment(show.date).from(
+                                  Date.now()
+                                )}`}
+                              />
+                            ))
+                        ) : (
+                          <M.Typography variant="body1">
+                            {lang.user.mangaList.lnoneUser}
+                          </M.Typography>
+                        )
+                      ) : !isEmpty(user) && user.later && user.later.manga ? (
+                        Object.values(user.later.manga)
+                          .sort((a, b) => b.date - a.date)
+                          .map(show => (
+                            <CardButton
+                              key={show.id}
+                              onClick={() =>
+                                this.props.history.push(`/show?s=${show.id}`)
+                              }
+                              title={show.name}
+                              image={show.image}
+                              subtitle={`Added ${moment(show.date).from(
+                                Date.now()
+                              )}`}
+                            />
+                          ))
+                      ) : (
+                        <M.Typography variant="body1">
+                          {lang.user.mangaList.lnone}
+                        </M.Typography>
+                      )}
+                    </M.Grid>
                     <M.Typography vairant="title" className={classes.secTitle}>
                       {lang.user.mangaList.compl}
                     </M.Typography>
-                    <M.Grid container className={classes.itemcontainer} />
+                    <M.Grid container className={classes.itemcontainer}>
+                      {data ? (
+                        data.completed && data.completed.manga ? (
+                          Object.values(data.completed.manga)
+                            .sort((a, b) => b.date - a.date)
+                            .map(show => (
+                              <CardButton
+                                key={show.showId}
+                                onClick={() =>
+                                  this.props.history.push(show.link)
+                                }
+                                title={show.name}
+                                image={show.image}
+                                subtitle={`Completed ${moment(show.date).from(
+                                  Date.now()
+                                )}`}
+                              />
+                            ))
+                        ) : (
+                          <M.Typography variant="body1">
+                            {lang.user.mangaList.cnoneUser}
+                          </M.Typography>
+                        )
+                      ) : !isEmpty(user) &&
+                      user.completed &&
+                      user.completed.manga ? (
+                        Object.values(user.completed.manga)
+                          .sort((a, b) => b.date - a.date)
+                          .map(show => (
+                            <CardButton
+                              key={show.showId}
+                              onClick={() => this.props.history.push(show.link)}
+                              title={show.name}
+                              image={show.image}
+                              subtitle={`Completed ${moment(show.date).from(
+                                Date.now()
+                              )}`}
+                            />
+                          ))
+                      ) : (
+                        <M.Typography variant="body1">
+                          {lang.user.mangaList.cnone}
+                        </M.Typography>
+                      )}
+                    </M.Grid>
                     <M.Typography vairant="title" className={classes.secTitle}>
                       {lang.user.mangaList.dropped}
                     </M.Typography>
-                    <M.Grid container className={classes.itemcontainer} />
+                    <M.Grid container className={classes.itemcontainer}>
+                      {data ? (
+                        data.dropped && data.dropped.manga ? (
+                          Object.values(data.dropped.manga)
+                            .sort((a, b) => b.date - a.date)
+                            .map(show => (
+                              <CardButton
+                                key={show.showId}
+                                onClick={() =>
+                                  this.props.history.push(show.link)
+                                }
+                                title={show.name}
+                                image={show.image}
+                                subtitle={`Dropped ${moment(show.date).from(
+                                  Date.now()
+                                )}`}
+                              />
+                            ))
+                        ) : (
+                          <M.Typography variant="body1">
+                            {lang.user.mangaList.dnoneUser}
+                          </M.Typography>
+                        )
+                      ) : !isEmpty(user) &&
+                      user.dropped &&
+                      user.dropped.manga ? (
+                        Object.values(user.dropped.manga)
+                          .sort((a, b) => b.date - a.date)
+                          .map(show => (
+                            <CardButton
+                              key={show.showId}
+                              onClick={() => this.props.history.push(show.link)}
+                              title={show.name}
+                              image={show.image}
+                              subtitle={`Dropped ${moment(show.date).from(
+                                Date.now()
+                              )}`}
+                            />
+                          ))
+                      ) : (
+                        <M.Typography variant="body1">
+                          {lang.user.mangaList.dnone}
+                        </M.Typography>
+                      )}
+                    </M.Grid>
                   </Column>
                 </Container>
               ) : null}

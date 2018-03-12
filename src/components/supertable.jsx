@@ -290,7 +290,6 @@ const SuperTable = class extends React.Component {
         ? (list.scrollLeft = this.state.currentSlide)
         : list.scroll({ left: this.state.currentSlide, behavior: "smooth" });
       if (scrollSlide === 0) {
-        console.log("Oh shit");
       }
     });
   };
@@ -312,7 +311,6 @@ const SuperTable = class extends React.Component {
         ? (list.scrollLeft = this.state.currentSlide)
         : list.scroll({ left: this.state.currentSlide, behavior: "smooth" });
       if (scrollSlide === list.scrollWidth) {
-        console.log("Oh shit");
       }
     });
   };

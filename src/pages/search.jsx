@@ -550,7 +550,7 @@ class Search extends Component {
                     variant={"display3"}
                     className={classes.feedTitle}
                   >
-                    Search
+                    {lang.search.title}
                   </M.Typography>
                 )}
               </M.Hidden>
@@ -562,8 +562,7 @@ class Search extends Component {
                       textAlign: "center"
                     }}
                   >
-                    Seems like something happened. Do you have a proxy by any
-                    chance?
+                    {lang.search.error}
                   </M.Typography>
                 </Column>
               ) : (
@@ -597,7 +596,7 @@ class Search extends Component {
                       </M.Grid>
                     </M.Grid>
                   ) : (
-                    <SectionTitle title="No anime found" lighter />
+                    <SectionTitle title={lang.search.noani} lighter />
                   )}
                   {manga && manga.length > 0 ? (
                     <M.Grid container className={classes.container}>
@@ -623,7 +622,7 @@ class Search extends Component {
                       </M.Grid>
                     </M.Grid>
                   ) : (
-                    <SectionTitle title="No manga found" lighter />
+                    <SectionTitle title={lang.search.nomang} lighter />
                   )}
                   {characters && characters.data.Page.characters.length > 0 ? (
                     <M.Grid container className={classes.container}>
@@ -631,24 +630,26 @@ class Search extends Component {
                         variant="title"
                         className={classes.secTitle}
                       >
-                        Characters
+                        {lang.search.characters}
                       </M.Typography>
                       <M.Grid container className={classes.itemcontainer}>
-                        {characters
-                          ? characters.data.Page.characters.map(char => (
-                              <PeopleButton
-                                key={char.id}
-                                name={{
-                                  first: char.name.first,
-                                  last: char.name.last
-                                }}
-                                image={char.image.large}
-                                onClick={() =>
-                                  this.props.history.push(`/fig?c=${char.id}`)
-                                }
-                              />
-                            ))
-                          : null}
+                        {characters ? (
+                          characters.data.Page.characters.map(char => (
+                            <PeopleButton
+                              key={char.id}
+                              name={{
+                                first: char.name.first,
+                                last: char.name.last
+                              }}
+                              image={char.image.large}
+                              onClick={() =>
+                                this.props.history.push(`/fig?c=${char.id}`)
+                              }
+                            />
+                          ))
+                        ) : (
+                          <SectionTitle title={lang.search.nochar} lighter />
+                        )}
                       </M.Grid>
                     </M.Grid>
                   ) : null}
@@ -658,7 +659,7 @@ class Search extends Component {
                         variant="title"
                         className={classes.secTitle}
                       >
-                        Staff & Actors
+                        {lang.search.stafftitle}
                       </M.Typography>
                       <M.Grid container className={classes.itemcontainer}>
                         {staff
@@ -679,7 +680,7 @@ class Search extends Component {
                       </M.Grid>
                     </M.Grid>
                   ) : (
-                    <SectionTitle title="No staff found" lighter />
+                    <SectionTitle title={lang.search.nostaff} lighter />
                   )}
                   {studios && studios.data.Page.studios.length > 0 ? (
                     <M.Grid container className={classes.container}>
@@ -687,7 +688,7 @@ class Search extends Component {
                         variant="title"
                         className={classes.secTitle}
                       >
-                        Studios
+                        {lang.search.studiotitle}
                       </M.Typography>
                       <M.Grid container className={classes.itemcontainer}>
                         {studios
@@ -704,7 +705,7 @@ class Search extends Component {
                       </M.Grid>
                     </M.Grid>
                   ) : (
-                    <SectionTitle title="No studios found" lighter />
+                    <SectionTitle title={lang.search.nostudio} lighter />
                   )}
                   {users && users.length > 0 ? (
                     <M.Grid container className={classes.container}>
@@ -712,7 +713,7 @@ class Search extends Component {
                         variant="title"
                         className={classes.secTitle}
                       >
-                        Users
+                        {lang.search.userstitle}
                       </M.Typography>
                       <M.Grid container className={classes.itemcontainer}>
                         {users
@@ -739,7 +740,7 @@ class Search extends Component {
                       </M.Grid>
                     </M.Grid>
                   ) : (
-                    <SectionTitle title="No users found" lighter />
+                    <SectionTitle title={lang.search.nousers} lighter />
                   )}
                 </Column>
               )}

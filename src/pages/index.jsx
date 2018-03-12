@@ -134,7 +134,7 @@ class Index extends Component {
     loading: true,
     log: "Please wait",
     error: false,
-    info: "ECODE: 1. Mirai couldn't load. Check console for more information."
+    info: "Mirai crashed. Check console for more information."
   };
 
   componentWillMount = () => {

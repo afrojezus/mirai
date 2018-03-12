@@ -99,22 +99,6 @@ class Tos extends Component {
               className={this.props.classes.headline}
               variant="headline"
             >
-              Mirai should not be used in conjunction with any form of threat or
-              violence.
-            </Typography>
-            <Typography
-              variant="body1"
-              className={this.props.classes.paragraph}
-            >
-              Mirai should not be seen or used as a means of research upon
-              creation of recreational harmful matter, nuclear weaponry or
-              political violence.
-            </Typography>
-            <Divider className={this.props.classes.divider} />
-            <Typography
-              className={this.props.classes.headline}
-              variant="headline"
-            >
               Mirai is an open platform where everyone, regardless of sex,
               gender, race, ethnicity, are welcome.
             </Typography>
@@ -122,8 +106,8 @@ class Tos extends Component {
               variant="body1"
               className={this.props.classes.paragraph}
             >
-              Any form of the opposite mentioned above will be observed, and the
-              users behind will be restricted to further usage of the platform.
+              Any form of the discrimination will be observed, and the users
+              behind will be restricted to further usage of the platform.
             </Typography>
           </div>
         </Container>

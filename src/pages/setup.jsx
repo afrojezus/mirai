@@ -136,7 +136,7 @@ class Setup extends Component {
             role: "Normal",
             isDeveloper: false,
             noMine: true,
-            willLog: false
+            willLog: true
           })
           .then(() => {
             history.push("/wizard");

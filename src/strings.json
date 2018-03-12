@@ -221,7 +221,8 @@
         "title": "Your status on this anime/manga",
         "finished": "Completed",
         "dropped": "Dropped",
-        "watching": "Watching"
+        "watching": "Watching",
+        "reading": "Reading"
       },
       "airingstart": "Airing start",
       "airingended": "Airing ended",
@@ -310,6 +311,21 @@
       "post": "Publish",
       "uploadImage": "Upload an image",
       "uploadError": "Currently issues with upload on Safari, sorry."
+    },
+    "search": {
+      "title": "Search",
+      "error":
+        "An error occured. Do you have anything blocking the connection?",
+      "nousers": "No users found",
+      "userstitle": "Users",
+      "nostudio": "No studios found",
+      "studiotitle": "Studios",
+      "stafftitle": "Staff & Actors",
+      "nostaff": "No staff & actors found",
+      "characters": "Characters",
+      "nochar": "No characters found",
+      "nomang": "No manga found",
+      "noani": "No anime found"
     }
   },
   "nbno": {
@@ -542,7 +558,8 @@
         "title": "Din status på denne animen/mangaen",
         "finished": "Fullført",
         "dropped": "Droppet",
-        "watching": "Ser på"
+        "watching": "Ser på",
+        "reading": "Leser"
       },
       "airingstart": "Kringkasting start",
       "airingended": "Kringkasting slutt",
@@ -566,6 +583,20 @@
       "hideChapters": "Skjul kapitler",
       "unavaliable":
         "Beklageligvis er ikke denne animen/mangaen tilgjengelig på Mirai, rapporter utilgjengeligheten til hovedutvikleren hvis du vil at den skal dukke opp tilgjengelig i nær fremtid."
+    },
+    "search": {
+      "title": "Søk",
+      "error": "En feil skjedde. Kanskje noe blokkerer nettverket?",
+      "nousers": "Ingen brukere funnet",
+      "userstitle": "Brukere",
+      "nostudio": "Ingen studioer funnet",
+      "studiotitle": "Studioer",
+      "stafftitle": "Medvirkende og skuespillere",
+      "nostaff": "Ingen medvirkende eller skuespillere funnet",
+      "characters": "Karakterer",
+      "nochar": "Ingen karakterer funnet",
+      "nomang": "Ingen mangaer funnet",
+      "noani": "Ingen animer funnet"
     },
     "user": {
       "nouserfound": "For å se andre sine brukere, må du registrere deg",
@@ -725,6 +756,21 @@
       "onlyfeeds": "投稿のみ",
       "onlyactivities": "アクティビティのみ",
       "random": "ランダム"
+    },
+    "search": {
+      "title": "Search",
+      "error":
+        "An error occured. Do you have anything blocking the connection?",
+      "nousers": "No users found",
+      "userstitle": "Users",
+      "nostudio": "No studios found",
+      "studiotitle": "Studios",
+      "stafftitle": "Staff & Actors",
+      "nostaff": "No staff & actors found",
+      "characters": "Characters",
+      "nochar": "No characters found",
+      "nomang": "No manga found",
+      "noani": "No anime found"
     },
     "later": {
       "later": "後で",

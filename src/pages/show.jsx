@@ -741,7 +741,7 @@ class Show extends Component {
               }
             } else throw new Error("Metadata error");
           } catch (error) {
-            this.setState({ error }, () =>
+            this.setState({ error: error.error }, () =>
               setTimeout(() => this.setState({ error: "" }), 3000)
             );
           }
@@ -1288,11 +1288,83 @@ class Show extends Component {
 
   changerVal = e => this.setState({ rVal: e.target.value });
 
-  rSendMReport = () => {};
+  rSendMReport = async () => {
+    if (isEmpty(this.props.profile)) {
+      if (this.state.userlessREmail !== "")
+        return await this.props.firebase
+          .database()
+          .ref("/reports")
+          .child("m")
+          .child(this.state.id)
+          .update({
+            reporter: this.state.userlessREmail,
+            info: "Missing content"
+          });
+      else return null;
+    } else {
+      return await this.props.firebase
+        .database()
+        .ref("/reports")
+        .child("m")
+        .child(this.state.id)
+        .update({
+          reporter: this.props.profile.userID,
+          info: "Missing content"
+        });
+    }
+  };
 
-  rSendWReport = () => {};
+  rSendWReport = async () => {
+    if (isEmpty(this.props.profile)) {
+      if (this.state.userlessREmail !== "")
+        return await this.props.firebase
+          .database()
+          .ref("/reports")
+          .child("w")
+          .child(this.state.id)
+          .update({
+            reporter: this.state.userlessREmail,
+            info: "Wrong info"
+          });
+      else return null;
+    } else {
+      return await this.props.firebase
+        .database()
+        .ref("/reports")
+        .child("w")
+        .child(this.state.id)
+        .update({
+          reporter: this.props.profile.userID,
+          info: "Wrong info"
+        });
+    }
+  };
 
-  rSendDReport = () => {};
+  rSendDReport = async () => {
+    if (isEmpty(this.props.profile)) {
+      if (this.state.userlessREmail !== "")
+        return await this.props.firebase
+          .database()
+          .ref("/reports")
+          .child("d")
+          .child(this.state.id)
+          .update({
+            reporter: this.state.userlessREmail,
+            info: "Copyright issues"
+          });
+      else return null;
+    } else {
+      return await this.props.firebase
+        .database()
+        .ref("/reports")
+        .child("d")
+        .child(this.state.id)
+        .update({
+          reporter: this.props.profile.userID,
+          info: "Copyright issues"
+        });
+    }
+  };
 
   showEpisodes = e => this.setState({ showEpisodes: !this.state.showEpisodes });
 
@@ -1619,14 +1691,22 @@ class Show extends Component {
                       mir && mir.play && mir.play.meta.id === data.Media.id
                         ? null
                         : data.Media.type.includes("MANGA")
-                          ? this.play
+                          ? null
                           : data.Media.status.includes("NOT_YET_RELEASED") ||
                             !eps
                             ? null
                             : this.play
                     }
-                    onMouseOver={e => (e.currentTarget.style.background = hue)}
-                    onKeyDown={this.handleKeyDown}
+                    style={{
+                      pointerEvents: data.Media.type.includes("MANGA")
+                        ? "none"
+                        : null
+                    }}
+                    onMouseOver={e =>
+                      data.Media.type.includes("MANGA")
+                        ? null
+                        : (e.currentTarget.style.background = hue)
+                    }
                   >
                     <img
                       src={data.Media.coverImage.large}
@@ -1650,15 +1730,7 @@ class Show extends Component {
                         lang.show.playing
                       ) : data.Media.status.includes("NOT_YET_RELEASED") ? (
                         "TBA"
-                      ) : data.Media.type.includes("MANGA") ? (
-                        <Button
-                          variant={"fab"}
-                          style={{ background: hue }}
-                          className={classes.playArtworkButtonContainer}
-                        >
-                          <Icon.Book className={classes.playArtworkButton} />
-                        </Button>
-                      ) : eps ? (
+                      ) : data.Media.type.includes("MANGA") ? null : eps ? (
                         <Button
                           variant={"fab"}
                           style={{ background: hue }}
@@ -1869,7 +1941,7 @@ class Show extends Component {
                         <Paper
                           key={index}
                           className={classes.commandoTextBoxRow}
-                          style={{ flex: 1 }}
+                          style={{ flex: 1, maxWidth: 200 }}
                         >
                           <Typography
                             variant="title"
@@ -2248,14 +2320,16 @@ class Show extends Component {
                       </IconButton>
                     </Tooltip>
                   ) : null}
-                  <IconButton
-                    aria-owns={openMenu ? "more-menu" : null}
-                    aria-haspopup="true"
-                    onClick={e => this.setState({ menuEl: e.currentTarget })}
-                    color="default"
-                  >
-                    <Icon.MoreVert />
-                  </IconButton>
+                  {isEmpty(user) ? null : (
+                    <IconButton
+                      aria-owns={openMenu ? "more-menu" : null}
+                      aria-haspopup="true"
+                      onClick={e => this.setState({ menuEl: e.currentTarget })}
+                      color="default"
+                    >
+                      <Icon.MoreVert />
+                    </IconButton>
+                  )}
                   {menu}
                   <Dialogue
                     aria-labelledby="report-modal"
@@ -2441,7 +2515,9 @@ class Show extends Component {
                             }
                             value="w"
                           >
-                            {lang.show.status.watching}
+                            {data.Media.type.includes("MANGA")
+                              ? lang.show.status.reading
+                              : lang.show.status.watching}
                           </MenuItem>
                           <MenuItem value="c">
                             {lang.show.status.finished}

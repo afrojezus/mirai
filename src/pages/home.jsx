@@ -839,8 +839,8 @@ class Home extends Component {
                     filterFeedVal === 0
                       ? o
                       : filterFeedVal === 1
-                        ? !o.type
-                        : filterFeedVal === 2 ? o.type : null
+                        ? o && !o.type
+                        : filterFeedVal === 2 ? o && o.type : null
                 ).length > 0 ? (
                   feeds
                     .filter(
@@ -848,8 +848,8 @@ class Home extends Component {
                         filterFeedVal === 0
                           ? o
                           : filterFeedVal === 1
-                            ? !o.type
-                            : filterFeedVal === 2 ? o.type : null
+                            ? o && !o.type
+                            : filterFeedVal === 2 ? o && o.type : null
                     )
                     .map((feed, index) => {
                       if (feed.user && feed.user.username === undefined)

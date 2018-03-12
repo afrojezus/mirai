@@ -11,7 +11,7 @@ import {
 import firebase from "firebase";
 import mirReducer from "./modules";
 import { MIR_TWIST_LOAD } from "./constants";
-import { fireconfig } from "./utils/config.json";
+import { fireconfig, FDOconfig } from "./utils/config.json";
 import Twist from "./twist-api";
 
 const rrfConfig = {
@@ -36,7 +36,7 @@ const rrfConfig = {
   resetBeforeLogin: false
 };
 
-firebase.initializeApp(fireconfig);
+firebase.initializeApp(FDOconfig);
 
 export const history = createHistory();
 

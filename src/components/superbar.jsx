@@ -831,7 +831,7 @@ class Superbar extends Component {
     const metaShit = (
       <div className={classes.metashit}>
         <Typography className={classes.footerCopy} variant="headline">
-          Mirai (Depth study version)
+          Mirai 1.0
           <br />
           {onlineUsers ? Object.values(onlineUsers).length : 0} users online
           <br />
@@ -839,11 +839,12 @@ class Superbar extends Component {
             ? `${Object.keys(this.props.mir.twist).length -
                 1} anime in database`
             : null}
-          <br />2018 18-MED-15
+          <br />18-MED-15 Oslo By Steinerskole <br />15. March 2018
         </Typography>
         <div className={classes.quicklinks}>
           <IconButton
             disabled
+            style={{ display: "none" }}
             onClick={() => {
               this.toggleDrawer();
               window.open("https://discord.gg/gt69fbe");
@@ -857,6 +858,7 @@ class Superbar extends Component {
             </svg>
           </IconButton>
           <IconButton
+            style={{ display: "none" }}
             disabled
             onClick={() => {
               this.toggleDrawer();
@@ -1459,7 +1461,7 @@ class Superbar extends Component {
               PopoverClasses={{ paper: classes.menuPadding }}
             >
               <div
-                style={{ outline: "none", maxHeight: "inherit", maxWidth: 250 }}
+                style={{ outline: "none", maxHeight: "inherit", maxWidth: 350 }}
                 className={classes.profileCard}
               >
                 <MenuItem
@@ -1506,7 +1508,7 @@ class Superbar extends Component {
                       🇳🇴
                     </span>
                   </Avatar>
-                  Norsk Bokmål
+                  Norsk Bokmål (Semi-experimental)
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
