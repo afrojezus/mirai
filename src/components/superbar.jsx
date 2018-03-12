@@ -755,7 +755,7 @@ class Superbar extends Component {
             ? `${Object.keys(this.props.mir.twist).length -
                 1} anime in database`
             : null}
-          <br />2018 a mysterious developer
+          <br />2018 18-MED-15
         </Typography>
         <div className={classes.quicklinks}>
           <IconButton
