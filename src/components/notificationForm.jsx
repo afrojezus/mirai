@@ -26,7 +26,6 @@ export const types = {
 const style = theme => ({
   root: {
     width: 300,
-    maxHeight: 400,
     boxShadow: "none",
     padding: 0
   },

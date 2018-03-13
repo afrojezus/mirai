@@ -838,9 +838,6 @@ class Fig extends Component {
                       {fav ? <Icon.Favorite /> : <Icon.FavoriteBorder />}
                     </M.IconButton>
                   ) : null}
-                  <M.IconButton color="default">
-                    <Icon.MoreVert />
-                  </M.IconButton>
                 </CommandoBar>
                 <Container>
                   {data.Staff &&
@@ -875,7 +872,9 @@ class Fig extends Component {
                   {data.Staff &&
                   data.Staff.staffMedia &&
                   data.Staff.staffMedia.edges &&
-                  data.Staff.staffMedia.edges.length > 0 ? (
+                  this.props.mir.twist &&
+                  TwistFilter(data.Staff.staffMedia.edges, this.props.mir.twist)
+                    .length > 0 ? (
                     <M.Grid item xs style={{ zIndex: 10 }}>
                       <M.Typography
                         variant="title"

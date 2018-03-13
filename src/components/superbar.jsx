@@ -839,7 +839,7 @@ class Superbar extends Component {
             ? `${Object.keys(this.props.mir.twist).length -
                 1} anime in database`
             : null}
-          <br />18-MED-15 Oslo By Steinerskole <br />15. March 2018
+          <br />18-MED-15 Oslo By Steinerskole <br />14. March 2018
         </Typography>
         <div className={classes.quicklinks}>
           <IconButton
@@ -1359,43 +1359,6 @@ class Superbar extends Component {
                       </FormControl>
                     </form>
                     <Divider /> */}
-                  {isEmpty(this.props.profile) ? null : this.props.profile
-                    .role === "Normal" ? null : this.props.profile.role ===
-                    "dev" || "admin" ? (
-                    <List
-                      subheader={
-                        <ListSubheader>
-                          {lang.superbar.usermenu.developer}
-                        </ListSubheader>
-                      }
-                    >
-                      <ListItem
-                        button
-                        onClick={() => {
-                          this.handleRequestClose();
-                          this.props.history.push("/admin/db");
-                        }}
-                      >
-                        <ListItemText
-                          primary={lang.superbar.usermenu.developerDb}
-                        />
-                      </ListItem>
-                      {this.props.profile.isDeveloper ? (
-                        <ListItem
-                          button
-                          onClick={() => {
-                            this.handleRequestClose();
-                            this.props.history.push("/dev/player");
-                          }}
-                        >
-                          <ListItemText
-                            primary={lang.superbar.usermenu.developerMedia}
-                          />
-                        </ListItem>
-                      ) : null}
-                      <Divider />
-                    </List>
-                  ) : null}
                   <Hidden smDown>{menuList}</Hidden>
                   {user ? (
                     <List>

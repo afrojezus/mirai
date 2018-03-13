@@ -43,8 +43,10 @@ import Grid from "material-ui/Grid/Grid";
 import { PeopleButton } from "./cardButton";
 import moment from "moment";
 import { Dialogue } from "./layouts";
+import strings from "../strings.json";
 
 import Avatar from "material-ui/Avatar";
+import checklang from "../checklang";
 
 const style = theme => ({
   root: {
@@ -322,7 +324,8 @@ class MirStreamer extends Component {
     hosterPlayTime: "",
     date: "",
     alphaMsg: true,
-    id: 0
+    id: 0,
+    lang: strings.enus
   };
 
   componentWillMount = async () => {
@@ -330,6 +333,8 @@ class MirStreamer extends Component {
     const playerUseTorrent = await localForage.getItem(
       "player-setting-torrent"
     );
+
+    checklang(this);
 
     if (window.mobilecheck()) this.setState({ native: true });
 
@@ -575,18 +580,26 @@ class MirStreamer extends Component {
     if (!this.state.seeking)
       this.setState(state, async () => {
         this.setState({
-          videoQuality: this.player.getInternalPlayer().videoHeight,
+          videoQuality: this.player
+            ? this.player.getInternalPlayer().videoHeight
+            : null,
           recentlyWatched: Date.now()
         });
-        switch (this.player.getInternalPlayer().networkState) {
-          case 1:
-            this.setState({ buffering: false });
-            break;
-          case 2:
-            this.setState({ buffering: false });
-            break;
-          default:
-            break;
+        if (
+          this.player !== null &&
+          this.player.getInternalPlayer() &&
+          this.player.getInternalPlayer().networkState
+        ) {
+          switch (this.player.getInternalPlayer().networkState) {
+            case 1:
+              this.setState({ buffering: false });
+              break;
+            case 2:
+              this.setState({ buffering: false });
+              break;
+            default:
+              break;
+          }
         }
 
         if (this.state.resume) {
@@ -827,7 +840,8 @@ class MirStreamer extends Component {
       hoster,
       hosterAva,
       date,
-      alphaMsg
+      alphaMsg,
+      lang
     } = this.state;
     const menu = Boolean(menuEl);
     const volumeMenu = Boolean(volEl);
@@ -845,7 +859,7 @@ class MirStreamer extends Component {
         <div>
           <Dialogue
             open={alphaMsg}
-            title={"Welcome to livestreaming"}
+            title={lang.stream.title}
             actions={"ok"}
             onClose={() =>
               this.setState({ alphaMsg: false }, () =>
@@ -856,10 +870,7 @@ class MirStreamer extends Component {
               )
             }
           >
-            <Typography variant="body1">
-              Mirai sharestreaming isn't fully optimal yet, but should run
-              almost issue-less.
-            </Typography>
+            <Typography variant="body1">{lang.stream.warn}</Typography>
           </Dialogue>
           <CircularProgress
             className={classes.loading}
@@ -877,14 +888,14 @@ class MirStreamer extends Component {
             <Icon.ArrowBack />
           </IconButton>
           <Typography variant={"title"}>
-            {king ? "Your sharestream" : `${hoster}s sharestream`}
+            {king ? lang.stream.you : hoster + lang.stream.them}
           </Typography>
           <div style={{ flex: 1 }} />
           <Typography variant="body1">
             {users
               ? Object.values(users).length > 1
-                ? Object.values(users).length + " users watching"
-                : Object.values(users).length + " user watching"
+                ? Object.values(users).length + lang.stream.users
+                : Object.values(users).length + lang.stream.user
               : null}
           </Typography>
         </Toolbar>
@@ -984,25 +995,31 @@ class MirStreamer extends Component {
               />
             </CardContent>
             <CardActions className={classes.controlpanelActions}>
-              <IconButton
-                disabled={!!(loaded === 0 || !source)}
-                onClick={this.playPause}
-              >
-                {playing ? (
-                  <Icon.Pause />
-                ) : played === 1 ? (
-                  <Icon.Replay />
-                ) : (
-                  <Icon.PlayArrow />
-                )}
-              </IconButton>
-              <Tooltip title="Forward to hosters playtime">
-                <IconButton
-                  disabled={king ? true : loaded === 0}
-                  onClick={this.skipToHostersTime}
-                >
-                  <Icon.FastForward />
-                </IconButton>
+              <Tooltip title={playing ? lang.watch.pause : lang.watch.play}>
+                <div>
+                  <IconButton
+                    disabled={!!(loaded === 0 || !source)}
+                    onClick={this.playPause}
+                  >
+                    {playing ? (
+                      <Icon.Pause />
+                    ) : played === 1 ? (
+                      <Icon.Replay />
+                    ) : (
+                      <Icon.PlayArrow />
+                    )}
+                  </IconButton>
+                </div>
+              </Tooltip>
+              <Tooltip title={lang.watch.streamskip}>
+                <div>
+                  <IconButton
+                    disabled={king ? true : loaded === 0}
+                    onClick={this.skipToHostersTime}
+                  >
+                    <Icon.FastForward />
+                  </IconButton>
+                </div>
               </Tooltip>
               <Typography
                 variant="title"
@@ -1011,7 +1028,7 @@ class MirStreamer extends Component {
                 {status} {played > 0 && source ? ` Episode ${ep}` : null}
               </Typography>
               <div style={{ flex: 1 }} />
-              <Tooltip title={king ? "You" : hoster}>
+              <Tooltip title={king ? lang.watch.you : hoster}>
                 <Avatar
                   src={king ? this.props.profile.avatar : hosterAva}
                   style={{ border: "2px solid", borderColor: yellow.A200 }}
@@ -1195,21 +1212,31 @@ class MirStreamer extends Component {
                   onChange={this.setVolume}
                 />
               </Menu>
-              <IconButton onClick={this.handleFullscreen}>
-                {fullscreen ? <Icon.FullscreenExit /> : <Icon.Fullscreen />}
-              </IconButton>
-              <div>
-                <IconButton
-                  disabled={
-                    !king ? true : eps.length < 1 ? true : !(eps.length > 0)
-                  }
-                  aria-owns={menu ? "ep-menu" : null}
-                  aria-haspopup="true"
-                  onClick={e => this.setState({ menuEl: e.currentTarget })}
-                  color="default"
-                >
-                  <Icon.ViewList />
+              <Tooltip
+                title={
+                  fullscreen ? lang.watch.fullscreenExit : lang.watch.fullscreen
+                }
+              >
+                <IconButton onClick={this.handleFullscreen}>
+                  {fullscreen ? <Icon.FullscreenExit /> : <Icon.Fullscreen />}
                 </IconButton>
+              </Tooltip>
+              <div>
+                <Tooltip title={lang.watch.showEpisodes} disableTriggerFocus>
+                  <div>
+                    <IconButton
+                      disabled={
+                        !king ? true : eps.length < 1 ? true : !(eps.length > 0)
+                      }
+                      aria-owns={menu ? "ep-menu" : null}
+                      aria-haspopup="true"
+                      onClick={e => this.setState({ menuEl: e.currentTarget })}
+                      color="default"
+                    >
+                      <Icon.ViewList />
+                    </IconButton>
+                  </div>
+                </Tooltip>
                 <Menu
                   id="ep-menu"
                   anchorEl={menuEl}
@@ -1244,7 +1271,7 @@ class MirStreamer extends Component {
                   <Card style={{ background: grey[800] }}>
                     <CardHeader
                       style={{ background: grey[900] }}
-                      title="Episodes"
+                      title={lang.watch.episodes}
                       classes={{
                         action: classes.marginAuto,
                         title: classes.secTitleText

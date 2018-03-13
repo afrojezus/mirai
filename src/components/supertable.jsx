@@ -746,7 +746,7 @@ const SuperTable = class extends React.Component {
                           }`}`
                         : null}
                     </Typography>
-                    <Dotdotdot clamp={2} className={classes.dotdot}>
+                    <Dotdotdot clamp={3} className={classes.dotdot}>
                       <Typography
                         variant="display2"
                         className={classes.bigCardTitle}
@@ -827,7 +827,7 @@ const SuperTable = class extends React.Component {
                           }`}`
                         : null}
                     </Typography>
-                    <Dotdotdot clamp={2} className={classes.dotdot}>
+                    <Dotdotdot clamp={3} className={classes.dotdot}>
                       <Typography
                         variant="display2"
                         className={classes.bigCardTitle}
@@ -941,7 +941,7 @@ const SuperTable = class extends React.Component {
                             }`}`
                           : null}
                     </Typography>
-                    <Dotdotdot clamp={2} className={classes.dotdot}>
+                    <Dotdotdot clamp={3} className={classes.dotdot}>
                       <Typography
                         variant="display2"
                         className={classes.bigCardTitle}

@@ -42,6 +42,8 @@ import hsfetcher from "../torrent";
 import { getState, loadEp, loadFile } from "../utils/mirfetch";
 import { MIR_PLAY_SHOW } from "../constants";
 import { guid } from "../utils/uuid";
+import strings from "../strings.json";
+import checklang from "../checklang";
 
 const style = theme => ({
   root: {
@@ -310,7 +312,8 @@ class MirPlayer extends Component {
     quality: 480,
     torrentFile: null,
     quaEl: null,
-    native: false
+    native: false,
+    lang: strings.enus
   };
 
   componentWillMount = async () => {
@@ -318,6 +321,7 @@ class MirPlayer extends Component {
     const playerUseTorrent = await localForage.getItem(
       "player-setting-torrent"
     );
+    checklang(this);
 
     if (window.mobilecheck()) this.setState({ native: true });
 
@@ -353,6 +357,7 @@ class MirPlayer extends Component {
 
     if (
       this.props.profile.completed &&
+      this.props.profile.completed.show &&
       this.props.profile.completed.show[this.state.showId]
     ) {
       if (
@@ -460,7 +465,11 @@ class MirPlayer extends Component {
             status: `Watching ${this.state.title} Episode ${this.state.ep}`
           });
         }
-        if (this.player !== null) {
+        if (
+          this.player !== null &&
+          this.player.getInternalPlayer() &&
+          this.player.getInternalPlayer().networkState
+        ) {
           switch (this.player.getInternalPlayer().networkState) {
             case 1:
               this.setState({ buffering: false });
@@ -785,7 +794,8 @@ class MirPlayer extends Component {
       torrent,
       quaEl,
       quality,
-      native
+      native,
+      lang
     } = this.state;
     const menu = Boolean(menuEl);
     const volumeMenu = Boolean(volEl);
@@ -990,18 +1000,22 @@ class MirPlayer extends Component {
               />
             </CardContent>
             <CardActions className={classes.controlpanelActions}>
-              <IconButton
-                disabled={!!(loaded === 0 || !source)}
-                onClick={this.playPause}
-              >
-                {playing ? (
-                  <Icon.Pause />
-                ) : played === 1 ? (
-                  <Icon.Replay />
-                ) : (
-                  <Icon.PlayArrow />
-                )}
-              </IconButton>
+              <Tooltip title={playing ? lang.watch.pause : lang.watch.play}>
+                <div>
+                  <IconButton
+                    disabled={!!(loaded === 0 || !source)}
+                    onClick={this.playPause}
+                  >
+                    {playing ? (
+                      <Icon.Pause />
+                    ) : played === 1 ? (
+                      <Icon.Replay />
+                    ) : (
+                      <Icon.PlayArrow />
+                    )}
+                  </IconButton>
+                </div>
+              </Tooltip>
               <Typography
                 variant="title"
                 className={!source ? classes.left : null}
@@ -1009,16 +1023,6 @@ class MirPlayer extends Component {
                 {status} {played > 0 && source ? ` Episode ${ep}` : null}
               </Typography>
               <div style={{ flex: 1 }} />
-              {willLoadNextEp ? (
-                <div className={classes.nextWrapper}>
-                  <Button
-                    onClick={this.skipToNextEp}
-                    className={classes.nextButton}
-                  >
-                    Loading next episode in 5 seconds...
-                  </Button>
-                </div>
-              ) : null}
               <IconButton
                 disabled={!torrent}
                 aria-owns={qualityMenu ? "quality-menu" : null}
@@ -1188,32 +1192,50 @@ class MirPlayer extends Component {
                   onChange={this.setVolume}
                 />
               </Menu>
-              <IconButton
-                disabled={
-                  loaded === 0
-                    ? eps.length > 0 ? eps.length < ep : true
-                    : false
+              <Tooltip title={lang.watch.skipToNextEp}>
+                <div>
+                  <IconButton
+                    disabled={
+                      loaded === 0
+                        ? eps.length > 0 ? eps.length < ep : true
+                        : false
+                    }
+                    onClick={this.skipToNextEp}
+                  >
+                    <Icon.SkipNext />
+                  </IconButton>
+                </div>
+              </Tooltip>
+              <Tooltip title={lang.watch.skipTo30sec}>
+                <div>
+                  <IconButton disabled={loaded === 0} onClick={this.skip30Sec}>
+                    <Icon.Forward30 />
+                  </IconButton>
+                </div>
+              </Tooltip>
+              <Tooltip
+                title={
+                  fullscreen ? lang.watch.fullscreenExit : lang.watch.fullscreen
                 }
-                onClick={this.skipToNextEp}
               >
-                <Icon.SkipNext />
-              </IconButton>
-              <IconButton disabled={loaded === 0} onClick={this.skip30Sec}>
-                <Icon.Forward30 />
-              </IconButton>
-              <IconButton onClick={this.handleFullscreen}>
-                {fullscreen ? <Icon.FullscreenExit /> : <Icon.Fullscreen />}
-              </IconButton>
-              <div>
-                <IconButton
-                  disabled={eps.length < 1 ? true : !(eps.length > 0)}
-                  aria-owns={menu ? "ep-menu" : null}
-                  aria-haspopup="true"
-                  onClick={e => this.setState({ menuEl: e.currentTarget })}
-                  color="default"
-                >
-                  <Icon.ViewList />
+                <IconButton onClick={this.handleFullscreen}>
+                  {fullscreen ? <Icon.FullscreenExit /> : <Icon.Fullscreen />}
                 </IconButton>
+              </Tooltip>
+              <div>
+                <Tooltip title={lang.watch.showEpisodes} disableTriggerFocus>
+                  <div>
+                    <IconButton
+                      disabled={eps.length < 1 ? true : !(eps.length > 0)}
+                      aria-owns={menu ? "ep-menu" : null}
+                      aria-haspopup="true"
+                      onClick={e => this.setState({ menuEl: e.currentTarget })}
+                      color="default"
+                    >
+                      <Icon.ViewList />
+                    </IconButton>
+                  </div>
+                </Tooltip>
                 <Menu
                   id="ep-menu"
                   anchorEl={menuEl}
@@ -1248,7 +1270,7 @@ class MirPlayer extends Component {
                   <Card style={{ background: grey[800] }}>
                     <CardHeader
                       style={{ background: grey[900] }}
-                      title="Episodes"
+                      title={lang.watch.episodes}
                       classes={{
                         action: classes.marginAuto,
                         title: classes.secTitleText

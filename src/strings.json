@@ -329,9 +329,42 @@
       "nochar": "No characters found",
       "nomang": "No manga found",
       "noani": "No anime found"
+    },
+    "stream": {
+      "title": "Welcome to Sharestreaming!",
+      "warn":
+        "Sharestreaming isn't fully optimal, but should run almost issue-less.",
+      "them": " s Sharestream",
+      "you": "Your Sharestream",
+      "users": " users watching",
+      "user": " user watching"
+    },
+    "watch": {
+      "episodes": "Episodes",
+      "skipTo30sec": "Skip 30 seconds forward",
+      "skipToNextEp": "Skip to the next episode",
+      "you": "You",
+      "streamskip": "Forward to hosters playtime",
+      "fullscreen": "Fullscreen",
+      "fullscreenExit": "Exit fullscreen",
+      "showEpisodes": "Show episodes",
+      "pause": "Pause",
+      "play": "Play"
     }
   },
   "nbno": {
+    "watch": {
+      "episodes": "Episoder",
+      "skipTo30sec": "Spol 30 sekunder videre",
+      "skipToNextEp": "Gå til neste episode",
+      "you": "Du",
+      "streamskip": "Gå til lederens nåværende tidspunkt",
+      "fullscreen": "Fullskjerm",
+      "fullscreenExit": "Exit fullskjerm",
+      "showEpisodes": "Vis episoder",
+      "pause": "Pause",
+      "play": "Spill av"
+    },
     "superbar": {
       "home": "Hjem",
       "feeds": "Status",
@@ -366,6 +399,14 @@
       },
       "user": "Bruker",
       "search": "Søk"
+    },
+    "stream": {
+      "title": "Velkommen til delestrømming",
+      "warn": "Delestrømming er ikke helt feilfri, men burde fungere greit",
+      "them": "  sin delestream",
+      "you": "Din delestream",
+      "users": " brukere ser på",
+      "user": " bruker ser på"
     },
     "live": {
       "streams": "Streamer",
@@ -664,6 +705,18 @@
     }
   },
   "jp": {
+    "watch": {
+      "episodes": "Episodes",
+      "skipTo30sec": "Skip 30 seconds forward",
+      "skipToNextEp": "Skip to the next episode",
+      "fullscreen": "Fullscreen",
+      "fullscreenExit": "Exit fullscreen",
+      "you": "You",
+      "streamskip": "Forward to hosters playtime",
+      "showEpisodes": "Show episodes",
+      "pause": "Pause",
+      "play": "Play"
+    },
     "superbar": {
       "home": "自宅",
       "feeds": "フィード",
@@ -982,6 +1035,15 @@
         "dnoneUser": "De har ikke droppet en manga enda",
         "dnone": "Du har ikke droppet en manga enda"
       }
+    },
+    "stream": {
+      "title": "Welcome to Sharestreaming!",
+      "warn":
+        "Sharestreaming isn't fully optimal, but should run almost issue-less.",
+      "them": " s Sharestream",
+      "you": "Your Sharestream",
+      "users": " users watching",
+      "user": " user watching"
     }
   }
 }
