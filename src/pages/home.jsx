@@ -709,7 +709,8 @@ class Home extends Component {
                       style={{
                         background: hue,
                         border: "1px solid rgba(255,255,255,.1)",
-                        position: "relative"
+                        position: "relative",
+                        marginBottom: 16
                       }}
                       elevation={4}
                     >
@@ -755,7 +756,8 @@ class Home extends Component {
                     <Card
                       style={{
                         background: hue,
-                        border: "1px solid rgba(255,255,255,.1)"
+                        border: "1px solid rgba(255,255,255,.1)",
+                        display: "none"
                       }}
                       elevation={4}
                     >
@@ -956,7 +958,8 @@ class Home extends Component {
                   <Card
                     style={{
                       background: hue,
-                      border: "1px solid rgba(255,255,255,.1)"
+                      border: "1px solid rgba(255,255,255,.1)",
+                      marginBottom: 16
                     }}
                     elevation={4}
                   >
@@ -1007,7 +1010,7 @@ class Home extends Component {
                     elevation={4}
                   >
                     <CardHeader
-                      title={lang.home.mangaavTitle}
+                      title={lang.home.mangafavTitle}
                       classes={{ title: classes.secTitleText }}
                     />
                     <Divider />
