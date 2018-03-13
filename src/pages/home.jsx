@@ -752,6 +752,19 @@ class Home extends Component {
                         {lang.home.random}
                       </MenuItem>
                     </Card>
+                    <Card
+                      style={{
+                        background: hue,
+                        border: "1px solid rgba(255,255,255,.1)"
+                      }}
+                      elevation={4}
+                    >
+                      <CardHeader
+                        title={lang.home.sponsor}
+                        classes={{ title: classes.secTitleText }}
+                      />
+                      <Divider />
+                    </Card>
                   </Grid>
                 </Hidden>
               ) : (
@@ -964,6 +977,52 @@ class Home extends Component {
                             key={anime.id}
                             onClick={() =>
                               this.props.history.push(`/show?s=${anime.id}`)
+                            }
+                          >
+                            <Avatar
+                              src={anime.image}
+                              style={{
+                                borderRadius: 0,
+                                height: "auto",
+                                width: 60,
+                                background: "white"
+                              }}
+                            />
+                            <ListItemText primary={anime.name} />
+                          </MenuItem>
+                        ))
+                    ) : (
+                      <MenuItem disabled>
+                        <Typography variant="body1">
+                          {lang.home.nofavs}
+                        </Typography>
+                      </MenuItem>
+                    )}
+                  </Card>
+                  <Card
+                    style={{
+                      background: hue,
+                      border: "1px solid rgba(255,255,255,.1)"
+                    }}
+                    elevation={4}
+                  >
+                    <CardHeader
+                      title={lang.home.mangaavTitle}
+                      classes={{ title: classes.secTitleText }}
+                    />
+                    <Divider />
+                    {!isEmpty(user) &&
+                    user.favs &&
+                    user.favs.manga &&
+                    user.favs.manga ? (
+                      Object.values(user.favs.manga)
+                        .sort((a, b) => a.name - b.name)
+                        .map(anime => (
+                          <MenuItem
+                            style={{ paddingLeft: 0 }}
+                            key={anime.id}
+                            onClick={() =>
+                              this.props.history.push(`/show?m=${anime.id}`)
                             }
                           >
                             <Avatar
