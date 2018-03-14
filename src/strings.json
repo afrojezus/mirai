@@ -96,7 +96,7 @@
       "settings": "Settings",
       "aesthetics": "Aesthetics",
       "account": "Account",
-      "sync": "Synchronization (WIP)",
+      "sync": "Synchronization",
       "misc": "Misc. Settings",
       "language": "Language",
       "languageDesc":
@@ -493,7 +493,7 @@
       "settings": "Innstillinger",
       "aesthetics": "Utseende",
       "account": "Konto",
-      "sync": "Synkronisering (Eksperimental)",
+      "sync": "Synkronisering",
       "misc": "Andre innstillinger",
       "language": "Språk",
       "languageDesc":

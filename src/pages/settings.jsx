@@ -832,7 +832,7 @@ class Settings extends Component {
             </M.ExpansionPanel>
             <M.ExpansionPanel
               disabled
-              style={{ background: hue ? hue : null }}
+              style={{ display: "none", background: hue ? hue : null }}
               className={classes.panel}
             >
               <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
@@ -873,7 +873,7 @@ class Settings extends Component {
             </M.ExpansionPanel>
             <M.ExpansionPanel
               disabled
-              style={{ background: hue ? hue : null }}
+              style={{ display: "none", background: hue ? hue : null }}
               className={classes.panel}
             >
               <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>
@@ -912,13 +912,17 @@ class Settings extends Component {
                 </M.FormGroup>
               </M.ExpansionPanelActions>
             </M.ExpansionPanel>
-            <div className={classes.divide} />
-            <M.Typography variant="headline" className={classes.headline}>
+            <div style={{ display: "none" }} className={classes.divide} />
+            <M.Typography
+              style={{ display: "none" }}
+              variant="headline"
+              className={classes.headline}
+            >
               {lang.settings.misc}
             </M.Typography>
             <M.ExpansionPanel
               disabled
-              style={{ background: hue ? hue : null }}
+              style={{ display: "none", background: hue ? hue : null }}
               className={classes.panel}
             >
               <M.ExpansionPanelSummary expandIcon={<Icon.ExpandMore />}>

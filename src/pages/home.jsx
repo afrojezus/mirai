@@ -465,7 +465,6 @@ class Home extends Component {
           .filter(x => x.feed)
           .map(f => f.feed);
         const userFeedArray = users.map(s => Object.values(s));
-        // THIS SHIT IS GIVING ME HEADACHES.
         let userFeeds = [];
         userFeedArray.map(a => a.map(s => userFeeds.push(s)));
         // Make sure there ain't duplicates
@@ -473,7 +472,7 @@ class Home extends Component {
           userFeeds.map(s => !s.activity)
         );
 
-        // Group them together in one fuckfeed
+        // Group them together in one feed
         let feeds = [
           ...Object.values(feedsync.byusers),
           ...feedsync.public_feed,
